@@ -542,7 +542,7 @@ const ADMINS = ['deberjerac']; // ← додай сюди TG username адмін
 const API = 'https://script.google.com/macros/s/AKfycbwybos79QSCBbtzu_XVFtp5fZRoz70xL4vAWu0H1TCrxw0rMsnzhZVZuRCcwWlYo4oAjw/exec';
 const CLOUDINARY_CLOUD = 'dde1lbwld';
 const CLOUDINARY_PRESET = 'disc_central';
-const ADMIN_PASS = 'DiscC3ntr@l2024';
+const ADMIN_PASS = 'DiscC3ntr@l2024'; // server-side check only
 
 let CU=null, CF='all', allDiscs=[], allReqs=[], buyId=null, retId=null, reqTestId=null;
 let photoUrls=['','',''];
@@ -562,23 +562,26 @@ function st(s){return ST[s]||ST.available}
 function dl(e){if(!e)return null;return Math.ceil((new Date(e)-new Date())/864e5)}
 
 // ── API ──
-async function apiGet(params){
+
+function jsonp(url){
   return new Promise((resolve,reject)=>{
-    const cb='cb_'+Date.now();
-    const url=API+'?'+new URLSearchParams({...params,callback:cb});
+    const name='_jcb'+Date.now();
     const s=document.createElement('script');
-    window[cb]=(d)=>{delete window[cb];s.remove();resolve(d);};
-    s.onerror=reject;s.src=url;document.head.appendChild(s);
+    const t=setTimeout(()=>{delete window[name];s.remove();reject(new Error('timeout'));},15000);
+    window[name]=(d)=>{clearTimeout(t);delete window[name];s.remove();resolve(d);};
+    s.onerror=()=>{clearTimeout(t);delete window[name];s.remove();reject(new Error('error'));};
+    // Replace callback placeholder
+    s.src=url.replace('CBNAME',name);
+    document.head.appendChild(s);
   });
 }
+async function apiGet(params){
+  const p=new URLSearchParams({...params,callback:'CBNAME'}).toString();
+  return jsonp(API+'?'+p);
+}
 async function apiPost(body){
-  return new Promise((resolve,reject)=>{
-    const cb='cb_'+Date.now();
-    const url=API+'?callback='+cb+'&data='+encodeURIComponent(JSON.stringify(body));
-    const s=document.createElement('script');
-    window[cb]=(d)=>{delete window[cb];s.remove();resolve(d);};
-    s.onerror=reject;s.src=url;document.head.appendChild(s);
-  });
+  const url=API+'?callback=CBNAME&data='+encodeURIComponent(JSON.stringify(body));
+  return jsonp(url);
 }
 
 // ── LOAD ──
@@ -1189,8 +1192,13 @@ function filterByOwner(owner){
 // Share disc link
 function shareDisc(id){
   const url=`${location.origin}${location.pathname}?disc=${id}`;
-  if(navigator.share){navigator.share({title:'Disc Central',url});}
-  else{navigator.clipboard.writeText(url).then(()=>toast('🔗 Посилання скопійовано!'));}
+  navigator.clipboard.writeText(url).then(()=>toast('🔗 Посилання скопійовано!')).catch(()=>{
+    // fallback for older browsers
+    const el=document.createElement('textarea');
+    el.value=url;document.body.appendChild(el);el.select();
+    document.execCommand('copy');document.body.removeChild(el);
+    toast('🔗 Посилання скопійовано!');
+  });
 }
 
 // Trade offer modal
@@ -1367,6 +1375,8 @@ function openModal(n) {
 }
 
 async function init(){
+  // Safety net - hide loading after 20s no matter what
+  setTimeout(()=>{document.getElementById('loadingOverlay').style.display='none';},20000);
   restoreUser();
   loadBanned();
   // Auto-show admin nav if user is admin
@@ -1387,8 +1397,13 @@ async function init(){
       },300);
     }
   }
-  catch(e){document.getElementById('discGrid').innerHTML=`<div class="empty" style="grid-column:1/-1"><div class="empty-icon">⚠️</div>Помилка завантаження</div>`;}
-  finally{document.getElementById('loadingOverlay').style.display='none';}
+  catch(e){
+    console.error('Load error:', e);
+    document.getElementById('discGrid').innerHTML=`<div class="empty" style="grid-column:1/-1"><div class="empty-icon">⚠️</div>Помилка завантаження. <button class="btn btn-lime btn-sm" onclick="init()" style="margin-top:0.5rem">↻ Спробувати знову</button></div>`;
+  }
+  finally{
+    document.getElementById('loadingOverlay').style.display='none';
+  }
 }
 init();
 </script>
