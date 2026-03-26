@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Disc Central</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
 :root{
@@ -212,7 +213,6 @@ td{padding:9px 12px;font-size:0.84rem}
   </nav>
   <div class="header-right">
     <button class="btn btn-ghost btn-sm" onclick="openModal('addDisc')">+ Диск</button>
-    <button class="btn btn-lime btn-sm" onclick="openModal('reqTest')">Тест</button>
     <div class="hamburger" id="hamburger" onclick="toggleNav()"><span></span><span></span><span></span></div>
     <button class="btn btn-ghost btn-sm" style="min-width:80px" onclick="openModal('login')" id="userBtn">Увійти</button>
   </div>
@@ -258,6 +258,34 @@ td{padding:9px 12px;font-size:0.84rem}
           <button class="ft" onclick="setFt(this,'testing')">На тесті</button>
           <button class="ft" onclick="setFt(this,'reserved')">Резерв</button>
           <button class="ft" onclick="setFt(this,'sold')">Продані</button>
+        </div>
+        <button class="btn btn-ghost btn-sm" onclick="toggleAdvFilters()" id="advFilterBtn">⚙ Фільтри</button>
+      </div>
+      <div id="advFilters" style="display:none;background:var(--s2);border:1px solid var(--b1);border-radius:var(--r2);padding:1rem;margin-bottom:1rem">
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:0.75rem;align-items:end">
+          <div>
+            <div class="fl">Speed (мін)</div>
+            <input type="number" id="f-speed" placeholder="0" min="0" max="15" oninput="applyFilters()" style="padding:6px 10px">
+          </div>
+          <div>
+            <div class="fl">Glide (мін)</div>
+            <input type="number" id="f-glide" placeholder="0" min="0" max="7" oninput="applyFilters()" style="padding:6px 10px">
+          </div>
+          <div>
+            <div class="fl">Turn (макс)</div>
+            <input type="number" id="f-turn" placeholder="1" min="-5" max="1" step="0.5" oninput="applyFilters()" style="padding:6px 10px">
+          </div>
+          <div>
+            <div class="fl">Fade (макс)</div>
+            <input type="number" id="f-fade" placeholder="5" min="0" max="5" oninput="applyFilters()" style="padding:6px 10px">
+          </div>
+          <div>
+            <div class="fl">Ціна до (₴)</div>
+            <input type="number" id="f-price" placeholder="9999" min="0" oninput="applyFilters()" style="padding:6px 10px">
+          </div>
+          <div style="display:flex;align-items:flex-end">
+            <button class="btn btn-ghost btn-sm btn-full" onclick="resetFilters()">✕ Скинути</button>
+          </div>
         </div>
       </div>
       <div class="disc-grid" id="discGrid"><div class="empty"><div class="empty-icon">🥏</div>Завантаження...</div></div>
@@ -421,8 +449,7 @@ td{padding:9px 12px;font-size:0.84rem}
     <button class="mc" onclick="closeModal('reqTest')">✕</button>
     <div class="mt">ЗАПИТ НА <span>ТЕСТ</span></div>
     <div class="info-box"><strong>Ліміт:</strong> 3 диски · до 2 тижнів · повернення у тому ж стані</div>
-    <div class="fg"><label class="fl">Ваше ім'я *</label><input id="rt-name" placeholder="Хто тестує?"></div>
-    <div class="fg"><label class="fl">Telegram (для зв'язку з власником)</label><input id="rt-tg" placeholder="username без @"></div>
+
     <div class="fg"><label class="fl">Оберіть диск *</label><select id="rt-disc"></select></div>
     <div class="fr"><div class="fg"><label class="fl">Дата початку</label><input id="rt-start" type="date"></div><div class="fg"><label class="fl">Дата повернення</label><input id="rt-end" type="date"></div></div>
     <div class="fg"><label class="fl">Про себе / навіщо цей диск</label><textarea id="rt-note" placeholder="Досвід, мета тесту..."></textarea></div>
@@ -588,11 +615,39 @@ function cardHTML(d) {
   </div>`;
 }
 
+function toggleAdvFilters() {
+  const el = document.getElementById('advFilters');
+  const btn = document.getElementById('advFilterBtn');
+  const open = el.style.display === 'none';
+  el.style.display = open ? 'block' : 'none';
+  btn.style.borderColor = open ? 'var(--lime)' : 'var(--b1)';
+  btn.style.color = open ? 'var(--lime)' : '';
+}
+
+function resetFilters() {
+  ['f-speed','f-glide','f-turn','f-fade','f-price'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = '';
+  });
+  applyFilters();
+}
+
 function applyFilters() {
   const q = (document.getElementById('mainSearch')||{value:''}).value.toLowerCase();
+  const fSpeed = parseFloat(document.getElementById('f-speed')?.value) || 0;
+  const fGlide = parseFloat(document.getElementById('f-glide')?.value) || 0;
+  const fTurn  = parseFloat(document.getElementById('f-turn')?.value) ?? 1;
+  const fFade  = parseFloat(document.getElementById('f-fade')?.value) ?? 5;
+  const fPrice = parseFloat(document.getElementById('f-price')?.value) || 0;
+
   let list = allDiscs;
   if (CF !== 'all') list = list.filter(d => d.status === CF);
   if (q) list = list.filter(d => [d.brand,d.model,d.plastic,d.color,d.owner].join(' ').toLowerCase().includes(q));
+  if (fSpeed > 0) list = list.filter(d => parseFloat(d.speed) >= fSpeed);
+  if (fGlide > 0) list = list.filter(d => parseFloat(d.glide) >= fGlide);
+  if (document.getElementById('f-turn')?.value !== '') list = list.filter(d => parseFloat(d.turn) <= fTurn);
+  if (document.getElementById('f-fade')?.value !== '') list = list.filter(d => parseFloat(d.fade) <= fFade);
+  if (fPrice > 0) list = list.filter(d => parseFloat(d.buyout) <= fPrice);
   const g = document.getElementById('discGrid');
   g.innerHTML = list.length
     ? list.map(cardHTML).join('')
@@ -846,9 +901,11 @@ function qTest(id) {
 }
 
 async function submitTestReq() {
-  const name = document.getElementById('rt-name').value.trim();
   const discId = document.getElementById('rt-disc').value;
-  if (!name || !discId) { toast('⚠️ Вкажіть ім\'я та виберіть диск', true); return; }
+  const name = CU?.name || 'Анонім';
+  const tgUser = CU?.tg || '';
+  if (!discId) { toast('⚠️ Виберіть диск', true); return; }
+  if (!CU) { toast('⚠️ Спочатку увійдіть', true); openModal('login'); return; }
   const active = allDiscs.filter(d => d.tester === name && ['testing','reserved'].includes(d.status));
   if (active.length >= 3) { toast('⚠️ Ліміт: 3 диски на тесті', true); return; }
 
@@ -858,7 +915,7 @@ async function submitTestReq() {
     const res = await apiPost({
       action: 'addRequest',
       discId, tester: name,
-      testerTg: document.getElementById('rt-tg').value.trim(),
+      testerTg: tgUser,
       date: document.getElementById('rt-start').value,
       endDate: document.getElementById('rt-end').value,
       note: document.getElementById('rt-note').value,
@@ -936,6 +993,24 @@ function doLogin() {
 
 function restoreUser() {
   try {
+    // Спочатку пробуємо Telegram WebApp авторизацію
+    const tg = window.Telegram?.WebApp;
+    if (tg && tg.initDataUnsafe?.user) {
+      const u = tg.initDataUnsafe.user;
+      CU = {
+        name: (u.first_name + (u.last_name ? ' ' + u.last_name : '')).trim(),
+        tg: u.username || String(u.id),
+        tgId: String(u.id),
+        role: 'both'
+      };
+      localStorage.setItem('dcUser', JSON.stringify(CU));
+      document.getElementById('userBtn').textContent = CU.name.slice(0,10);
+      document.getElementById('userBtn').style.background = 'var(--lime)';
+      document.getElementById('userBtn').style.color = '#080a10';
+      tg.expand(); // розгортаємо на весь екран
+      return;
+    }
+    // Fallback — збережений користувач
     const saved = localStorage.getItem('dcUser');
     if (saved) {
       CU = JSON.parse(saved);
