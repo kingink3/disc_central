@@ -563,25 +563,20 @@ function dl(e){if(!e)return null;return Math.ceil((new Date(e)-new Date())/864e5
 
 // ── API ──
 
-function jsonp(url){
-  return new Promise((resolve,reject)=>{
-    const name='_jcb'+Date.now();
-    const s=document.createElement('script');
-    const t=setTimeout(()=>{delete window[name];s.remove();reject(new Error('timeout'));},15000);
-    window[name]=(d)=>{clearTimeout(t);delete window[name];s.remove();resolve(d);};
-    s.onerror=()=>{clearTimeout(t);delete window[name];s.remove();reject(new Error('error'));};
-    // Replace callback placeholder
-    s.src=url.replace('CBNAME',name);
-    document.head.appendChild(s);
-  });
-}
 async function apiGet(params){
-  const p=new URLSearchParams({...params,callback:'CBNAME'}).toString();
-  return jsonp(API+'?'+p);
+  const url=API+'?'+new URLSearchParams(params);
+  const r=await fetch(url,{redirect:'follow'});
+  const text=await r.text();
+  // Strip JSONP wrapper if present e.g. callback({...})
+  const match=text.match(/^[^(]+\((.+)\)\s*;?\s*$/s);
+  return JSON.parse(match?match[1]:text);
 }
 async function apiPost(body){
-  const url=API+'?callback=CBNAME&data='+encodeURIComponent(JSON.stringify(body));
-  return jsonp(url);
+  const url=API+'?data='+encodeURIComponent(JSON.stringify(body));
+  const r=await fetch(url,{redirect:'follow'});
+  const text=await r.text();
+  const match=text.match(/^[^(]+\((.+)\)\s*;?\s*$/s);
+  return JSON.parse(match?match[1]:text);
 }
 
 // ── LOAD ──
