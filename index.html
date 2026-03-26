@@ -43,7 +43,7 @@ nav{display:flex;gap:0.15rem;align-items:center;flex:1;justify-content:center}
 .btn-cyan{background:rgba(64,212,240,0.1);color:var(--cyan);border:1px solid rgba(64,212,240,0.2)}.btn-cyan:hover{background:rgba(64,212,240,0.18)}
 .btn-orange{background:rgba(240,96,64,0.1);color:var(--orange);border:1px solid rgba(240,96,64,0.2)}
 .btn-danger{background:rgba(240,96,64,0.1);color:#f87171;border:1px solid rgba(248,113,113,0.2)}
-.btn-purple{background:rgba(167,139,250,0.1);color:var(--purple);border:1px solid rgba(167,139,250,0.2)}
+.btn-purple{background:rgba(167,139,250,0.1);color:var(--purple);border:1px solid rgba(167,139,250,0.2)}.btn-purple:hover{background:rgba(167,139,250,0.18)}
 
 .hamburger{display:none;flex-direction:column;gap:4px;cursor:pointer;padding:7px;border-radius:7px;border:1px solid var(--b1);background:var(--s2)}
 .hamburger span{display:block;width:16px;height:2px;background:var(--text);border-radius:1px;transition:all 0.2s}
@@ -245,14 +245,13 @@ td{padding:8px 10px;font-size:0.8rem}
 </div>
 
 <header>
-  <div class="logo">
+  <div class="logo" onclick="goPage('catalog',null);document.querySelectorAll('.nav-a').forEach((b,i)=>{if(i===0)b.classList.add('active');else b.classList.remove('active');})" style="cursor:pointer">
     <div class="logo-disc"></div>
     <span class="logo-text">DISC <b>CENTRAL</b></span>
   </div>
   <nav>
     <button class="nav-a active" onclick="goPage('catalog',this)">🥏 Каталог</button>
-    <button class="nav-a" onclick="goPage('seller',this)">📦 Продавець</button>
-    <button class="nav-a" onclick="goPage('tester',this)">🎯 Тестер</button>
+    <button class="nav-a" onclick="goPage('cabinet',this)">👤 Кабінет</button>
     <button class="nav-a" onclick="goPage('rules',this)">📋 Правила</button>
     <button class="nav-a" onclick="goPage('admin',this)">🔐 Адмін</button>
   </nav>
@@ -265,8 +264,7 @@ td{padding:8px 10px;font-size:0.8rem}
 
 <div class="mobile-nav" id="mobileNav">
   <button class="nav-a" onclick="goPageM('catalog')">🥏 Каталог</button>
-  <button class="nav-a" onclick="goPageM('seller')">📦 Кабінет продавця</button>
-  <button class="nav-a" onclick="goPageM('tester')">🎯 Кабінет тестера</button>
+  <button class="nav-a" onclick="goPageM('cabinet')">👤 Кабінет</button>
   <button class="nav-a" onclick="goPageM('rules')">📋 Правила</button>
   <button class="nav-a" onclick="goPageM('admin')">🔐 Адмін</button>
   <hr style="border-color:var(--b1);margin:0.2rem 0">
@@ -282,18 +280,20 @@ td{padding:8px 10px;font-size:0.8rem}
       <div class="stat-m"><div class="stat-mn or" id="hs-te">—</div><div class="stat-ml">На тесті</div></div>
       <div class="stat-m"><div class="stat-mn wh" id="hs-tr">—</div><div class="stat-ml">Трейд</div></div>
     </div>
-    <div style="display:flex;gap:0.5rem;align-items:center;margin-bottom:0.5rem;flex-wrap:wrap">
-      <div class="ftabs" style="flex:1;min-width:0">
+    <div style="display:flex;gap:0.4rem;align-items:center;margin-bottom:0.5rem">
+      <div class="ftabs" style="flex:1;min-width:0;overflow-x:auto">
         <button class="ft active" onclick="setFt(this,'all')">Всі</button>
         <button class="ft" onclick="setFt(this,'available')">Доступні</button>
         <button class="ft" onclick="setFt(this,'testing')">На тесті</button>
         <button class="ft" onclick="setFt(this,'trade')">Трейд</button>
         <button class="ft" onclick="setFt(this,'reserved')">Резерв</button>
       </div>
-      <input class="search-box" id="mainSearch" placeholder="🔍" oninput="applyFilters()" style="max-width:120px;flex-shrink:0">
       <button class="btn btn-ghost btn-sm" onclick="toggleAdvFilters()" id="advBtn" style="flex-shrink:0;padding:5px 9px">⚙</button>
     </div>
     <div class="adv-filters" id="advFilters">
+      <div class="adv-row" style="margin-bottom:0.6rem">
+        <div style="grid-column:1/-1"><span class="fl">Пошук</span><input class="search-box" id="mainSearch" placeholder="🔍 Пошук за брендом, моделлю..." oninput="applyFilters()" style="max-width:100%;width:100%"></div>
+      </div>
       <div class="adv-row">
         <div><span class="fl">Сортування</span>
           <select id="f-sort" onchange="applyFilters()" class="sort-sel">
@@ -314,44 +314,43 @@ td{padding:8px 10px;font-size:0.8rem}
         <div style="display:flex;align-items:flex-end"><button class="btn btn-ghost btn-sm btn-full" onclick="resetFilters()">✕ Скинути</button></div>
       </div>
     </div>
+    <div id="catalog-section"></div>
     <div class="disc-grid" id="discGrid"><div class="empty"><div class="empty-icon">🥏</div>Завантаження...</div></div>
   </div>
 </div>
 
-<!-- SELLER -->
-<div id="page-seller" class="page">
+<!-- CABINET (merged seller+tester) -->
+<div id="page-cabinet" class="page">
   <div class="content">
-    <div id="sellerNoAuth"><div class="empty"><div class="empty-icon">🔐</div>Увійдіть для кабінету продавця<br><br><button class="btn btn-lime" onclick="openModal('login')">Увійти</button></div></div>
-    <div id="sellerContent" style="display:none">
-      <div class="stats-row">
+    <div id="cabinetNoAuth"><div class="empty"><div class="empty-icon">🔐</div>Увійдіть щоб побачити кабінет<br><br><button class="btn btn-lime" onclick="openModal('login')">Увійти</button></div></div>
+    <div id="cabinetContent" style="display:none">
+      <!-- STATS -->
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:0.6rem;margin-bottom:1rem">
         <div class="stat-card"><div class="stat-n" id="sel-total">0</div><div class="stat-l">Моїх дисків</div></div>
-        <div class="stat-card"><div class="stat-n cy" id="sel-active">0</div><div class="stat-l">Активних</div></div>
+        <div class="stat-card"><div class="stat-n cy" id="te-active">0</div><div class="stat-l">На тесті</div></div>
         <div class="stat-card"><div class="stat-n or" id="sel-revenue">0₴</div><div class="stat-l">Зароблено</div></div>
       </div>
-      <div class="dash-grid">
-        <div class="card"><div class="sec-hdr"><div class="sec-ttl">МОЇ ДИСКИ</div><button class="btn btn-lime btn-sm" onclick="openModal('addDisc')">+ Додати</button></div><div class="dash-list" id="sellerDiscList"></div></div>
-        <div class="card"><div class="sec-hdr"><div class="sec-ttl">ЗАПИТИ</div><button class="btn btn-ghost btn-sm" onclick="renderSeller()">↻</button></div><div class="dash-list" id="sellerRequests"></div></div>
+      <!-- MY DISCS + REQUESTS -->
+      <div class="dash-grid" style="margin-bottom:1rem">
+        <div class="card">
+          <div class="sec-hdr"><div class="sec-ttl">МОЇ ДИСКИ</div><button class="btn btn-lime btn-sm" onclick="openModal('addDisc')">+ Додати</button></div>
+          <div class="dash-list" id="sellerDiscList"></div>
+        </div>
+        <div class="card">
+          <div class="sec-hdr"><div class="sec-ttl">ЗАПИТИ ДО МЕНЕ</div><button class="btn btn-ghost btn-sm" onclick="renderCabinet()">↻</button></div>
+          <div class="dash-list" id="sellerRequests"></div>
+        </div>
       </div>
-    </div>
-  </div>
-</div>
-
-<!-- TESTER -->
-<div id="page-tester" class="page">
-  <div class="content">
-    <div id="testerNoAuth"><div class="empty"><div class="empty-icon">🔐</div>Увійдіть для кабінету тестера<br><br><button class="btn btn-lime" onclick="openModal('login')">Увійти</button></div></div>
-    <div id="testerContent" style="display:none">
-      <div class="info-box cy"><strong>Ліміт:</strong> 3 диски одночасно · деталі обговорюйте в особистих повідомленнях</div>
-      <div class="stats-row">
-        <div class="stat-card"><div class="stat-n cy" id="te-active">0</div><div class="stat-l">На тесті</div></div>
-        <div class="stat-card"><div class="stat-n" id="te-done">0</div><div class="stat-l">Всього тестів</div></div>
-        <div class="stat-card"><div class="stat-n or" id="te-bought">0</div><div class="stat-l">Куплено</div></div>
-      </div>
+      <!-- ACTIVE TESTS -->
       <div class="card" style="margin-bottom:1rem">
-        <div class="sec-hdr"><div class="sec-ttl">АКТИВНІ ТЕСТИ</div></div>
+        <div class="sec-hdr"><div class="sec-ttl">Я ТЕСТУЮ</div><div style="font-size:0.72rem;color:var(--m1)">ліміт 3 диски</div></div>
         <div id="testerActiveList"></div>
       </div>
-      <div class="card"><div class="sec-hdr"><div class="sec-ttl">ІСТОРІЯ</div></div><div id="testerHistoryList"></div></div>
+      <!-- HISTORY -->
+      <div class="card">
+        <div class="sec-hdr"><div class="sec-ttl">ІСТОРІЯ</div></div>
+        <div id="testerHistoryList"></div>
+      </div>
     </div>
   </div>
 </div>
@@ -480,7 +479,6 @@ td{padding:8px 10px;font-size:0.8rem}
     <div class="fg"><label class="fl">Статус</label>
       <select id="edit-status">
         <option value="available">Доступний</option>
-        <option value="trade">Трейд</option>
         <option value="reserved">Зарезервований</option>
         <option value="testing">На тестуванні</option>
       </select>
@@ -556,7 +554,7 @@ const ST={
   testing:{l:'На тестуванні',c:'te',b:'b-te'},
   pending:{l:'Очікує повернення',c:'pe',b:'b-pe'},
   sold:{l:'Продано',c:'so',b:'b-so'},
-  trade:{l:'Трейд',c:'tr',b:'b-tr'},
+  trade:{l:'Доступний',c:'av',b:'b-av'},
 };
 function st(s){return ST[s]||ST.available}
 function dl(e){if(!e)return null;return Math.ceil((new Date(e)-new Date())/864e5)}
@@ -596,7 +594,7 @@ async function loadDiscs(){
 function updateStats(){
   const av=allDiscs.filter(d=>d.status==='available').length;
   const te=allDiscs.filter(d=>['testing','reserved'].includes(d.status)).length;
-  const tr=allDiscs.filter(d=>d.status==='trade').length;
+  const tr=allDiscs.filter(d=>d.tradeWant&&d.tradeWant.trim()!=='').length;
   const vis=allDiscs.filter(d=>d.status!=='sold').length;
   document.getElementById('hs-total').textContent=vis;
   document.getElementById('hs-av').textContent=av;
@@ -658,7 +656,10 @@ function cardHTML(d){
     <div class="disc-body">
       <div class="disc-top">
         <div><div class="disc-title">${d.brand} ${d.model}</div><div class="disc-sub">${d.plastic||''} · ${d.weight||''}г</div></div>
-        <span class="badge ${s.b}">${s.l}</span>
+        <div style="display:flex;gap:3px;align-items:center;flex-wrap:wrap;justify-content:flex-end">
+          ${d.tradeWant?'<span class="badge b-tr">🔄</span>':''}
+          <span class="badge ${s.b}">${s.l}</span>
+        </div>
       </div>
       ${condBar(d.condition)}
       <div class="flight-row">
@@ -674,9 +675,10 @@ function cardHTML(d){
       <div class="disc-footer">
         <div><div class="disc-price-lbl">Buyout</div><div class="disc-price">${d.buyout?d.buyout+' ₴':'—'}</div></div>
         <div style="text-align:right">
-          <div class="disc-own">👤 ${d.owner||''}</div>
+          <div class="disc-own" onclick="event.stopPropagation();filterByOwner('${d.owner}')" style="cursor:pointer;text-decoration:underline dotted">👤 ${d.owner||''}</div>
           <div class="disc-act" onclick="event.stopPropagation()">
             ${canT&&!isNew?`<button class="btn btn-cyan btn-xs" onclick="openReqTest('${d.id}')">Тест</button>`:''}
+            ${d.tradeWant?`<button class="btn btn-purple btn-xs" onclick="event.stopPropagation();openTradeOffer('${d.id}')">🔄</button>`:''}
             ${canB?`<button class="btn btn-lime btn-xs" onclick="oBuy('${d.id}')">Купити</button>`:''}
           </div>
         </div>
@@ -710,7 +712,8 @@ function applyFilters(){
 
   // exclude sold
   let list=allDiscs.filter(d=>d.status!=='sold');
-  if(CF!=='all')list=list.filter(d=>d.status===CF);
+  if(CF==='trade')list=list.filter(d=>d.tradeWant&&d.tradeWant.trim()!=='');
+  else if(CF!=='all')list=list.filter(d=>d.status===CF);
   if(q)list=list.filter(d=>[d.brand,d.model,d.plastic,d.color,d.owner].join(' ').toLowerCase().includes(q));
   if(fSpeed>0)list=list.filter(d=>parseFloat(d.speed)>=fSpeed);
   if(fGlide>0)list=list.filter(d=>parseFloat(d.glide)>=fGlide);
@@ -775,9 +778,11 @@ function showDetail(id){
     <div style="display:flex;align-items:center;justify-content:space-between;padding-top:0.875rem;border-top:1px solid var(--b1);gap:0.75rem;flex-wrap:wrap">
       <div><div class="disc-price-lbl">Buyout</div><div class="disc-price" style="font-size:1.3rem">${d.buyout||0}₴</div></div>
       <div style="display:flex;gap:0.4rem;flex-wrap:wrap">
-        ${canT?`<button class="btn btn-cyan btn-sm" onclick="openReqTest('${d.id}');closeModal('detail')">🥏 Запит на тест</button>`:''}
+        ${canT?`<button class="btn btn-cyan btn-sm" onclick="openReqTest('${d.id}');closeModal('detail')">🥏 Тест</button>`:''}
+        ${d.tradeWant?`<button class="btn btn-purple btn-sm" onclick="openTradeOffer('${d.id}');closeModal('detail')">🔄 Трейд</button>`:''}
         ${canB?`<button class="btn btn-lime btn-sm" onclick="oBuy('${d.id}');closeModal('detail')">💰 Купити ${d.buyout||0}₴</button>`:''}
         ${d.status==='testing'&&CU?.name===d.tester?`<button class="btn btn-ghost btn-sm" onclick="oRet('${d.id}');closeModal('detail')">↩ Повернути</button>`:''}
+        <button class="btn btn-ghost btn-sm" onclick="shareDisc('${d.id}')">🔗</button>
       </div>
     </div>`;
   openModal('detail');
@@ -851,7 +856,7 @@ async function submitDisc(){
       buyout:parseInt(document.getElementById('ad-buyout').value)||0,
       notes:document.getElementById('ad-notes').value,
       tradeWant:isTrade?document.getElementById('ad-trade-desc').value:'',
-      status:isTrade?'trade':'available',
+      status:'available',
       photoUrl:photos[0],photoUrl2:photos[1],photoUrl3:photos[2],
     });
     if(res.ok){
@@ -982,9 +987,9 @@ async function renderSeller(){
   const name=CU?.name;
   const my=allDiscs.filter(d=>String(d.owner).trim()===String(name).trim());
   const rev=allDiscs.filter(d=>d.owner===name&&d.status==='sold').reduce((a,d)=>a+(Number(d.buyout)||0),0);
-  document.getElementById('sel-total').textContent=my.length;
-  document.getElementById('sel-active').textContent=my.filter(d=>!['sold'].includes(d.status)).length;
-  document.getElementById('sel-revenue').textContent=rev+'₴';
+  if(document.getElementById('sel-total'))document.getElementById('sel-total').textContent=my.length;
+  if(document.getElementById('sel-active'))document.getElementById('sel-active').textContent=my.filter(d=>!['sold'].includes(d.status)).length;
+  if(document.getElementById('sel-revenue'))document.getElementById('sel-revenue').textContent=rev+'₴';
 
   document.getElementById('sellerDiscList').innerHTML=my.length
     ?my.map(d=>`<div class="dash-item">
@@ -1008,6 +1013,12 @@ async function renderSeller(){
         :`<div style="color:var(--m1);font-size:0.8rem;padding:0.5rem 0">Немає запитів</div>`;
     }
   }catch(e){}
+}
+
+// ── CABINET (combined) ──
+async function renderCabinet(){
+  renderSeller();
+  renderTester();
 }
 
 // ── TESTER ──
@@ -1151,6 +1162,63 @@ function renderAdminReqs(reqs){
   }).join('');
 }
 
+// Filter by owner
+function filterByOwner(owner){
+  CF='all';
+  document.querySelectorAll('.ft').forEach((b,i)=>{b.classList.toggle('active',i===0);});
+  // open adv filters and set search
+  const adv=document.getElementById('advFilters');
+  adv.classList.add('open');
+  const search=document.getElementById('mainSearch');
+  if(search)search.value=owner;
+  applyFilters();
+  document.getElementById('catalog-section')?.scrollIntoView({behavior:'smooth'});
+  // go to catalog
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('page-catalog').classList.add('active');
+}
+
+// Share disc link
+function shareDisc(id){
+  const url=`${location.origin}${location.pathname}?disc=${id}`;
+  if(navigator.share){navigator.share({title:'Disc Central',url});}
+  else{navigator.clipboard.writeText(url).then(()=>toast('🔗 Посилання скопійовано!'));}
+}
+
+// Trade offer modal
+function openTradeOffer(id){
+  if(!CU){toast('⚠️ Спочатку увійдіть',true);openModal('login');return;}
+  const d=allDiscs.find(x=>String(x.id)===String(id));
+  if(!d)return;
+  reqTestId=id;
+
+  // Show available discs from current user for trade
+  const myDiscs=allDiscs.filter(x=>x.owner===CU.name&&!['sold'].includes(x.status));
+  const myDiscOpts=myDiscs.length
+    ?`<div class="fg"><label class="fl">Пропоную натомість</label><select id="trade-offer-disc"><option value="">— мій диск —</option>${myDiscs.map(x=>`<option value="${x.id}">${x.brand} ${x.model} (${x.plastic||''})</option>`).join('')}</select></div>`
+    :'';
+
+  document.getElementById('reqDiscInfo').innerHTML=
+    `<strong>${d.brand} ${d.model}</strong> · ${d.plastic||''}<br>`+
+    `Власник шукає: <strong style="color:var(--purple)">${d.tradeWant}</strong><br>`+
+    `<span style="color:var(--m1);font-size:0.75rem">Від: <strong style="color:var(--text)">${CU.name}</strong></span>`;
+
+  // Inject myDiscs selector before note
+  const noteEl=document.getElementById('rt-note');
+  const wrap=noteEl.closest('.fg');
+  const existing=document.getElementById('trade-disc-inject');
+  if(existing)existing.remove();
+  if(myDiscOpts){
+    const div=document.createElement('div');
+    div.id='trade-disc-inject';
+    div.innerHTML=myDiscOpts;
+    wrap.parentNode.insertBefore(div,wrap);
+  }
+
+  document.getElementById('rt-note').placeholder='Розкажи більше про свій диск або умови обміну...';
+  openModal('reqTest');
+}
+
 // BAN
 function loadBanned(){
   try{bannedUsers=JSON.parse(localStorage.getItem('banned')||'[]');}catch(e){bannedUsers=[];}
@@ -1202,7 +1270,7 @@ document.getElementById('edit-trade').addEventListener('change',function(){
 async function submitEditDisc(){
   const id=document.getElementById('edit-id').value;
   const isTrade=document.getElementById('edit-trade').checked;
-  const status=isTrade?'trade':document.getElementById('edit-status').value;
+  const status=document.getElementById('edit-status').value;
   try{
     const res=await apiPost({action:'updateDisc',id,updates:{
       buyout:parseInt(document.getElementById('edit-buyout').value)||0,
@@ -1257,8 +1325,7 @@ function goPage(page,btn){
   document.getElementById('page-'+page).classList.add('active');
   document.querySelectorAll('.nav-a').forEach(b=>b.classList.remove('active'));
   if(btn)btn.classList.add('active');
-  if(page==='seller'){const ok=!!CU;document.getElementById('sellerNoAuth').style.display=ok?'none':'block';document.getElementById('sellerContent').style.display=ok?'block':'none';if(ok)renderSeller();}
-  if(page==='tester'){const ok=!!CU;document.getElementById('testerNoAuth').style.display=ok?'none':'block';document.getElementById('testerContent').style.display=ok?'block':'none';if(ok)renderTester();}
+  if(page==='cabinet'){const ok=!!CU;document.getElementById('cabinetNoAuth').style.display=ok?'none':'block';document.getElementById('cabinetContent').style.display=ok?'block':'none';if(ok)renderCabinet();}
   if(page==='catalog')applyFilters();
 }
 function goPageM(page){closeMobileNav();goPage(page,null);}
@@ -1293,7 +1360,18 @@ function openModal(n) {
 async function init(){
   restoreUser();
   loadBanned();
-  try{await loadDiscs();}
+  try{
+    await loadDiscs();
+    // Handle direct disc link
+    const params=new URLSearchParams(location.search);
+    const discId=params.get('disc');
+    if(discId){
+      setTimeout(()=>{
+        const d=allDiscs.find(x=>String(x.id)===String(discId));
+        if(d)showDetail(discId);
+      },300);
+    }
+  }
   catch(e){document.getElementById('discGrid').innerHTML=`<div class="empty" style="grid-column:1/-1"><div class="empty-icon">⚠️</div>Помилка завантаження</div>`;}
   finally{document.getElementById('loadingOverlay').style.display='none';}
 }
