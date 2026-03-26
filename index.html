@@ -232,7 +232,7 @@ td{padding:8px 10px;font-size:0.8rem}
   .stats-row{grid-template-columns:repeat(2,1fr)}
   .fr{grid-template-columns:1fr}
   .dash-grid{grid-template-columns:1fr}
-  .header-right .btn-ghost{display:none}
+  #addDiscBtn2{display:none}
 }
 .dash-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
 </style>
@@ -257,9 +257,9 @@ td{padding:8px 10px;font-size:0.8rem}
     <button class="nav-a" onclick="goPage('admin',this)">🔐 Адмін</button>
   </nav>
   <div class="header-right">
-    <button class="btn btn-ghost btn-sm" onclick="openModal('addDisc')">+ Диск</button>
+    <button class="btn btn-ghost btn-sm" onclick="openModal('addDisc')" id="addDiscBtn2">+ Диск</button>
+    <button class="btn btn-ghost btn-sm" onclick="CU?null:openModal('login')" id="userBtn" style="min-width:74px">Увійти</button>
     <div class="hamburger" id="hamburger" onclick="toggleNav()"><span></span><span></span><span></span></div>
-    <button class="btn btn-ghost btn-sm" style="min-width:74px" onclick="openModal('login')" id="userBtn">Увійти</button>
   </div>
 </header>
 
@@ -282,16 +282,16 @@ td{padding:8px 10px;font-size:0.8rem}
       <div class="stat-m"><div class="stat-mn or" id="hs-te">—</div><div class="stat-ml">На тесті</div></div>
       <div class="stat-m"><div class="stat-mn wh" id="hs-tr">—</div><div class="stat-ml">Трейд</div></div>
     </div>
-    <div class="filter-bar">
-      <input class="search-box" id="mainSearch" placeholder="🔍 Пошук..." oninput="applyFilters()">
-      <div class="ftabs">
+    <div style="display:flex;gap:0.5rem;align-items:center;margin-bottom:0.5rem;flex-wrap:wrap">
+      <div class="ftabs" style="flex:1;min-width:0">
         <button class="ft active" onclick="setFt(this,'all')">Всі</button>
         <button class="ft" onclick="setFt(this,'available')">Доступні</button>
         <button class="ft" onclick="setFt(this,'testing')">На тесті</button>
         <button class="ft" onclick="setFt(this,'trade')">Трейд</button>
         <button class="ft" onclick="setFt(this,'reserved')">Резерв</button>
       </div>
-      <button class="btn btn-ghost btn-sm" onclick="toggleAdvFilters()" id="advBtn">⚙</button>
+      <input class="search-box" id="mainSearch" placeholder="🔍" oninput="applyFilters()" style="max-width:120px;flex-shrink:0">
+      <button class="btn btn-ghost btn-sm" onclick="toggleAdvFilters()" id="advBtn" style="flex-shrink:0;padding:5px 9px">⚙</button>
     </div>
     <div class="adv-filters" id="advFilters">
       <div class="adv-row">
@@ -1020,10 +1020,11 @@ function restoreUser(){
 function updateUserBtn(){
   if(!CU)return;
   const btn=document.getElementById('userBtn');
-  btn.textContent=CU.name.slice(0,10);
+  btn.textContent=CU.name.slice(0,8);
   btn.style.background='var(--lime)';
   btn.style.color='#080a10';
   btn.style.borderColor='transparent';
+  btn.onclick=null; // disable click when logged in
 }
 function doLogin(){
   const name=document.getElementById('li-name').value.trim();
