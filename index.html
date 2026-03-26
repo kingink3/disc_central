@@ -298,9 +298,12 @@ td{padding:8px 10px;font-size:0.8rem}
         <div><span class="fl">Сортування</span>
           <select id="f-sort" onchange="applyFilters()" class="sort-sel">
             <option value="new">Новіші</option>
+            <option value="old">Старіші</option>
             <option value="price-asc">Ціна ↑</option>
             <option value="price-desc">Ціна ↓</option>
-            <option value="speed">Speed ↓</option>
+            <option value="speed-desc">Speed ↓</option>
+            <option value="speed-asc">Speed ↑</option>
+            <option value="cond-desc">Стан ↓</option>
           </select>
         </div>
         <div><span class="fl">Speed від</span><input type="number" id="f-speed" placeholder="0" min="0" max="15" oninput="applyFilters()"></div>
@@ -419,7 +422,7 @@ td{padding:8px 10px;font-size:0.8rem}
     <div class="mt">ВХІД / <span>РЕЄСТРАЦІЯ</span></div>
     <div class="info-box">Вкажи ім'я та Telegram для отримання сповіщень.</div>
     <div class="fg"><label class="fl">Ім'я</label><input id="li-name" placeholder="Ім'я або нікнейм"></div>
-    <div class="fg"><label class="fl">Telegram username (без @)</label><input id="li-tg" placeholder="username"></div>
+    <div class="fg"><label class="fl">Telegram username (без @)</label><input id="li-tg" placeholder="username" oninput="this.value=this.value.replace('@','')"></div>
     <div class="fg"><label class="fl">Роль</label><select id="li-role"><option value="both">Продавець і тестер</option><option value="seller">Продавець</option><option value="tester">Тестер</option></select></div>
     <button class="btn btn-lime btn-full" onclick="doLogin()">Увійти</button>
   </div>
@@ -458,7 +461,7 @@ td{padding:8px 10px;font-size:0.8rem}
     </label>
     <div class="fg" id="tradeDescWrap" style="display:none"><label class="fl">Що хочу отримати в обмін</label><textarea id="ad-trade-desc" placeholder="Опиши що шукаєш..."></textarea></div>
     <div class="fg"><label class="fl">Нотатки</label><textarea id="ad-notes" placeholder="Додаткова інформація..."></textarea></div>
-    <div class="fg"><label class="fl">Ваше ім'я *</label><input id="ad-owner" placeholder="Ваше ім'я"></div>
+    <div class="fg" id="ownerFieldWrap"><label class="fl">Ваше ім'я *</label><input id="ad-owner" placeholder="Ваше ім'я"></div>
     <button class="btn btn-lime btn-full" id="addDiscBtn" onclick="submitDisc()">Додати до каталогу</button>
   </div>
 </div>
@@ -683,8 +686,10 @@ function applyFilters(){
   // sort
   if(sort==='price-asc')list.sort((a,b)=>(parseFloat(a.buyout)||0)-(parseFloat(b.buyout)||0));
   else if(sort==='price-desc')list.sort((a,b)=>(parseFloat(b.buyout)||0)-(parseFloat(a.buyout)||0));
-  else if(sort==='speed')list.sort((a,b)=>(parseFloat(b.speed)||0)-(parseFloat(a.speed)||0));
-  // default: newest first (already ordered by append)
+  else if(sort==='speed-desc')list.sort((a,b)=>(parseFloat(b.speed)||0)-(parseFloat(a.speed)||0));
+  else if(sort==='speed-asc')list.sort((a,b)=>(parseFloat(a.speed)||0)-(parseFloat(b.speed)||0));
+  else if(sort==='cond-desc')list.sort((a,b)=>(parseFloat(b.condition)||0)-(parseFloat(a.condition)||0));
+  else if(sort==='old')list.reverse();
 
   const g=document.getElementById('discGrid');
   g.innerHTML=list.length?list.map(cardHTML).join(''):
@@ -856,7 +861,7 @@ function openReqTest(id){
   const d=allDiscs.find(x=>x.id===id||x.id==id);
   if(!d)return;
   if(!CU){toast('⚠️ Спочатку увійдіть',true);openModal('login');return;}
-  document.getElementById('reqDiscInfo').innerHTML=`<strong>${d.brand} ${d.model}</strong> · ${d.plastic||''} · ${d.weight||''}г · <strong style="color:var(--lime)">${d.buyout||0}₴</strong><br>Власник: ${d.owner}${d.ownerTg?` · @${d.ownerTg}`:''}`;
+  document.getElementById('reqDiscInfo').innerHTML=`<strong>${d.brand} ${d.model}</strong> · ${d.plastic||''} · ${d.weight||''}г · <strong style="color:var(--lime)">${d.buyout||0}₴</strong><br>Власник: ${d.owner}${d.ownerTg?` · @${d.ownerTg}`:''}<br><span style="color:var(--m1);font-size:0.75rem">Від: <strong style="color:var(--text)">${CU.name}</strong>${CU.tg?' (@'+CU.tg+')':''}</span>`;
   document.getElementById('rt-note').value='';
   openModal('reqTest');
 }
@@ -869,7 +874,7 @@ async function submitTestReq(){
   if(active.length>=3){toast('⚠️ Ліміт: 3 диски на тесті',true);return;}
 
   // check ban
-  if(bannedUsers.includes(CU.tg)||bannedUsers.includes(CU.tgId)){toast('⚠️ Ваш акаунт заблокований',true);return;}
+  if(bannedUsers.some(b=>b===CU.tg||b===CU.tgId)){toast('⚠️ Ваш акаунт заблокований',true);return;}
 
   const btn=document.getElementById('reqTestBtn');
   btn.disabled=true;btn.textContent='Відправка...';
@@ -931,7 +936,7 @@ async function submitReturn(){
 // ── SELLER ──
 async function renderSeller(){
   const name=CU?.name;
-  const my=allDiscs.filter(d=>d.owner===name);
+  const my=allDiscs.filter(d=>String(d.owner).trim()===String(name).trim());
   const rev=allDiscs.filter(d=>d.owner===name&&d.status==='sold').reduce((a,d)=>a+(Number(d.buyout)||0),0);
   document.getElementById('sel-total').textContent=my.length;
   document.getElementById('sel-active').textContent=my.filter(d=>!['sold'].includes(d.status)).length;
@@ -1165,7 +1170,7 @@ function goPageM(page){closeMobileNav();goPage(page,null);}
 function toggleNav(){document.getElementById('hamburger').classList.toggle('open');document.getElementById('mobileNav').classList.toggle('open');}
 function closeMobileNav(){document.getElementById('hamburger').classList.remove('open');document.getElementById('mobileNav').classList.remove('open');}
 
-function openModal(n){document.getElementById('ov-'+n).classList.add('open');}
+// openModal defined below
 function closeModal(n){document.getElementById('ov-'+n).classList.remove('open');}
 document.querySelectorAll('.overlay').forEach(o=>o.addEventListener('click',e=>{if(e.target===o)closeModal(o.id.slice(3));}));
 
@@ -1173,6 +1178,21 @@ function toast(msg,err=false){
   const c=document.getElementById('toasts'),t=document.createElement('div');
   t.className='toast'+(err?' err':'');t.textContent=msg;c.appendChild(t);
   setTimeout(()=>t.remove(),3500);
+}
+
+// Auto-fill owner when opening addDisc
+const _origOpenModal = openModal;
+function openModal(n) {
+  if(['reqTest','buy','return'].includes(n)&&!CU){
+    toast('⚠️ Спочатку увійдіть',true);
+    document.getElementById('ov-login').classList.add('open');
+    return;
+  }
+  document.getElementById('ov-'+n).classList.add('open');
+  if(n==='addDisc'&&CU){
+    document.getElementById('ad-owner').value=CU.name;
+    document.getElementById('ownerFieldWrap').style.display='none';
+  }
 }
 
 async function init(){
