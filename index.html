@@ -1374,12 +1374,14 @@ async function init(){
   setTimeout(()=>{document.getElementById('loadingOverlay').style.display='none';},20000);
   restoreUser();
   loadBanned();
-  // Auto-show admin nav if user is admin
-  if(isAdminUser&&isAdminUser()){
-    document.querySelectorAll('.nav-a').forEach(b=>{
-      if(b.textContent.includes('Адмін'))b.style.color='var(--orange)';
-    });
-  }
+  // Auto-show admin nav if user is admin (guard against undefined)
+  try{
+    if(typeof isAdminUser==='function'&&isAdminUser()){
+      document.querySelectorAll('.nav-a').forEach(b=>{
+        if(b.textContent.includes('Адмін'))b.style.color='var(--orange)';
+      });
+    }
+  }catch(e){}
   try{
     await loadDiscs();
     // Handle direct disc link
