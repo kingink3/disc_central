@@ -373,11 +373,11 @@ td{padding:8px 10px;font-size:0.8rem}
 <div id="page-admin" class="page">
   <div class="content">
     <div id="adminNoAuth">
-      <div class="empty"><div class="empty-icon">🔐</div>Адмін-панель<br><br>
-        <div style="max-width:260px;margin:0.875rem auto">
-          <div class="fg"><label class="fl">Пароль</label><input type="password" id="adminPassInput" placeholder="Пароль адміна"></div>
-          <button class="btn btn-lime btn-full" onclick="adminLogin()">Увійти</button>
-        </div>
+      <div class="empty"><div class="empty-icon">🔐</div>
+        <div>Адмін-панель</div>
+        <div style="font-size:0.8rem;color:var(--m1);margin-top:0.5rem">Доступ тільки для адмінів</div>
+        <br>
+        <button class="btn btn-lime" onclick="openModal('login')">Увійти через Telegram</button>
       </div>
     </div>
     <div id="adminContent" style="display:none">
@@ -536,6 +536,8 @@ function fmtDate(iso){
     return d.toLocaleDateString('uk-UA',{day:'2-digit',month:'2-digit',year:'numeric'});
   }catch(e){return iso;}
 }
+
+const ADMINS = ['deberjerac']; // ← додай сюди TG username адмінів (без @)
 
 const API = 'https://script.google.com/macros/s/AKfycbwybos79QSCBbtzu_XVFtp5fZRoz70xL4vAWu0H1TCrxw0rMsnzhZVZuRCcwWlYo4oAjw/exec';
 const CLOUDINARY_CLOUD = 'dde1lbwld';
@@ -1088,8 +1090,13 @@ function doLogin(){
   localStorage.setItem('dcUser',JSON.stringify(CU));
   updateUserBtn();
   closeModal('login');
-  renderSeller();renderTester();
-  toast(`👋 Привіт, ${name}!`);
+  renderCabinet();
+  if(isAdminUser()){
+    // highlight admin nav
+    toast(`👋 Привіт, ${name}! Ти адмін 🔐`);
+  } else {
+    toast(`👋 Привіт, ${name}!`);
+  }
 }
 
 // ── ADMIN ──
@@ -1104,6 +1111,7 @@ function adminLogout(){
   isAdmin=false;
   document.getElementById('adminNoAuth').style.display='block';
   document.getElementById('adminContent').style.display='none';
+  toast('Вийшли з адмін-панелі');
 }
 async function loadAdminData(){
   try{
@@ -1327,6 +1335,7 @@ function goPage(page,btn){
   if(btn)btn.classList.add('active');
   if(page==='cabinet'){const ok=!!CU;document.getElementById('cabinetNoAuth').style.display=ok?'none':'block';document.getElementById('cabinetContent').style.display=ok?'block':'none';if(ok)renderCabinet();}
   if(page==='catalog')applyFilters();
+  if(page==='admin')checkAdminAccess();
 }
 function goPageM(page){closeMobileNav();goPage(page,null);}
 function toggleNav(){document.getElementById('hamburger').classList.toggle('open');document.getElementById('mobileNav').classList.toggle('open');}
@@ -1360,6 +1369,12 @@ function openModal(n) {
 async function init(){
   restoreUser();
   loadBanned();
+  // Auto-show admin nav if user is admin
+  if(isAdminUser&&isAdminUser()){
+    document.querySelectorAll('.nav-a').forEach(b=>{
+      if(b.textContent.includes('Адмін'))b.style.color='var(--orange)';
+    });
+  }
   try{
     await loadDiscs();
     // Handle direct disc link
