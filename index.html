@@ -594,7 +594,7 @@ async function loadDiscs(){
 function updateStats(){
   const av=allDiscs.filter(d=>d.status==='available').length;
   const te=allDiscs.filter(d=>['testing','reserved'].includes(d.status)).length;
-  const tr=allDiscs.filter(d=>d.tradeWant&&d.tradeWant.trim()!=='').length;
+  const tr=allDiscs.filter(d=>d.tradeWant&&String(d.tradeWant).trim()!=='').length;
   const vis=allDiscs.filter(d=>d.status!=='sold').length;
   document.getElementById('hs-total').textContent=vis;
   document.getElementById('hs-av').textContent=av;
@@ -678,7 +678,7 @@ function cardHTML(d){
           <div class="disc-own" onclick="event.stopPropagation();filterByOwner('${d.owner}')" style="cursor:pointer;text-decoration:underline dotted">👤 ${d.owner||''}</div>
           <div class="disc-act" onclick="event.stopPropagation()">
             ${canT&&!isNew?`<button class="btn btn-cyan btn-xs" onclick="openReqTest('${d.id}')">Тест</button>`:''}
-            ${d.tradeWant?`<button class="btn btn-purple btn-xs" onclick="event.stopPropagation();openTradeOffer('${d.id}')">🔄</button>`:''}
+            ${d.tradeWant&&String(d.tradeWant).trim()?`<button class="btn btn-purple btn-xs" onclick="event.stopPropagation();openTradeOffer('${d.id}')">🔄</button>`:''}
             ${canB?`<button class="btn btn-lime btn-xs" onclick="oBuy('${d.id}')">Купити</button>`:''}
           </div>
         </div>
@@ -712,8 +712,8 @@ function applyFilters(){
 
   // exclude sold
   let list=allDiscs.filter(d=>d.status!=='sold');
-  if(CF==='trade')list=list.filter(d=>d.tradeWant&&d.tradeWant.trim()!=='');
-  else if(CF!=='all')list=list.filter(d=>d.status===CF);
+  if(CF==='trade')list=list.filter(d=>d.tradeWant&&String(d.tradeWant).trim()!=='');
+  else if(CF!=='all')list=list.filter(d=>d.status===CF||d.status==='trade');
   if(q)list=list.filter(d=>[d.brand,d.model,d.plastic,d.color,d.owner].join(' ').toLowerCase().includes(q));
   if(fSpeed>0)list=list.filter(d=>parseFloat(d.speed)>=fSpeed);
   if(fGlide>0)list=list.filter(d=>parseFloat(d.glide)>=fGlide);
@@ -930,7 +930,7 @@ async function submitTestReq(){
       closeModal('reqTest');
       await loadDiscs();
       if(CU){renderSeller();renderTester();}
-      toast(`📝 Запит відправлено! ${d.ownerTg?'Власник @'+d.ownerTg+' отримав сповіщення':''}`.trim());
+      toast(`📝 Запит відправлено!${d.ownerTg?' Сповіщення → @'+d.ownerTg:''}`.trim());
     }else{toast('⚠️ '+(res.error||'Помилка'),true);}
   }catch(e){toast('⚠️ Помилка',true);}
   btn.disabled=false;btn.textContent='Надіслати запит';
