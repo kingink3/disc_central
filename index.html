@@ -330,26 +330,37 @@ td{padding:8px 10px;font-size:0.8rem}
         <div class="stat-card"><div class="stat-n cy" id="te-active">0</div><div class="stat-l">На тесті</div></div>
         <div class="stat-card"><div class="stat-n or" id="sel-revenue">0₴</div><div class="stat-l">Зароблено</div></div>
       </div>
-      <!-- MY DISCS + REQUESTS -->
-      <div class="dash-grid" style="margin-bottom:1rem">
+      <!-- TABS -->
+      <div style="display:flex;gap:0.4rem;margin-bottom:1rem;background:var(--s2);border:1px solid var(--b1);border-radius:var(--r);padding:3px">
+        <button class="ft active" id="cab-tab-discs" onclick="setCabTab('discs')" style="flex:1;text-align:center">📦 Мої диски</button>
+        <button class="ft" id="cab-tab-requests" onclick="setCabTab('requests')" style="flex:1;text-align:center">📝 Запити</button>
+        <button class="ft" id="cab-tab-testing" onclick="setCabTab('testing')" style="flex:1;text-align:center">🎯 Тестую</button>
+        <button class="ft" id="cab-tab-history" onclick="setCabTab('history')" style="flex:1;text-align:center">📋 Історія</button>
+      </div>
+      <!-- TAB CONTENTS -->
+      <div id="cab-discs" class="cab-tab-content">
         <div class="card">
           <div class="sec-hdr"><div class="sec-ttl">МОЇ ДИСКИ</div><button class="btn btn-lime btn-sm" onclick="openModal('addDisc')">+ Додати</button></div>
           <div class="dash-list" id="sellerDiscList"></div>
         </div>
+      </div>
+      <div id="cab-requests" class="cab-tab-content" style="display:none">
         <div class="card">
           <div class="sec-hdr"><div class="sec-ttl">ЗАПИТИ ДО МЕНЕ</div><button class="btn btn-ghost btn-sm" onclick="renderCabinet()">↻</button></div>
           <div class="dash-list" id="sellerRequests"></div>
         </div>
       </div>
-      <!-- ACTIVE TESTS -->
-      <div class="card" style="margin-bottom:1rem">
-        <div class="sec-hdr"><div class="sec-ttl">Я ТЕСТУЮ</div><div style="font-size:0.72rem;color:var(--m1)">ліміт 3 диски</div></div>
-        <div id="testerActiveList"></div>
+      <div id="cab-testing" class="cab-tab-content" style="display:none">
+        <div class="card">
+          <div class="sec-hdr"><div class="sec-ttl">Я ТЕСТУЮ</div><div style="font-size:0.72rem;color:var(--m1)">ліміт 3 диски</div></div>
+          <div id="testerActiveList"></div>
+        </div>
       </div>
-      <!-- HISTORY -->
-      <div class="card">
-        <div class="sec-hdr"><div class="sec-ttl">ІСТОРІЯ</div></div>
-        <div id="testerHistoryList"></div>
+      <div id="cab-history" class="cab-tab-content" style="display:none">
+        <div class="card">
+          <div class="sec-hdr"><div class="sec-ttl">ІСТОРІЯ</div></div>
+          <div id="testerHistoryList"></div>
+        </div>
       </div>
     </div>
   </div>
@@ -542,6 +553,7 @@ const ADMINS = ['280215742']; // ← числові Telegram ID адмінів
 const API = 'https://script.google.com/macros/s/AKfycbwybos79QSCBbtzu_XVFtp5fZRoz70xL4vAWu0H1TCrxw0rMsnzhZVZuRCcwWlYo4oAjw/exec';
 const CLOUDINARY_CLOUD = 'dde1lbwld';
 const CLOUDINARY_PRESET = 'disc_central';
+const ADMIN_PASS = 'DiscC3ntr@l2024'; // server-side check only
 
 let CU=null, CF='all', allDiscs=[], allReqs=[], buyId=null, retId=null, reqTestId=null;
 let photoUrls=['','',''];
@@ -593,7 +605,7 @@ async function loadDiscs(){
 function updateStats(){
   const av=allDiscs.filter(d=>d.status==='available').length;
   const te=allDiscs.filter(d=>['testing','reserved'].includes(d.status)).length;
-  const tr=allDiscs.filter(d=>d.tradeWant&&String(d.tradeWant).trim()!=='').length;
+  const tr=allDiscs.filter(d=>d.tradeWant&&String(d.tradeWant).trim()!==''&&String(d.tradeWant)!=='false').length;
   const vis=allDiscs.filter(d=>d.status!=='sold').length;
   document.getElementById('hs-total').textContent=vis;
   document.getElementById('hs-av').textContent=av;
@@ -677,7 +689,7 @@ function cardHTML(d){
           <div class="disc-own" onclick="event.stopPropagation();filterByOwner('${d.owner}')" style="cursor:pointer;text-decoration:underline dotted">👤 ${d.owner||''}</div>
           <div class="disc-act" onclick="event.stopPropagation()">
             ${canT&&!isNew?`<button class="btn btn-cyan btn-xs" onclick="openReqTest('${d.id}')">Тест</button>`:''}
-            ${(d.tradeWant&&String(d.tradeWant).trim()&&d.tradeWant!==false&&d.tradeWant!=='false')?`<button class="btn btn-purple btn-xs" onclick="event.stopPropagation();openTradeOffer('${d.id}')">🔄 Трейд</button>`:''}
+            ${(d.tradeWant&&String(d.tradeWant).trim()!==''&&String(d.tradeWant)!=='false'&&String(d.tradeWant)!=='0')?`<button class="btn btn-purple btn-xs" onclick="event.stopPropagation();openTradeOffer('${d.id}')">🔄</button>`:''}
             ${canB?`<button class="btn btn-lime btn-xs" onclick="oBuy('${d.id}')">Купити</button>`:''}
           </div>
         </div>
@@ -711,7 +723,7 @@ function applyFilters(){
 
   // exclude sold
   let list=allDiscs.filter(d=>d.status!=='sold');
-  if(CF==='trade')list=list.filter(d=>d.tradeWant&&String(d.tradeWant).trim()!==''&&d.tradeWant!==false);
+  if(CF==='trade')list=list.filter(d=>d.tradeWant&&String(d.tradeWant).trim()!==''&&String(d.tradeWant)!=='false'&&String(d.tradeWant)!=='0');
   else if(CF!=='all')list=list.filter(d=>d.status===CF);
   if(q)list=list.filter(d=>[d.brand,d.model,d.plastic,d.color,d.owner].join(' ').toLowerCase().includes(q));
   if(fSpeed>0)list=list.filter(d=>parseFloat(d.speed)>=fSpeed);
@@ -900,7 +912,11 @@ function openReqTest(id){
   const d=allDiscs.find(x=>x.id===id||x.id==id);
   if(!d)return;
   if(!CU){toast('⚠️ Спочатку увійдіть',true);openModal('login');return;}
-  document.getElementById('reqDiscInfo').innerHTML=`<strong>${d.brand} ${d.model}</strong> · ${d.plastic||''} · ${d.weight||''}г · <strong style="color:var(--lime)">${d.buyout||0}₴</strong><br>Власник: ${d.owner}${d.ownerTg?` · @${d.ownerTg}`:''}<br><span style="color:var(--m1);font-size:0.75rem">Від: <strong style="color:var(--text)">${CU.name}</strong>${CU.tg?' (@'+CU.tg+')':''}</span>`;
+  const _owTg=(d.ownerTg||'').replace('@','');
+  document.getElementById('reqDiscInfo').innerHTML=
+    `<strong>${d.brand} ${d.model}</strong> · ${d.plastic||''} · ${d.weight||''}г · <strong style="color:var(--lime)">${d.buyout||0}₴</strong><br>`+
+    `Власник: <strong>${d.owner}</strong>`+(_owTg?` · <a href="https://t.me/${_owTg}" target="_blank" style="color:var(--cyan)">@${_owTg} ↗</a>`:'')+`<br>`+
+    `<span style="color:var(--m1);font-size:0.75rem">Від: <strong style="color:var(--text)">${CU.name}</strong>`+(CU.tg?` · <a href="https://t.me/${(CU.tg||'').replace('@','')}" target="_blank" style="color:var(--cyan)">@${(CU.tg||'').replace('@','')} ↗</a>`:'')+`</span>`;
   document.getElementById('rt-note').value='';
   document.getElementById('rt-note').value='';
   openModal('reqTest');
@@ -1002,6 +1018,9 @@ async function renderSeller(){
     const data=await apiGet({action:'getRequests'});
     if(data.ok){
       const myReqs=(data.requests||[]).filter(r=>my.some(d=>String(d.id)===String(r.discId)));
+      // Update requests tab badge
+      const reqTab=document.getElementById('cab-tab-requests');
+      if(reqTab&&myReqs.length) reqTab.textContent='📝 Запити ('+myReqs.length+')';
       document.getElementById('sellerRequests').innerHTML=myReqs.length
         ?myReqs.map(r=>{const d=allDiscs.find(x=>String(x.id)===String(r.discId));
           return`<div class="dash-item">📝<div style="flex:1;min-width:0;margin-left:0.5rem">
@@ -1012,6 +1031,14 @@ async function renderSeller(){
         :`<div style="color:var(--m1);font-size:0.8rem;padding:0.5rem 0">Немає запитів</div>`;
     }
   }catch(e){}
+}
+
+// ── CABINET TABS ──
+function setCabTab(tab){
+  document.querySelectorAll('.cab-tab-content').forEach(el=>el.style.display='none');
+  document.querySelectorAll('[id^="cab-tab-"]').forEach(b=>b.classList.remove('active'));
+  document.getElementById('cab-'+tab).style.display='block';
+  document.getElementById('cab-tab-'+tab).classList.add('active');
 }
 
 // ── CABINET (combined) ──
