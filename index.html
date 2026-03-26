@@ -670,7 +670,7 @@ function cardHTML(d){
       </div>
       <div class="disc-tags">
         ${d.color?`<span class="tag">${d.color}</span>`:''}
-        ${d.tradeWant?`<span class="tag" style="color:var(--purple)">🔄 ${d.tradeWant.slice(0,20)}</span>`:''}
+        ${(d.tradeWant&&String(d.tradeWant).trim()&&d.tradeWant!=='false')?`<span class="tag" style="color:var(--purple)">🔄 ${String(d.tradeWant).slice(0,20)}</span>`:''}
       </div>
       <div class="disc-footer">
         <div><div class="disc-price-lbl">Buyout</div><div class="disc-price">${d.buyout?d.buyout+' ₴':'—'}</div></div>
@@ -678,7 +678,7 @@ function cardHTML(d){
           <div class="disc-own" onclick="event.stopPropagation();filterByOwner('${d.owner}')" style="cursor:pointer;text-decoration:underline dotted">👤 ${d.owner||''}</div>
           <div class="disc-act" onclick="event.stopPropagation()">
             ${canT&&!isNew?`<button class="btn btn-cyan btn-xs" onclick="openReqTest('${d.id}')">Тест</button>`:''}
-            ${d.tradeWant&&String(d.tradeWant).trim()?`<button class="btn btn-purple btn-xs" onclick="event.stopPropagation();openTradeOffer('${d.id}')">🔄</button>`:''}
+            ${(d.tradeWant&&String(d.tradeWant).trim()&&d.tradeWant!==false&&d.tradeWant!=='false')?`<button class="btn btn-purple btn-xs" onclick="event.stopPropagation();openTradeOffer('${d.id}')">🔄 Трейд</button>`:''}
             ${canB?`<button class="btn btn-lime btn-xs" onclick="oBuy('${d.id}')">Купити</button>`:''}
           </div>
         </div>
@@ -712,8 +712,8 @@ function applyFilters(){
 
   // exclude sold
   let list=allDiscs.filter(d=>d.status!=='sold');
-  if(CF==='trade')list=list.filter(d=>d.tradeWant&&String(d.tradeWant).trim()!=='');
-  else if(CF!=='all')list=list.filter(d=>d.status===CF||d.status==='trade');
+  if(CF==='trade')list=list.filter(d=>d.tradeWant&&String(d.tradeWant).trim()!==''&&d.tradeWant!==false);
+  else if(CF!=='all')list=list.filter(d=>d.status===CF);
   if(q)list=list.filter(d=>[d.brand,d.model,d.plastic,d.color,d.owner].join(' ').toLowerCase().includes(q));
   if(fSpeed>0)list=list.filter(d=>parseFloat(d.speed)>=fSpeed);
   if(fGlide>0)list=list.filter(d=>parseFloat(d.glide)>=fGlide);
