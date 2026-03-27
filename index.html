@@ -195,7 +195,7 @@ td{padding:8px 10px;font-size:0.8rem}
   </nav>
   <div class="header-right">
     <button class="btn btn-lime btn-sm" onclick="openModal('addDisc')" id="addDiscBtn2">+ Диск</button>
-    <button class="btn btn-ghost btn-sm" onclick="CU?null:openModal('login')" id="userBtn" style="min-width:74px">Увійти</button>
+    <button class="btn btn-ghost btn-sm" onclick="CU?null:openModal('login')" id="userBtn" style="display:none">Увійти</button>
     <div class="hamburger" id="hamburger" onclick="toggleNav()"><span></span><span></span><span></span></div>
   </div>
 </header>
@@ -238,6 +238,8 @@ td{padding:8px 10px;font-size:0.8rem}
         <div><span class="fl">Сортування</span><select id="f-sort" onchange="applyFilters()"><option value="new">Новіші</option><option value="old">Старіші</option><option value="price-asc">Ціна ↑</option><option value="price-desc">Ціна ↓</option><option value="speed-desc">Speed ↓</option><option value="speed-asc">Speed ↑</option><option value="cond-desc">Стан ↓</option></select></div>
         <div><span class="fl">Speed від</span><input type="number" id="f-speed" placeholder="0" oninput="applyFilters()"></div>
         <div><span class="fl">Glide від</span><input type="number" id="f-glide" placeholder="0" oninput="applyFilters()"></div>
+        <div><span class="fl">Turn до</span><input type="number" id="f-turn" placeholder="1" step="0.5" oninput="applyFilters()"></div>
+        <div><span class="fl">Fade до</span><input type="number" id="f-fade" placeholder="5" oninput="applyFilters()"></div>
         <div><span class="fl">Ціна до ₴</span><input type="number" id="f-price" placeholder="9999" oninput="applyFilters()"></div>
         <div style="display:flex;align-items:flex-end"><button class="btn btn-ghost btn-sm btn-full" onclick="resetFilters()">✕ Скинути</button></div>
       </div>
@@ -366,9 +368,13 @@ td{padding:8px 10px;font-size:0.8rem}
     <div class="fr"><div class="fg"><label class="fl">Колір</label><input id="ad-color" placeholder="Жовтий..."></div><div class="fg"><label class="fl">Buyout (UAH)</label><input id="ad-buyout" type="number" placeholder="850"></div></div>
     <div class="fg"><label class="fl">Стан: <span id="condValLabel">7</span>/10</label>
       <div style="display:flex;align-items:center;gap:0.5rem">
-        <input type="range" id="ad-cond" min="0" max="10" value="7" style="flex:1;accent-color:var(--lime)" oninput="document.getElementById('condValLabel').textContent=this.value">
+        <input type="range" id="ad-cond" min="1" max="10" value="7" step="1" style="flex:1;accent-color:var(--lime)" oninput="document.getElementById('condValLabel').textContent=this.value;updateCondBar()">
         <span style="font-family:'Space Mono';font-size:0.9rem;font-weight:700;color:var(--lime);min-width:20px;text-align:center" id="condVal">7</span>
       </div>
+      <div style="display:flex;gap:2px;margin-top:0.4rem" id="condBarPreview">
+        ${Array(10).fill(0).map((_,i)=>`<div style="flex:1;height:4px;border-radius:2px;background:${i<7?'var(--lime)':'var(--s3)'}"></div>`).join('')}
+      </div>
+      <div style="display:flex;justify-content:space-between;font-size:0.6rem;color:var(--m1);margin-top:2px"><span>1</span><span>5</span><span>10</span></div>
     </div>
     <div class="fg"><label class="fl">Speed / Glide / Turn / Fade</label>
       <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:0.4rem">
@@ -581,6 +587,10 @@ function applyFilters(){
   if(q)list=list.filter(d=>[d.brand,d.model,d.plastic,d.color,d.owner].join(' ').toLowerCase().includes(q));
   if(fSpeed>0)list=list.filter(d=>parseFloat(d.speed)>=fSpeed);
   if(fGlide>0)list=list.filter(d=>parseFloat(d.glide)>=fGlide);
+  const fTurnEl=document.getElementById('f-turn');
+  const fFadeEl=document.getElementById('f-fade');
+  if(fTurnEl?.value!=='')list=list.filter(d=>parseFloat(d.turn)<=(parseFloat(fTurnEl.value)));
+  if(fFadeEl?.value!=='')list=list.filter(d=>parseFloat(d.fade)<=(parseFloat(fFadeEl.value)));
   if(fPrice>0)list=list.filter(d=>parseFloat(d.buyout)<=fPrice);
   if(sort==='price-asc')list.sort((a,b)=>(parseFloat(a.buyout)||0)-(parseFloat(b.buyout)||0));
   else if(sort==='price-desc')list.sort((a,b)=>(parseFloat(b.buyout)||0)-(parseFloat(a.buyout)||0));
@@ -683,7 +693,17 @@ function resetAddForm(){
 }
 
 document.getElementById('ad-trade').addEventListener('change',function(){document.getElementById('tradeDescWrap').style.display=this.checked?'block':'none';});
-document.getElementById('ad-cond').addEventListener('input',function(){document.getElementById('condValLabel').textContent=this.value;document.getElementById('condVal').textContent=this.value;});
+document.getElementById('ad-cond').addEventListener('input',function(){
+  document.getElementById('condValLabel').textContent=this.value;
+  document.getElementById('condVal').textContent=this.value;
+  updateCondBar();
+});
+function updateCondBar(){
+  const v=parseInt(document.getElementById('ad-cond').value)||7;
+  const bar=document.getElementById('condBarPreview');
+  if(!bar)return;
+  bar.innerHTML=Array(10).fill(0).map((_,i)=>`<div style="flex:1;height:4px;border-radius:2px;background:${i<v?'var(--lime)':'var(--s3)'}"></div>`).join('');
+}
 document.getElementById('edit-cond').addEventListener('input',function(){document.getElementById('editCondLabel').textContent=this.value;document.getElementById('editCondVal').textContent=this.value;});
 document.getElementById('edit-trade').addEventListener('change',function(){document.getElementById('editTradeWrap').style.display=this.checked?'block':'none';});
 
@@ -812,8 +832,15 @@ function oRet(id){retId=id;const d=allDiscs.find(x=>x.id===id||String(x.id)===St
 async function submitReturn(){
   const btn=document.getElementById('retBtn');btn.disabled=true;btn.textContent='...';
   try{
+    const d=allDiscs.find(x=>x.id===retId||String(x.id)===String(retId));
     const {error}=await sb.from('discs').update({status:'pending'}).eq('id',retId);
-    if(!error){closeModal('return');await loadDiscs();if(CU)renderCabinet();toast('↩️ Запит на повернення відправлено');}
+    if(!error){
+      closeModal('return');
+      await loadDiscs();
+      if(CU)renderCabinet();
+      toast('↩️ Запит на повернення відправлено');
+      if(d)notifyAppsScript('return',d,CU);
+    }
     else toast('⚠️ Помилка',true);
   }catch(e){toast('⚠️ Помилка',true);}
   btn.disabled=false;btn.textContent='Підтвердити';
@@ -1105,8 +1132,9 @@ function restoreUser(){
 }
 function updateUserBtn(){
   if(!CU)return;
-  const btn=document.getElementById('userBtn');
-  if(btn){btn.textContent=CU.name.slice(0,8);btn.style.background='var(--lime)';btn.style.color='#080a10';btn.onclick=null;}
+  // Show green dot on hamburger
+  const hb=document.getElementById('hamburger');
+  if(hb)hb.style.borderColor='var(--lime)';
   const el=document.getElementById('mobileUserInfo');
   if(el){el.textContent='👤 '+CU.name+(CU.tg?' · @'+CU.tg:'');el.style.display='block';}
 }
