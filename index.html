@@ -518,11 +518,11 @@ td{padding:8px 10px;font-size:0.8rem}
 <div class="overlay" id="ov-buy">
   <div class="modal" style="max-width:380px">
     <button class="mc" onclick="closeModal('buy')">✕</button>
-    <div class="mt">ЗАМОВИТИ <span>ДИСК</span></div>
+    <div class="mt">КУПИТИ <span>ДИСК</span></div>
     <div id="buyInfo" class="info-box"></div>
     <div class="fg"><label class="fl">Коментар</label><textarea id="buy-note" placeholder="Побажання..."></textarea></div>
     <div id="buySellerLink" style="display:none;margin-bottom:0.875rem"></div>
-    <button class="btn btn-lime btn-full" id="buyBtn" onclick="submitBuy()">Надіслати запит на купівлю</button>
+    <button class="btn btn-lime btn-full" id="buyBtn" onclick="submitBuy()">Підтвердити</button>
   </div>
 </div>
 
@@ -690,7 +690,7 @@ function cardHTML(d){
         <div onclick="event.stopPropagation()" style="display:flex;gap:3px;width:100%">
           <button class="btn btn-purple btn-xs" onclick="event.stopPropagation();openTradeOffer('${d.id}')" style="${hasTrade?'':'visibility:hidden'}">Обмін</button>
           <button class="btn btn-cyan btn-xs" onclick="openReqTest('${d.id}')" style="${canT?'':'visibility:hidden'}">Тест</button>
-          <button class="btn btn-lime btn-xs" onclick="oBuy('${d.id}')" style="margin-left:auto;${canB?'':'visibility:hidden'}">Замовити</button>
+          <button class="btn btn-lime btn-xs" onclick="oBuy('${d.id}')" style="margin-left:auto;${canB?'':'visibility:hidden'}">Купити</button>
         </div>
       </div>
     </div>
@@ -788,7 +788,7 @@ function showDetail(id){
     <div style="display:flex;gap:0.4rem;flex-wrap:wrap;padding-top:0.875rem;border-top:1px solid var(--b1)">
         ${canT?`<button class="btn btn-cyan btn-sm" onclick="openReqTest('${d.id}');closeModal('detail')">Тест</button>`:''}
         ${(String(d.tradeWant||'').trim()&&String(d.tradeWant)!=='false')?`<button class="btn btn-purple btn-sm" onclick="openTradeOffer('${d.id}');closeModal('detail')">Обмін</button>`:''}
-        ${canB?`<button class="btn btn-lime btn-sm" onclick="oBuy('${d.id}');closeModal('detail')">Замовити ${d.buyout||0}₴</button>`:''}
+        ${canB?`<button class="btn btn-lime btn-sm" onclick="oBuy('${d.id}');closeModal('detail')">Купити ${d.buyout||0}₴</button>`:''}
         ${d.status==='testing'&&CU?.name===d.tester?`<button class="btn btn-ghost btn-sm" onclick="oRet('${d.id}');closeModal('detail')">↩ Повернути</button>`:''}
       </div>
       <div style="margin-top:0.5rem;width:100%">
@@ -1080,7 +1080,7 @@ async function renderTester(){
       ${d.photoUrl?`<img src="${d.photoUrl}" style="width:38px;height:38px;object-fit:cover;border-radius:7px;flex-shrink:0">`:'<div style="width:38px;height:38px;background:var(--s3);border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0">🥏</div>'}
       <div style="flex:1"><div class="di-title">${d.brand} ${d.model} <span style="color:var(--m1);font-weight:400">${d.plastic||''}</span></div><div class="di-sub">👤 ${d.owner} · <span style="color:var(--lime)">${d.buyout||0}₴</span></div></div>
       <div style="display:flex;gap:0.3rem">
-        <button class="btn btn-lime btn-xs" onclick="oBuy('${d.id}')">Замовити</button>
+        <button class="btn btn-lime btn-xs" onclick="oBuy('${d.id}')">Купити</button>
         <button class="btn btn-ghost btn-xs" onclick="oRet('${d.id}')">↩</button>
       </div>
     </div>
