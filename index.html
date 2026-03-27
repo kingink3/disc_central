@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Disc Central</title>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
 :root{
@@ -437,7 +437,7 @@ td{padding:8px 10px;font-size:0.8rem}
 // ── SUPABASE ──
 const SUPABASE_URL = 'https://bxbpyletoouksllnifej.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_990YeXA-COsdfAJn6p-1Rw_jkgm0CQJ';
-const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 // ── APPS SCRIPT (for Telegram notifications only) ──
 const APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbwybos79QSCBbtzu_XVFtp5fZRoz70xL4vAWu0H1TCrxw0rMsnzhZVZuRCcwWlYo4oAjw/exec';
@@ -988,7 +988,7 @@ async function adminLoginPass(){
       loadAdminData();
       toast('✅ Ласкаво просимо!');
     }else toast('⚠️ Невірний пароль',true);
-  }catch(e){toast('⚠️ Помилка з'єднання',true);}
+  }catch(e){toast('⚠️ Помилка зєднання',true);}
   if(btn){btn.disabled=false;btn.textContent='Увійти';}
 }
 
