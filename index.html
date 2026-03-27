@@ -89,10 +89,10 @@ nav{display:flex;gap:0.15rem;align-items:center;flex:1;justify-content:center}
 .disc-strip.av{background:var(--av)}.disc-strip.re{background:var(--re)}.disc-strip.te{background:var(--te)}.disc-strip.pe{background:var(--pe)}.disc-strip.tr{background:var(--purple)}
 
 /* PHOTO CAROUSEL in card */
-.disc-photo-wrap{position:relative;height:110px;overflow:hidden;background:var(--s2)}
-.disc-photo-wrap img{width:100%;height:110px;object-fit:cover;display:none}
+.disc-photo-wrap{position:relative;height:100px;overflow:hidden;background:var(--s2)}
+.disc-photo-wrap img{width:100%;height:100px;object-fit:cover;display:none}
 .disc-photo-wrap img.active{display:block}
-.disc-photo-placeholder{width:100%;height:110px;display:flex;align-items:center;justify-content:center;font-size:2rem;background:var(--s2)}
+.disc-photo-placeholder{width:100%;height:100px;display:flex;align-items:center;justify-content:center;font-size:2rem;background:var(--s2)}
 .photo-dots{position:absolute;bottom:5px;left:0;right:0;display:flex;justify-content:center;gap:3px}
 .photo-dot{width:5px;height:5px;border-radius:50%;background:rgba(255,255,255,0.4);cursor:pointer;transition:background 0.15s}
 .photo-dot.active{background:white}
@@ -102,7 +102,7 @@ nav{display:flex;gap:0.15rem;align-items:center;flex:1;justify-content:center}
 
 .disc-body{padding:0.7rem;display:flex;flex-direction:column}
 .disc-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:0.5rem}
-.disc-title{font-weight:700;font-size:0.85rem;line-height:1.2}
+.disc-title{font-weight:700;font-size:0.85rem;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .disc-sub{font-size:0.65rem;color:var(--m1);margin-top:1px;font-family:'Space Mono',monospace}
 
 .badge{padding:2px 6px;border-radius:20px;font-size:0.6rem;font-weight:700;letter-spacing:0.3px;text-transform:uppercase;white-space:nowrap;flex-shrink:0}
@@ -257,12 +257,12 @@ td{padding:8px 10px;font-size:0.8rem}
   </nav>
   <div class="header-right">
     <button class="btn btn-lime btn-sm" onclick="openModal('addDisc')">+ Диск</button>
-    <button class="btn btn-ghost btn-sm" onclick="CU?null:openModal('login')" id="userBtn" style="min-width:74px">Увійти</button>
     <div class="hamburger" id="hamburger" onclick="toggleNav()"><span></span><span></span><span></span></div>
   </div>
 </header>
 
 <div class="mobile-nav" id="mobileNav">
+  <div id="mobileUserInfo" style="padding:0.5rem 0.75rem;font-size:0.82rem;color:var(--m2);border-bottom:1px solid var(--b1);margin-bottom:0.25rem;display:none"></div>
   <button class="nav-a" onclick="goPageM('catalog')">🥏 Каталог</button>
   <button class="nav-a" onclick="goPageM('cabinet')">👤 Кабінет</button>
   <button class="nav-a" onclick="goPageM('rules')">📋 Правила</button>
@@ -281,11 +281,11 @@ td{padding:8px 10px;font-size:0.8rem}
       <div class="stat-m" style="padding:0.6rem 0.5rem;text-align:center"><div class="stat-mn wh" id="hs-tr" style="font-size:1.4rem">—</div><div class="stat-ml">Трейд</div></div>
     </div>
     <div style="display:flex;gap:0.4rem;align-items:center;margin-bottom:0.5rem">
-      <div style="display:flex;gap:2px;overflow-x:auto;-webkit-overflow-scrolling:touch;flex:1;background:var(--s2);border:1px solid var(--b1);border-radius:var(--r);padding:3px">
+      <div style="display:flex;gap:2px;overflow-x:auto;-webkit-overflow-scrolling:touch;flex:1;background:var(--s2);border:1px solid var(--b1);border-radius:var(--r);padding:3px;scrollbar-width:none">
         <button class="ft active" onclick="setFt(this,'all')" style="flex-shrink:0">Всі</button>
         <button class="ft" onclick="setFt(this,'available')" style="flex-shrink:0">Доступні</button>
-        <button class="ft" onclick="setFt(this,'testing')" style="flex-shrink:0">На тесті</button>
-        <button class="ft" onclick="setFt(this,'trade')" style="flex-shrink:0">🔄 Трейд</button>
+        <button class="ft" onclick="setFt(this,'testing')" style="flex-shrink:0">Тест</button>
+        <button class="ft" onclick="setFt(this,'trade')" style="flex-shrink:0">🔄</button>
         <button class="ft" onclick="setFt(this,'reserved')" style="flex-shrink:0">Резерв</button>
       </div>
       <button class="btn btn-ghost btn-sm" onclick="toggleAdvFilters()" id="advBtn" style="flex-shrink:0;padding:5px 9px">⚙</button>
@@ -608,7 +608,7 @@ async function loadDiscs(){
 function updateStats(){
   const av=allDiscs.filter(d=>d.status==='available').length;
   const te=allDiscs.filter(d=>['testing','reserved'].includes(d.status)).length;
-  const tr=allDiscs.filter(d=>{const tw=String(d.tradeWant||'').trim();return tw&&tw!=='false'&&tw!=='0'&&tw!=='undefined';}).length;
+  const tr=allDiscs.filter(d=>String(d.tradeWant||'').trim()&&String(d.tradeWant)!=='false').length;
   const vis=allDiscs.filter(d=>d.status!=='sold').length;
   document.getElementById('hs-total').textContent=vis;
   document.getElementById('hs-av').textContent=av;
@@ -684,7 +684,7 @@ function cardHTML(d){
       </div>
       <div class="disc-tags">
         ${d.color?`<span class="tag">${d.color}</span>`:''}
-        ${(d.tradeWant&&String(d.tradeWant).trim()&&d.tradeWant!=='false')?`<span class="tag" style="color:var(--purple)">🔄 ${String(d.tradeWant).slice(0,20)}</span>`:''}
+        ${(String(d.tradeWant||'').trim()&&String(d.tradeWant)!=='false')?`<span class="tag" style="color:var(--purple)">🔄</span>`:''}
       </div>
       <div class="disc-footer">
         <div><div class="disc-price-lbl">Buyout</div><div class="disc-price">${d.buyout?d.buyout+' ₴':'—'}</div></div>
@@ -692,7 +692,7 @@ function cardHTML(d){
           <div class="disc-own" onclick="event.stopPropagation();filterByOwner('${d.owner}')" style="cursor:pointer;text-decoration:underline dotted">👤 ${d.owner||''}</div>
           <div class="disc-act" onclick="event.stopPropagation()">
             ${canT&&!isNew?`<button class="btn btn-cyan btn-xs" onclick="openReqTest('${d.id}')">Тест</button>`:''}
-            ${(()=>{const tw=String(d.tradeWant||'').trim();return tw&&tw!=='false'&&tw!=='0'&&tw!=='undefined';})()?`<button class="btn btn-purple btn-xs" onclick="event.stopPropagation();openTradeOffer('${d.id}')">🔄</button>`:''}
+            ${(String(d.tradeWant||'').trim()&&String(d.tradeWant)!=='false')?`<button class="btn btn-purple btn-xs" onclick="event.stopPropagation();openTradeOffer('${d.id}')">🔄</button>`:''}
             ${canB?`<button class="btn btn-lime btn-xs" onclick="oBuy('${d.id}')">Купити</button>`:''}
           </div>
         </div>
@@ -726,7 +726,7 @@ function applyFilters(){
 
   // exclude sold
   let list=allDiscs.filter(d=>d.status!=='sold');
-  if(CF==='trade'){list=list.filter(d=>{const tw=String(d.tradeWant||'').trim();return tw!==''&&tw!=='false'&&tw!=='0'&&tw!=='undefined';});}
+  if(CF==='trade'){list=list.filter(d=>String(d.tradeWant||'').trim()&&String(d.tradeWant)!=='false');}
   else if(CF!=='all')list=list.filter(d=>d.status===CF);
   if(q)list=list.filter(d=>[d.brand,d.model,d.plastic,d.color,d.owner].join(' ').toLowerCase().includes(q));
   if(fSpeed>0)list=list.filter(d=>parseFloat(d.speed)>=fSpeed);
@@ -1107,12 +1107,8 @@ function restoreUser(){
 }
 function updateUserBtn(){
   if(!CU)return;
-  const btn=document.getElementById('userBtn');
-  btn.textContent=CU.name.slice(0,8);
-  btn.style.background='var(--lime)';
-  btn.style.color='#080a10';
-  btn.style.borderColor='transparent';
-  btn.onclick=null; // disable click when logged in
+  const el=document.getElementById('mobileUserInfo');
+  if(el){el.textContent='👤 '+CU.name+(CU.tg?' · @'+CU.tg:'');el.style.display='block';}
 }
 function doLogin(){
   const name=document.getElementById('li-name').value.trim();
@@ -1138,6 +1134,27 @@ function adminLogin(){
   document.getElementById('adminContent').style.display='block';
   loadAdminData();
 }
+async function adminLoginPass(){
+  const passEl=document.getElementById('adminPassInput');
+  if(!passEl||!passEl.value){toast('⚠️ Введіть пароль',true);return;}
+  const btn=document.querySelector('#adminNoAuth .btn-lime');
+  if(btn){btn.disabled=true;btn.textContent='...';}
+  try{
+    const res=await apiPost({action:'adminAuth',password:passEl.value});
+    if(res&&res.ok&&res.token){
+      ADMIN_TOKEN=res.token;
+      sessionStorage.setItem('adminToken',res.token);
+      document.getElementById('adminNoAuth').style.display='none';
+      document.getElementById('adminContent').style.display='block';
+      setTimeout(loadAdminData,100);
+      toast('✅ Ад мін-панель відкрита');
+    }else{
+      toast('⚠️ '+(res?.error||'Невірний пароль'),true);
+    }
+  }catch(e){toast('⚠️ Помилка: '+e.message,true);}
+  if(btn){btn.disabled=false;btn.textContent='Увійти';}
+}
+
 function adminLogout(){
   isAdmin=false;
   ADMIN_TOKEN=null;
