@@ -444,7 +444,7 @@ const APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbwybos79QSCBbtzu_XV
 const CLOUDINARY_CLOUD = 'dde1lbwld';
 const CLOUDINARY_PRESET = 'disc_central';
 const ADMINS = ['280215742'];
-const ADMIN_PASS = 'DiscC3ntr@l2024';
+// Admin auth via server only
 
 let CU = null, CF = 'all', allDiscs = [], buyId = null, retId = null, reqTestId = null;
 let photoFiles = [null, null, null];
@@ -966,12 +966,30 @@ let ADMIN_TOKEN=null;
 async function adminLoginPass(){
   const pass=document.getElementById('adminPassInput')?.value;
   if(!pass){toast('⚠️ Введіть пароль',true);return;}
-  if(pass===ADMIN_PASS){
-    ADMIN_TOKEN='local';
-    document.getElementById('adminNoAuth').style.display='none';
-    document.getElementById('adminContent').style.display='block';
-    loadAdminData();
-  }else toast('⚠️ Невірний пароль',true);
+  const btn=document.querySelector('#adminNoAuth .btn-lime');
+  if(btn){btn.disabled=true;btn.textContent='...';}
+  try{
+    // Verify password server-side via Apps Script
+    const url=APPS_SCRIPT+'?action=adminAuth&password='+encodeURIComponent(pass)+'&callback=cb_auth_'+Date.now();
+    const token=await new Promise((resolve,reject)=>{
+      const cb='cb_auth_'+Date.now();
+      const s=document.createElement('script');
+      const t=setTimeout(()=>{delete window[cb];s.remove();reject('timeout');},10000);
+      window[cb]=(d)=>{clearTimeout(t);delete window[cb];s.remove();resolve(d);};
+      s.onerror=()=>{clearTimeout(t);reject('error');};
+      s.src=APPS_SCRIPT+'?action=adminAuth&password='+encodeURIComponent(pass)+'&callback='+cb;
+      document.head.appendChild(s);
+    });
+    if(token&&token.ok&&token.token){
+      ADMIN_TOKEN=token.token;
+      sessionStorage.setItem('adminToken',token.token);
+      document.getElementById('adminNoAuth').style.display='none';
+      document.getElementById('adminContent').style.display='block';
+      loadAdminData();
+      toast('✅ Ласкаво просимо!');
+    }else toast('⚠️ Невірний пароль',true);
+  }catch(e){toast('⚠️ Помилка з'єднання',true);}
+  if(btn){btn.disabled=false;btn.textContent='Увійти';}
 }
 
 function checkAdminAccess(){
@@ -1099,6 +1117,8 @@ function doLogin(){
 async function init(){
   setTimeout(()=>{document.getElementById('loadingOverlay').style.display='none';},15000);
   restoreUser();loadBanned();
+  const savedToken=sessionStorage.getItem('adminToken');
+  if(savedToken)ADMIN_TOKEN=savedToken;
   const params=new URLSearchParams(location.search);
   const discId=params.get('disc')||window.Telegram?.WebApp?.initDataUnsafe?.start_param;
   await loadDiscs();
