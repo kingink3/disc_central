@@ -285,7 +285,7 @@ td{padding:8px 10px;font-size:0.8rem}
         <button class="ft active" onclick="setFt(this,'all')" style="flex-shrink:0">Всі</button>
         <button class="ft" onclick="setFt(this,'available')" style="flex-shrink:0">Доступні</button>
         <button class="ft" onclick="setFt(this,'testing')" style="flex-shrink:0">Тест</button>
-        <button class="ft" onclick="setFt(this,'trade')" style="flex-shrink:0">Трейд</button>
+        <button class="ft" onclick="setFt(this,'trade')" style="flex-shrink:0">Обмін</button>
         <button class="ft" onclick="setFt(this,'reserved')" style="flex-shrink:0">Резерв</button>
       </div>
       <button class="btn btn-ghost btn-sm" onclick="toggleAdvFilters()" id="advBtn" style="flex-shrink:0;padding:5px 9px">⚙</button>
@@ -688,7 +688,7 @@ function cardHTML(d){
           <div onclick="event.stopPropagation();filterByOwner('${d.owner}')" style="cursor:pointer;font-size:0.65rem;color:var(--m1)">👤 ${(d.owner||'').split(' ')[0]}</div>
         </div>
         <div onclick="event.stopPropagation()" style="display:flex;gap:3px">
-          ${hasTrade?`<button class="btn btn-purple btn-xs" onclick="event.stopPropagation();openTradeOffer('${d.id}')">🔄</button>`:''}
+          ${hasTrade?`<button class="btn btn-purple btn-xs" onclick="event.stopPropagation();openTradeOffer('${d.id}')">Обмін</button>`:''}
           ${canT?`<button class="btn btn-cyan btn-xs" onclick="openReqTest('${d.id}')">Тест</button>`:''}
           ${canB?`<button class="btn btn-lime btn-xs" style="margin-left:auto" onclick="oBuy('${d.id}')">Купити</button>`:''}
         </div>
@@ -783,13 +783,13 @@ function showDetail(id){
       <div><span style="color:var(--m1)">Власник:</span> ${d.owner||'—'}</div>
       ${d.tester?`<div><span style="color:var(--m1)">Тестер:</span> ${d.tester}</div>`:''}
     </div>
-    ${d.tradeWant?`<div class="info-box" style="border-color:rgba(167,139,250,0.25);background:rgba(167,139,250,0.05)"><strong style="color:var(--purple)">🔄 Трейд:</strong> ${d.tradeWant}</div>`:''}
+    ${d.tradeWant?`<div class="info-box" style="border-color:rgba(167,139,250,0.25);background:rgba(167,139,250,0.05)"><strong style="color:var(--purple)">Обмін:</strong> ${d.tradeWant}</div>`:''}
     ${d.notes?`<div style="font-size:0.8rem;color:var(--m2);padding:0.65rem;background:var(--s2);border-radius:var(--r);margin-bottom:0.875rem">${d.notes}</div>`:''}
     <div style="display:flex;align-items:center;justify-content:space-between;padding-top:0.875rem;border-top:1px solid var(--b1);gap:0.75rem;flex-wrap:wrap">
       <div><div class="disc-price" style="font-size:1.3rem">${d.buyout||0}₴</div></div>
       <div style="display:flex;gap:0.4rem;flex-wrap:wrap">
         ${canT?`<button class="btn btn-cyan btn-sm" onclick="openReqTest('${d.id}');closeModal('detail')">🥏 Тест</button>`:''}
-        ${d.tradeWant?`<button class="btn btn-purple btn-sm" onclick="openTradeOffer('${d.id}');closeModal('detail')">🔄 Трейд</button>`:''}
+        ${d.tradeWant?`<button class="btn btn-purple btn-sm" onclick="openTradeOffer('${d.id}');closeModal('detail')">Обмін</button>`:''}
         ${canB?`<button class="btn btn-lime btn-sm" onclick="oBuy('${d.id}');closeModal('detail')">Купити ${d.buyout||0}₴</button>`:''}
         ${d.status==='testing'&&CU?.name===d.tester?`<button class="btn btn-ghost btn-sm" onclick="oRet('${d.id}');closeModal('detail')">↩ Повернути</button>`:''}
     </div>
