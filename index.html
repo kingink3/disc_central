@@ -256,7 +256,7 @@ td{padding:8px 10px;font-size:0.8rem}
     <button class="nav-a" onclick="goPage('admin',this)">🔐 Адмін</button>
   </nav>
   <div class="header-right">
-    <button class="btn btn-ghost btn-sm" onclick="openModal('addDisc')" id="addDiscBtn2">+ Диск</button>
+    <button class="btn btn-lime btn-sm" onclick="openModal('addDisc')">+ Диск</button>
     <button class="btn btn-ghost btn-sm" onclick="CU?null:openModal('login')" id="userBtn" style="min-width:74px">Увійти</button>
     <div class="hamburger" id="hamburger" onclick="toggleNav()"><span></span><span></span><span></span></div>
   </div>
@@ -288,7 +288,6 @@ td{padding:8px 10px;font-size:0.8rem}
         <button class="ft" onclick="setFt(this,'trade')" style="flex-shrink:0">🔄 Трейд</button>
         <button class="ft" onclick="setFt(this,'reserved')" style="flex-shrink:0">Резерв</button>
       </div>
-      <button class="btn btn-lime btn-sm" onclick="openModal('addDisc')" style="flex-shrink:0">+</button>
       <button class="btn btn-ghost btn-sm" onclick="toggleAdvFilters()" id="advBtn" style="flex-shrink:0;padding:5px 9px">⚙</button>
     </div>
     <div class="adv-filters" id="advFilters">
@@ -1093,6 +1092,8 @@ function restoreUser(){
       const tgId=String(u.id);
       CU={name:(u.first_name+(u.last_name?' '+u.last_name:'')).trim(),tg:u.username||tgId,tgId:tgId,role:'both'};
       console.log('TG user:', JSON.stringify({id:u.id,username:u.username,name:CU.name,tgId:tgId}));
+      // Auto-open admin if on admin page
+      if(document.getElementById('page-admin')?.classList.contains('active')) checkAdminAccess();
       localStorage.setItem('dcUser',JSON.stringify(CU));
       updateUserBtn();
       tg.expand();
@@ -1368,7 +1369,7 @@ function goPage(page,btn){
   if(btn)btn.classList.add('active');
   if(page==='cabinet'){const ok=!!CU;document.getElementById('cabinetNoAuth').style.display=ok?'none':'block';document.getElementById('cabinetContent').style.display=ok?'block':'none';if(ok)renderCabinet();}
   if(page==='catalog')applyFilters();
-  if(page==='admin')checkAdminAccess();
+  if(page==='admin')setTimeout(checkAdminAccess, 200);
 }
 function goPageM(page){closeMobileNav();goPage(page,null);}
 function toggleNav(){document.getElementById('hamburger').classList.toggle('open');document.getElementById('mobileNav').classList.toggle('open');}
