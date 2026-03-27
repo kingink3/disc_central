@@ -644,7 +644,7 @@ async function submitDisc(){
   const photos=await uploadAllPhotos();
   const isTrade=document.getElementById('ad-trade').checked;
   const disc={
-    id:genId(),owner,owner_tg:CU?.tgId||CU?.tg||'',brand,model,
+    id:genId(),owner,owner_tg:CU?.tg||'',owner_tg_id:CU?.tgId||'',brand,model,
     plastic:document.getElementById('ad-plastic').value,
     weight:parseInt(document.getElementById('ad-weight').value)||175,
     color:document.getElementById('ad-color').value,
@@ -820,7 +820,7 @@ async function submitReturn(){
 // ── NOTIFY via Apps Script ──
 async function notifyAppsScript(type,disc,buyer){
   try{
-    const url=APPS_SCRIPT+'?notify=1&type='+type+'&discId='+disc.id+'&discBrand='+encodeURIComponent(disc.brand)+'&discModel='+encodeURIComponent(disc.model)+'&discBuyout='+(disc.buyout||0)+'&ownerTg='+encodeURIComponent(disc.ownerTg||'')+'&testerName='+encodeURIComponent(buyer.name)+'&testerTg='+encodeURIComponent(buyer.tg||'')+'&callback=cb_notify';
+    const url=APPS_SCRIPT+'?notify=1&type='+type+'&discId='+disc.id+'&discBrand='+encodeURIComponent(disc.brand)+'&discModel='+encodeURIComponent(disc.model)+'&discBuyout='+(disc.buyout||0)+'&ownerTg='+encodeURIComponent(disc.ownerTgId||disc.ownerTg||'')+'&testerName='+encodeURIComponent(buyer.name)+'&testerTg='+encodeURIComponent(buyer.tg||'')+'&callback=cb_notify';
     const s=document.createElement('script');window.cb_notify=()=>{delete window.cb_notify;s.remove();};s.src=url;document.head.appendChild(s);
     setTimeout(()=>{delete window.cb_notify;s.remove();},5000);
   }catch(e){}
