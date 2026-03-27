@@ -792,9 +792,9 @@ function showDetail(id){
         ${d.tradeWant?`<button class="btn btn-purple btn-sm" onclick="openTradeOffer('${d.id}');closeModal('detail')">Обмін</button>`:''}
         ${canB?`<button class="btn btn-lime btn-sm" onclick="oBuy('${d.id}');closeModal('detail')">Купити ${d.buyout||0}₴</button>`:''}
         ${d.status==='testing'&&CU?.name===d.tester?`<button class="btn btn-ghost btn-sm" onclick="oRet('${d.id}');closeModal('detail')">↩ Повернути</button>`:''}
-    </div>
-    <div style="margin-top:0.4rem">
+    <div style="margin-top:0.5rem;width:100%">
       <button class="btn btn-ghost btn-xs" onclick="shareDisc('${d.id}')" style="color:var(--m1);width:100%">🔗 Поділитись посиланням</button>
+    </div>
     </div>`;
   openModal('detail');
 }
