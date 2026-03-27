@@ -274,14 +274,11 @@ td{padding:8px 10px;font-size:0.8rem}
 <!-- CATALOG -->
 <div id="page-catalog" class="page active">
   <div class="content">
-    <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.75rem">
-      <div style="display:flex;gap:0.5rem;flex:1;overflow-x:auto;-webkit-overflow-scrolling:touch">
-        <div class="stat-m" style="flex-shrink:0;min-width:70px;padding:0.6rem 0.75rem"><div class="stat-mn" id="hs-total" style="font-size:1.5rem">—</div><div class="stat-ml">Всього</div></div>
-        <div class="stat-m" style="flex-shrink:0;min-width:70px;padding:0.6rem 0.75rem"><div class="stat-mn cy" id="hs-av" style="font-size:1.5rem">—</div><div class="stat-ml">Доступно</div></div>
-        <div class="stat-m" style="flex-shrink:0;min-width:70px;padding:0.6rem 0.75rem"><div class="stat-mn or" id="hs-te" style="font-size:1.5rem">—</div><div class="stat-ml">На тесті</div></div>
-        <div class="stat-m" style="flex-shrink:0;min-width:70px;padding:0.6rem 0.75rem"><div class="stat-mn wh" id="hs-tr" style="font-size:1.5rem">—</div><div class="stat-ml">Трейд</div></div>
-      </div>
-      <button class="btn btn-lime" onclick="openModal('addDisc')" style="flex-shrink:0;height:fit-content">+ Диск</button>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:0.5rem;margin-bottom:0.6rem">
+      <div class="stat-m" style="padding:0.6rem 0.5rem;text-align:center"><div class="stat-mn" id="hs-total" style="font-size:1.4rem">—</div><div class="stat-ml">Всього</div></div>
+      <div class="stat-m" style="padding:0.6rem 0.5rem;text-align:center"><div class="stat-mn cy" id="hs-av" style="font-size:1.4rem">—</div><div class="stat-ml">Доступно</div></div>
+      <div class="stat-m" style="padding:0.6rem 0.5rem;text-align:center"><div class="stat-mn or" id="hs-te" style="font-size:1.4rem">—</div><div class="stat-ml">На тесті</div></div>
+      <div class="stat-m" style="padding:0.6rem 0.5rem;text-align:center"><div class="stat-mn wh" id="hs-tr" style="font-size:1.4rem">—</div><div class="stat-ml">Трейд</div></div>
     </div>
     <div style="display:flex;gap:0.4rem;align-items:center;margin-bottom:0.5rem">
       <div style="display:flex;gap:2px;overflow-x:auto;-webkit-overflow-scrolling:touch;flex:1;background:var(--s2);border:1px solid var(--b1);border-radius:var(--r);padding:3px">
@@ -291,6 +288,7 @@ td{padding:8px 10px;font-size:0.8rem}
         <button class="ft" onclick="setFt(this,'trade')" style="flex-shrink:0">🔄 Трейд</button>
         <button class="ft" onclick="setFt(this,'reserved')" style="flex-shrink:0">Резерв</button>
       </div>
+      <button class="btn btn-lime btn-sm" onclick="openModal('addDisc')" style="flex-shrink:0">+</button>
       <button class="btn btn-ghost btn-sm" onclick="toggleAdvFilters()" id="advBtn" style="flex-shrink:0;padding:5px 9px">⚙</button>
     </div>
     <div class="adv-filters" id="advFilters">
@@ -387,8 +385,9 @@ td{padding:8px 10px;font-size:0.8rem}
 <div id="page-admin" class="page">
   <div class="content">
     <div id="adminNoAuth">
-      <div class="empty"><div class="empty-icon">🔐</div>
-        <div>Адмін-панель</div>
+      <div class="empty">
+        <div class="empty-icon">🔐</div>
+        <div id="adminNoAuthMsg">Адмін-панель</div>
         <div style="font-size:0.8rem;color:var(--m1);margin-top:0.5rem">Доступ тільки для адмінів</div>
         <br>
         <button class="btn btn-lime" onclick="openModal('login')">Увійти через Telegram</button>
@@ -1091,7 +1090,9 @@ function restoreUser(){
     const tg=window.Telegram?.WebApp;
     if(tg&&tg.initDataUnsafe?.user){
       const u=tg.initDataUnsafe.user;
-      CU={name:(u.first_name+(u.last_name?' '+u.last_name:'')).trim(),tg:u.username||String(u.id),tgId:String(u.id),role:'both'};
+      const tgId=String(u.id);
+      CU={name:(u.first_name+(u.last_name?' '+u.last_name:'')).trim(),tg:u.username||tgId,tgId:tgId,role:'both'};
+      console.log('TG user:', JSON.stringify({id:u.id,username:u.username,name:CU.name,tgId:tgId}));
       localStorage.setItem('dcUser',JSON.stringify(CU));
       updateUserBtn();
       tg.expand();
