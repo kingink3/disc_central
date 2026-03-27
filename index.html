@@ -668,7 +668,7 @@ function cardHTML(d){
     <div class="disc-strip ${s.c}"></div>
     <div style="position:relative">
       ${photoCarousel(urls,'c'+d.id)}
-      <span class="badge ${s.b}" style="position:absolute;bottom:5px;left:5px;font-size:0.62rem;background:rgba(0,0,0,0.75);backdrop-filter:blur(4px)">${s.l}</span>
+      <span class="badge ${s.b}" style="position:absolute;bottom:5px;left:50%;transform:translateX(-50%);font-size:0.62rem;background:rgba(0,0,0,0.82);backdrop-filter:blur(4px);white-space:nowrap">${s.l}</span>
     </div>
     <div class="disc-body">
       <div style="margin-bottom:0.4rem">
@@ -1055,7 +1055,9 @@ async function renderCabinet(){
 // ── TESTER ──
 async function renderTester(){
   const name=CU?.name;
-  const active=allDiscs.filter(d=>d.tester===name&&['testing','reserved'].includes(d.status));
+  // Reload fresh data
+  try{ const fresh=await apiGet({action:'getDiscs'}); if(fresh.ok) allDiscs=fresh.discs||[]; }catch(e){}
+  const active=allDiscs.filter(d=>String(d.tester||'').toLowerCase()===String(name||'').toLowerCase()&&['testing','reserved'].includes(d.status));
   document.getElementById('te-active').textContent=active.length;
 
   try{
@@ -1075,6 +1077,7 @@ async function renderTester(){
   }catch(e){}
 
   const al=document.getElementById('testerActiveList');
+  if(!active.length){al.innerHTML=`<div class="empty" style="padding:1.5rem"><div class="empty-icon" style="font-size:1.25rem">🎯</div>Немає активних тестів</div>`;return;}
   if(!active.length){al.innerHTML=`<div class="empty" style="padding:1.5rem"><div class="empty-icon" style="font-size:1.25rem">🎯</div>Немає активних тестів</div>`;return;}
   al.innerHTML=active.map(d=>`<div class="dash-item" style="flex-direction:column;align-items:stretch;gap:0.4rem">
     <div style="display:flex;align-items:center;gap:0.6rem">
