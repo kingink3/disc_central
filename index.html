@@ -1437,7 +1437,7 @@ async function init(){
     await loadDiscs();
     // Handle direct disc link
     const params=new URLSearchParams(location.search);
-    const discId=params.get('disc');
+    const discId=params.get('disc')||window.Telegram?.WebApp?.initDataUnsafe?.start_param;
     if(discId){
       setTimeout(()=>{
         const d=allDiscs.find(x=>String(x.id)===String(discId));
