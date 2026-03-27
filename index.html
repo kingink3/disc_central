@@ -822,10 +822,16 @@ async function submitReturn(){
 // ── NOTIFY via Apps Script ──
 async function notifyAppsScript(type,disc,buyer){
   try{
-    const url=APPS_SCRIPT+'?notify=1&type='+type+'&discId='+disc.id+'&discBrand='+encodeURIComponent(disc.brand)+'&discModel='+encodeURIComponent(disc.model)+'&discBuyout='+(disc.buyout||0)+'&ownerTg='+encodeURIComponent(disc.ownerTgId||disc.ownerTg||'')+'&testerName='+encodeURIComponent(buyer.name)+'&testerTg='+encodeURIComponent(buyer.tg||'')+'&callback=cb_notify';
-    const s=document.createElement('script');window.cb_notify=()=>{delete window.cb_notify;s.remove();};s.src=url;document.head.appendChild(s);
-    setTimeout(()=>{delete window.cb_notify;s.remove();},5000);
-  }catch(e){}
+    // Use numeric tgId if available, fallback to username
+    const ownerTg=disc.ownerTgId||disc.ownerTg||'';
+    const url=APPS_SCRIPT+'?notify=1&type='+type+'&discId='+disc.id+'&discBrand='+encodeURIComponent(disc.brand)+'&discModel='+encodeURIComponent(disc.model)+'&discBuyout='+(disc.buyout||0)+'&ownerTg='+encodeURIComponent(ownerTg)+'&testerName='+encodeURIComponent(buyer.name)+'&testerTg='+encodeURIComponent(buyer.tg||'')+'&callback=cb_notify';
+    console.log('notifyAppsScript url:', url);
+    const s=document.createElement('script');
+    window.cb_notify=(d)=>{console.log('notify response:',d);delete window.cb_notify;s.remove();};
+    s.onerror=(e)=>{console.error('notify script error:',e);};
+    s.src=url;document.head.appendChild(s);
+    setTimeout(()=>{delete window.cb_notify;s.remove();},8000);
+  }catch(e){console.error('notifyAppsScript err:',e);}
 }
 
 // ── CONFIRM SALE ──
