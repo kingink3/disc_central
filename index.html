@@ -352,7 +352,7 @@ td{padding:8px 10px;font-size:0.8rem}
       </div>
       <div id="cab-testing" class="cab-tab-content" style="display:none">
         <div class="card">
-          <div class="sec-hdr"><div class="sec-ttl">Я ТЕСТУЮ</div><div style="font-size:0.72rem;color:var(--m1)">ліміт 3 диски</div></div>
+          <div class="sec-hdr"><div class="sec-ttl">Я ТЕСТУЮ</div></div>
           <div id="testerActiveList"></div>
         </div>
       </div>
@@ -666,14 +666,14 @@ function cardHTML(d){
 
   return`<div class="disc-card" onclick="showDetail('${d.id}')">
     <div class="disc-strip ${s.c}"></div>
-    ${photoCarousel(urls,'c'+d.id)}
+    <div style="position:relative">
+      ${photoCarousel(urls,'c'+d.id)}
+      <span class="badge ${s.b}" style="position:absolute;bottom:5px;left:5px;font-size:0.62rem">${s.l}</span>
+    </div>
     <div class="disc-body">
-      <div class="disc-top" style="margin-bottom:0.4rem">
-        <div style="min-width:0;flex:1">
-          <div class="disc-title">${d.brand} ${d.model}</div>
-          <div class="disc-sub">${[d.plastic,d.weight?d.weight+'г':''].filter(Boolean).join(' · ')}</div>
-        </div>
-        <span class="badge ${s.b}" style="flex-shrink:0;margin-left:4px">${s.l}</span>
+      <div style="margin-bottom:0.4rem">
+        <div class="disc-title">${d.brand} ${d.model}</div>
+        <div class="disc-sub">${[d.plastic,d.weight?d.weight+'г':''].filter(Boolean).join(' · ')}</div>
       </div>
       ${condBar(d.condition)}
       <div class="flight-row">
@@ -971,8 +971,8 @@ async function submitBuy(){
   const btn=document.getElementById('buyBtn');
   btn.disabled=true;btn.textContent='Обробка...';
   try{
-    const res=await apiPost({action:'updateDisc',id:buyId,updates:{status:'reserved',tester:CU.name},testerName:CU.name});
-    if(res.ok){closeModal('buy');await loadDiscs();if(CU){renderCabinet();}toast('🛒 Запит на купівлю відправлено! Очікуй підтвердження від продавця.');}
+    const res=await apiPost({action:'addRequest',discId:buyId,tester:CU.name,testerTg:CU.tg||'',note:'Запит на купівлю'+(document.getElementById('buy-note')?.value?' · '+document.getElementById('buy-note').value:''),requestType:'buy'});
+    if(res.ok){closeModal('buy');await loadDiscs();if(CU){renderCabinet();}toast('🛒 Запит на купівлю відправлено!');}
     else{toast('⚠️ '+(res.error||'Помилка'),true);}
   }catch(e){toast('⚠️ Помилка',true);}
   btn.disabled=false;btn.textContent='Підтвердити купівлю';
