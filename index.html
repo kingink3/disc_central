@@ -462,7 +462,7 @@ td{padding:8px 10px;font-size:0.8rem}
     <div class="fr"><div class="fg"><label class="fl">Пластик</label><input id="ad-plastic" placeholder="Star, ESP..."></div><div class="fg"><label class="fl">Вага (г)</label><input id="ad-weight" type="number" placeholder="175"></div></div>
     <div class="fr"><div class="fg"><label class="fl">Колір</label><input id="ad-color" placeholder="Жовтий..."></div><div class="fg"><label class="fl">Buyout (UAH)</label><input id="ad-buyout" type="number" placeholder="850"></div></div>
     <div class="fg"><label class="fl">Стан диска: <span id="condValLabel">7</span>/10</label>
-      <div class="cond-slider-wrap"><span style="font-size:0.7rem;color:var(--m1)">0</span><input type="range" id="ad-cond" min="0" max="10" value="7" oninput="document.getElementById('condValLabel').textContent=this.value"><span style="font-size:0.7rem;color:var(--m1)">10</span><span class="cond-val" id="condVal">7</span></div>
+      <input type="range" id="ad-cond" min="0" max="10" value="7" style="width:100%" oninput="document.getElementById('condValLabel').textContent=this.value;document.getElementById('condVal').textContent=this.value">
     </div>
     <div class="fg"><label class="fl">Speed / Glide / Turn / Fade</label>
       <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:0.4rem">
@@ -606,7 +606,7 @@ async function loadDiscs(){
 }
 
 function updateStats(){
-  const av=allDiscs.filter(d=>d.status==='available').length;
+  const av=allDiscs.filter(d=>d.status==='available'||d.status==='trade').length;
   const te=allDiscs.filter(d=>['testing','reserved'].includes(d.status)).length;
   const tr=allDiscs.filter(d=>d.status!=='sold'&&String(d.tradeWant||'').trim()&&String(d.tradeWant)!=='false').length;
   const vis=allDiscs.filter(d=>d.status!=='sold').length;
@@ -668,7 +668,7 @@ function cardHTML(d){
     <div class="disc-strip ${s.c}"></div>
     <div style="position:relative">
       ${photoCarousel(urls,'c'+d.id)}
-      <span class="badge ${s.b}" style="position:absolute;bottom:5px;left:5px;font-size:0.62rem">${s.l}</span>
+      <span class="badge ${s.b}" style="position:absolute;bottom:5px;left:5px;font-size:0.62rem;background:rgba(0,0,0,0.75);backdrop-filter:blur(4px)">${s.l}</span>
     </div>
     <div class="disc-body">
       <div style="margin-bottom:0.4rem">
@@ -1059,9 +1059,10 @@ async function renderTester(){
   document.getElementById('te-active').textContent=active.length;
 
   try{
-    const data=await apiGet({action:'getRequests',tester:name});
+    const data=await apiGet({action:'getRequests'});
     if(data.ok){
-      const myR=data.requests||[];
+      const allR=data.requests||[];
+      const myR=allR.filter(r=>String(r.tester||'').toLowerCase()===String(name||'').toLowerCase());
       document.getElementById('te-done').textContent=myR.length;
       document.getElementById('te-bought').textContent=allDiscs.filter(d=>d.tester===name&&d.status==='sold').length;
       document.getElementById('testerHistoryList').innerHTML=myR.length
