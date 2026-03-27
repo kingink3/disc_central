@@ -335,10 +335,12 @@ td{padding:8px 10px;font-size:0.8rem}
 <div class="overlay" id="ov-login">
   <div class="modal" style="max-width:360px">
     <button class="mc" onclick="closeModal('login')">✕</button>
-    <div class="mt">ВХІД / <span>РЕЄСТРАЦІЯ</span></div>
-    <div class="fg"><label class="fl">Ім'я</label><input id="li-name" placeholder="Ім'я або нікнейм"></div>
-    <div class="fg"><label class="fl">Telegram username (без @)</label><input id="li-tg" placeholder="username" oninput="this.value=this.value.replace('@','')"></div>
-    <button class="btn btn-lime btn-full" onclick="doLogin()">Увійти</button>
+    <div class="mt">ВХІД</div>
+    <div class="empty" style="padding:1rem 0">
+      <div class="empty-icon">🔐</div>
+      <div style="font-size:0.9rem;margin-bottom:1rem">Відкрий через Telegram бота</div>
+      <a href="https://t.me/disc_central_bot/app" class="btn btn-lime btn-full" style="text-decoration:none">Відкрити в Telegram</a>
+    </div>
   </div>
 </div>
 
