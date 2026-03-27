@@ -682,17 +682,15 @@ function cardHTML(d){
         <div class="fc"><div class="fv">${d.turn||0}</div><div class="fk">Trn</div></div>
         <div class="fc"><div class="fv">${d.fade||0}</div><div class="fk">Fde</div></div>
       </div>
-      <div class="disc-footer">
-        <div style="display:flex;align-items:center;justify-content:space-between;width:100%;gap:0.3rem">
-          <div style="min-width:0;flex:1;display:flex;align-items:baseline;gap:0.35rem">
-            <div class="disc-price">${d.buyout?d.buyout+' ₴':'—'}</div>
-            <div class="disc-own" onclick="event.stopPropagation();filterByOwner('${d.owner}')" style="cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:0.65rem;color:var(--m1)">👤 ${(d.owner||'').split(' ')[0]}</div>
-          </div>
-          <div class="disc-act" onclick="event.stopPropagation()" style="flex-shrink:0;display:flex;gap:3px">
-            ${hasTrade?`<button class="btn btn-purple btn-xs" onclick="event.stopPropagation();openTradeOffer('${d.id}')">🔄</button>`:''}
-            ${canT?`<button class="btn btn-cyan btn-xs" onclick="openReqTest('${d.id}')">Тест</button>`:''}
-            ${canB?`<button class="btn btn-lime btn-xs" onclick="oBuy('${d.id}')">Купити</button>`:''}
-          </div>
+      <div class="disc-footer" style="flex-direction:column;gap:0.4rem;align-items:stretch">
+        <div style="display:flex;align-items:center;justify-content:space-between">
+          <div class="disc-price">${d.buyout?d.buyout+' ₴':'—'}</div>
+          <div onclick="event.stopPropagation();filterByOwner('${d.owner}')" style="cursor:pointer;font-size:0.65rem;color:var(--m1)">👤 ${(d.owner||'').split(' ')[0]}</div>
+        </div>
+        <div onclick="event.stopPropagation()" style="display:flex;gap:3px">
+          ${hasTrade?`<button class="btn btn-purple btn-xs" onclick="event.stopPropagation();openTradeOffer('${d.id}')">🔄</button>`:''}
+          ${canT?`<button class="btn btn-cyan btn-xs" onclick="openReqTest('${d.id}')">Тест</button>`:''}
+          ${canB?`<button class="btn btn-lime btn-xs" style="margin-left:auto" onclick="oBuy('${d.id}')">Купити</button>`:''}
         </div>
       </div>
     </div>
@@ -794,7 +792,6 @@ function showDetail(id){
         ${d.tradeWant?`<button class="btn btn-purple btn-sm" onclick="openTradeOffer('${d.id}');closeModal('detail')">🔄 Трейд</button>`:''}
         ${canB?`<button class="btn btn-lime btn-sm" onclick="oBuy('${d.id}');closeModal('detail')">Купити ${d.buyout||0}₴</button>`:''}
         ${d.status==='testing'&&CU?.name===d.tester?`<button class="btn btn-ghost btn-sm" onclick="oRet('${d.id}');closeModal('detail')">↩ Повернути</button>`:''}
-      </div>
     </div>
     <div style="margin-top:0.4rem">
       <button class="btn btn-ghost btn-xs" onclick="shareDisc('${d.id}')" style="color:var(--m1);width:100%">🔗 Поділитись посиланням</button>
