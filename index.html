@@ -285,7 +285,7 @@ td{padding:8px 10px;font-size:0.8rem}
         <button class="ft active" onclick="setFt(this,'all')" style="flex-shrink:0">Всі</button>
         <button class="ft" onclick="setFt(this,'available')" style="flex-shrink:0">Доступні</button>
         <button class="ft" onclick="setFt(this,'testing')" style="flex-shrink:0">Тест</button>
-        <button class="ft" onclick="setFt(this,'trade')" style="flex-shrink:0">🔄</button>
+        <button class="ft" onclick="setFt(this,'trade')" style="flex-shrink:0">Трейд</button>
         <button class="ft" onclick="setFt(this,'reserved')" style="flex-shrink:0">Резерв</button>
       </div>
       <button class="btn btn-ghost btn-sm" onclick="toggleAdvFilters()" id="advBtn" style="flex-shrink:0;padding:5px 9px">⚙</button>
@@ -332,10 +332,10 @@ td{padding:8px 10px;font-size:0.8rem}
       </div>
       <!-- TABS -->
       <div style="display:flex;gap:0.4rem;margin-bottom:1rem;background:var(--s2);border:1px solid var(--b1);border-radius:var(--r);padding:3px;overflow-x:auto;-webkit-overflow-scrolling:touch">
-        <button class="ft active" id="cab-tab-discs" onclick="setCabTab('discs')" style="flex-shrink:0">📦 Диски</button>
-        <button class="ft" id="cab-tab-requests" onclick="setCabTab('requests')" style="flex-shrink:0">📝 Запити</button>
-        <button class="ft" id="cab-tab-testing" onclick="setCabTab('testing')" style="flex-shrink:0">🎯 Тестую</button>
-        <button class="ft" id="cab-tab-history" onclick="setCabTab('history')" style="flex-shrink:0">📋 Історія</button>
+        <button class="ft active" id="cab-tab-discs" onclick="setCabTab('discs')" style="flex-shrink:0">Диски</button>
+        <button class="ft" id="cab-tab-requests" onclick="setCabTab('requests')" style="flex-shrink:0">Запити</button>
+        <button class="ft" id="cab-tab-testing" onclick="setCabTab('testing')" style="flex-shrink:0">Тестую</button>
+        <button class="ft" id="cab-tab-history" onclick="setCabTab('history')" style="flex-shrink:0">Історія</button>
       </div>
       <!-- TAB CONTENTS -->
       <div id="cab-discs" class="cab-tab-content">
@@ -726,7 +726,7 @@ function applyFilters(){
 
   // exclude sold
   let list=allDiscs.filter(d=>d.status!=='sold');
-  if(CF==='trade'){list=list.filter(d=>String(d.tradeWant||'').trim()&&String(d.tradeWant)!=='false');}
+  if(CF==='trade'){list=list.filter(d=>{const tw=String(d.tradeWant||'').trim();return tw.length>0&&tw!=='false'&&tw!=='0';});}
   else if(CF!=='all')list=list.filter(d=>d.status===CF);
   if(q)list=list.filter(d=>[d.brand,d.model,d.plastic,d.color,d.owner].join(' ').toLowerCase().includes(q));
   if(fSpeed>0)list=list.filter(d=>parseFloat(d.speed)>=fSpeed);
