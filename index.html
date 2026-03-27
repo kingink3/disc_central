@@ -1240,14 +1240,16 @@ function filterByOwner(owner){
 
 // Share disc link
 function shareDisc(id){
-  const url=`${location.origin}${location.pathname}?disc=${id}`;
-  navigator.clipboard.writeText(url).then(()=>toast('🔗 Посилання скопійовано!')).catch(()=>{
-    // fallback for older browsers
-    const el=document.createElement('textarea');
-    el.value=url;document.body.appendChild(el);el.select();
-    document.execCommand('copy');document.body.removeChild(el);
-    toast('🔗 Посилання скопійовано!');
-  });
+  const tgLink=`https://t.me/disc_central_bot/app?startapp=${id}`;
+  const copy=(text)=>{
+    navigator.clipboard.writeText(text).then(()=>toast('🔗 Посилання скопійовано!')).catch(()=>{
+      const el=document.createElement('textarea');
+      el.value=text;document.body.appendChild(el);el.select();
+      document.execCommand('copy');document.body.removeChild(el);
+      toast('🔗 Посилання скопійовано!');
+    });
+  };
+  copy(tgLink);
 }
 
 // Trade offer modal
