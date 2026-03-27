@@ -461,8 +461,11 @@ td{padding:8px 10px;font-size:0.8rem}
     <div class="fr"><div class="fg"><label class="fl">Бренд *</label><input id="ad-brand" placeholder="Innova, Discraft..."></div><div class="fg"><label class="fl">Модель *</label><input id="ad-model" placeholder="Boss, Buzzz..."></div></div>
     <div class="fr"><div class="fg"><label class="fl">Пластик</label><input id="ad-plastic" placeholder="Star, ESP..."></div><div class="fg"><label class="fl">Вага (г)</label><input id="ad-weight" type="number" placeholder="175"></div></div>
     <div class="fr"><div class="fg"><label class="fl">Колір</label><input id="ad-color" placeholder="Жовтий..."></div><div class="fg"><label class="fl">Buyout (UAH)</label><input id="ad-buyout" type="number" placeholder="850"></div></div>
-    <div class="fg"><label class="fl">Стан диска: <span id="condValLabel">7</span>/10</label>
-      <input type="range" id="ad-cond" min="0" max="10" value="7" style="width:100%" oninput="document.getElementById('condValLabel').textContent=this.value;document.getElementById('condVal').textContent=this.value">
+    <div class="fg"><label class="fl">Стан: <span id="condValLabel">7</span>/10</label>
+      <div style="display:flex;align-items:center;gap:0.5rem">
+        <input type="range" id="ad-cond" min="0" max="10" value="7" style="flex:1;min-width:0" oninput="document.getElementById('condValLabel').textContent=this.value;document.getElementById('condVal').textContent=this.value">
+        <span class="cond-val" id="condVal">7</span>
+      </div>
     </div>
     <div class="fg"><label class="fl">Speed / Glide / Turn / Fade</label>
       <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:0.4rem">
@@ -1023,9 +1026,10 @@ async function renderSeller(){
     const data=await apiGet({action:'getRequests'});
     if(data.ok){
       const myReqs=(data.requests||[]).filter(r=>my.some(d=>String(d.id)===String(r.discId)));
-      // Update requests tab badge
+      // Sort newest first
+      myReqs.sort((a,b)=>(b.createdAt||b.date||'').localeCompare(a.createdAt||a.date||''));
       const reqTab=document.getElementById('cab-tab-requests');
-      if(reqTab&&myReqs.length) reqTab.textContent='📝 Запити ('+myReqs.length+')';
+      if(reqTab) reqTab.textContent='Запити'+(myReqs.length?' ('+myReqs.length+')':'');
       document.getElementById('sellerRequests').innerHTML=myReqs.length
         ?myReqs.map(r=>{const d=allDiscs.find(x=>String(x.id)===String(r.discId));
           return`<div class="dash-item">📝<div style="flex:1;min-width:0;margin-left:0.5rem">
@@ -1055,29 +1059,46 @@ async function renderCabinet(){
 // ── TESTER ──
 async function renderTester(){
   const name=CU?.name;
-  // Reload fresh data
+  if(!name)return;
   try{ const fresh=await apiGet({action:'getDiscs'}); if(fresh.ok) allDiscs=fresh.discs||[]; }catch(e){}
-  const active=allDiscs.filter(d=>String(d.tester||'').toLowerCase()===String(name||'').toLowerCase()&&['testing','reserved'].includes(d.status));
-  document.getElementById('te-active').textContent=active.length;
+  const active=allDiscs.filter(d=>String(d.tester||'').toLowerCase()===String(name).toLowerCase()&&['testing','reserved'].includes(d.status));
+  if(document.getElementById('te-active'))document.getElementById('te-active').textContent=active.length;
 
+  // History
   try{
     const data=await apiGet({action:'getRequests'});
     if(data.ok){
       const allR=data.requests||[];
-      const myR=allR.filter(r=>String(r.tester||'').toLowerCase()===String(name||'').toLowerCase());
-      document.getElementById('te-done').textContent=myR.length;
-      document.getElementById('te-bought').textContent=allDiscs.filter(d=>d.tester===name&&d.status==='sold').length;
-      document.getElementById('testerHistoryList').innerHTML=myR.length
-        ?`<div class="tw"><table><thead><tr><th>Диск</th><th>Дата</th><th>Статус</th></tr></thead><tbody>
-            ${myR.map(r=>{const d=allDiscs.find(x=>String(x.id)===String(r.discId));
-              return`<tr><td>${d?d.brand+' '+d.model:'?'}</td><td>${r.date||''}</td><td><span class="badge b-te">${r.status||'active'}</span></td></tr>`;
-            }).join('')}</tbody></table></div>`
-        :`<div style="color:var(--m1);font-size:0.8rem">Немає тестів</div>`;
+      const myR=allR.filter(r=>String(r.tester||'').toLowerCase()===String(name).toLowerCase());
+      // Sort newest first
+      myR.sort((a,b)=>(b.createdAt||b.date||'').localeCompare(a.createdAt||a.date||''));
+      if(document.getElementById('te-done'))document.getElementById('te-done').textContent=myR.length;
+      if(document.getElementById('te-bought'))document.getElementById('te-bought').textContent=myR.filter(r=>r.note&&r.note.toLowerCase().includes('купів')).length;
+      const hl=document.getElementById('testerHistoryList');
+      if(hl){
+        hl.innerHTML=myR.length
+          ?myR.map(r=>{
+              const d=allDiscs.find(x=>String(x.id)===String(r.discId));
+              const isBuyH=r.note&&r.note.toLowerCase().includes('купів');
+              const isExchH=r.note&&r.note.toLowerCase().includes('обмін');
+              const type=isBuyH?'Купівля':isExchH?'Обмін':'Тест';
+              const badgeCls=isBuyH?'b-av':isExchH?'b-tr':'b-te';
+              return`<div class="dash-item" style="margin-bottom:0.4rem">
+                <div style="flex:1;min-width:0">
+                  <div class="di-title">${d?d.brand+' '+d.model:'Диск видалено'} <span class="badge ${badgeCls}" style="font-size:0.58rem">${type}</span></div>
+                  <div class="di-sub">${r.date||''}${r.note&&!isBuyH&&!isExchH?' · '+r.note:''}</div>
+                </div>
+                <span class="badge b-te" style="font-size:0.6rem">${r.status||'active'}</span>
+              </div>`;
+            }).join('')
+          :`<div style="color:var(--m1);font-size:0.84rem;padding:0.5rem 0">Немає запитів</div>`;
+      }
     }
-  }catch(e){}
+  }catch(e){console.error('tester history err:',e);}
 
+  // Active tests
   const al=document.getElementById('testerActiveList');
-  if(!active.length){al.innerHTML=`<div class="empty" style="padding:1.5rem"><div class="empty-icon" style="font-size:1.25rem">🎯</div>Немає активних тестів</div>`;return;}
+  if(!al)return;
   if(!active.length){al.innerHTML=`<div class="empty" style="padding:1.5rem"><div class="empty-icon" style="font-size:1.25rem">🎯</div>Немає активних тестів</div>`;return;}
   al.innerHTML=active.map(d=>`<div class="dash-item" style="flex-direction:column;align-items:stretch;gap:0.4rem">
     <div style="display:flex;align-items:center;gap:0.6rem">
