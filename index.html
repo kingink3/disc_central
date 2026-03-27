@@ -644,7 +644,7 @@ async function submitDisc(){
   const photos=await uploadAllPhotos();
   const isTrade=document.getElementById('ad-trade').checked;
   const disc={
-    id:genId(),owner,owner_tg:CU?.tg||'',brand,model,
+    id:genId(),owner,owner_tg:CU?.tgId||CU?.tg||'',brand,model,
     plastic:document.getElementById('ad-plastic').value,
     weight:parseInt(document.getElementById('ad-weight').value)||175,
     color:document.getElementById('ad-color').value,
