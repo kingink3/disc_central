@@ -100,7 +100,7 @@ nav{display:flex;gap:0.15rem;align-items:center;flex:1;justify-content:center}
 .disc-photo-wrap:hover .photo-nav{opacity:1}
 .photo-nav.prev{left:4px}.photo-nav.next{right:4px}
 
-.disc-body{padding:0.7rem}
+.disc-body{padding:0.7rem;display:flex;flex-direction:column}
 .disc-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:0.5rem}
 .disc-title{font-weight:700;font-size:0.85rem;line-height:1.2}
 .disc-sub{font-size:0.65rem;color:var(--m1);margin-top:1px;font-family:'Space Mono',monospace}
@@ -274,19 +274,22 @@ td{padding:8px 10px;font-size:0.8rem}
 <!-- CATALOG -->
 <div id="page-catalog" class="page active">
   <div class="content">
-    <div class="stats-mini">
-      <div class="stat-m"><div class="stat-mn" id="hs-total">—</div><div class="stat-ml">В каталозі</div></div>
-      <div class="stat-m"><div class="stat-mn cy" id="hs-av">—</div><div class="stat-ml">Доступно</div></div>
-      <div class="stat-m"><div class="stat-mn or" id="hs-te">—</div><div class="stat-ml">На тесті</div></div>
-      <div class="stat-m"><div class="stat-mn wh" id="hs-tr">—</div><div class="stat-ml">Трейд</div></div>
+    <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.75rem">
+      <div style="display:flex;gap:0.5rem;flex:1;overflow-x:auto;-webkit-overflow-scrolling:touch">
+        <div class="stat-m" style="flex-shrink:0;min-width:70px;padding:0.6rem 0.75rem"><div class="stat-mn" id="hs-total" style="font-size:1.5rem">—</div><div class="stat-ml">Всього</div></div>
+        <div class="stat-m" style="flex-shrink:0;min-width:70px;padding:0.6rem 0.75rem"><div class="stat-mn cy" id="hs-av" style="font-size:1.5rem">—</div><div class="stat-ml">Доступно</div></div>
+        <div class="stat-m" style="flex-shrink:0;min-width:70px;padding:0.6rem 0.75rem"><div class="stat-mn or" id="hs-te" style="font-size:1.5rem">—</div><div class="stat-ml">На тесті</div></div>
+        <div class="stat-m" style="flex-shrink:0;min-width:70px;padding:0.6rem 0.75rem"><div class="stat-mn wh" id="hs-tr" style="font-size:1.5rem">—</div><div class="stat-ml">Трейд</div></div>
+      </div>
+      <button class="btn btn-lime" onclick="openModal('addDisc')" style="flex-shrink:0;height:fit-content">+ Диск</button>
     </div>
     <div style="display:flex;gap:0.4rem;align-items:center;margin-bottom:0.5rem">
-      <div class="ftabs" style="flex:1;min-width:0;overflow-x:auto">
-        <button class="ft active" onclick="setFt(this,'all')">Всі</button>
-        <button class="ft" onclick="setFt(this,'available')">Доступні</button>
-        <button class="ft" onclick="setFt(this,'testing')">На тесті</button>
-        <button class="ft" onclick="setFt(this,'trade')">Трейд</button>
-        <button class="ft" onclick="setFt(this,'reserved')">Резерв</button>
+      <div style="display:flex;gap:2px;overflow-x:auto;-webkit-overflow-scrolling:touch;flex:1;background:var(--s2);border:1px solid var(--b1);border-radius:var(--r);padding:3px">
+        <button class="ft active" onclick="setFt(this,'all')" style="flex-shrink:0">Всі</button>
+        <button class="ft" onclick="setFt(this,'available')" style="flex-shrink:0">Доступні</button>
+        <button class="ft" onclick="setFt(this,'testing')" style="flex-shrink:0">На тесті</button>
+        <button class="ft" onclick="setFt(this,'trade')" style="flex-shrink:0">🔄 Трейд</button>
+        <button class="ft" onclick="setFt(this,'reserved')" style="flex-shrink:0">Резерв</button>
       </div>
       <button class="btn btn-ghost btn-sm" onclick="toggleAdvFilters()" id="advBtn" style="flex-shrink:0;padding:5px 9px">⚙</button>
     </div>
@@ -331,11 +334,11 @@ td{padding:8px 10px;font-size:0.8rem}
         <div class="stat-card"><div class="stat-n or" id="sel-revenue">0₴</div><div class="stat-l">Зароблено</div></div>
       </div>
       <!-- TABS -->
-      <div style="display:flex;gap:0.4rem;margin-bottom:1rem;background:var(--s2);border:1px solid var(--b1);border-radius:var(--r);padding:3px">
-        <button class="ft active" id="cab-tab-discs" onclick="setCabTab('discs')" style="flex:1;text-align:center">📦 Мої диски</button>
-        <button class="ft" id="cab-tab-requests" onclick="setCabTab('requests')" style="flex:1;text-align:center">📝 Запити</button>
-        <button class="ft" id="cab-tab-testing" onclick="setCabTab('testing')" style="flex:1;text-align:center">🎯 Тестую</button>
-        <button class="ft" id="cab-tab-history" onclick="setCabTab('history')" style="flex:1;text-align:center">📋 Історія</button>
+      <div style="display:flex;gap:0.4rem;margin-bottom:1rem;background:var(--s2);border:1px solid var(--b1);border-radius:var(--r);padding:3px;overflow-x:auto;-webkit-overflow-scrolling:touch">
+        <button class="ft active" id="cab-tab-discs" onclick="setCabTab('discs')" style="flex-shrink:0">📦 Диски</button>
+        <button class="ft" id="cab-tab-requests" onclick="setCabTab('requests')" style="flex-shrink:0">📝 Запити</button>
+        <button class="ft" id="cab-tab-testing" onclick="setCabTab('testing')" style="flex-shrink:0">🎯 Тестую</button>
+        <button class="ft" id="cab-tab-history" onclick="setCabTab('history')" style="flex-shrink:0">📋 Історія</button>
       </div>
       <!-- TAB CONTENTS -->
       <div id="cab-discs" class="cab-tab-content">
@@ -605,7 +608,7 @@ async function loadDiscs(){
 function updateStats(){
   const av=allDiscs.filter(d=>d.status==='available').length;
   const te=allDiscs.filter(d=>['testing','reserved'].includes(d.status)).length;
-  const tr=allDiscs.filter(d=>d.tradeWant&&String(d.tradeWant).trim()!==''&&String(d.tradeWant)!=='false').length;
+  const tr=allDiscs.filter(d=>{const tw=String(d.tradeWant||'').trim();return tw&&tw!=='false'&&tw!=='0'&&tw!=='undefined';}).length;
   const vis=allDiscs.filter(d=>d.status!=='sold').length;
   document.getElementById('hs-total').textContent=vis;
   document.getElementById('hs-av').textContent=av;
@@ -689,7 +692,7 @@ function cardHTML(d){
           <div class="disc-own" onclick="event.stopPropagation();filterByOwner('${d.owner}')" style="cursor:pointer;text-decoration:underline dotted">👤 ${d.owner||''}</div>
           <div class="disc-act" onclick="event.stopPropagation()">
             ${canT&&!isNew?`<button class="btn btn-cyan btn-xs" onclick="openReqTest('${d.id}')">Тест</button>`:''}
-            ${(d.tradeWant&&String(d.tradeWant).trim()!==''&&String(d.tradeWant)!=='false'&&String(d.tradeWant)!=='0')?`<button class="btn btn-purple btn-xs" onclick="event.stopPropagation();openTradeOffer('${d.id}')">🔄</button>`:''}
+            ${(()=>{const tw=String(d.tradeWant||'').trim();return tw&&tw!=='false'&&tw!=='0'&&tw!=='undefined';})()?`<button class="btn btn-purple btn-xs" onclick="event.stopPropagation();openTradeOffer('${d.id}')">🔄</button>`:''}
             ${canB?`<button class="btn btn-lime btn-xs" onclick="oBuy('${d.id}')">Купити</button>`:''}
           </div>
         </div>
@@ -723,7 +726,7 @@ function applyFilters(){
 
   // exclude sold
   let list=allDiscs.filter(d=>d.status!=='sold');
-  if(CF==='trade')list=list.filter(d=>d.tradeWant&&String(d.tradeWant).trim()!==''&&String(d.tradeWant)!=='false'&&String(d.tradeWant)!=='0');
+  if(CF==='trade'){list=list.filter(d=>{const tw=String(d.tradeWant||'').trim();return tw!==''&&tw!=='false'&&tw!=='0'&&tw!=='undefined';});}
   else if(CF!=='all')list=list.filter(d=>d.status===CF);
   if(q)list=list.filter(d=>[d.brand,d.model,d.plastic,d.color,d.owner].join(' ').toLowerCase().includes(q));
   if(fSpeed>0)list=list.filter(d=>parseFloat(d.speed)>=fSpeed);
