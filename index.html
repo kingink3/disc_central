@@ -660,20 +660,20 @@ function condBar(val){
 function cardHTML(d){
   const s=st(d.status);
   const urls=[d.photoUrl,d.photoUrl2,d.photoUrl3].filter(Boolean);
-  const canT=['available','trade'].includes(d.status)&&d.status!=='sold';
-  const canB=['available','reserved','testing','trade'].includes(d.status);
-  const isNew=d.condition>=9;
+  const canT=d.status!=='sold'&&d.status!=='reserved';
+  const canB=d.status!=='sold';
+  const hasTrade=String(d.tradeWant||'').trim().length>0&&String(d.tradeWant)!=='false';
 
   return`<div class="disc-card" onclick="showDetail('${d.id}')">
     <div class="disc-strip ${s.c}"></div>
     ${photoCarousel(urls,'c'+d.id)}
     <div class="disc-body">
-      <div class="disc-top">
-        <div><div class="disc-title">${d.brand} ${d.model}</div><div class="disc-sub">${d.plastic||''} · ${d.weight||''}г</div></div>
-        <div style="display:flex;gap:3px;align-items:center;flex-wrap:wrap;justify-content:flex-end">
-          ${d.tradeWant?'<span class="badge b-tr">🔄</span>':''}
-          <span class="badge ${s.b}">${s.l}</span>
+      <div class="disc-top" style="margin-bottom:0.4rem">
+        <div style="min-width:0;flex:1">
+          <div class="disc-title">${d.brand} ${d.model}</div>
+          <div class="disc-sub">${[d.plastic,d.weight?d.weight+'г':''].filter(Boolean).join(' · ')}</div>
         </div>
+        <span class="badge ${s.b}" style="flex-shrink:0;margin-left:4px">${s.l}</span>
       </div>
       ${condBar(d.condition)}
       <div class="flight-row">
@@ -682,17 +682,15 @@ function cardHTML(d){
         <div class="fc"><div class="fv">${d.turn||0}</div><div class="fk">Trn</div></div>
         <div class="fc"><div class="fv">${d.fade||0}</div><div class="fk">Fde</div></div>
       </div>
-      <div class="disc-tags">
-        ${d.color?`<span class="tag">${d.color}</span>`:''}
-        ${(String(d.tradeWant||'').trim()&&String(d.tradeWant)!=='false')?`<span class="tag" style="color:var(--purple)">🔄</span>`:''}
-      </div>
       <div class="disc-footer">
-        <div><div class="disc-price-lbl">Buyout</div><div class="disc-price">${d.buyout?d.buyout+' ₴':'—'}</div></div>
-        <div style="text-align:right">
-          <div class="disc-own" onclick="event.stopPropagation();filterByOwner('${d.owner}')" style="cursor:pointer;text-decoration:underline dotted">👤 ${d.owner||''}</div>
-          <div class="disc-act" onclick="event.stopPropagation()">
-            ${canT&&!isNew?`<button class="btn btn-cyan btn-xs" onclick="openReqTest('${d.id}')">Тест</button>`:''}
-            ${(String(d.tradeWant||'').trim()&&String(d.tradeWant)!=='false')?`<button class="btn btn-purple btn-xs" onclick="event.stopPropagation();openTradeOffer('${d.id}')">🔄</button>`:''}
+        <div style="display:flex;align-items:center;justify-content:space-between;width:100%;gap:0.3rem">
+          <div style="min-width:0;flex:1">
+            <div class="disc-price">${d.buyout?d.buyout+' ₴':'—'}</div>
+            <div class="disc-own" onclick="event.stopPropagation();filterByOwner('${d.owner}')" style="cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:0.65rem;color:var(--m1)">👤 ${(d.owner||'').split(' ')[0]}</div>
+          </div>
+          <div class="disc-act" onclick="event.stopPropagation()" style="flex-shrink:0;display:flex;gap:3px">
+            ${hasTrade?`<button class="btn btn-purple btn-xs" onclick="event.stopPropagation();openTradeOffer('${d.id}')">🔄</button>`:''}
+            ${canT?`<button class="btn btn-cyan btn-xs" onclick="openReqTest('${d.id}')">Тест</button>`:''}
             ${canB?`<button class="btn btn-lime btn-xs" onclick="oBuy('${d.id}')">Купити</button>`:''}
           </div>
         </div>
