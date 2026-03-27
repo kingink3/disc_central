@@ -608,7 +608,7 @@ async function loadDiscs(){
 function updateStats(){
   const av=allDiscs.filter(d=>d.status==='available').length;
   const te=allDiscs.filter(d=>['testing','reserved'].includes(d.status)).length;
-  const tr=allDiscs.filter(d=>String(d.tradeWant||'').trim()&&String(d.tradeWant)!=='false').length;
+  const tr=allDiscs.filter(d=>d.status!=='sold'&&String(d.tradeWant||'').trim()&&String(d.tradeWant)!=='false').length;
   const vis=allDiscs.filter(d=>d.status!=='sold').length;
   document.getElementById('hs-total').textContent=vis;
   document.getElementById('hs-av').textContent=av;
@@ -726,7 +726,7 @@ function applyFilters(){
 
   // exclude sold
   let list=allDiscs.filter(d=>d.status!=='sold');
-  if(CF==='trade'){list=list.filter(d=>{const tw=String(d.tradeWant||'').trim();return tw.length>0&&tw!=='false'&&tw!=='0';});}
+  if(CF==='trade'){list=list.filter(d=>{const tw=String(d.tradeWant||'').trim();return d.status!=='sold'&&tw.length>0&&tw!=='false'&&tw!=='0';});}
   else if(CF!=='all')list=list.filter(d=>d.status===CF);
   if(q)list=list.filter(d=>[d.brand,d.model,d.plastic,d.color,d.owner].join(' ').toLowerCase().includes(q));
   if(fSpeed>0)list=list.filter(d=>parseFloat(d.speed)>=fSpeed);
