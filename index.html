@@ -387,9 +387,11 @@ td{padding:8px 10px;font-size:0.8rem}
       <div class="empty">
         <div class="empty-icon">🔐</div>
         <div id="adminNoAuthMsg">Адмін-панель</div>
-        <div style="font-size:0.8rem;color:var(--m1);margin-top:0.5rem">Доступ тільки для адмінів</div>
         <br>
-        <button class="btn btn-lime" onclick="openModal('login')">Увійти через Telegram</button>
+        <div style="max-width:260px;margin:0 auto">
+          <div class="fg"><label class="fl">Пароль</label><input type="password" id="adminPassInput" placeholder="Введіть пароль" onkeydown="if(event.key==='Enter')adminLoginPass()"></div>
+          <button class="btn btn-lime btn-full" onclick="adminLoginPass()">Увійти</button>
+        </div>
       </div>
     </div>
     <div id="adminContent" style="display:none">
@@ -554,7 +556,7 @@ const ADMINS = ['280215742']; // ← числові Telegram ID адмінів
 const API = 'https://script.google.com/macros/s/AKfycbwybos79QSCBbtzu_XVFtp5fZRoz70xL4vAWu0H1TCrxw0rMsnzhZVZuRCcwWlYo4oAjw/exec';
 const CLOUDINARY_CLOUD = 'dde1lbwld';
 const CLOUDINARY_PRESET = 'disc_central';
-const ADMIN_PASS = 'DiscC3ntr@l2024'; // server-side check only
+let ADMIN_TOKEN = null; // set after server auth
 
 let CU=null, CF='all', allDiscs=[], allReqs=[], buyId=null, retId=null, reqTestId=null;
 let photoUrls=['','',''];
@@ -1138,6 +1140,8 @@ function adminLogin(){
 }
 function adminLogout(){
   isAdmin=false;
+  ADMIN_TOKEN=null;
+  sessionStorage.removeItem('adminToken');
   document.getElementById('adminNoAuth').style.display='block';
   document.getElementById('adminContent').style.display='none';
   toast('Вийшли з адмін-панелі');
@@ -1330,7 +1334,7 @@ async function confirmDeleteDisc(){
   const d=allDiscs.find(x=>String(x.id)===String(id));
   if(!confirm(`Зняти з продажу "${d?.brand} ${d?.model}"?`))return;
   try{
-    const res=await apiPost({action:'adminAction',adminPass:ADMIN_PASS,type:'deleteDisc',discId:id});
+    const res=await apiPost({action:'adminAction',adminToken:ADMIN_TOKEN,type:'deleteDisc',discId:id});
     if(res.ok){closeModal('editDisc');await loadDiscs();renderSeller();toast('🗑 Диск знято');}
     else toast('⚠️ '+(res.error||'Помилка'),true);
   }catch(e){toast('⚠️ Помилка',true);}
@@ -1339,7 +1343,7 @@ async function confirmDeleteDisc(){
 async function adminSetStatus(discId,status){
   if(!status)return;
   try{
-    const res=await apiPost({action:'adminAction',adminPass:ADMIN_PASS,type:'setStatus',discId,status});
+    const res=await apiPost({action:'adminAction',adminToken:ADMIN_TOKEN,type:'setStatus',discId,status});
     if(res.ok){await loadAdminData();toast('✅ Статус змінено');}
     else toast('⚠️ '+(res.error||'Помилка'),true);
   }catch(e){toast('⚠️ Помилка',true);}
@@ -1347,14 +1351,14 @@ async function adminSetStatus(discId,status){
 async function adminDelete(discId,name){
   if(!confirm(`Видалити "${name}"?`))return;
   try{
-    const res=await apiPost({action:'adminAction',adminPass:ADMIN_PASS,type:'deleteDisc',discId});
+    const res=await apiPost({action:'adminAction',adminToken:ADMIN_TOKEN,type:'deleteDisc',discId});
     if(res.ok){await loadAdminData();toast('🗑 Видалено');}
     else toast('⚠️ '+(res.error||'Помилка'),true);
   }catch(e){toast('⚠️ Помилка',true);}
 }
 async function adminConfirmReturn(discId,requestId){
   try{
-    const res=await apiPost({action:'adminAction',adminPass:ADMIN_PASS,type:'confirmReturn',discId,requestId});
+    const res=await apiPost({action:'adminAction',adminToken:ADMIN_TOKEN,type:'confirmReturn',discId,requestId});
     if(res.ok){await loadAdminData();toast('✅ Повернення підтверджено');}
     else toast('⚠️ '+(res.error||'Помилка'),true);
   }catch(e){toast('⚠️ Помилка',true);}
@@ -1403,6 +1407,9 @@ function openModal(n) {
 async function init(){
   // Safety net - hide loading after 20s no matter what
   setTimeout(()=>{document.getElementById('loadingOverlay').style.display='none';},20000);
+  // Restore admin token from session
+  const savedToken = sessionStorage.getItem('adminToken');
+  if(savedToken) ADMIN_TOKEN = savedToken;
   restoreUser();
   loadBanned();
   // Auto-show admin nav if user is admin (guard against undefined)
