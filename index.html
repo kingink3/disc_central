@@ -476,6 +476,7 @@ let CU = null, CF = 'all', allDiscs = [], buyId = null, retId = null, reqTestId 
 let photoFiles = [null, null, null];
 let isAdmin = false;
 let bannedUsers = [];
+let isTradeReq = false;
 
 const ST = {
   available:{l:'Доступний',c:'av',sc:'s-av'},
@@ -810,6 +811,7 @@ async function confirmDeleteDisc(){
 // ── REQ TEST ──
 function openReqTest(id){
   reqTestId=id;
+  isTradeReq=false;
   const d=allDiscs.find(x=>x.id===id||String(x.id)===String(id));if(!d)return;
   if(!CU){toast('⚠️ Спочатку увійдіть',true);openModal('login');return;}
   const owTg=(d.ownerTg||'').replace('@','');
@@ -818,23 +820,29 @@ function openReqTest(id){
     `Власник: <strong>${d.owner}</strong>${owTg?` · <a href="https://t.me/${owTg}" target="_blank" style="color:var(--cyan)">@${owTg} ↗</a>`:''}<br>`+
     `<span style="color:var(--m1);font-size:0.75rem">Від: <strong style="color:var(--text)">${CU.name}</strong>${CU.tg?` · <a href="https://t.me/${CU.tg.replace('@','')}" target="_blank" style="color:var(--cyan)">@${CU.tg.replace('@','')} ↗</a>`:''}</span>`;
   document.getElementById('rt-note').value='';
+  document.getElementById('rt-note').placeholder='Коротко про себе або питання...';
+  document.querySelector('#ov-reqTest .mt').innerHTML='ЗАПИТ НА <span>ТЕСТ</span>';
+  document.getElementById('reqTestBtn').textContent='Надіслати запит';
   openModal('reqTest');
 }
 async function submitTestReq(){
   if(!CU){toast('⚠️ Увійдіть',true);return;}
   const d=allDiscs.find(x=>x.id===reqTestId||String(x.id)===String(reqTestId));if(!d)return;
   const btn=document.getElementById('reqTestBtn');btn.disabled=true;btn.textContent='...';
+  const reqType=isTradeReq?'exchange':'test';
+  const notifyType=isTradeReq?'exchange':'test';
   try{
-    const req={id:genId(),disc_id:reqTestId,tester:CU.name,tester_tg:CU.tg||'',note:document.getElementById('rt-note').value,request_type:'test',status:'pending'};
+    const req={id:genId(),disc_id:reqTestId,tester:CU.name,tester_tg:CU.tg||'',note:document.getElementById('rt-note').value,request_type:reqType,status:'pending'};
     const {error}=await sb.from('requests').insert(req);
     const {error:e2}=await sb.from('discs').update({status:'reserved',tester:CU.name,tester_tg:CU.tg||''}).eq('id',reqTestId);
     if(!error&&!e2){
       closeModal('reqTest');await loadDiscs();if(CU)renderCabinet();
-      toast(`📝 Запит відправлено!`);
-      notifyAppsScript('test',d,CU);
+      toast(isTradeReq?'🔄 Пропозицію обміну відправлено!':'📝 Запит відправлено!');
+      notifyAppsScript(notifyType,d,CU);
     }else toast('⚠️ Помилка',true);
   }catch(e){toast('⚠️ Помилка',true);}
-  btn.disabled=false;btn.textContent='Надіслати запит';
+  btn.disabled=false;btn.textContent=isTradeReq?'Надіслати пропозицію':'Надіслати запит';
+  isTradeReq=false;
 }
 
 // ── BUY ──
@@ -911,7 +919,8 @@ async function confirmSale(discId){
 // ── TRADE OFFER ──
 function openTradeOffer(id){
   if(!CU){toast('⚠️ Спочатку увійдіть',true);openModal('login');return;}
-  reqTestId=id;const d=allDiscs.find(x=>x.id===id||String(x.id)===String(id));if(!d)return;
+  reqTestId=id;isTradeReq=true;
+  const d=allDiscs.find(x=>x.id===id||String(x.id)===String(id));if(!d)return;
   const owTg=(d.ownerTg||'').replace('@','');
   document.getElementById('reqDiscInfo').innerHTML=
     `<strong>${d.brand} ${d.model}</strong><br>`+
@@ -920,6 +929,8 @@ function openTradeOffer(id){
     `<span style="color:var(--m1);font-size:0.75rem">Від: ${CU.name}</span>`;
   document.getElementById('rt-note').placeholder='Опиши свій диск для обміну...';
   document.getElementById('rt-note').value='';
+  document.querySelector('#ov-reqTest .mt').innerHTML='ПРОПОЗИЦІЯ <span>ОБМІНУ</span>';
+  document.getElementById('reqTestBtn').textContent='Надіслати пропозицію';
   openModal('reqTest');
 }
 
@@ -945,44 +956,77 @@ async function renderSeller(){
   const rev=allDiscs.filter(d=>d.owner===name&&d.status==='sold').reduce((a,d)=>a+(Number(d.buyout)||0),0);
   if(document.getElementById('sel-total'))document.getElementById('sel-total').textContent=my.length;
   if(document.getElementById('sel-revenue'))document.getElementById('sel-revenue').textContent=rev+'₴';
+
+  // Fetch all requests for my discs
+  let allReqs=[];
+  try{
+    if(my.length){
+      const {data}=await sb.from('requests').select('*').in('disc_id',my.map(d=>d.id)).order('created_at',{ascending:false});
+      allReqs=data||[];
+    }
+  }catch(e){}
+
   document.getElementById('sellerDiscList').innerHTML=my.length
-    ?my.map(d=>`<div class="dash-item">
-        ${d.photoUrl?`<img src="${d.photoUrl}" style="width:34px;height:34px;object-fit:cover;border-radius:6px;flex-shrink:0">`:'<div style="width:34px;height:34px;background:var(--s3);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0">🥏</div>'}
-        <div style="flex:1;min-width:0"><div class="di-title">${d.brand} ${d.model}</div><div class="di-sub"><span class="badge b-${st(d.status).c}">${st(d.status).l}</span>${d.tester?' · '+d.tester:''}</div></div>
-        <div style="text-align:right;display:flex;flex-direction:column;align-items:flex-end;gap:3px">
-          <div class="di-price">${d.buyout||0}₴</div>
-          <div style="display:flex;gap:3px">
-            ${d.status==='reserved'&&d.tester?`<button class="btn btn-lime btn-xs" onclick="event.stopPropagation();confirmSale('${d.id}')">✓ Продано</button>`:''}
-            <button class="btn btn-ghost btn-xs" onclick="event.stopPropagation();openEditDisc('${d.id}')">✏️</button>
+    ?my.map(d=>{
+      const discReqs=allReqs.filter(r=>String(r.disc_id)===String(d.id));
+      const historyId='hist-'+d.id;
+      return`<div style="border:1px solid var(--b1);border-radius:var(--r);overflow:hidden;background:var(--s2);margin-bottom:0.3rem">
+        <div class="dash-item" style="border:none;margin:0">
+          ${d.photoUrl?`<img src="${d.photoUrl}" style="width:34px;height:34px;object-fit:cover;border-radius:6px;flex-shrink:0">`:'<div style="width:34px;height:34px;background:var(--s3);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0">🥏</div>'}
+          <div style="flex:1;min-width:0"><div class="di-title">${d.brand} ${d.model}</div><div class="di-sub"><span class="badge b-${st(d.status).c}">${st(d.status).l}</span>${d.tester?' · '+d.tester:''}</div></div>
+          <div style="text-align:right;display:flex;flex-direction:column;align-items:flex-end;gap:3px">
+            <div class="di-price">${d.buyout||0}₴</div>
+            <div style="display:flex;gap:3px">
+              ${d.status==='reserved'&&d.tester?`<button class="btn btn-lime btn-xs" onclick="event.stopPropagation();confirmSale('${d.id}')">✓ Продано</button>`:''}
+              <button class="btn btn-ghost btn-xs" onclick="event.stopPropagation();openEditDisc('${d.id}')">✏️</button>
+            </div>
           </div>
         </div>
-      </div>`).join('')
+        <div style="padding:0 0.65rem 0.5rem">
+          <button class="btn btn-ghost btn-xs" style="width:100%;font-size:0.7rem;color:var(--m1)" onclick="const el=document.getElementById('${historyId}');el.style.display=el.style.display==='none'?'block':'none';this.querySelector('.hist-arrow').textContent=el.style.display==='none'?'▸':'▾'">
+            <span class="hist-arrow">▸</span> Історія запитів${discReqs.length?' ('+discReqs.length+')':''}
+          </button>
+          <div id="${historyId}" style="display:none;margin-top:0.4rem">
+            ${discReqs.length?discReqs.map(r=>{
+              const isBuy=r.request_type==='buy'||(r.note&&r.note.toLowerCase().includes('купів'));
+              const isExch=r.request_type==='exchange';
+              const typeLabel=isBuy?'Купівля':isExch?'Обмін':'Тест';
+              const typeBadge=isBuy?'b-av':isExch?'b-tr':'b-te';
+              return`<div style="padding:0.4rem 0.5rem;border-top:1px solid var(--b1);font-size:0.78rem;display:flex;align-items:center;gap:0.4rem">
+                <div style="flex:1;min-width:0">
+                  <div>${r.tester} <span class="badge ${typeBadge}" style="font-size:0.58rem">${typeLabel}</span> <span class="badge b-te" style="font-size:0.58rem">${r.status||'pending'}</span></div>
+                  <div style="font-size:0.68rem;color:var(--m1)">${fmtDate(r.created_at)}${r.tester_tg?' · @'+r.tester_tg.replace('@',''):''}${r.note?' · '+r.note.substring(0,40)+(r.note.length>40?'…':''):''}</div>
+                </div>
+                ${isBuy&&r.status==='pending'?`<button class="btn btn-lime btn-xs" onclick="event.stopPropagation();confirmSale('${d.id}')" style="flex-shrink:0">✓</button>`:''}
+              </div>`;
+            }).join(''):'<div style="padding:0.4rem 0.5rem;font-size:0.75rem;color:var(--m1)">Немає запитів</div>'}
+          </div>
+        </div>
+      </div>`;
+    }).join('')
     :`<div class="empty" style="padding:1.25rem"><div class="empty-icon" style="font-size:1.25rem">📦</div>Немає дисків</div>`;
 
-  try{
-    const {data}=await sb.from('requests').select('*,discs(brand,model)').in('disc_id',my.map(d=>d.id)).order('created_at',{ascending:false});
-    const reqs=data||[];
-    const reqTab=document.getElementById('cab-tab-requests');
-    if(reqTab)reqTab.textContent='Запити'+(reqs.length?' ('+reqs.length+')':'');
-    document.getElementById('sellerRequests').innerHTML=reqs.length
-      ?reqs.map(r=>{
-          const isBuy=r.request_type==='buy'||(r.note&&r.note.toLowerCase().includes('купів'));
-          const isExch=r.request_type==='exchange'||(r.note&&r.note.toLowerCase().includes('обмін'));
-          const typeLabel=isBuy?'Купівля':isExch?'Обмін':'Тест';
-          const typeBadge=isBuy?'b-av':isExch?'b-tr':'b-te';
-          const disc=my.find(d=>String(d.id)===String(r.disc_id));
-          return`<div class="dash-item" style="flex-direction:column;align-items:stretch;gap:0.35rem">
-            <div style="display:flex;align-items:center;gap:0.5rem">
-              <div style="flex:1;min-width:0">
-                <div class="di-title">${r.tester} → ${disc?disc.brand+' '+disc.model:'?'} <span class="badge ${typeBadge}">${typeLabel}</span></div>
-                <div class="di-sub">${fmtDate(r.created_at)}${r.tester_tg?' · <a href="https://t.me/'+r.tester_tg.replace('@','')+'" target="_blank" style="color:var(--cyan)">@'+r.tester_tg.replace('@','')+'</a>':''}</div>
-              </div>
-              ${disc&&isBuy&&r.status==='pending'?`<button class="btn btn-lime btn-xs" onclick="confirmSale('${disc.id}')">✓ Продано</button>`:''}
+  // Render requests tab (unchanged logic)
+  const reqTab=document.getElementById('cab-tab-requests');
+  if(reqTab)reqTab.textContent='Запити'+(allReqs.length?' ('+allReqs.length+')':'');
+  document.getElementById('sellerRequests').innerHTML=allReqs.length
+    ?allReqs.map(r=>{
+        const isBuy=r.request_type==='buy'||(r.note&&r.note.toLowerCase().includes('купів'));
+        const isExch=r.request_type==='exchange';
+        const typeLabel=isBuy?'Купівля':isExch?'Обмін':'Тест';
+        const typeBadge=isBuy?'b-av':isExch?'b-tr':'b-te';
+        const disc=my.find(d=>String(d.id)===String(r.disc_id));
+        return`<div class="dash-item" style="flex-direction:column;align-items:stretch;gap:0.35rem">
+          <div style="display:flex;align-items:center;gap:0.5rem">
+            <div style="flex:1;min-width:0">
+              <div class="di-title">${r.tester} → ${disc?disc.brand+' '+disc.model:'?'} <span class="badge ${typeBadge}">${typeLabel}</span></div>
+              <div class="di-sub">${fmtDate(r.created_at)}${r.tester_tg?' · <a href="https://t.me/'+r.tester_tg.replace('@','')+'" target="_blank" style="color:var(--cyan)">@'+r.tester_tg.replace('@','')+'</a>':''}</div>
             </div>
-          </div>`;
-        }).join('')
-      :`<div style="color:var(--m1);font-size:0.84rem;padding:0.5rem 0">Немає запитів</div>`;
-  }catch(e){}
+            ${disc&&isBuy&&r.status==='pending'?`<button class="btn btn-lime btn-xs" onclick="confirmSale('${disc.id}')">✓ Продано</button>`:''}
+          </div>
+        </div>`;
+      }).join('')
+    :`<div style="color:var(--m1);font-size:0.84rem;padding:0.5rem 0">Немає запитів</div>`;
 }
 
 async function renderTester(){
