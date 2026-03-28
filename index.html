@@ -272,7 +272,6 @@ input[type=range]::-moz-range-track{height:6px;background:var(--s3);border-radiu
         <button class="ft active" id="cab-tab-discs" onclick="setCabTab('discs')" style="flex-shrink:0">Диски</button>
         <button class="ft" id="cab-tab-requests" onclick="setCabTab('requests')" style="flex-shrink:0">Запити</button>
         <button class="ft" id="cab-tab-testing" onclick="setCabTab('testing')" style="flex-shrink:0">Тестую</button>
-        <button class="ft" id="cab-tab-history" onclick="setCabTab('history')" style="flex-shrink:0">Історія</button>
       </div>
       <div id="cab-discs" class="cab-tab-content active">
         <div class="card"><div class="sec-hdr"><div class="sec-ttl">МОЇ ДИСКИ</div><button class="btn btn-lime btn-sm" onclick="openModal('addDisc')">+ Додати</button></div><div class="dash-list" id="sellerDiscList"></div></div>
@@ -282,9 +281,6 @@ input[type=range]::-moz-range-track{height:6px;background:var(--s3);border-radiu
       </div>
       <div id="cab-testing" class="cab-tab-content">
         <div class="card"><div class="sec-hdr"><div class="sec-ttl">Я ТЕСТУЮ</div></div><div id="testerActiveList"></div></div>
-      </div>
-      <div id="cab-history" class="cab-tab-content">
-        <div class="card"><div class="sec-hdr"><div class="sec-ttl">ІСТОРІЯ</div></div><div id="testerHistoryList"></div></div>
       </div>
     </div>
   </div>
@@ -834,8 +830,7 @@ async function submitTestReq(){
   try{
     const req={id:genId(),disc_id:reqTestId,tester:CU.name,tester_tg:CU.tg||'',note:document.getElementById('rt-note').value,request_type:reqType,status:'pending'};
     const {error}=await sb.from('requests').insert(req);
-    const {error:e2}=await sb.from('discs').update({status:'reserved',tester:CU.name,tester_tg:CU.tg||''}).eq('id',reqTestId);
-    if(!error&&!e2){
+    if(!error){
       closeModal('reqTest');await loadDiscs();if(CU)renderCabinet();
       toast(isTradeReq?'🔄 Пропозицію обміну відправлено!':'📝 Запит відправлено!');
       notifyAppsScript(notifyType,d,CU);
@@ -902,6 +897,22 @@ async function notifyAppsScript(type,disc,buyer){
     s.src=url;document.head.appendChild(s);
     setTimeout(()=>{delete window.cb_notify;s.remove();},8000);
   }catch(e){console.error('notifyAppsScript err:',e);}
+}
+
+// ── ACCEPT REQUEST (test/exchange) ──
+async function acceptRequest(reqId, discId, testerName, testerTg, reqType){
+  const d=allDiscs.find(x=>String(x.id)===String(discId));if(!d)return;
+  const label=reqType==='exchange'?'обмін':'тест';
+  if(!confirm(`Прийняти ${label} від ${testerName}?`))return;
+  try{
+    const newStatus=reqType==='exchange'?'reserved':'testing';
+    const {error}=await sb.from('discs').update({status:newStatus,tester:testerName,tester_tg:testerTg||''}).eq('id',discId);
+    const {error:e2}=await sb.from('requests').update({status:'accepted'}).eq('id',reqId);
+    if(!error&&!e2){
+      await loadDiscs();renderCabinet();
+      toast(`✅ ${label.charAt(0).toUpperCase()+label.slice(1)} прийнято!`);
+    }else toast('⚠️ Помилка',true);
+  }catch(e){toast('⚠️ Помилка',true);}
 }
 
 // ── CONFIRM SALE ──
@@ -998,6 +1009,7 @@ async function renderSeller(){
                   <div style="font-size:0.68rem;color:var(--m1)">${fmtDate(r.created_at)}${r.tester_tg?' · @'+r.tester_tg.replace('@',''):''}${r.note?' · '+r.note.substring(0,40)+(r.note.length>40?'…':''):''}</div>
                 </div>
                 ${isBuy&&r.status==='pending'?`<button class="btn btn-lime btn-xs" onclick="event.stopPropagation();confirmSale('${d.id}')" style="flex-shrink:0">✓</button>`:''}
+                ${!isBuy&&r.status==='pending'?`<button class="btn btn-cyan btn-xs" onclick="event.stopPropagation();acceptRequest('${r.id}','${d.id}','${(r.tester||'').replace(/'/g,"\\'")}','${(r.tester_tg||'').replace(/'/g,"\\'")}','${r.request_type}')" style="flex-shrink:0">Прийняти</button>`:''}
               </div>`;
             }).join(''):'<div style="padding:0.4rem 0.5rem;font-size:0.75rem;color:var(--m1)">Немає запитів</div>'}
           </div>
@@ -1023,6 +1035,7 @@ async function renderSeller(){
               <div class="di-sub">${fmtDate(r.created_at)}${r.tester_tg?' · <a href="https://t.me/'+r.tester_tg.replace('@','')+'" target="_blank" style="color:var(--cyan)">@'+r.tester_tg.replace('@','')+'</a>':''}</div>
             </div>
             ${disc&&isBuy&&r.status==='pending'?`<button class="btn btn-lime btn-xs" onclick="confirmSale('${disc.id}')">✓ Продано</button>`:''}
+            ${disc&&!isBuy&&r.status==='pending'?`<button class="btn btn-cyan btn-xs" onclick="acceptRequest('${r.id}','${disc.id}','${(r.tester||'').replace(/'/g,"\\'")}','${(r.tester_tg||'').replace(/'/g,"\\'")}','${r.request_type}')">Прийняти</button>`:''}
           </div>
         </div>`;
       }).join('')
@@ -1046,29 +1059,6 @@ async function renderTester(){
         </div>`).join('')
       :`<div class="empty" style="padding:1.5rem"><div class="empty-icon" style="font-size:1.25rem">🎯</div>Немає активних тестів</div>`;
   }
-  try{
-    const {data}=await sb.from('requests').select('*').eq('tester',name).order('created_at',{ascending:false});
-    const myR=data||[];
-    const hl=document.getElementById('testerHistoryList');
-    if(hl){
-      hl.innerHTML=myR.length
-        ?myR.map(r=>{
-            const d=allDiscs.find(x=>String(x.id)===String(r.disc_id));
-            const isBuy=r.request_type==='buy'||(r.note&&r.note.toLowerCase().includes('купів'));
-            const isExch=r.request_type==='exchange';
-            const type=isBuy?'Купівля':isExch?'Обмін':'Тест';
-            const bc=isBuy?'b-av':isExch?'b-tr':'b-te';
-            return`<div class="dash-item" style="margin-bottom:0.4rem">
-              <div style="flex:1;min-width:0">
-                <div class="di-title">${d?d.brand+' '+d.model:'Диск видалено'} <span class="badge ${bc}">${type}</span></div>
-                <div class="di-sub">${fmtDate(r.created_at)}</div>
-              </div>
-              <span class="badge b-te">${r.status||'pending'}</span>
-            </div>`;
-          }).join('')
-        :`<div style="color:var(--m1);font-size:0.84rem;padding:0.5rem 0">Немає запитів</div>`;
-    }
-  }catch(e){console.error('history err:',e);}
 }
 
 // ── ADMIN ──
