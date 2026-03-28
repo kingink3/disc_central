@@ -22,9 +22,7 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
 
 header{position:sticky;top:0;z-index:100;background:rgba(8,10,16,0.95);backdrop-filter:blur(14px);border-bottom:1px solid var(--b1);height:54px;display:flex;align-items:center;padding:0 1rem;gap:0.75rem}
 .logo{display:flex;align-items:center;gap:8px;cursor:pointer;flex-shrink:0}
-.logo-disc{width:28px;height:28px;border-radius:50%;background:conic-gradient(var(--lime) 0deg,var(--cyan) 120deg,var(--orange) 240deg,var(--lime) 360deg);animation:spin 7s linear infinite;position:relative}
-.logo-disc::after{content:'';position:absolute;inset:7px;background:var(--bg);border-radius:50%}
-@keyframes spin{to{transform:rotate(360deg)}}
+.logo-basket{width:32px;height:34px;flex-shrink:0}
 .logo-text{font-family:'Bebas Neue',sans-serif;font-size:1.3rem;letter-spacing:2px}
 .logo-text b{color:var(--lime)}
 nav{display:flex;gap:0.15rem;align-items:center;flex:1;justify-content:center}
@@ -193,7 +191,22 @@ input[type=range]::-moz-range-track{height:6px;background:var(--s3);border-radiu
 
 <header>
   <div class="logo" onclick="goPage('catalog')">
-    <div class="logo-disc"></div>
+    <svg class="logo-basket" viewBox="0 0 80 82" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <line x1="40" y1="0" x2="40" y2="78" stroke="#d4f040" stroke-width="2.5" opacity="0.4"/>
+      <rect x="36" y="74" width="8" height="6" fill="#d4f040" opacity="0.25" rx="1"/>
+      <ellipse cx="40" cy="6" rx="28" ry="5.5" stroke="#d4f040" stroke-width="2.5"/>
+      <ellipse cx="40" cy="6" rx="18" ry="3.5" stroke="#d4f040" stroke-width="1" opacity="0.3"/>
+      <line x1="14" y1="11" x2="10" y2="52" stroke="#d4f040" stroke-width="1.5" opacity="0.5"/>
+      <line x1="22" y1="11" x2="18" y2="52" stroke="#d4f040" stroke-width="1.5" opacity="0.5"/>
+      <line x1="32" y1="11" x2="28" y2="52" stroke="#d4f040" stroke-width="1.5" opacity="0.5"/>
+      <line x1="40" y1="11" x2="40" y2="52" stroke="#d4f040" stroke-width="1.5" opacity="0.5"/>
+      <line x1="48" y1="11" x2="52" y2="52" stroke="#d4f040" stroke-width="1.5" opacity="0.5"/>
+      <line x1="58" y1="11" x2="62" y2="52" stroke="#d4f040" stroke-width="1.5" opacity="0.5"/>
+      <line x1="66" y1="11" x2="70" y2="52" stroke="#d4f040" stroke-width="1.5" opacity="0.5"/>
+      <ellipse cx="40" cy="54" rx="34" ry="7" stroke="#d4f040" stroke-width="2.5"/>
+      <path d="M8 56 L16 72 L64 72 L72 56" stroke="#d4f040" stroke-width="1.8" opacity="0.4"/>
+      <path d="M12 58 L18 70 L62 70 L68 58" stroke="#d4f040" stroke-width="1" opacity="0.2"/>
+    </svg>
     <span class="logo-text">DISC <b>CENTRAL</b></span>
   </div>
   <nav>
