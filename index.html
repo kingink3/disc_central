@@ -394,10 +394,26 @@ td{padding:8px 10px;font-size:0.8rem}
     <button class="mc" onclick="closeModal('editDisc')">✕</button>
     <div class="mt">РЕДАГУВАТИ <span>ДИСК</span></div>
     <input type="hidden" id="edit-id">
-    <div class="fr"><div class="fg"><label class="fl">Buyout (UAH)</label><input id="edit-buyout" type="number"></div><div class="fg"><label class="fl">Стан: <span id="editCondLabel">7</span>/10</label><div style="display:flex;align-items:center;gap:0.5rem"><input type="range" id="edit-cond" min="0" max="10" value="7" style="flex:1;accent-color:var(--lime)" oninput="document.getElementById('editCondLabel').textContent=this.value"><span style="font-family:'Space Mono';font-size:0.9rem;font-weight:700;color:var(--lime)" id="editCondVal">7</span></div></div></div>
+    <div class="fr"><div class="fg"><label class="fl">Buyout (UAH)</label><input id="edit-buyout" type="number"></div><div class="fg"><label class="fl">Стан: <span id="editCondLabel">7</span>/10</label><div style="display:flex;align-items:center;gap:0.5rem"><input type="range" id="edit-cond" min="1" max="10" value="7" step="1" style="flex:1;accent-color:var(--lime)" oninput="document.getElementById('editCondLabel').textContent=this.value"><span style="font-family:'Space Mono';font-size:0.9rem;font-weight:700;color:var(--lime)" id="editCondVal">7</span></div></div></div>
+    <div class="fg"><label class="fl">Speed / Glide / Turn / Fade</label>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:0.4rem">
+        <input id="edit-speed" type="number" placeholder="Speed" step="0.5">
+        <input id="edit-glide" type="number" placeholder="Glide" step="0.5">
+        <input id="edit-turn" type="number" placeholder="Turn" step="0.5">
+        <input id="edit-fade" type="number" placeholder="Fade" step="0.5">
+      </div>
+    </div>
     <label class="toggle-row fg"><input type="checkbox" id="edit-trade"><span style="font-size:0.84rem">🔄 Готовий до обміну</span></label>
     <div class="fg" id="editTradeWrap" style="display:none"><label class="fl">Що хочу отримати</label><textarea id="edit-trade-desc"></textarea></div>
     <div class="fg"><label class="fl">Нотатки</label><textarea id="edit-notes"></textarea></div>
+    <div class="fg"><label class="fl">Speed / Glide / Turn / Fade</label>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:0.4rem">
+        <input id="edit-speed" type="number" placeholder="Speed">
+        <input id="edit-glide" type="number" placeholder="Glide">
+        <input id="edit-turn" type="number" placeholder="Turn" step="0.5">
+        <input id="edit-fade" type="number" placeholder="Fade">
+      </div>
+    </div>
     <div class="fg"><label class="fl">Статус</label><select id="edit-status"><option value="available">Доступний</option><option value="reserved">Зарезервований</option><option value="testing">На тестуванні</option><option value="sold">Продано</option></select></div>
     <div style="display:flex;gap:0.5rem"><button class="btn btn-lime btn-full" onclick="submitEditDisc()">Зберегти</button><button class="btn btn-danger btn-sm" onclick="confirmDeleteDisc()">🗑</button></div>
   </div>
@@ -630,7 +646,8 @@ function showDetail(id){
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.35rem 1.25rem;font-size:0.82rem;margin-bottom:0.875rem">
       <div><span style="color:var(--m1)">Пластик:</span> ${d.plastic||'—'}</div>
       <div><span style="color:var(--m1)">Вага:</span> ${d.weight||'—'}г</div>
-      <div><span style="color:var(--m1)">Колір:</span> ${d.color||'—'}${d.inked?' · <span style="color:var(--purple)">🖊️ Inked</span>':''}</div>
+      <div><span style="color:var(--m1)">Колір:</span> \${d.color||'—'}</div>
+      \${d.inked?'<div style="grid-column:1/-1"><span style="color:var(--purple)">🖊️ Inked</span></div>':''}
       <div><span style="color:var(--m1)">Власник:</span> ${d.owner||'—'}${d.ownerTg?` · <a href="https://t.me/${d.ownerTg.replace('@','')}" target="_blank" style="color:var(--cyan)">@${d.ownerTg.replace('@','')}</a>`:''}</div>
       ${d.tester?`<div style="grid-column:1/-1"><span style="color:var(--m1)">Тестер:</span> ${d.tester}</div>`:''}
     </div>
@@ -750,6 +767,10 @@ function openEditDisc(id){
   document.getElementById('editTradeWrap').style.display=d.tradeWant?'block':'none';
   document.getElementById('edit-notes').value=d.notes||'';
   document.getElementById('edit-status').value=d.status||'available';
+  document.getElementById('edit-speed').value=d.speed||0;
+  document.getElementById('edit-glide').value=d.glide||0;
+  document.getElementById('edit-turn').value=d.turn||0;
+  document.getElementById('edit-fade').value=d.fade||0;
   openModal('editDisc');
 }
 async function submitEditDisc(){
@@ -761,6 +782,10 @@ async function submitEditDisc(){
     status:document.getElementById('edit-status').value,
     trade_want:isTrade?document.getElementById('edit-trade-desc').value:'',
     notes:document.getElementById('edit-notes').value,
+    speed:parseFloat(document.getElementById('edit-speed').value)||0,
+    glide:parseFloat(document.getElementById('edit-glide').value)||0,
+    turn:parseFloat(document.getElementById('edit-turn').value)||0,
+    fade:parseFloat(document.getElementById('edit-fade').value)||0,
   };
   try{
     const {error}=await sb.from('discs').update(updates).eq('id',id);
