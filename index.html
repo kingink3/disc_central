@@ -406,14 +406,7 @@ td{padding:8px 10px;font-size:0.8rem}
     <label class="toggle-row fg"><input type="checkbox" id="edit-trade"><span style="font-size:0.84rem">🔄 Готовий до обміну</span></label>
     <div class="fg" id="editTradeWrap" style="display:none"><label class="fl">Що хочу отримати</label><textarea id="edit-trade-desc"></textarea></div>
     <div class="fg"><label class="fl">Нотатки</label><textarea id="edit-notes"></textarea></div>
-    <div class="fg"><label class="fl">Speed / Glide / Turn / Fade</label>
-      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:0.4rem">
-        <input id="edit-speed" type="number" placeholder="Speed">
-        <input id="edit-glide" type="number" placeholder="Glide">
-        <input id="edit-turn" type="number" placeholder="Turn" step="0.5">
-        <input id="edit-fade" type="number" placeholder="Fade">
-      </div>
-    </div>
+    
     <div class="fg"><label class="fl">Статус</label><select id="edit-status"><option value="available">Доступний</option><option value="reserved">Зарезервований</option><option value="testing">На тестуванні</option><option value="sold">Продано</option></select></div>
     <div style="display:flex;gap:0.5rem"><button class="btn btn-lime btn-full" onclick="submitEditDisc()">Зберегти</button><button class="btn btn-danger btn-sm" onclick="confirmDeleteDisc()">🗑</button></div>
   </div>
@@ -555,7 +548,7 @@ function condBar(val){const v=parseInt(val)||0;return`<div class="cond-bar">${Ar
 function cardHTML(d){
   const s=st(d.status);
   const urls=[d.photoUrl,d.photoUrl2,d.photoUrl3].filter(Boolean);
-  const canT=d.status!=='sold'&&d.status!=='reserved';
+  const canT=d.status==='available'||d.status==='trade';
   const canB=d.status!=='sold';
   const hasTrade=String(d.tradeWant||'').trim().length>0&&String(d.tradeWant)!=='false';
   return`<div class="disc-card" onclick="showDetail('${d.id}')">
@@ -626,7 +619,7 @@ function showDetail(id){
   const d=allDiscs.find(x=>x.id===id||String(x.id)===String(id));if(!d)return;
   const s=st(d.status);
   const urls=[d.photoUrl,d.photoUrl2,d.photoUrl3].filter(Boolean);
-  const canT=d.status!=='sold'&&d.status!=='reserved';
+  const canT=d.status==='available'||d.status==='trade';
   const canB=d.status!=='sold';
   const hasTrade=String(d.tradeWant||'').trim()&&String(d.tradeWant)!=='false';
   const photos=urls.length?`<div class="detail-photos" id="dp-${d.id}">${urls.map((u,i)=>`<img src="${u}" class="${i===0?'active':''}" alt="">`).join('')}${urls.length>1?`<button class="photo-nav prev" onclick="photoNav('dp-${d.id}',-1)">‹</button><button class="photo-nav next" onclick="photoNav('dp-${d.id}',1)">›</button>`:''}</div>`:`<div style="height:120px;background:var(--s2);border-radius:var(--r2);display:flex;align-items:center;justify-content:center;font-size:3rem;margin-bottom:1rem">🥏</div>`;
@@ -646,8 +639,8 @@ function showDetail(id){
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.35rem 1.25rem;font-size:0.82rem;margin-bottom:0.875rem">
       <div><span style="color:var(--m1)">Пластик:</span> ${d.plastic||'—'}</div>
       <div><span style="color:var(--m1)">Вага:</span> ${d.weight||'—'}г</div>
-      <div><span style="color:var(--m1)">Колір:</span> \${d.color||'—'}</div>
-      \${d.inked?'<div style="grid-column:1/-1"><span style="color:var(--purple)">🖊️ Inked</span></div>':''}
+      <div><span style="color:var(--m1)">Колір:</span> ${d.color||'—'}</div>
+      ${d.inked?'<div style="grid-column:1/-1"><span style="color:var(--purple)">🖊️ Inked</span></div>':''}
       <div><span style="color:var(--m1)">Власник:</span> ${d.owner||'—'}${d.ownerTg?` · <a href="https://t.me/${d.ownerTg.replace('@','')}" target="_blank" style="color:var(--cyan)">@${d.ownerTg.replace('@','')}</a>`:''}</div>
       ${d.tester?`<div style="grid-column:1/-1"><span style="color:var(--m1)">Тестер:</span> ${d.tester}</div>`:''}
     </div>
