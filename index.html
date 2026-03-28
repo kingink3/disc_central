@@ -368,12 +368,10 @@ td{padding:8px 10px;font-size:0.8rem}
     <div class="fr"><div class="fg"><label class="fl">Колір</label><input id="ad-color" placeholder="Жовтий..."></div><div class="fg"><label class="fl">Buyout (UAH)</label><input id="ad-buyout" type="number" placeholder="850"></div></div>
     <div class="fg"><label class="fl">Стан: <span id="condValLabel">7</span>/10</label>
       <div style="display:flex;align-items:center;gap:0.5rem">
-        <input type="range" id="ad-cond" min="1" max="10" value="7" step="1" style="flex:1;accent-color:var(--lime)" oninput="document.getElementById('condValLabel').textContent=this.value;updateCondBar()">
+        <input type="range" id="ad-cond" min="1" max="10" value="7" step="1" style="flex:1;accent-color:var(--lime)" oninput="document.getElementById('condValLabel').textContent=this.value;document.getElementById('condVal').textContent=this.value;updateCondBar()">
         <span style="font-family:'Space Mono';font-size:0.9rem;font-weight:700;color:var(--lime);min-width:20px;text-align:center" id="condVal">7</span>
       </div>
-      <div style="display:flex;gap:2px;margin-top:0.4rem" id="condBarPreview">
-        ${Array(10).fill(0).map((_,i)=>`<div style="flex:1;height:4px;border-radius:2px;background:${i<7?'var(--lime)':'var(--s3)'}"></div>`).join('')}
-      </div>
+      <div style="display:flex;gap:2px;margin-top:0.4rem" id="condBarPreview"></div>
       <div style="display:flex;justify-content:space-between;font-size:0.6rem;color:var(--m1);margin-top:2px"><span>1</span><span>5</span><span>10</span></div>
     </div>
     <div class="fg"><label class="fl">Speed / Glide / Turn / Fade</label>
@@ -381,7 +379,10 @@ td{padding:8px 10px;font-size:0.8rem}
         <input id="ad-speed" type="number" placeholder="Speed"><input id="ad-glide" type="number" placeholder="Glide"><input id="ad-turn" type="number" placeholder="Turn" step="0.5"><input id="ad-fade" type="number" placeholder="Fade">
       </div>
     </div>
-    <label class="toggle-row fg"><input type="checkbox" id="ad-trade"><span style="font-size:0.84rem">🔄 Готовий до обміну</span></label>
+    <div style="display:flex;gap:0.5rem">
+      <label class="toggle-row fg" style="flex:1"><input type="checkbox" id="ad-trade"><span style="font-size:0.84rem">🔄 Обмін</span></label>
+      <label class="toggle-row fg" style="flex:1"><input type="checkbox" id="ad-inked"><span style="font-size:0.84rem">🖊️ Inked</span></label>
+    </div>
     <div class="fg" id="tradeDescWrap" style="display:none"><label class="fl">Що хочу отримати</label><textarea id="ad-trade-desc" placeholder="Опиши що шукаєш..."></textarea></div>
     <div class="fg"><label class="fl">Нотатки</label><textarea id="ad-notes" placeholder="Додаткова інформація..."></textarea></div>
     <button class="btn btn-lime btn-full" id="addDiscBtn" onclick="submitDisc()">Додати до каталогу</button>
@@ -493,7 +494,7 @@ function dbToDisc(r){
     condition:r.condition||7, buyout:r.buyout||0, status:r.status||'available',
     tester:r.tester||'', testerTg:r.tester_tg||'',
     photoUrl:r.photo_url||'', photoUrl2:r.photo_url2||'', photoUrl3:r.photo_url3||'',
-    notes:r.notes||'', tradeWant:r.trade_want||'', createdAt:r.created_at,
+    notes:r.notes||'', tradeWant:r.trade_want||'', inked:r.inked||false, createdAt:r.created_at,
   };
 }
 function discToDb(d){
@@ -629,7 +630,7 @@ function showDetail(id){
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.35rem 1.25rem;font-size:0.82rem;margin-bottom:0.875rem">
       <div><span style="color:var(--m1)">Пластик:</span> ${d.plastic||'—'}</div>
       <div><span style="color:var(--m1)">Вага:</span> ${d.weight||'—'}г</div>
-      <div><span style="color:var(--m1)">Колір:</span> ${d.color||'—'}</div>
+      <div><span style="color:var(--m1)">Колір:</span> ${d.color||'—'}${d.inked?' · <span style="color:var(--purple)">🖊️ Inked</span>':''}</div>
       <div><span style="color:var(--m1)">Власник:</span> ${d.owner||'—'}${d.ownerTg?` · <a href="https://t.me/${d.ownerTg.replace('@','')}" target="_blank" style="color:var(--cyan)">@${d.ownerTg.replace('@','')}</a>`:''}</div>
       ${d.tester?`<div style="grid-column:1/-1"><span style="color:var(--m1)">Тестер:</span> ${d.tester}</div>`:''}
     </div>
@@ -667,6 +668,7 @@ async function submitDisc(){
     fade:parseFloat(document.getElementById('ad-fade').value)||0,
     buyout:parseInt(document.getElementById('ad-buyout').value)||0,
     notes:document.getElementById('ad-notes').value,
+    inked:document.getElementById('ad-inked').checked,
     trade_want:isTrade?document.getElementById('ad-trade-desc').value:'',
     status:'available',
     photo_url:photos[0],photo_url2:photos[1],photo_url3:photos[2],
@@ -685,6 +687,7 @@ function resetAddForm(){
   document.getElementById('uploadProg').style.display='none';
   document.getElementById('uploadStatus').textContent='';
   document.getElementById('ad-trade').checked=false;
+  document.getElementById('ad-inked').checked=false;
   document.getElementById('tradeDescWrap').style.display='none';
   document.getElementById('condValLabel').textContent='7';
   document.getElementById('ad-cond').value='7';
@@ -699,10 +702,14 @@ document.getElementById('ad-cond').addEventListener('input',function(){
   updateCondBar();
 });
 function updateCondBar(){
-  const v=parseInt(document.getElementById('ad-cond').value)||7;
-  const bar=document.getElementById('condBarPreview');
+  var v=parseInt(document.getElementById('ad-cond').value)||7;
+  var bar=document.getElementById('condBarPreview');
   if(!bar)return;
-  bar.innerHTML=Array(10).fill(0).map((_,i)=>`<div style="flex:1;height:4px;border-radius:2px;background:${i<v?'var(--lime)':'var(--s3)'}"></div>`).join('');
+  var html='';
+  for(var i=0;i<10;i++){
+    html+='<div style="flex:1;height:4px;border-radius:2px;background:'+(i<v?'var(--lime)':'var(--s3)')+'"></div>';
+  }
+  bar.innerHTML=html;
 }
 document.getElementById('edit-cond').addEventListener('input',function(){document.getElementById('editCondLabel').textContent=this.value;document.getElementById('editCondVal').textContent=this.value;});
 document.getElementById('edit-trade').addEventListener('change',function(){document.getElementById('editTradeWrap').style.display=this.checked?'block':'none';});
@@ -1151,6 +1158,7 @@ function doLogin(){
 async function init(){
   setTimeout(()=>{document.getElementById('loadingOverlay').style.display='none';},15000);
   restoreUser();loadBanned();
+  setTimeout(updateCondBar,100);
   const savedToken=sessionStorage.getItem('adminToken');
   if(savedToken)ADMIN_TOKEN=savedToken;
   const params=new URLSearchParams(location.search);
