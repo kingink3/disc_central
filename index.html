@@ -425,7 +425,7 @@ input[type=range]::-moz-range-track{height:6px;background:var(--s3);border-radiu
     <div class="fg"><label class="fl">Нотатки</label><textarea id="edit-notes"></textarea></div>
     
     <div class="fg"><label class="fl">Статус</label><select id="edit-status"><option value="available">Доступний</option><option value="reserved">Зарезервований</option><option value="testing">На тестуванні</option><option value="sold">Продано</option></select></div>
-    <div style="display:flex;gap:0.5rem"><button class="btn btn-lime btn-full" onclick="submitEditDisc()">Зберегти</button><button class="btn btn-danger btn-sm" onclick="confirmDeleteDisc()">🗑</button></div>
+    <div style="display:flex;gap:0.5rem"><button class="btn btn-lime btn-full" onclick="submitEditDisc()">Зберегти</button></div>
   </div>
 </div>
 
@@ -809,6 +809,7 @@ async function confirmDeleteDisc(){
   const d=allDiscs.find(x=>String(x.id)===String(id));
   if(!confirm(`Видалити "${d?.brand} ${d?.model}"?`))return;
   try{
+    await sb.from('requests').delete().eq('disc_id',id);
     const {error}=await sb.from('discs').delete().eq('id',id);
     if(!error){closeModal('editDisc');await loadDiscs();renderCabinet();toast('🗑 Видалено');}
     else toast('⚠️ '+error.message,true);
@@ -1158,6 +1159,7 @@ async function adminSetStatus(discId,status){
 }
 async function adminDelete(discId){
   if(!confirm('Видалити?'))return;
+  await sb.from('requests').delete().eq('disc_id',discId);
   const {error}=await sb.from('discs').delete().eq('id',discId);
   if(!error){await loadDiscs();loadAdminData();toast('🗑 Видалено');}
   else toast('⚠️ '+error.message,true);
