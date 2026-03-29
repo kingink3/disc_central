@@ -502,7 +502,7 @@ async function loadDiscs(){
   // Show cache first
   try{const c=localStorage.getItem('dc_discs');if(c){allDiscs=JSON.parse(c);applyFilters();updateStats();document.getElementById('loadingOverlay').style.display='none';}}catch(e){}
   try{
-    const {data,error}=await sb.from('discs').select('*').neq('status','sold').order('created_at',{ascending:false});
+    const {data,error}=await sb.from('discs').select('*').neq('status','sold').neq('id','__config__').order('created_at',{ascending:false});
     if(!error&&data){
       allDiscs=data.map(dbToDisc);
       localStorage.setItem('dc_discs',JSON.stringify(allDiscs));
@@ -1118,7 +1118,7 @@ function adminLogout(){ADMIN_TOKEN=null;document.getElementById('adminNoAuth').s
 
 async function loadAdminData(){
   try{
-    const {data:discs}=await sb.from('discs').select('*').order('created_at',{ascending:false});
+    const {data:discs}=await sb.from('discs').select('*').neq('id','__config__').order('created_at',{ascending:false});
     const {data:reqs}=await sb.from('requests').select('*').order('created_at',{ascending:false});
     const all=discs||[];
     document.getElementById('adm-total').textContent=all.length;
@@ -1147,7 +1147,7 @@ async function loadAdminData(){
       const isBuy=r.request_type==='buy'||(r.note&&r.note.includes('купів'));
       return`<tr><td>${r.tester||'-'}${r.tester_tg?' · @'+r.tester_tg:''}</td><td>${d?d.brand+' '+d.model:'?'}</td><td>${isBuy?'Купівля':'Тест'}</td><td>${fmtDate(r.created_at)}</td><td><span class="badge b-te">${r.status||'-'}</span></td></tr>`;
     }).join('');
-    renderBanned();
+    await loadBanned();
   }catch(e){toast('⚠️ Помилка завантаження',true);}
 }
 
@@ -1166,10 +1166,53 @@ async function adminDelete(discId){
 }
 
 // ── BAN ──
-function loadBanned(){try{bannedUsers=JSON.parse(localStorage.getItem('banned')||'[]');}catch(e){bannedUsers=[];}renderBanned();}
-function renderBanned(){const el=document.getElementById('bannedList');if(!el)return;el.innerHTML=bannedUsers.length?bannedUsers.map(u=>`<div class="dash-item">${u}<button class="btn btn-ghost btn-xs" style="margin-left:auto" onclick="unbanUser('${u}')">Розблок</button></div>`).join(''):'<div style="color:var(--m1);font-size:0.8rem">Немає</div>';}
-function banUser(){const v=document.getElementById('banInput').value.trim();if(!v)return;if(!bannedUsers.includes(v))bannedUsers.push(v);localStorage.setItem('banned',JSON.stringify(bannedUsers));document.getElementById('banInput').value='';renderBanned();toast(`🚫 ${v} заблоковано`);}
-function unbanUser(u){bannedUsers=bannedUsers.filter(x=>x!==u);localStorage.setItem('banned',JSON.stringify(bannedUsers));renderBanned();toast(`✅ ${u} розблоковано`);}
+async function loadBanned(){
+  try{
+    const {data}=await sb.from('users').select('telegram_id,tg_username,name').eq('banned',true);
+    bannedUsers=(data||[]).map(u=>({id:u.telegram_id,tg:u.tg_username||'',name:u.name||''}));
+  }catch(e){bannedUsers=[];}
+  renderBanned();
+}
+function renderBanned(){
+  const el=document.getElementById('bannedList');if(!el)return;
+  el.innerHTML=bannedUsers.length
+    ?bannedUsers.map(u=>{
+      const label=(u.name||'')+(u.tg?' · @'+u.tg:'')+(u.id?' · '+u.id:'');
+      return`<div class="dash-item">${label}<button class="btn btn-ghost btn-xs" style="margin-left:auto" onclick="unbanUser('${u.id}')">Розблок</button></div>`;
+    }).join('')
+    :'<div style="color:var(--m1);font-size:0.8rem">Немає</div>';
+}
+async function banUser(){
+  const v=document.getElementById('banInput').value.trim();if(!v)return;
+  try{
+    const {data}=await sb.from('users').select('telegram_id').or('telegram_id.eq.'+v+',tg_username.eq.'+v);
+    if(data&&data.length){
+      await sb.from('users').update({banned:true}).eq('telegram_id',data[0].telegram_id);
+      document.getElementById('banInput').value='';
+      await loadBanned();
+      toast('🚫 '+v+' заблоковано');
+    }else{toast('⚠️ Користувача не знайдено',true);}
+  }catch(e){toast('⚠️ Помилка',true);}
+}
+async function unbanUser(tgId){
+  try{
+    await sb.from('users').update({banned:false}).eq('telegram_id',tgId);
+    await loadBanned();
+    toast('✅ Розблоковано');
+  }catch(e){toast('⚠️ Помилка',true);}
+}
+async function checkBanned(){
+  if(!CU||!CU.tgId)return false;
+  try{
+    const {data}=await sb.from('users').select('banned').eq('telegram_id',CU.tgId).single();
+    if(data&&data.banned){
+      CU=null;localStorage.removeItem('dcUser');
+      document.body.innerHTML='<div style="display:flex;align-items:center;justify-content:center;min-height:100vh;color:#f87171;font-size:1.1rem;text-align:center;padding:2rem">🚫 Ваш акаунт заблоковано.<br>Зверніться до адміністратора.</div>';
+      return true;
+    }
+  }catch(e){}
+  return false;
+}
 
 // ── NAV ──
 function goPage(page,btn){
@@ -1186,7 +1229,7 @@ function toggleNav(){document.getElementById('hamburger').classList.toggle('open
 function closeMobileNav(){document.getElementById('hamburger').classList.remove('open');document.getElementById('mobileNav').classList.remove('open');}
 
 function openModal(n){
-  if(['reqTest','buy','return'].includes(n)&&!CU){toast('⚠️ Спочатку увійдіть',true);document.getElementById('ov-login').classList.add('open');return;}
+  if(['reqTest','buy','return','addDisc'].includes(n)&&!CU){toast('⚠️ Спочатку увійдіть',true);document.getElementById('ov-login').classList.add('open');return;}
   document.getElementById('ov-'+n)?.classList.add('open');
   if(n==='addDisc'&&CU){const f=document.getElementById('ownerFieldWrap');if(f)f.style.display='none';}
 }
@@ -1232,7 +1275,8 @@ function doLogin(){
 // ── INIT ──
 async function init(){
   setTimeout(()=>{document.getElementById('loadingOverlay').style.display='none';},15000);
-  restoreUser();loadBanned();
+  restoreUser();
+  if(await checkBanned())return;
   setTimeout(updateCondBar,100);
   const savedToken=sessionStorage.getItem('adminToken');
   if(savedToken)ADMIN_TOKEN=savedToken;
