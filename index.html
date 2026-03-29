@@ -491,6 +491,7 @@ const ST = {
   testing:{l:'На тестуванні',c:'te',sc:'s-te'},
   pending:{l:'Очікує повернення',c:'pe',sc:'s-pe'},
   sold:{l:'Продано',c:'so',sc:'s-so'},
+  deleted:{l:'Видалено',c:'so',sc:'s-so'},
   trade:{l:'Доступний',c:'av',sc:'s-av'},
 };
 function st(s){return ST[s]||ST.available;}
@@ -502,7 +503,7 @@ async function loadDiscs(){
   // Show cache first
   try{const c=localStorage.getItem('dc_discs');if(c){allDiscs=JSON.parse(c);applyFilters();updateStats();document.getElementById('loadingOverlay').style.display='none';}}catch(e){}
   try{
-    const {data,error}=await sb.from('discs').select('*').neq('status','sold').neq('id','__config__').order('created_at',{ascending:false});
+    const {data,error}=await sb.from('discs').select('*').neq('status','sold').neq('status','deleted').order('created_at',{ascending:false});
     if(!error&&data){
       allDiscs=data.map(dbToDisc);
       localStorage.setItem('dc_discs',JSON.stringify(allDiscs));
@@ -1158,10 +1159,9 @@ async function adminSetStatus(discId,status){
   else toast('⚠️ '+error.message,true);
 }
 async function adminDelete(discId){
-  if(!confirm('Видалити?'))return;
-  await sb.from('requests').delete().eq('disc_id',discId);
-  const {error}=await sb.from('discs').delete().eq('id',discId);
-  if(!error){await loadDiscs();loadAdminData();toast('🗑 Видалено');}
+  if(!confirm('Приховати диск?'))return;
+  const {error}=await sb.from('discs').update({status:'deleted'}).eq('id',discId);
+  if(!error){await loadDiscs();loadAdminData();toast('🗑 Диск приховано');}
   else toast('⚠️ '+error.message,true);
 }
 
