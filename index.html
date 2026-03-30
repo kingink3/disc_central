@@ -591,10 +591,10 @@ function cardHTML(d){
           <div class="disc-price">${d.buyout?d.buyout+' ₴':'—'}</div>
           <div class="disc-own" onclick="event.stopPropagation();filterByOwner('${d.owner}')">👤 ${(d.owner||'').split(' ')[0]}</div>
         </div>
-        <div onclick="event.stopPropagation()" style="display:flex;gap:3px;width:100%;justify-content:flex-end;flex-wrap:wrap">
-          ${hasTrade?`<button class="btn btn-purple btn-xs" onclick="event.stopPropagation();openTradeOffer('${d.id}')">Обмін</button>`:''}
-          ${canT?`<button class="btn btn-cyan btn-xs" onclick="openReqTest('${d.id}')">Тест</button>`:''}
-          ${canB?`<button class="btn btn-lime btn-xs" onclick="oBuy('${d.id}')">Купити</button>`:''}
+        <div onclick="event.stopPropagation()" style="display:flex;gap:3px;width:100%">
+          ${hasTrade?`<button class="btn btn-purple btn-xs" onclick="event.stopPropagation();openTradeOffer('${d.id}')" style="flex:1">Обмін</button>`:''}
+          ${canT?`<button class="btn btn-cyan btn-xs" onclick="openReqTest('${d.id}')" style="flex:1">Тест</button>`:''}
+          ${canB?`<button class="btn btn-lime btn-xs" onclick="oBuy('${d.id}')" style="flex:1">Купити</button>`:''}
         </div>
       </div>
     </div>
