@@ -374,6 +374,13 @@ input[type=range]::-moz-range-track{height:6px;background:var(--s3);border-radiu
         <div class="photo-slot" id="slot1" onclick="triggerUpload(1)"><span class="slot-icon">📸</span></div>
         <div class="photo-slot" id="slot2" onclick="triggerUpload(2)"><span class="slot-icon">📸</span></div>
       </div>
+      <div id="cropWrap" style="display:none;margin-top:0.5rem">
+        <label class="fl">Область прев'ю (перетягніть фото)</label>
+        <div id="cropBox" style="width:100%;height:90px;overflow:hidden;border-radius:var(--r);border:2px solid var(--lime);position:relative;cursor:grab;touch-action:none">
+          <img id="cropImg" style="width:100%;position:absolute;left:0;user-select:none;pointer-events:none" draggable="false">
+        </div>
+        <div style="font-size:0.6rem;color:var(--m1);margin-top:3px;text-align:center">↕ Перетягніть вгору/вниз</div>
+      </div>
       <input type="file" id="photoFile0" accept="image/*" style="display:none" onchange="handlePhoto(0,this)">
       <input type="file" id="photoFile1" accept="image/*" style="display:none" onchange="handlePhoto(1,this)">
       <input type="file" id="photoFile2" accept="image/*" style="display:none" onchange="handlePhoto(2,this)">
@@ -522,6 +529,7 @@ function dbToDisc(r){
     condition:r.condition||7, buyout:r.buyout||0, status:r.status||'available',
     tester:r.tester||'', testerTg:r.tester_tg||'',
     photoUrl:r.photo_url||'', photoUrl2:r.photo_url2||'', photoUrl3:r.photo_url3||'',
+    photoPos:r.photo_pos||'50% 50%',
     notes:r.notes||'', tradeWant:r.trade_want||'', inked:r.inked||false, createdAt:r.created_at,
   };
 }
@@ -549,11 +557,12 @@ function updateStats(){
 }
 
 // ── PHOTO CAROUSEL ──
-function photoCarousel(urls, prefix){
+function photoCarousel(urls, prefix, photoPos){
   const imgs=urls.filter(Boolean);
   if(!imgs.length)return`<div class="disc-photo-placeholder">🥏</div>`;
+  const pos=photoPos||'50% 50%';
   return`<div class="disc-photo-wrap" id="pw-${prefix}">
-    ${imgs.map((u,i)=>`<img src="${u}" class="${i===0?'active':''}" alt="" loading="lazy">`).join('')}
+    ${imgs.map((u,i)=>`<img src="${u}" class="${i===0?'active':''}" alt="" loading="lazy" style="${i===0?'object-position:'+pos:''}">`).join('')}
     ${imgs.length>1?`<button class="photo-nav prev" onclick="event.stopPropagation();photoNav('${prefix}',-1)">‹</button><button class="photo-nav next" onclick="event.stopPropagation();photoNav('${prefix}',1)">›</button><div class="photo-dots">${imgs.map((_,i)=>`<div class="photo-dot${i===0?' active':''}" onclick="event.stopPropagation();photoGo('${prefix}',${i})"></div>`).join('')}</div>`:''}
   </div>`;
 }
@@ -573,7 +582,7 @@ function cardHTML(d){
   return`<div class="disc-card" onclick="showDetail('${d.id}')">
     <div class="disc-strip ${s.c}"></div>
     <div style="position:relative">
-      ${photoCarousel(urls,'c'+d.id)}
+      ${photoCarousel(urls,'c'+d.id,d.photoPos)}
       <span class="${s.sc} status-overlay">${s.l}</span>
     </div>
     <div class="disc-body">
@@ -701,6 +710,7 @@ async function submitDisc(){
     trade_want:isTrade?(document.getElementById('ad-trade-desc').value.trim()||'Пропонуйте'):'',
     status:'available',
     photo_url:photos[0],photo_url2:photos[1],photo_url3:photos[2],
+    photo_pos:'50% '+cropPosY+'%',
   };
   try{
     const {error}=await sb.from('discs').insert(disc);
@@ -711,8 +721,9 @@ async function submitDisc(){
 }
 
 function resetAddForm(){
-  photoFiles=[null,null,null];
+  photoFiles=[null,null,null];cropPosY=50;
   [0,1,2].forEach(i=>{const s=document.getElementById('slot'+i);s.style.backgroundImage='';s.querySelector('.slot-icon').style.display='';document.getElementById('photoFile'+i).value='';});
+  document.getElementById('cropWrap').style.display='none';
   document.getElementById('uploadProg').style.display='none';
   document.getElementById('uploadStatus').textContent='';
   document.getElementById('ad-trade').checked=false;
@@ -750,9 +761,43 @@ function handlePhoto(i,input){
   compressImage(file,1200,0.8).then(compressed=>{
     photoFiles[i]=compressed;
     const reader=new FileReader();
-    reader.onload=e=>{const slot=document.getElementById('slot'+i);slot.style.backgroundImage=`url(${e.target.result})`;slot.style.backgroundSize='cover';slot.style.backgroundPosition='center';slot.querySelector('.slot-icon').style.display='none';};
+    reader.onload=e=>{
+      const slot=document.getElementById('slot'+i);
+      slot.style.backgroundImage=`url(${e.target.result})`;slot.style.backgroundSize='cover';slot.style.backgroundPosition='center';slot.querySelector('.slot-icon').style.display='none';
+      if(i===0)initCropPreview(e.target.result);
+    };
     reader.readAsDataURL(compressed);
   });
+}
+let cropPosY=50;
+function initCropPreview(src){
+  const wrap=document.getElementById('cropWrap');wrap.style.display='block';
+  const img=document.getElementById('cropImg');img.src=src;
+  cropPosY=50;
+  img.onload=()=>{
+    const box=document.getElementById('cropBox');
+    const scale=box.offsetWidth/img.naturalWidth;
+    const imgH=img.naturalHeight*scale;
+    img.style.top=-((imgH-box.offsetHeight)*0.5)+'px';
+    setupCropDrag(box,img,imgH);
+  };
+}
+function setupCropDrag(box,img,imgH){
+  let startY=0,startTop=0,dragging=false;
+  const maxOff=Math.max(0,imgH-box.offsetHeight);
+  function onStart(e){dragging=true;startY=(e.touches?e.touches[0].clientY:e.clientY);startTop=parseFloat(img.style.top)||0;box.style.cursor='grabbing';}
+  function onMove(e){
+    if(!dragging)return;e.preventDefault();
+    const y=(e.touches?e.touches[0].clientY:e.clientY);
+    let newTop=startTop+(y-startY);
+    newTop=Math.min(0,Math.max(-maxOff,newTop));
+    img.style.top=newTop+'px';
+    cropPosY=maxOff>0?Math.round((-newTop/maxOff)*100):50;
+  }
+  function onEnd(){dragging=false;box.style.cursor='grab';}
+  box.onmousedown=onStart;box.ontouchstart=onStart;
+  document.addEventListener('mousemove',onMove);document.addEventListener('touchmove',onMove,{passive:false});
+  document.addEventListener('mouseup',onEnd);document.addEventListener('touchend',onEnd);
 }
 function compressImage(file,maxSize,quality){
   return new Promise(resolve=>{
