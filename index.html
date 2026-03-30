@@ -418,6 +418,18 @@ input[type=range]::-moz-range-track{height:6px;background:var(--s3);border-radiu
     <button class="mc" onclick="closeModal('editDisc')">✕</button>
     <div class="mt">РЕДАГУВАТИ <span>ДИСК</span></div>
     <input type="hidden" id="edit-id">
+    <div class="fg">
+      <label class="fl">Фото</label>
+      <div id="edit-photo-current" style="margin-bottom:0.4rem"></div>
+      <div class="photo-upload-grid">
+        <div class="photo-slot" id="ep-slot0" onclick="document.getElementById('epFile0').click()"><span class="slot-icon">📸</span></div>
+        <div class="photo-slot" id="ep-slot1" onclick="document.getElementById('epFile1').click()"><span class="slot-icon">📸</span></div>
+        <div class="photo-slot" id="ep-slot2" onclick="document.getElementById('epFile2').click()"><span class="slot-icon">📸</span></div>
+      </div>
+      <input type="file" id="epFile0" accept="image/*" style="display:none" onchange="handleEditPhoto(0,this)">
+      <input type="file" id="epFile1" accept="image/*" style="display:none" onchange="handleEditPhoto(1,this)">
+      <input type="file" id="epFile2" accept="image/*" style="display:none" onchange="handleEditPhoto(2,this)">
+    </div>
     <div class="fr"><div class="fg"><label class="fl">Buyout (UAH)</label><input id="edit-buyout" type="number"></div><div class="fg"><label class="fl">Стан: <span id="editCondLabel">7</span>/10</label><div style="display:flex;align-items:center;gap:0.5rem"><input type="range" id="edit-cond" min="1" max="10" value="7" step="1" style="flex:1" oninput="document.getElementById('editCondLabel').textContent=this.value"><span style="font-family:'Space Mono';font-size:0.9rem;font-weight:700;color:var(--lime)" id="editCondVal">7</span></div></div></div>
     <div class="fg"><label class="fl">Speed / Glide / Turn / Fade</label>
       <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:0.4rem">
@@ -855,9 +867,26 @@ async function uploadAllPhotos(){
 }
 
 // ── EDIT DISC ──
+let editPhotoFiles=[null,null,null];
+let editPhotoExisting=['','',''];
+
 function openEditDisc(id){
-  const d=allDiscs.find(x=>String(x.id)===String(id));if(!d)return;
-  document.getElementById('edit-id').value=id;
+  // Search in allDiscs first, then fetch from Supabase
+  let d=allDiscs.find(x=>String(x.id)===String(id));
+  if(!d){
+    // For sold/unlisted discs loaded in cabinet
+    sb.from('discs').select('*').eq('id',id).single().then(({data})=>{
+      if(data)openEditDiscWithData(dbToDisc(data));
+      else toast('⚠️ Диск не знайдено',true);
+    });
+    return;
+  }
+  openEditDiscWithData(d);
+}
+function openEditDiscWithData(d){
+  editPhotoFiles=[null,null,null];
+  editPhotoExisting=[d.photoUrl||'',d.photoUrl2||'',d.photoUrl3||''];
+  document.getElementById('edit-id').value=d.id;
   document.getElementById('edit-buyout').value=d.buyout||0;
   document.getElementById('edit-cond').value=d.condition||7;
   document.getElementById('editCondLabel').textContent=d.condition||7;
@@ -871,11 +900,65 @@ function openEditDisc(id){
   document.getElementById('edit-glide').value=d.glide||0;
   document.getElementById('edit-turn').value=d.turn||0;
   document.getElementById('edit-fade').value=d.fade||0;
+  // Init photo slots
+  [0,1,2].forEach(i=>{
+    const slot=document.getElementById('ep-slot'+i);
+    if(editPhotoExisting[i]){
+      slot.style.backgroundImage='url('+editPhotoExisting[i]+')';slot.style.backgroundSize='cover';slot.style.backgroundPosition='center';
+      slot.querySelector('.slot-icon').style.display='none';
+    }else{
+      slot.style.backgroundImage='';slot.querySelector('.slot-icon').style.display='';
+    }
+    document.getElementById('epFile'+i).value='';
+  });
+  // Show current photos with delete buttons
+  renderEditPhotoCurrent();
   openModal('editDisc');
+}
+function renderEditPhotoCurrent(){
+  const el=document.getElementById('edit-photo-current');
+  const has=editPhotoExisting.filter(Boolean);
+  el.innerHTML=has.length
+    ?`<div style="display:flex;gap:0.4rem">${editPhotoExisting.map((u,i)=>u?`<div style="position:relative"><img src="${u}" style="width:70px;height:50px;object-fit:cover;border-radius:var(--r);border:1px solid var(--b1)"><button class="btn btn-danger btn-xs" style="position:absolute;top:1px;right:1px;padding:0 3px;font-size:0.55rem" onclick="editRemovePhoto(${i})">✕</button></div>`:''
+    ).join('')}</div>`:'';
+}
+function editRemovePhoto(idx){
+  editPhotoExisting[idx]='';
+  editPhotoFiles[idx]=null;
+  const slot=document.getElementById('ep-slot'+idx);
+  slot.style.backgroundImage='';slot.querySelector('.slot-icon').style.display='';
+  document.getElementById('epFile'+idx).value='';
+  renderEditPhotoCurrent();
+}
+function handleEditPhoto(i,input){
+  const file=input.files[0];if(!file)return;
+  compressImage(file,1200,0.8).then(compressed=>{
+    editPhotoFiles[i]=compressed;
+    const reader=new FileReader();
+    reader.onload=e=>{
+      const slot=document.getElementById('ep-slot'+i);
+      slot.style.backgroundImage='url('+e.target.result+')';slot.style.backgroundSize='cover';slot.style.backgroundPosition='center';
+      slot.querySelector('.slot-icon').style.display='none';
+    };
+    reader.readAsDataURL(compressed);
+  });
 }
 async function submitEditDisc(){
   const id=document.getElementById('edit-id').value;
   const isTrade=document.getElementById('edit-trade').checked;
+  const btn=document.querySelector('#ov-editDisc .btn-lime');
+  btn.disabled=true;btn.textContent='Збереження...';
+  // Upload new photos if any
+  const urls=[...editPhotoExisting];
+  for(let i=0;i<3;i++){
+    if(!editPhotoFiles[i])continue;
+    try{
+      const fd=new FormData();fd.append('file',editPhotoFiles[i]);fd.append('upload_preset',CLOUDINARY_PRESET);
+      const r=await fetch('https://api.cloudinary.com/v1_1/'+CLOUDINARY_CLOUD+'/image/upload',{method:'POST',body:fd});
+      const data=await r.json();
+      if(data.secure_url)urls[i]=data.secure_url;
+    }catch(e){}
+  }
   const updates={
     buyout:parseInt(document.getElementById('edit-buyout').value)||0,
     condition:parseInt(document.getElementById('edit-cond').value)||7,
@@ -886,12 +969,14 @@ async function submitEditDisc(){
     glide:parseFloat(document.getElementById('edit-glide').value)||0,
     turn:parseFloat(document.getElementById('edit-turn').value)||0,
     fade:parseFloat(document.getElementById('edit-fade').value)||0,
+    photo_url:urls[0]||'',photo_url2:urls[1]||'',photo_url3:urls[2]||'',
   };
   try{
     const {error}=await sb.from('discs').update(updates).eq('id',id);
     if(!error){closeModal('editDisc');await loadDiscs();renderCabinet();toast('✅ Диск оновлено!');}
     else toast('⚠️ '+error.message,true);
   }catch(e){toast('⚠️ Помилка',true);}
+  btn.disabled=false;btn.textContent='Зберегти';
 }
 async function confirmDeleteDisc(){
   const id=document.getElementById('edit-id').value;
@@ -1065,15 +1150,17 @@ async function renderCabinet(){await renderSeller();await renderTester();}
 
 async function renderSeller(){
   const name=CU?.name;if(!name)return;
-  const my=allDiscs.filter(d=>String(d.owner).trim()===String(name).trim());
-
-  // Fetch sold discs for revenue (they're filtered out of allDiscs)
-  let rev=0;
+  // Fetch ALL my discs including sold/unlisted (they're filtered out of allDiscs)
+  let my=[];
   try{
-    const {data}=await sb.from('discs').select('buyout').eq('owner',name).eq('status','sold');
-    if(data)rev=data.reduce((a,d)=>a+(Number(d.buyout)||0),0);
-  }catch(e){}
-  if(document.getElementById('sel-total'))document.getElementById('sel-total').textContent=my.length;
+    const {data}=await sb.from('discs').select('*').eq('owner',name).neq('status','deleted').order('created_at',{ascending:false});
+    my=(data||[]).map(dbToDisc);
+  }catch(e){
+    my=allDiscs.filter(d=>String(d.owner).trim()===String(name).trim());
+  }
+
+  const rev=my.filter(d=>d.status==='sold').reduce((a,d)=>a+(Number(d.buyout)||0),0);
+  if(document.getElementById('sel-total'))document.getElementById('sel-total').textContent=my.filter(d=>d.status!=='sold').length;
   if(document.getElementById('sel-revenue'))document.getElementById('sel-revenue').textContent=rev+'₴';
 
   // Fetch all requests for my discs
