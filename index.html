@@ -301,7 +301,7 @@ input[type=range]::-moz-range-track{height:6px;background:var(--s3);border-radiu
 <div id="page-rules" class="page">
   <div class="content">
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:0.875rem">
-      <div class="card"><div style="font-size:1.5rem;margin-bottom:0.5rem">🥏</div><div style="font-weight:700;margin-bottom:0.35rem">Знайди диск</div><div style="font-size:0.8rem;color:var(--m2);line-height:1.7">Переглядай каталог, фільтруй за характеристиками. Кожен диск має Speed / Glide / Turn / Fade і стан 0-10.</div></div>
+<div class="card"><div style="font-size:1.5rem;margin-bottom:0.5rem">🥏</div><div style="font-weight:700;margin-bottom:0.35rem">Знайди диск</div><div style="font-size:0.8rem;color:var(--m2);line-height:1.7">Переглядай каталог, фільтруй за характеристиками. Кожен диск має Speed / Glide / Turn / Fade і стан 0-10.</div></div>
       <div class="card"><div style="font-size:1.5rem;margin-bottom:0.5rem">📝</div><div style="font-weight:700;margin-bottom:0.35rem">Запит на тест</div><div style="font-size:0.8rem;color:var(--m2);line-height:1.7">Натисни «Тест» - власник отримає сповіщення в Telegram. Пошкодив при тесті - купив. Деталі обговорюйте в особистих.</div></div>
       <div class="card"><div style="font-size:1.5rem;margin-bottom:0.5rem">🔄</div><div style="font-weight:700;margin-bottom:0.35rem">Обмін</div><div style="font-size:0.8rem;color:var(--m2);line-height:1.7">Власник може позначити диск як «Обмін». Деталі в описі диска та в особистих.</div></div>
       <div class="card"><div style="font-size:1.5rem;margin-bottom:0.5rem">💰</div><div style="font-weight:700;margin-bottom:0.35rem">Купівля</div><div style="font-size:0.8rem;color:var(--m2);line-height:1.7">Натисни «Купити» - продавець отримає запит і підтверджує продаж у кабінеті.</div></div>
@@ -841,12 +841,13 @@ async function submitTestReq(){
   const reqType=isTradeReq?'exchange':'test';
   const notifyType=isTradeReq?'exchange':'test';
   try{
-    const req={id:genId(),disc_id:reqTestId,tester:CU.name,tester_tg:CU.tg||'',note:document.getElementById('rt-note').value,request_type:reqType,status:'pending'};
+    const noteVal=document.getElementById('rt-note').value;
+    const req={id:genId(),disc_id:reqTestId,tester:CU.name,tester_tg:CU.tg||'',note:noteVal,request_type:reqType,status:'pending'};
     const {error}=await sb.from('requests').insert(req);
     if(!error){
       closeModal('reqTest');await loadDiscs();if(CU)renderCabinet();
       toast(isTradeReq?'🔄 Пропозицію обміну відправлено!':'📝 Запит відправлено!');
-      notifyAppsScript(notifyType,d,CU);
+      notifyAppsScript(notifyType,d,CU,noteVal);
     }else toast('⚠️ Помилка',true);
   }catch(e){toast('⚠️ Помилка',true);}
   btn.disabled=false;btn.textContent=isTradeReq?'Надіслати пропозицію':'Надіслати запит';
@@ -868,11 +869,12 @@ async function submitBuy(){
   if(!CU){toast('⚠️ Увійдіть',true);return;}
   const btn=document.getElementById('buyBtn');btn.disabled=true;btn.textContent='...';
   const d=allDiscs.find(x=>x.id===buyId||String(x.id)===String(buyId));
+  const buyNote=document.getElementById('buy-note').value;
   try{
-    const req={id:genId(),disc_id:buyId,tester:CU.name,tester_tg:CU.tg||'',note:'Запит на купівлю'+(document.getElementById('buy-note').value?' · '+document.getElementById('buy-note').value:''),request_type:'buy',status:'pending'};
+    const req={id:genId(),disc_id:buyId,tester:CU.name,tester_tg:CU.tg||'',note:'Запит на купівлю'+(buyNote?' · '+buyNote:''),request_type:'buy',status:'pending'};
     const {error}=await sb.from('requests').insert(req);
     const {error:e2}=await sb.from('discs').update({status:'reserved',tester:CU.name,tester_tg:CU.tg||''}).eq('id',buyId);
-    if(!error&&!e2){closeModal('buy');await loadDiscs();if(CU)renderCabinet();toast('🛒 Запит відправлено!');notifyAppsScript('buy',d,CU);}
+    if(!error&&!e2){closeModal('buy');await loadDiscs();if(CU)renderCabinet();toast('🛒 Запит відправлено!');notifyAppsScript('buy',d,CU,buyNote);}
     else toast('⚠️ Помилка',true);
   }catch(e){toast('⚠️ Помилка',true);}
   btn.disabled=false;btn.textContent='Підтвердити';
@@ -898,11 +900,10 @@ async function submitReturn(){
 }
 
 // ── NOTIFY via Apps Script ──
-async function notifyAppsScript(type,disc,buyer){
+async function notifyAppsScript(type,disc,buyer,note){
   try{
-    // Use numeric tgId if available, fallback to username
     const ownerTg=disc.ownerTgId||disc.ownerTg||'';
-    const url=APPS_SCRIPT+'?notify=1&type='+type+'&discId='+disc.id+'&discBrand='+encodeURIComponent(disc.brand)+'&discModel='+encodeURIComponent(disc.model)+'&discBuyout='+(disc.buyout||0)+'&ownerTg='+encodeURIComponent(ownerTg)+'&testerName='+encodeURIComponent(buyer.name)+'&testerTg='+encodeURIComponent(buyer.tg||'')+'&callback=cb_notify';
+    const url=APPS_SCRIPT+'?notify=1&type='+type+'&discId='+disc.id+'&discBrand='+encodeURIComponent(disc.brand)+'&discModel='+encodeURIComponent(disc.model)+'&discBuyout='+(disc.buyout||0)+'&ownerTg='+encodeURIComponent(ownerTg)+'&testerName='+encodeURIComponent(buyer.name)+'&testerTg='+encodeURIComponent(buyer.tg||'')+'&note='+encodeURIComponent(note||'')+'&callback=cb_notify';
     console.log('notifyAppsScript url:', url);
     const s=document.createElement('script');
     window.cb_notify=(d)=>{console.log('notify response:',d);delete window.cb_notify;s.remove();};
