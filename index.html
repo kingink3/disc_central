@@ -431,7 +431,7 @@ input[type=range]::-moz-range-track{height:6px;background:var(--s3);border-radiu
     <div class="fg" id="editTradeWrap" style="display:none"><label class="fl">Що хочу отримати</label><textarea id="edit-trade-desc"></textarea></div>
     <div class="fg"><label class="fl">Нотатки</label><textarea id="edit-notes"></textarea></div>
     
-    <div class="fg"><label class="fl">Статус</label><select id="edit-status"><option value="available">Доступний</option><option value="reserved">Зарезервований</option><option value="testing">На тестуванні</option><option value="sold">Продано</option></select></div>
+    <div class="fg"><label class="fl">Статус</label><select id="edit-status"><option value="available">Доступний</option><option value="reserved">Зарезервований</option><option value="testing">На тестуванні</option><option value="sold">Продано</option><option value="unlisted">Знято з продажу</option></select></div>
     <div style="display:flex;gap:0.5rem"><button class="btn btn-lime btn-full" onclick="submitEditDisc()">Зберегти</button></div>
   </div>
 </div>
@@ -471,6 +471,28 @@ input[type=range]::-moz-range-track{height:6px;background:var(--s3);border-radiu
   <div class="modal modal-wide"><button class="mc" onclick="closeModal('detail')">✕</button><div id="detailContent"></div></div>
 </div>
 
+<div class="overlay" id="ov-adminPhoto">
+  <div class="modal" style="max-width:440px">
+    <button class="mc" onclick="closeModal('adminPhoto')">✕</button>
+    <div class="mt">ФОТО <span>ДИСКА</span></div>
+    <input type="hidden" id="ap-disc-id">
+    <div id="ap-current" style="margin-bottom:1rem"></div>
+    <div class="fg">
+      <label class="fl">Завантажити / замінити фото</label>
+      <div class="photo-upload-grid">
+        <div class="photo-slot" id="ap-slot0" onclick="document.getElementById('apFile0').click()"><span class="slot-icon">📸</span></div>
+        <div class="photo-slot" id="ap-slot1" onclick="document.getElementById('apFile1').click()"><span class="slot-icon">📸</span></div>
+        <div class="photo-slot" id="ap-slot2" onclick="document.getElementById('apFile2').click()"><span class="slot-icon">📸</span></div>
+      </div>
+      <input type="file" id="apFile0" accept="image/*" style="display:none" onchange="handleAdminPhoto(0,this)">
+      <input type="file" id="apFile1" accept="image/*" style="display:none" onchange="handleAdminPhoto(1,this)">
+      <input type="file" id="apFile2" accept="image/*" style="display:none" onchange="handleAdminPhoto(2,this)">
+      <div style="font-size:0.65rem;color:var(--m1);margin-top:0.3rem">Натисніть слот щоб завантажити або замінити фото</div>
+    </div>
+    <button class="btn btn-lime btn-full" onclick="saveAdminPhotos()">Зберегти фото</button>
+  </div>
+</div>
+
 <div class="toasts" id="toasts"></div>
 
 <script>
@@ -499,6 +521,7 @@ const ST = {
   pending:{l:'Очікує повернення',c:'pe',sc:'s-pe'},
   sold:{l:'Продано',c:'so',sc:'s-so'},
   deleted:{l:'Видалено',c:'so',sc:'s-so'},
+  unlisted:{l:'Знято з продажу',c:'so',sc:'s-so'},
   trade:{l:'Доступний',c:'av',sc:'s-av'},
 };
 function st(s){return ST[s]||ST.available;}
@@ -510,7 +533,7 @@ async function loadDiscs(){
   // Show cache first
   try{const c=localStorage.getItem('dc_discs');if(c){allDiscs=JSON.parse(c);applyFilters();updateStats();document.getElementById('loadingOverlay').style.display='none';}}catch(e){}
   try{
-    const {data,error}=await sb.from('discs').select('*').neq('status','sold').neq('status','deleted').order('created_at',{ascending:false});
+    const {data,error}=await sb.from('discs').select('*').neq('status','sold').neq('status','deleted').neq('status','unlisted').order('created_at',{ascending:false});
     if(!error&&data){
       allDiscs=data.map(dbToDisc);
       localStorage.setItem('dc_discs',JSON.stringify(allDiscs));
@@ -1212,7 +1235,9 @@ async function loadAdminData(){
           <option value="reserved">Резерв</option>
           <option value="pending">Повернення</option>
           <option value="sold">Продано</option>
+          <option value="unlisted">Знято з продажу</option>
         </select>
+        <button class="btn btn-ghost btn-xs" style="margin-top:3px" onclick="adminEditPhotos('${d.id}')">📷</button>
         <button class="btn btn-danger btn-xs" style="margin-top:3px" onclick="adminDelete('${d.id}')">🗑</button>
       </td></tr>`).join('');
     document.getElementById('adminReqTable').innerHTML=(reqs||[]).map(r=>{
@@ -1235,6 +1260,86 @@ async function adminDelete(discId){
   const {error}=await sb.from('discs').update({status:'deleted'}).eq('id',discId);
   if(!error){await loadDiscs();loadAdminData();toast('🗑 Диск приховано');}
   else toast('⚠️ '+error.message,true);
+}
+
+// ── ADMIN PHOTOS ──
+let adminPhotoFiles=[null,null,null];
+let adminPhotoExisting=['','',''];
+
+async function adminEditPhotos(discId){
+  adminPhotoFiles=[null,null,null];
+  document.getElementById('ap-disc-id').value=discId;
+  // Fetch disc from Supabase (might be sold/deleted, not in allDiscs)
+  let d=allDiscs.find(x=>String(x.id)===String(discId));
+  if(!d){
+    try{const {data}=await sb.from('discs').select('*').eq('id',discId).single();if(data)d=dbToDisc(data);}catch(e){}
+  }
+  if(!d){toast('⚠️ Диск не знайдено',true);return;}
+  adminPhotoExisting=[d.photoUrl||'',d.photoUrl2||'',d.photoUrl3||''];
+  // Show current photos
+  document.getElementById('ap-current').innerHTML=adminPhotoExisting.filter(Boolean).length
+    ?`<div style="display:flex;gap:0.4rem;flex-wrap:wrap">${adminPhotoExisting.map((u,i)=>u?`<div style="position:relative"><img src="${u}" style="width:100px;height:70px;object-fit:cover;border-radius:var(--r);border:1px solid var(--b1)"><button class="btn btn-danger btn-xs" style="position:absolute;top:2px;right:2px;padding:1px 4px;font-size:0.6rem" onclick="adminRemovePhoto(${i})">✕</button></div>`:''
+    ).join('')}</div>`
+    :'<div style="color:var(--m1);font-size:0.8rem">Немає фото</div>';
+  // Reset slots
+  [0,1,2].forEach(i=>{
+    const slot=document.getElementById('ap-slot'+i);
+    if(adminPhotoExisting[i]){
+      slot.style.backgroundImage='url('+adminPhotoExisting[i]+')';slot.style.backgroundSize='cover';slot.style.backgroundPosition='center';
+      slot.querySelector('.slot-icon').style.display='none';
+    }else{
+      slot.style.backgroundImage='';slot.querySelector('.slot-icon').style.display='';
+    }
+    document.getElementById('apFile'+i).value='';
+  });
+  openModal('adminPhoto');
+}
+
+function adminRemovePhoto(idx){
+  adminPhotoExisting[idx]='';
+  adminPhotoFiles[idx]=null;
+  const slot=document.getElementById('ap-slot'+idx);
+  slot.style.backgroundImage='';slot.querySelector('.slot-icon').style.display='';
+  document.getElementById('apFile'+idx).value='';
+  // Refresh current display
+  document.getElementById('ap-current').innerHTML=adminPhotoExisting.filter(Boolean).length
+    ?`<div style="display:flex;gap:0.4rem;flex-wrap:wrap">${adminPhotoExisting.map((u,i)=>u?`<div style="position:relative"><img src="${u}" style="width:100px;height:70px;object-fit:cover;border-radius:var(--r);border:1px solid var(--b1)"><button class="btn btn-danger btn-xs" style="position:absolute;top:2px;right:2px;padding:1px 4px;font-size:0.6rem" onclick="adminRemovePhoto(${i})">✕</button></div>`:''
+    ).join('')}</div>`
+    :'<div style="color:var(--m1);font-size:0.8rem">Немає фото</div>';
+}
+
+function handleAdminPhoto(i,input){
+  const file=input.files[0];if(!file)return;
+  compressImage(file,1200,0.8).then(compressed=>{
+    adminPhotoFiles[i]=compressed;
+    const reader=new FileReader();
+    reader.onload=e=>{
+      const slot=document.getElementById('ap-slot'+i);
+      slot.style.backgroundImage='url('+e.target.result+')';slot.style.backgroundSize='cover';slot.style.backgroundPosition='center';
+      slot.querySelector('.slot-icon').style.display='none';
+    };
+    reader.readAsDataURL(compressed);
+  });
+}
+
+async function saveAdminPhotos(){
+  const discId=document.getElementById('ap-disc-id').value;
+  const btn=document.querySelector('#ov-adminPhoto .btn-lime');
+  btn.disabled=true;btn.textContent='Завантаження...';
+  const urls=[...adminPhotoExisting];
+  for(let i=0;i<3;i++){
+    if(!adminPhotoFiles[i])continue;
+    try{
+      const fd=new FormData();fd.append('file',adminPhotoFiles[i]);fd.append('upload_preset',CLOUDINARY_PRESET);
+      const r=await fetch('https://api.cloudinary.com/v1_1/'+CLOUDINARY_CLOUD+'/image/upload',{method:'POST',body:fd});
+      const data=await r.json();
+      if(data.secure_url)urls[i]=data.secure_url;
+    }catch(e){}
+  }
+  const {error}=await sb.from('discs').update({photo_url:urls[0]||'',photo_url2:urls[1]||'',photo_url3:urls[2]||''}).eq('id',discId);
+  if(!error){closeModal('adminPhoto');await loadDiscs();loadAdminData();toast('✅ Фото оновлено');}
+  else toast('⚠️ '+error.message,true);
+  btn.disabled=false;btn.textContent='Зберегти фото';
 }
 
 // ── BAN ──
