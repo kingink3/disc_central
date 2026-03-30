@@ -665,11 +665,11 @@ function showDetail(id){
     </div>
     ${hasTrade?`<div class="info-box" style="border-color:rgba(167,139,250,0.25);background:rgba(167,139,250,0.05);margin-bottom:0.875rem"><strong style="color:var(--purple)">🔄 Обмін:</strong> ${d.tradeWant}</div>`:''}
     ${d.notes?`<div style="font-size:0.8rem;color:var(--m2);padding:0.65rem;background:var(--s2);border-radius:var(--r);margin-bottom:0.875rem">${d.notes}</div>`:''}
-    <div style="display:flex;gap:0.4rem;flex-wrap:wrap;padding-top:0.875rem;border-top:1px solid var(--b1)">
-      ${canT?`<button class="btn btn-cyan btn-sm" onclick="openReqTest('${d.id}');closeModal('detail')">Тест</button>`:''}
-      ${hasTrade?`<button class="btn btn-purple btn-sm" onclick="openTradeOffer('${d.id}');closeModal('detail')">Обмін</button>`:''}
-      ${canB?`<button class="btn btn-lime btn-sm" onclick="oBuy('${d.id}');closeModal('detail')">Купити ${d.buyout||0}₴</button>`:''}
-      ${d.status==='testing'&&CU?.name===d.tester?`<button class="btn btn-ghost btn-sm" onclick="oRet('${d.id}');closeModal('detail')">↩ Повернути</button>`:''}
+    <div style="display:flex;gap:0.4rem;padding-top:0.875rem;border-top:1px solid var(--b1)">
+      ${canT?`<button class="btn btn-cyan btn-sm" onclick="openReqTest('${d.id}');closeModal('detail')" style="flex:1">Тест</button>`:''}
+      ${hasTrade?`<button class="btn btn-purple btn-sm" onclick="openTradeOffer('${d.id}');closeModal('detail')" style="flex:1">Обмін</button>`:''}
+      ${canB?`<button class="btn btn-lime btn-sm" onclick="oBuy('${d.id}');closeModal('detail')" style="flex:1">Купити ${d.buyout||0}₴</button>`:''}
+      ${d.status==='testing'&&CU?.name===d.tester?`<button class="btn btn-ghost btn-sm" onclick="oRet('${d.id}');closeModal('detail')" style="flex:1">↩ Повернути</button>`:''}
     </div>
     <div style="margin-top:0.5rem"><button class="btn btn-ghost btn-xs" onclick="shareDisc('${d.id}')" style="color:var(--m1);width:100%">🔗 Поділитись посиланням</button></div>`;
   openModal('detail');
