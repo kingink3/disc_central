@@ -125,7 +125,8 @@ nav{display:flex;gap:0.15rem;align-items:center;flex:1;justify-content:center}
 input,select,textarea{width:100%;background:var(--s2);border:1px solid var(--b1);border-radius:var(--r);padding:7px 10px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:0.84rem;outline:none;transition:border-color 0.2s}
 input:focus,select:focus,textarea:focus{border-color:var(--lime)}
 select option{background:var(--s2)}
-textarea{resize:vertical;min-height:65px}
+textarea{resize:vertical;min-height:65px;-webkit-user-select:text;user-select:text}
+input,textarea,select{-webkit-user-select:text;user-select:text}
 .toggle-row{display:flex;align-items:center;gap:0.75rem;padding:0.6rem 0.75rem;background:var(--s2);border:1px solid var(--b1);border-radius:var(--r);cursor:pointer}
 .toggle-row input[type=checkbox]{width:auto;cursor:pointer;accent-color:var(--lime)}
 .photo-upload-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:0.5rem;margin-bottom:0.5rem}
@@ -1527,9 +1528,20 @@ function openModal(n){
   if(['reqTest','buy','return','addDisc'].includes(n)&&!CU){toast('⚠️ Спочатку увійдіть',true);document.getElementById('ov-login').classList.add('open');return;}
   document.getElementById('ov-'+n)?.classList.add('open');
   if(n==='addDisc'&&CU){const f=document.getElementById('ownerFieldWrap');if(f)f.style.display='none';}
+  // Fix Telegram WebApp textarea focus
+  const tg=window.Telegram?.WebApp;
+  if(tg){try{tg.expand();}catch(e){}}
 }
 function closeModal(n){document.getElementById('ov-'+n)?.classList.remove('open');}
 document.querySelectorAll('.overlay').forEach(o=>o.addEventListener('click',e=>{if(e.target===o)closeModal(o.id.slice(3));}));
+
+// Fix Telegram WebApp input/textarea focus globally
+document.addEventListener('click',function(e){
+  const el=e.target;
+  if(el.tagName==='TEXTAREA'||el.tagName==='INPUT'){
+    setTimeout(()=>el.focus(),50);
+  }
+});
 
 function toast(msg,err=false){const c=document.getElementById('toasts'),t=document.createElement('div');t.className='toast'+(err?' err':'');t.textContent=msg;c.appendChild(t);setTimeout(()=>t.remove(),3500);}
 
