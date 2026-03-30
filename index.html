@@ -541,11 +541,12 @@ function fmtDate(iso){if(!iso)return'—';try{return new Date(iso).toLocaleDateS
 function genId(){return Date.now().toString(36)+Math.random().toString(36).slice(2,5);}
 
 // ── LOAD DISCS ──
+const HIDDEN=['sold','deleted','unlisted'];
 async function loadDiscs(){
-  // Show cache first
+  // Show cache instantly
   try{const c=localStorage.getItem('dc_discs');if(c){allDiscs=JSON.parse(c);applyFilters();updateStats();document.getElementById('loadingOverlay').style.display='none';}}catch(e){}
   try{
-    const {data,error}=await sb.from('discs').select('*').neq('status','sold').neq('status','deleted').neq('status','unlisted').order('created_at',{ascending:false});
+    const {data,error}=await sb.from('discs').select('*').not('status','in','("sold","deleted","unlisted")').order('created_at',{ascending:false});
     if(!error&&data){
       allDiscs=data.map(dbToDisc);
       localStorage.setItem('dc_discs',JSON.stringify(allDiscs));
@@ -554,6 +555,37 @@ async function loadDiscs(){
     }
   }catch(e){console.error(e);}
   document.getElementById('loadingOverlay').style.display='none';
+}
+
+// ── REALTIME ──
+function subscribeRealtime(){
+  sb.channel('discs-changes')
+    .on('postgres_changes',{event:'INSERT',schema:'public',table:'discs'},payload=>{
+      const d=dbToDisc(payload.new);
+      if(!HIDDEN.includes(d.status)){
+        allDiscs=[d,...allDiscs.filter(x=>x.id!==d.id)];
+        localStorage.setItem('dc_discs',JSON.stringify(allDiscs));
+        applyFilters();updateStats();
+      }
+    })
+    .on('postgres_changes',{event:'UPDATE',schema:'public',table:'discs'},payload=>{
+      const d=dbToDisc(payload.new);
+      if(HIDDEN.includes(d.status)){
+        allDiscs=allDiscs.filter(x=>x.id!==d.id);
+      }else{
+        const idx=allDiscs.findIndex(x=>x.id===d.id);
+        if(idx>=0)allDiscs[idx]=d;
+        else allDiscs=[d,...allDiscs];
+      }
+      localStorage.setItem('dc_discs',JSON.stringify(allDiscs));
+      applyFilters();updateStats();
+    })
+    .on('postgres_changes',{event:'DELETE',schema:'public',table:'discs'},payload=>{
+      allDiscs=allDiscs.filter(x=>x.id!==payload.old.id);
+      localStorage.setItem('dc_discs',JSON.stringify(allDiscs));
+      applyFilters();updateStats();
+    })
+    .subscribe();
 }
 
 function dbToDisc(r){
@@ -1546,6 +1578,7 @@ async function init(){
   const params=new URLSearchParams(location.search);
   const discId=params.get('disc')||window.Telegram?.WebApp?.initDataUnsafe?.start_param;
   await loadDiscs();
+  subscribeRealtime();
   if(discId)setTimeout(()=>{showDetail(discId);},300);
 }
 init();
