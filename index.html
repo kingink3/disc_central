@@ -567,7 +567,7 @@ function condBar(val){const v=parseInt(val)||0;return`<div class="cond-bar">${Ar
 function cardHTML(d){
   const s=st(d.status);
   const urls=[d.photoUrl,d.photoUrl2,d.photoUrl3].filter(Boolean);
-  const canT=d.status==='available'||d.status==='trade';
+  const canT=(d.status==='available'||d.status==='trade')&&parseInt(d.condition)<10;
   const canB=d.status!=='sold';
   const hasTrade=String(d.tradeWant||'').trim().length>0&&String(d.tradeWant)!=='false';
   return`<div class="disc-card" onclick="showDetail('${d.id}')">
@@ -591,10 +591,10 @@ function cardHTML(d){
           <div class="disc-price">${d.buyout?d.buyout+' ₴':'—'}</div>
           <div class="disc-own" onclick="event.stopPropagation();filterByOwner('${d.owner}')">👤 ${(d.owner||'').split(' ')[0]}</div>
         </div>
-        <div onclick="event.stopPropagation()" style="display:flex;gap:3px;width:100%">
-          <button class="btn btn-purple btn-xs" onclick="event.stopPropagation();openTradeOffer('${d.id}')" style="${hasTrade?'':'visibility:hidden'}">Обмін</button>
-          <button class="btn btn-cyan btn-xs" onclick="openReqTest('${d.id}')" style="${canT?'':'visibility:hidden'}">Тест</button>
-          <button class="btn btn-lime btn-xs" onclick="oBuy('${d.id}')" style="margin-left:auto;${canB?'':'visibility:hidden'}">Купити</button>
+        <div onclick="event.stopPropagation()" style="display:flex;gap:3px;width:100%;justify-content:flex-end;flex-wrap:wrap">
+          ${hasTrade?`<button class="btn btn-purple btn-xs" onclick="event.stopPropagation();openTradeOffer('${d.id}')">Обмін</button>`:''}
+          ${canT?`<button class="btn btn-cyan btn-xs" onclick="openReqTest('${d.id}')">Тест</button>`:''}
+          ${canB?`<button class="btn btn-lime btn-xs" onclick="oBuy('${d.id}')">Купити</button>`:''}
         </div>
       </div>
     </div>
@@ -638,7 +638,7 @@ function showDetail(id){
   const d=allDiscs.find(x=>x.id===id||String(x.id)===String(id));if(!d)return;
   const s=st(d.status);
   const urls=[d.photoUrl,d.photoUrl2,d.photoUrl3].filter(Boolean);
-  const canT=d.status==='available'||d.status==='trade';
+  const canT=(d.status==='available'||d.status==='trade')&&parseInt(d.condition)<10;
   const canB=d.status!=='sold';
   const hasTrade=String(d.tradeWant||'').trim()&&String(d.tradeWant)!=='false';
   const photos=urls.length?`<div class="detail-photos" id="dp-${d.id}">${urls.map((u,i)=>`<img src="${u}" class="${i===0?'active':''}" alt="">`).join('')}${urls.length>1?`<button class="photo-nav prev" onclick="photoNav('dp-${d.id}',-1)">‹</button><button class="photo-nav next" onclick="photoNav('dp-${d.id}',1)">›</button>`:''}</div>`:`<div style="height:120px;background:var(--s2);border-radius:var(--r2);display:flex;align-items:center;justify-content:center;font-size:3rem;margin-bottom:1rem">🥏</div>`;
@@ -698,7 +698,7 @@ async function submitDisc(){
     buyout:parseInt(document.getElementById('ad-buyout').value)||0,
     notes:document.getElementById('ad-notes').value,
     inked:document.getElementById('ad-inked').checked,
-    trade_want:isTrade?document.getElementById('ad-trade-desc').value:'',
+    trade_want:isTrade?(document.getElementById('ad-trade-desc').value.trim()||'Пропонуйте'):'',
     status:'available',
     photo_url:photos[0],photo_url2:photos[1],photo_url3:photos[2],
   };
@@ -792,7 +792,7 @@ async function submitEditDisc(){
     buyout:parseInt(document.getElementById('edit-buyout').value)||0,
     condition:parseInt(document.getElementById('edit-cond').value)||7,
     status:document.getElementById('edit-status').value,
-    trade_want:isTrade?document.getElementById('edit-trade-desc').value:'',
+    trade_want:isTrade?(document.getElementById('edit-trade-desc').value.trim()||'Пропонуйте'):'',
     notes:document.getElementById('edit-notes').value,
     speed:parseFloat(document.getElementById('edit-speed').value)||0,
     glide:parseFloat(document.getElementById('edit-glide').value)||0,
