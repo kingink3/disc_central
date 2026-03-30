@@ -454,7 +454,7 @@ input[type=range]::-moz-range-track{height:6px;background:var(--s3);border-radiu
     <button class="mc" onclick="closeModal('reqTest')">✕</button>
     <div class="mt">ЗАПИТ НА <span>ТЕСТ</span></div>
     <div id="reqDiscInfo" class="info-box cy" style="margin-bottom:0.875rem"></div>
-    <div class="fg"><label class="fl">Коментар (опційно)</label><textarea id="rt-note" placeholder="Будь-який коментар (краще дотепний)"></textarea></div>
+    <div class="fg"><label class="fl">Коментар (опційно)</label><textarea id="rt-note" placeholder="Коментар має бути дотепним!"></textarea></div>
     <button class="btn btn-lime btn-full" id="reqTestBtn" onclick="submitTestReq()">Надіслати запит</button>
   </div>
 </div>
@@ -1535,13 +1535,36 @@ function openModal(n){
 function closeModal(n){document.getElementById('ov-'+n)?.classList.remove('open');}
 document.querySelectorAll('.overlay').forEach(o=>o.addEventListener('click',e=>{if(e.target===o)closeModal(o.id.slice(3));}));
 
-// Fix Telegram WebApp input/textarea focus globally
-document.addEventListener('click',function(e){
-  const el=e.target;
-  if(el.tagName==='TEXTAREA'||el.tagName==='INPUT'){
-    setTimeout(()=>el.focus(),50);
+// Fix Telegram WebApp input/textarea on Android
+(function(){
+  const isTgAndroid=window.Telegram?.WebApp&&/android/i.test(navigator.userAgent);
+  // Method 1: Force focus with blur-refocus cycle
+  document.addEventListener('touchend',function(e){
+    const el=e.target;
+    if(el.tagName==='TEXTAREA'||el.tagName==='INPUT'&&el.type!=='file'&&el.type!=='checkbox'&&el.type!=='radio'){
+      e.preventDefault();
+      el.blur();
+      setTimeout(()=>{el.focus();el.click();},100);
+    }
+  },{passive:false});
+  // Method 2: Remove backdrop-filter on modals when input is focused (Android WebView bug)
+  if(isTgAndroid){
+    document.addEventListener('focusin',function(e){
+      const el=e.target;
+      if(el.tagName==='TEXTAREA'||el.tagName==='INPUT'){
+        const overlay=el.closest('.overlay');
+        if(overlay){overlay.style.backdropFilter='none';overlay.style.webkitBackdropFilter='none';}
+      }
+    });
+    document.addEventListener('focusout',function(e){
+      const el=e.target;
+      if(el.tagName==='TEXTAREA'||el.tagName==='INPUT'){
+        const overlay=el.closest('.overlay');
+        if(overlay){setTimeout(()=>{overlay.style.backdropFilter='';overlay.style.webkitBackdropFilter='';},200);}
+      }
+    });
   }
-});
+})();
 
 function toast(msg,err=false){const c=document.getElementById('toasts'),t=document.createElement('div');t.className='toast'+(err?' err':'');t.textContent=msg;c.appendChild(t);setTimeout(()=>t.remove(),3500);}
 
