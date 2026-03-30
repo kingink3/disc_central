@@ -597,8 +597,7 @@ function photoCarousel(urls, prefix, photoPos){
   if(!imgs.length)return`<div class="disc-photo-placeholder">🥏</div>`;
   const pos=photoPos||'50% 50%';
   return`<div class="disc-photo-wrap" id="pw-${prefix}">
-    ${imgs.map((u,i)=>`<img src="${u}" class="${i===0?'active':''}" alt="" loading="lazy" style="${i===0?'object-position:'+pos:''}">`).join('')}
-    ${imgs.length>1?`<button class="photo-nav prev" onclick="event.stopPropagation();photoNav('${prefix}',-1)">‹</button><button class="photo-nav next" onclick="event.stopPropagation();photoNav('${prefix}',1)">›</button><div class="photo-dots">${imgs.map((_,i)=>`<div class="photo-dot${i===0?' active':''}" onclick="event.stopPropagation();photoGo('${prefix}',${i})"></div>`).join('')}</div>`:''}
+    <img src="${imgs[0]}" class="active" alt="" loading="lazy" style="object-position:${pos}">
   </div>`;
 }
 function photoNav(p,dir){const w=document.getElementById('pw-'+p);if(!w)return;const imgs=w.querySelectorAll('img'),dots=w.querySelectorAll('.photo-dot');let c=Array.from(imgs).findIndex(i=>i.classList.contains('active'));imgs[c].classList.remove('active');if(dots[c])dots[c].classList.remove('active');c=(c+dir+imgs.length)%imgs.length;imgs[c].classList.add('active');if(dots[c])dots[c].classList.add('active');}
