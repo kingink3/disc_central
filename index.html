@@ -1043,7 +1043,13 @@ async function renderCabinet(){await renderSeller();await renderTester();}
 async function renderSeller(){
   const name=CU?.name;if(!name)return;
   const my=allDiscs.filter(d=>String(d.owner).trim()===String(name).trim());
-  const rev=allDiscs.filter(d=>d.owner===name&&d.status==='sold').reduce((a,d)=>a+(Number(d.buyout)||0),0);
+
+  // Fetch sold discs for revenue (they're filtered out of allDiscs)
+  let rev=0;
+  try{
+    const {data}=await sb.from('discs').select('buyout').eq('owner',name).eq('status','sold');
+    if(data)rev=data.reduce((a,d)=>a+(Number(d.buyout)||0),0);
+  }catch(e){}
   if(document.getElementById('sel-total'))document.getElementById('sel-total').textContent=my.length;
   if(document.getElementById('sel-revenue'))document.getElementById('sel-revenue').textContent=rev+'₴';
 
