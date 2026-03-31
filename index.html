@@ -456,7 +456,7 @@ input[type=range]::-moz-range-track{height:6px;background:var(--s3);border-radiu
     </div>
     <!-- Post form -->
     <div class="card" style="margin-bottom:1rem;display:none" id="postFormWrap">
-      <div class="fg" style="margin-bottom:0.4rem"><input id="post-url" placeholder="Посилання YouTube, TikTok, Instagram..." style="font-size:14px"></div>
+      <div class="fg" style="margin-bottom:0.4rem"><input id="post-url" placeholder="YouTube, TikTok, Instagram, Facebook..." style="font-size:14px"></div>
       <div class="fg" style="margin-bottom:0.5rem"><input id="post-desc" placeholder="Опис (опційно)" style="font-size:14px"></div>
       <div style="display:flex;gap:0.4rem">
         <button class="btn btn-lime btn-full" onclick="submitPost()">Опублікувати</button>
@@ -1877,6 +1877,7 @@ function detectPlatform(url){
   if(/youtube\.com|youtu\.be/i.test(url))return'youtube';
   if(/tiktok\.com/i.test(url))return'tiktok';
   if(/instagram\.com/i.test(url))return'instagram';
+  if(/facebook\.com|fb\.watch/i.test(url))return'facebook';
   return'link';
 }
 function getEmbed(url,platform){
@@ -1885,10 +1886,18 @@ function getEmbed(url,platform){
     if(m)return`<iframe src="https://www.youtube.com/embed/${m[1]}" style="width:100%;aspect-ratio:16/9;border:none;border-radius:var(--r)" allowfullscreen loading="lazy"></iframe>`;
   }
   if(platform==='tiktok'){
-    return`<blockquote class="tiktok-embed" data-video-url="${url}" style="max-width:100%"><a href="${url}" target="_blank" style="color:var(--cyan);font-size:0.8rem">Відкрити в TikTok ↗</a></blockquote>`;
+    const m=url.match(/\/video\/(\d+)/)||url.match(/\/v\/(\d+)/);
+    if(m)return`<iframe src="https://www.tiktok.com/embed/v2/${m[1]}" style="width:100%;height:740px;border:none;border-radius:var(--r)" allowfullscreen loading="lazy"></iframe>`;
+    return`<a href="${url}" target="_blank" style="display:flex;align-items:center;gap:0.5rem;padding:0.75rem;background:var(--s2);border:1px solid var(--b1);border-radius:var(--r);color:var(--cyan);font-size:0.82rem">🎵 Відкрити в TikTok ↗</a>`;
   }
   if(platform==='instagram'){
-    return`<a href="${url}" target="_blank" style="display:block;padding:0.75rem;background:var(--s2);border:1px solid var(--b1);border-radius:var(--r);color:var(--cyan);font-size:0.82rem">📷 Відкрити в Instagram ↗</a>`;
+    const m=url.match(/\/(p|reel|reels)\/([a-zA-Z0-9_-]+)/);
+    if(m)return`<iframe src="https://www.instagram.com/${m[1]}/${m[2]}/embed/" style="width:100%;min-height:480px;border:none;border-radius:var(--r)" allowfullscreen loading="lazy"></iframe>`;
+    return`<a href="${url}" target="_blank" style="display:flex;align-items:center;gap:0.5rem;padding:0.75rem;background:var(--s2);border:1px solid var(--b1);border-radius:var(--r);color:var(--cyan);font-size:0.82rem">📷 Відкрити в Instagram ↗</a>`;
+  }
+  if(platform==='facebook'){
+    const encoded=encodeURIComponent(url);
+    return`<iframe src="https://www.facebook.com/plugins/video.php?href=${encoded}&show_text=false" style="width:100%;aspect-ratio:16/9;border:none;border-radius:var(--r);overflow:hidden" allowfullscreen loading="lazy"></iframe>`;
   }
   return`<a href="${url}" target="_blank" style="display:block;padding:0.75rem;background:var(--s2);border:1px solid var(--b1);border-radius:var(--r);color:var(--cyan);font-size:0.82rem;word-break:break-all">🔗 ${url}</a>`;
 }
@@ -1935,7 +1944,7 @@ function renderFeed(){
   if(!feedPosts.length){el.innerHTML='<div style="text-align:center;color:var(--m1);padding:2rem;font-size:0.85rem">Поки немає публікацій</div>';return;}
   el.innerHTML=feedPosts.map(p=>{
     const lk=getFeedLike(p.id);
-    const platformIcon=p.platform==='youtube'?'▶️':p.platform==='tiktok'?'🎵':p.platform==='instagram'?'📷':'🔗';
+    const platformIcon=p.platform==='youtube'?'▶️':p.platform==='tiktok'?'🎵':p.platform==='instagram'?'📷':p.platform==='facebook'?'📘':'🔗';
     return`<div class="card" style="margin-bottom:0.75rem">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.5rem">
         <div style="font-size:0.78rem"><span style="font-weight:700">${p.author}</span> <span style="color:var(--m1)">${fmtDateTime(p.created_at)}</span></div>
