@@ -550,30 +550,34 @@ function toggleFav(id){
 let likesCache={};// {disc_id: {count, liked}}
 async function loadLikes(){
   try{
-    const {data}=await sb.from('likes').select('disc_id');
+    const {data,error}=await sb.from('likes').select('disc_id');
+    if(error){console.error('loadLikes err:',error.message);return;}
     const counts={};
     (data||[]).forEach(r=>{counts[r.disc_id]=(counts[r.disc_id]||0)+1;});
     const myId=CU?.tgId||'';
     let myLikes=[];
     if(myId){
-      const {data:ml}=await sb.from('likes').select('disc_id').eq('user_tg_id',myId);
-      myLikes=(ml||[]).map(r=>r.disc_id);
+      const {data:ml,error:e2}=await sb.from('likes').select('disc_id').eq('user_tg_id',myId);
+      if(!e2)myLikes=(ml||[]).map(r=>r.disc_id);
     }
     likesCache={};
     Object.keys(counts).forEach(id=>{likesCache[id]={count:counts[id],liked:myLikes.includes(id)};});
     myLikes.forEach(id=>{if(!likesCache[id])likesCache[id]={count:1,liked:true};});
-  }catch(e){}
+  }catch(e){console.error('loadLikes catch:',e);}
 }
-function getLikes(id){return likesCache[id]||{count:0,liked:false};}
+function getLikes(id){return likesCache[String(id)]||{count:0,liked:false};}
 async function toggleLike(id,e){
   if(e)e.stopPropagation();
   if(!CU||!CU.tgId){toast('⚠️ Спочатку увійдіть',true);return;}
+  id=String(id);
   const cur=getLikes(id);
   if(cur.liked){
-    await sb.from('likes').delete().eq('disc_id',id).eq('user_tg_id',CU.tgId);
+    const {error}=await sb.from('likes').delete().eq('disc_id',id).eq('user_tg_id',CU.tgId);
+    if(error){toast('⚠️ '+error.message,true);return;}
     likesCache[id]={count:Math.max(0,cur.count-1),liked:false};
   }else{
-    await sb.from('likes').insert({disc_id:id,user_tg_id:CU.tgId});
+    const {error}=await sb.from('likes').insert({disc_id:id,user_tg_id:CU.tgId});
+    if(error){toast('⚠️ '+error.message,true);return;}
     likesCache[id]={count:cur.count+1,liked:true};
   }
   applyFilters();
@@ -1733,6 +1737,7 @@ async function init(){
   const discId=params.get('disc')||window.Telegram?.WebApp?.initDataUnsafe?.start_param;
   await loadDiscs();
   await loadLikes();
+  applyFilters();
   subscribeRealtime();
   if(discId)setTimeout(()=>{showDetail(discId);},300);
 }
