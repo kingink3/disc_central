@@ -536,14 +536,31 @@ let isAdmin = false;
 let bannedUsers = [];
 let isTradeReq = false;
 let favorites = [];
+// Load from localStorage as instant cache, then sync from Supabase
 try{favorites=JSON.parse(localStorage.getItem('dc_fav')||'[]');}catch(e){favorites=[];}
 function isFav(id){return favorites.includes(String(id));}
-function toggleFav(id){
+async function toggleFav(id){
   id=String(id);
-  if(favorites.includes(id))favorites=favorites.filter(x=>x!==id);
-  else favorites.push(id);
+  if(!CU||!CU.tgId){toast('⚠️ Спочатку увійдіть',true);return;}
+  if(favorites.includes(id)){
+    favorites=favorites.filter(x=>x!==id);
+    sb.from('favorites').delete().eq('disc_id',id).eq('user_tg_id',CU.tgId).then(()=>{});
+  }else{
+    favorites.push(id);
+    sb.from('favorites').insert({disc_id:id,user_tg_id:CU.tgId}).then(()=>{});
+  }
   localStorage.setItem('dc_fav',JSON.stringify(favorites));
   applyFilters();
+}
+async function loadFavorites(){
+  if(!CU||!CU.tgId)return;
+  try{
+    const {data}=await sb.from('favorites').select('disc_id').eq('user_tg_id',CU.tgId);
+    if(data){
+      favorites=data.map(r=>String(r.disc_id));
+      localStorage.setItem('dc_fav',JSON.stringify(favorites));
+    }
+  }catch(e){}
 }
 
 // ── LIKES ──
@@ -1736,7 +1753,7 @@ async function init(){
   const params=new URLSearchParams(location.search);
   const discId=params.get('disc')||window.Telegram?.WebApp?.initDataUnsafe?.start_param;
   await loadDiscs();
-  await loadLikes();
+  await Promise.all([loadLikes(),loadFavorites()]);
   applyFilters();
   subscribeRealtime();
   if(discId)setTimeout(()=>{showDetail(discId);},300);
