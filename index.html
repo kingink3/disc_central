@@ -58,7 +58,7 @@ nav{display:flex;gap:0.15rem;align-items:center;flex:1;justify-content:center}
 
 .filter-bar{display:flex;gap:0.4rem;align-items:center;margin-bottom:0.5rem}
 .ftabs{display:flex;gap:0;overflow-x:auto;-webkit-overflow-scrolling:touch;flex:1;background:var(--s2);border:1px solid var(--b1);border-radius:var(--r);padding:3px;scrollbar-width:none}
-.ft{padding:5px 0;border-radius:6px;font-size:0.71rem;font-weight:600;cursor:pointer;border:none;background:transparent;color:var(--m1);font-family:'DM Sans',sans-serif;transition:background 0.15s,color 0.15s;white-space:nowrap;flex:1;text-align:center;min-width:0}
+.ft{padding:5px 0;border-radius:6px;font-size:0.71rem;font-weight:600;cursor:pointer;border:none;background:transparent;color:var(--m1);font-family:'DM Sans',sans-serif;transition:background 0.15s,color 0.15s;white-space:nowrap;flex:1 1 0;text-align:center}
 .ft.active{background:var(--lime);color:#080a10}.ft:hover:not(.active){color:var(--text)}
 .adv-filters{display:none;background:var(--s2);border:1px solid var(--b1);border-radius:var(--r2);padding:0.875rem;margin-bottom:0.875rem}
 .adv-filters.open{display:block}
@@ -597,7 +597,11 @@ function hasTgUsername(tg){return tg&&!/^\d+$/.test(String(tg).replace('@','').t
 function tgLinkFull(tg){
   const clean=String(tg).replace('@','').trim();
   if(!clean)return'';
-  if(/^\d+$/.test(clean))return` · <a href="tg://user?id=${clean}" target="_blank" style="color:var(--cyan)">написати ↗</a>`;
+  if(/^\d+$/.test(clean)){
+    const tgApp=window.Telegram?.WebApp;
+    if(tgApp)return` · <a href="#" onclick="event.preventDefault();window.Telegram.WebApp.openTelegramLink('https://t.me/@id${clean}')" style="color:var(--cyan)">написати ↗</a>`;
+    return` · <a href="tg://user?id=${clean}" target="_blank" style="color:var(--cyan)">написати ↗</a>`;
+  }
   return` · <a href="https://t.me/${clean}" target="_blank" style="color:var(--cyan)">@${clean}</a>`;
 }
 
