@@ -180,7 +180,9 @@ input[type=range]::-moz-range-track{height:6px;background:var(--s3);border-radiu
 
 @media(max-width:600px){
   nav{display:none}.hamburger{display:flex}
-  .stats-mini{grid-template-columns:repeat(2,1fr)}
+  .stats-mini{grid-template-columns:repeat(4,1fr)}
+  .stat-mn{font-size:1.2rem}
+  .stat-ml{font-size:0.55rem}
   .disc-grid{grid-template-columns:repeat(2,1fr);gap:0.5rem}
   .fr{grid-template-columns:1fr}
 }
@@ -252,6 +254,7 @@ input[type=range]::-moz-range-track{height:6px;background:var(--s3);border-radiu
         <button class="ft" onclick="setFt(this,'testing')">Тест</button>
         <button class="ft" onclick="setFt(this,'trade')">Обмін</button>
         <button class="ft" onclick="setFt(this,'reserved')">Резерв</button>
+        <button class="ft" onclick="setFt(this,'fav')">❤️</button>
       </div>
       <button class="btn btn-ghost btn-sm" onclick="toggleAdvFilters()" id="advBtn" style="flex-shrink:0;padding:5px 9px">⚙</button>
     </div>
@@ -266,6 +269,7 @@ input[type=range]::-moz-range-track{height:6px;background:var(--s3);border-radiu
         <div><span class="fl">Turn до</span><input type="number" id="f-turn" placeholder="1" step="0.5" oninput="applyFilters()"></div>
         <div><span class="fl">Fade до</span><input type="number" id="f-fade" placeholder="5" oninput="applyFilters()"></div>
         <div><span class="fl">Ціна до ₴</span><input type="number" id="f-price" placeholder="9999" oninput="applyFilters()"></div>
+        <div><span class="fl">Місто</span><input id="f-city" placeholder="Всі" oninput="applyFilters()"></div>
         <div style="display:flex;align-items:flex-end"><button class="btn btn-ghost btn-sm btn-full" onclick="resetFilters()">✕ Скинути</button></div>
       </div>
     </div>
@@ -394,6 +398,7 @@ input[type=range]::-moz-range-track{height:6px;background:var(--s3);border-radiu
     <div class="fr"><div class="fg"><label class="fl">Бренд *</label><input id="ad-brand" placeholder="Innova, Discraft..."></div><div class="fg"><label class="fl">Модель *</label><input id="ad-model" placeholder="Boss, Buzzz..."></div></div>
     <div class="fr"><div class="fg"><label class="fl">Пластик</label><input id="ad-plastic" placeholder="Star, ESP..."></div><div class="fg"><label class="fl">Вага (г)</label><input id="ad-weight" type="number" placeholder="175"></div></div>
     <div class="fr"><div class="fg"><label class="fl">Колір</label><input id="ad-color" placeholder="Жовтий..."></div><div class="fg"><label class="fl">Buyout (UAH)</label><input id="ad-buyout" type="number" placeholder="850"></div></div>
+    <div class="fg"><label class="fl">Місто</label><input id="ad-city" placeholder="Київ, Біла Церква..."></div>
     <div class="fg"><label class="fl">Стан: <span id="condValLabel">7</span>/10</label>
       <div style="display:flex;align-items:center;gap:0.5rem">
         <input type="range" id="ad-cond" min="1" max="10" value="7" step="1" style="flex:1" oninput="document.getElementById('condValLabel').textContent=this.value;document.getElementById('condVal').textContent=this.value;updateCondBar()">
@@ -446,6 +451,7 @@ input[type=range]::-moz-range-track{height:6px;background:var(--s3);border-radiu
     <label class="toggle-row fg"><input type="checkbox" id="edit-trade"><span style="font-size:0.84rem">🔄 Готовий до обміну</span></label>
     <div class="fg" id="editTradeWrap" style="display:none"><label class="fl">Що хочу отримати</label><textarea id="edit-trade-desc"></textarea></div>
     <div class="fg"><label class="fl">Нотатки</label><textarea id="edit-notes"></textarea></div>
+    <div class="fg"><label class="fl">Місто</label><input id="edit-city" placeholder="Київ, Біла Церква..."></div>
     
     <div class="fg"><label class="fl">Статус</label><select id="edit-status"><option value="available">Доступний</option><option value="reserved">Зарезервований</option><option value="testing">На тестуванні</option><option value="sold">Продано</option><option value="unlisted">Знято з продажу</option></select></div>
     <div style="display:flex;gap:0.5rem"><button class="btn btn-lime btn-full" onclick="submitEditDisc()">Зберегти</button></div>
@@ -529,6 +535,16 @@ let photoFiles = [null, null, null];
 let isAdmin = false;
 let bannedUsers = [];
 let isTradeReq = false;
+let favorites = [];
+try{favorites=JSON.parse(localStorage.getItem('dc_fav')||'[]');}catch(e){favorites=[];}
+function isFav(id){return favorites.includes(String(id));}
+function toggleFav(id){
+  id=String(id);
+  if(favorites.includes(id))favorites=favorites.filter(x=>x!==id);
+  else favorites.push(id);
+  localStorage.setItem('dc_fav',JSON.stringify(favorites));
+  applyFilters();
+}
 
 const ST = {
   available:{l:'Доступний',c:'av',sc:'s-av'},
@@ -596,7 +612,7 @@ function dbToDisc(r){
   return {
     id:r.id, owner:r.owner, ownerTg:r.owner_tg||'',
     brand:r.brand, model:r.model, plastic:r.plastic||'', weight:r.weight||'',
-    color:r.color||'', speed:r.speed||0, glide:r.glide||0, turn:r.turn||0, fade:r.fade||0,
+    color:r.color||'', city:r.city||'', speed:r.speed||0, glide:r.glide||0, turn:r.turn||0, fade:r.fade||0,
     condition:r.condition||7, buyout:r.buyout||0, status:r.status||'available',
     tester:r.tester||'', testerTg:r.tester_tg||'',
     photoUrl:r.photo_url||'', photoUrl2:r.photo_url2||'', photoUrl3:r.photo_url3||'',
@@ -608,7 +624,7 @@ function discToDb(d){
   return {
     id:d.id, owner:d.owner, owner_tg:d.ownerTg||'',
     brand:d.brand, model:d.model, plastic:d.plastic||'', weight:d.weight||175,
-    color:d.color||'', speed:d.speed||0, glide:d.glide||0, turn:d.turn||0, fade:d.fade||0,
+    color:d.color||'', city:d.city||'', speed:d.speed||0, glide:d.glide||0, turn:d.turn||0, fade:d.fade||0,
     condition:d.condition||7, buyout:d.buyout||0, status:d.status||'available',
     tester:d.tester||'', tester_tg:d.testerTg||'',
     photo_url:d.photoUrl||'', photo_url2:d.photoUrl2||'', photo_url3:d.photoUrl3||'',
@@ -657,7 +673,7 @@ function cardHTML(d){
     </div>
     <div class="disc-body">
       <div class="disc-title">${d.brand} ${d.model}</div>
-      <div class="disc-sub">${[d.plastic,d.weight?d.weight+'г':''].filter(Boolean).join(' · ')}</div>
+      <div class="disc-sub">${[d.plastic,d.weight?d.weight+'г':'',d.city].filter(Boolean).join(' · ')}</div>
       ${condBar(d.condition)}
       <div class="flight-row">
         <div class="fc"><div class="fv">${d.speed||0}</div><div class="fk">Spd</div></div>
@@ -668,7 +684,10 @@ function cardHTML(d){
       <div class="disc-footer">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.35rem">
           <div class="disc-price">${d.buyout?d.buyout+' ₴':'—'}</div>
-          <div class="disc-own" onclick="event.stopPropagation();filterByOwner('${d.owner}')">👤 ${(d.owner||'').split(' ')[0]}</div>
+          <div style="display:flex;align-items:center;gap:0.4rem">
+            <span onclick="event.stopPropagation();toggleFav('${d.id}')" style="cursor:pointer;font-size:0.85rem;opacity:${isFav(d.id)?1:0.3}">${isFav(d.id)?'❤️':'🤍'}</span>
+            <div class="disc-own" onclick="event.stopPropagation();filterByOwner('${d.owner}')">👤 ${(d.owner||'').split(' ')[0]}</div>
+          </div>
         </div>
         <div onclick="event.stopPropagation()" style="display:flex;gap:3px;width:100%">
           ${hasTrade?`<button class="btn btn-purple btn-xs" onclick="event.stopPropagation();openTradeOffer('${d.id}')" style="flex:1">Обмін</button>`:''}
@@ -682,17 +701,19 @@ function cardHTML(d){
 
 // ── FILTERS ──
 function toggleAdvFilters(){const el=document.getElementById('advFilters'),btn=document.getElementById('advBtn'),open=!el.classList.contains('open');el.classList.toggle('open',open);btn.style.borderColor=open?'var(--lime)':'var(--b1)';btn.style.color=open?'var(--lime)':'';}
-function resetFilters(){['f-speed','f-glide','f-price'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});document.getElementById('f-sort').value='new';document.getElementById('mainSearch').value='';CF='all';document.querySelectorAll('.ft').forEach((b,i)=>b.classList.toggle('active',i===0));applyFilters();}
+function resetFilters(){['f-speed','f-glide','f-turn','f-fade','f-price','f-city'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});document.getElementById('f-sort').value='new';document.getElementById('mainSearch').value='';CF='all';document.querySelectorAll('.ft').forEach((b,i)=>b.classList.toggle('active',i===0));applyFilters();}
 function applyFilters(){
   const q=(document.getElementById('mainSearch')||{value:''}).value.toLowerCase();
   const fSpeed=parseFloat(document.getElementById('f-speed')?.value)||0;
   const fGlide=parseFloat(document.getElementById('f-glide')?.value)||0;
   const fPrice=parseFloat(document.getElementById('f-price')?.value)||0;
+  const fCity=(document.getElementById('f-city')?.value||'').toLowerCase().trim();
   const sort=document.getElementById('f-sort')?.value||'new';
   let list=allDiscs.filter(d=>d.status!=='sold');
-  if(CF==='trade')list=list.filter(d=>{const tw=String(d.tradeWant||'').trim();return tw&&tw!=='false';});
+  if(CF==='fav')list=list.filter(d=>isFav(d.id));
+  else if(CF==='trade')list=list.filter(d=>{const tw=String(d.tradeWant||'').trim();return tw&&tw!=='false';});
   else if(CF!=='all')list=list.filter(d=>d.status===CF||d.status==='trade'&&CF==='available');
-  if(q)list=list.filter(d=>[d.brand,d.model,d.plastic,d.color,d.owner].join(' ').toLowerCase().includes(q));
+  if(q)list=list.filter(d=>[d.brand,d.model,d.plastic,d.color,d.owner,d.city].join(' ').toLowerCase().includes(q));
   if(fSpeed>0)list=list.filter(d=>parseFloat(d.speed)>=fSpeed);
   if(fGlide>0)list=list.filter(d=>parseFloat(d.glide)>=fGlide);
   const fTurnEl=document.getElementById('f-turn');
@@ -700,6 +721,7 @@ function applyFilters(){
   if(fTurnEl?.value!=='')list=list.filter(d=>parseFloat(d.turn)<=(parseFloat(fTurnEl.value)));
   if(fFadeEl?.value!=='')list=list.filter(d=>parseFloat(d.fade)<=(parseFloat(fFadeEl.value)));
   if(fPrice>0)list=list.filter(d=>parseFloat(d.buyout)<=fPrice);
+  if(fCity)list=list.filter(d=>(d.city||'').toLowerCase().includes(fCity));
   if(sort==='price-asc')list.sort((a,b)=>(parseFloat(a.buyout)||0)-(parseFloat(b.buyout)||0));
   else if(sort==='price-desc')list.sort((a,b)=>(parseFloat(b.buyout)||0)-(parseFloat(a.buyout)||0));
   else if(sort==='speed-desc')list.sort((a,b)=>(parseFloat(b.speed)||0)-(parseFloat(a.speed)||0));
@@ -739,6 +761,7 @@ function showDetail(id){
       <div class="detail-info-item"><span class="di-label">Вага:</span> ${d.weight||'—'}г</div>
       <div class="detail-info-item"><span class="di-label">Колір:</span> ${d.color||'—'}</div>
       ${d.inked?'<div class="detail-info-item"><span style="color:var(--purple)">🖊️ Inked</span></div>':'<div></div>'}
+      ${d.city?`<div class="detail-info-item full"><span class="di-label">Місто:</span> ${d.city}</div>`:''}
       <div class="detail-info-item full"><span class="di-label">Власник:</span> ${d.owner||'—'}${d.ownerTg?` · <a href="https://t.me/${d.ownerTg.replace('@','')}" target="_blank" style="color:var(--cyan)">@${d.ownerTg.replace('@','')}</a>`:''}</div>
       ${d.tester&&d.status==='testing'?`<div class="detail-info-item full"><span class="di-label">Тестер:</span> ${d.tester}</div>`:''}
     </div>
@@ -804,6 +827,7 @@ async function submitDisc(){
     plastic:document.getElementById('ad-plastic').value,
     weight:parseInt(document.getElementById('ad-weight').value)||175,
     color:document.getElementById('ad-color').value,
+    city:document.getElementById('ad-city').value.trim(),
     condition:parseInt(document.getElementById('ad-cond').value)||7,
     speed:parseFloat(document.getElementById('ad-speed').value)||0,
     glide:parseFloat(document.getElementById('ad-glide').value)||0,
@@ -837,7 +861,7 @@ function resetAddForm(){
   document.getElementById('condValLabel').textContent='7';
   document.getElementById('ad-cond').value='7';
   document.getElementById('condVal').textContent='7';
-  ['ad-brand','ad-model','ad-plastic','ad-weight','ad-color','ad-buyout','ad-speed','ad-glide','ad-turn','ad-fade','ad-notes','ad-trade-desc'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  ['ad-brand','ad-model','ad-plastic','ad-weight','ad-color','ad-city','ad-buyout','ad-speed','ad-glide','ad-turn','ad-fade','ad-notes','ad-trade-desc'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
 }
 
 document.getElementById('ad-trade').addEventListener('change',function(){document.getElementById('tradeDescWrap').style.display=this.checked?'block':'none';});
@@ -965,6 +989,7 @@ function openEditDiscWithData(d){
   document.getElementById('edit-trade-desc').value=d.tradeWant||'';
   document.getElementById('editTradeWrap').style.display=d.tradeWant?'block':'none';
   document.getElementById('edit-notes').value=d.notes||'';
+  document.getElementById('edit-city').value=d.city||'';
   document.getElementById('edit-status').value=d.status||'available';
   document.getElementById('edit-speed').value=d.speed||0;
   document.getElementById('edit-glide').value=d.glide||0;
@@ -1035,6 +1060,7 @@ async function submitEditDisc(){
     status:document.getElementById('edit-status').value,
     trade_want:isTrade?(document.getElementById('edit-trade-desc').value.trim()||'Пропонуйте'):'',
     notes:document.getElementById('edit-notes').value,
+    city:document.getElementById('edit-city').value.trim(),
     speed:parseFloat(document.getElementById('edit-speed').value)||0,
     glide:parseFloat(document.getElementById('edit-glide').value)||0,
     turn:parseFloat(document.getElementById('edit-turn').value)||0,
