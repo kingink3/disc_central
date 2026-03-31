@@ -1578,7 +1578,6 @@ document.querySelectorAll('.overlay').forEach(o=>o.addEventListener('click',e=>{
 (function(){
   const isTg=!!window.Telegram?.WebApp;
   const isAndroid=/android/i.test(navigator.userAgent);
-  const isIOS=/iphone|ipad|ipod/i.test(navigator.userAgent);
   function isInput(el){return el&&(el.tagName==='TEXTAREA'||(el.tagName==='INPUT'&&!['file','checkbox','radio','range'].includes(el.type)));}
   // Force focus on tap (Android)
   if(isAndroid){
@@ -1601,12 +1600,17 @@ document.querySelectorAll('.overlay').forEach(o=>o.addEventListener('click',e=>{
       }
     });
   }
-  // Scroll input into view when keyboard opens (iOS + Android)
+  // Add bottom padding to modal when keyboard opens so content is scrollable
   document.addEventListener('focusin',function(e){
     if(isInput(e.target)){
-      setTimeout(()=>{
-        e.target.scrollIntoView({block:'center',behavior:'smooth'});
-      },isIOS?400:200);
+      const modal=e.target.closest('.modal');
+      if(modal)modal.style.paddingBottom='40vh';
+    }
+  });
+  document.addEventListener('focusout',function(e){
+    if(isInput(e.target)){
+      const modal=e.target.closest('.modal');
+      if(modal)setTimeout(()=>{modal.style.paddingBottom='';},300);
     }
   });
 })();
