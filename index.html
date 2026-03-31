@@ -737,7 +737,7 @@ function showDetail(id){
       <div class="detail-info-item"><span class="di-label">Колір:</span> ${d.color||'—'}</div>
       ${d.inked?'<div class="detail-info-item"><span style="color:var(--purple)">🖊️ Inked</span></div>':'<div></div>'}
       <div class="detail-info-item full"><span class="di-label">Власник:</span> ${d.owner||'—'}${d.ownerTg?` · <a href="https://t.me/${d.ownerTg.replace('@','')}" target="_blank" style="color:var(--cyan)">@${d.ownerTg.replace('@','')}</a>`:''}</div>
-      ${d.tester?`<div class="detail-info-item full"><span class="di-label">Тестер:</span> ${d.tester}</div>`:''}
+      ${d.tester&&d.status==='testing'?`<div class="detail-info-item full"><span class="di-label">Тестер:</span> ${d.tester}</div>`:''}
     </div>
     ${hasTrade?`<div class="info-box" style="border-color:rgba(167,139,250,0.25);background:rgba(167,139,250,0.05);margin-bottom:0.875rem"><strong style="color:var(--purple)">🔄 Обмін:</strong> ${d.tradeWant}</div>`:''}
     ${d.notes?`<div style="font-size:0.8rem;color:var(--m2);padding:0.65rem;background:var(--s2);border-radius:var(--r);margin-bottom:0.875rem">${d.notes}</div>`:''}
