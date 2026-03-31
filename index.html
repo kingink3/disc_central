@@ -2,7 +2,7 @@
 <html lang="uk">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Disc Central</title>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
@@ -16,65 +16,11 @@
   --av:#4ade80;--re:#facc15;--te:#60a5fa;--pe:#fb923c;--so:#4b5872;
   --r:8px;--r2:12px
 }
-.light{
-  --bg:#f0f2f5;--s1:#ffffff;--s2:#f7f8fa;--s3:#ebedf2;
-  --b1:#dce0e8;--b2:#c8cdd6;
-  --lime:#4d8200;--cyan:#0e7490;--orange:#c93d10;--purple:#6d28d9;
-  --text:#111318;--m1:#5f6673;--m2:#3d4350;
-  --av:#15803d;--re:#a16207;--te:#1d4ed8;--pe:#c2410c;--so:#94a3b8;
-  --r:8px;--r2:12px
-}
-.light header{box-shadow:0 1px 3px rgba(0,0,0,0.06)}
-.light .disc-card{box-shadow:0 1px 4px rgba(0,0,0,0.06)}
-.light .disc-card:hover{box-shadow:0 6px 20px rgba(0,0,0,0.1);border-color:var(--lime)}
-.light .stat-m,.light .stat-card,.light .card{box-shadow:0 1px 3px rgba(0,0,0,0.05)}
-.light .btn-lime{background:var(--lime);color:#fff}
-.light .btn-lime:hover{opacity:0.9}
-.light .btn-cyan{background:rgba(14,116,144,0.08);color:var(--cyan);border-color:rgba(14,116,144,0.2)}
-.light .btn-purple{background:rgba(109,40,217,0.08);color:var(--purple);border-color:rgba(109,40,217,0.2)}
-.light .btn-danger{background:rgba(220,38,38,0.08);color:#dc2626;border-color:rgba(220,38,38,0.2)}
-.light .btn-orange{background:rgba(201,61,16,0.08);color:var(--orange);border-color:rgba(201,61,16,0.2)}
-.light .btn-ghost{border-color:var(--b1);color:var(--text)}
-.light .btn-ghost:hover{background:var(--s2);border-color:var(--b2)}
-.light .ft.active{background:var(--lime);color:#fff}
-.light .nav-a.active{color:var(--lime);background:var(--s2)}
-.light .cond-seg.filled{background:var(--lime)}
-.light .fv{color:var(--lime)}
-.light .disc-price{color:var(--lime)}
-.light .badge{font-weight:700}
-.light .b-av{background:rgba(21,128,61,0.1);color:#15803d}
-.light .b-re{background:rgba(161,98,7,0.1);color:#a16207}
-.light .b-te{background:rgba(29,78,216,0.1);color:#1d4ed8}
-.light .b-pe{background:rgba(194,65,12,0.1);color:#c2410c}
-.light .b-so{background:rgba(148,163,184,0.12);color:#64748b}
-.light .b-tr{background:rgba(109,40,217,0.1);color:#6d28d9}
-.light .status-overlay{background:rgba(255,255,255,0.85);backdrop-filter:blur(4px)}
-.light .s-av{color:#15803d}.light .s-re{color:#a16207}.light .s-te{color:#1d4ed8}.light .s-pe{color:#c2410c}.light .s-so{color:#64748b}
-.light .info-box{background:rgba(77,130,0,0.05);border-color:rgba(77,130,0,0.2)}
-.light .info-box strong{color:var(--lime)}
-.light .info-box.cy{background:rgba(14,116,144,0.05);border-color:rgba(14,116,144,0.2)}
-.light .info-box.cy strong{color:var(--cyan)}
-.light .disc-photo-placeholder{background:var(--s3)}
-.light .overlay{background:rgba(0,0,0,0.35)}
-.light .modal{box-shadow:0 16px 48px rgba(0,0,0,0.15)}
-.light .toast{box-shadow:0 4px 16px rgba(0,0,0,0.1)}
-.light input,.light select,.light textarea{background:var(--s2);border-color:var(--b1);color:var(--text)}
-.light input:focus,.light select:focus,.light textarea:focus{border-color:var(--lime)}
-.light .toggle-row{background:var(--s2);border-color:var(--b1)}
-.light .photo-slot{background:var(--s2);border-color:var(--b1)}
-.light .hamburger{background:var(--s2);border-color:var(--b1)}
-.light .hamburger span{background:var(--text)}
-.light .fc{background:var(--s2)}
-.light .adv-filters{background:var(--s2);border-color:var(--b1)}
-.light .logo-basket line,.light .logo-basket ellipse,.light .logo-basket path{stroke:var(--lime) !important}
-.light .logo-basket rect{fill:var(--lime) !important}
-.light .logo-text b{color:var(--lime)}
-*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;tap-highlight-color:transparent}
-body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh;overflow-x:hidden;overflow-y:scroll}
-::-webkit-scrollbar{width:0;height:0}
-@media(min-width:601px){::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:var(--s1)}::-webkit-scrollbar-thumb{background:var(--b1);border-radius:2px}}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh;overflow-x:hidden}
+::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:var(--s1)}::-webkit-scrollbar-thumb{background:var(--b1);border-radius:2px}
 
-header{position:sticky;top:0;z-index:100;background:var(--bg);backdrop-filter:blur(14px);border-bottom:1px solid var(--b1);height:54px;display:flex;align-items:center;padding:0 1rem;gap:0.75rem}
+header{position:sticky;top:0;z-index:100;background:rgba(8,10,16,0.95);backdrop-filter:blur(14px);border-bottom:1px solid var(--b1);height:54px;display:flex;align-items:center;padding:0 1rem;gap:0.75rem}
 .logo{display:flex;align-items:center;gap:8px;cursor:pointer;flex-shrink:0}
 .logo-basket{width:32px;height:34px;flex-shrink:0}
 .logo-text{font-family:'Bebas Neue',sans-serif;font-size:1.3rem;letter-spacing:2px}
@@ -85,7 +31,7 @@ nav{display:flex;gap:0.15rem;align-items:center;flex:1;justify-content:center}
 .nav-a.active{color:var(--lime);background:var(--s2)}
 .header-right{display:flex;gap:0.4rem;align-items:center;flex-shrink:0}
 .btn{padding:6px 13px;border-radius:var(--r);font-family:'DM Sans',sans-serif;font-weight:600;font-size:0.78rem;cursor:pointer;transition:all 0.15s;border:none;display:inline-flex;align-items:center;justify-content:center;gap:0.3rem;white-space:nowrap}
-.btn-lime{background:var(--lime);color:#fff}.btn-lime:hover{opacity:0.9}
+.btn-lime{background:var(--lime);color:#080a10}.btn-lime:hover{background:#c0db2a}
 .btn-ghost{background:transparent;color:var(--text);border:1px solid var(--b1)}.btn-ghost:hover{border-color:var(--b2);background:var(--s2)}
 .btn-sm{padding:5px 11px;font-size:0.75rem}.btn-xs{padding:3px 8px;font-size:0.69rem}
 .btn-full{width:100%;justify-content:center;padding:10px 14px}
@@ -98,7 +44,7 @@ nav{display:flex;gap:0.15rem;align-items:center;flex:1;justify-content:center}
 .hamburger.open span:nth-child(1){transform:translateY(6px) rotate(45deg)}
 .hamburger.open span:nth-child(2){opacity:0}
 .hamburger.open span:nth-child(3){transform:translateY(-6px) rotate(-45deg)}
-.mobile-nav{display:none;position:fixed;top:54px;left:0;right:0;background:var(--bg);backdrop-filter:blur(16px);border-bottom:1px solid var(--b1);z-index:99;padding:0.75rem;flex-direction:column;gap:0.2rem}
+.mobile-nav{display:none;position:fixed;top:54px;left:0;right:0;background:rgba(8,10,16,0.97);backdrop-filter:blur(16px);border-bottom:1px solid var(--b1);z-index:99;padding:0.75rem;flex-direction:column;gap:0.2rem}
 .mobile-nav.open{display:flex}
 .mobile-nav .nav-a{text-align:left;padding:9px 12px;font-size:0.86rem}
 .page{display:none}.page.active{display:block}
@@ -111,9 +57,9 @@ nav{display:flex;gap:0.15rem;align-items:center;flex:1;justify-content:center}
 .stat-ml{font-size:0.62rem;color:var(--m1);text-transform:uppercase;letter-spacing:0.5px;margin-top:2px}
 
 .filter-bar{display:flex;gap:0.4rem;align-items:center;margin-bottom:0.5rem}
-.ftabs{display:flex;gap:0;overflow-x:auto;-webkit-overflow-scrolling:touch;flex:1;background:var(--s2);border:1px solid var(--b1);border-radius:var(--r);padding:3px;scrollbar-width:none}
-.ft{padding:5px 0;border-radius:6px;font-size:0.71rem;font-weight:600;cursor:pointer;border:none;background:transparent;color:var(--m1);font-family:'DM Sans',sans-serif;transition:background 0.15s,color 0.15s;white-space:nowrap;flex:1 1 0;text-align:center}
-.ft.active{background:var(--lime);color:#fff}.ft:hover:not(.active){color:var(--text)}
+.ftabs{display:flex;gap:2px;overflow-x:auto;-webkit-overflow-scrolling:touch;flex:1;background:var(--s2);border:1px solid var(--b1);border-radius:var(--r);padding:3px;scrollbar-width:none}
+.ft{padding:3px 9px;border-radius:6px;font-size:0.71rem;font-weight:600;cursor:pointer;border:none;background:transparent;color:var(--m1);font-family:'DM Sans',sans-serif;transition:all 0.15s;white-space:nowrap;flex-shrink:0}
+.ft.active{background:var(--lime);color:#080a10}.ft:hover:not(.active){color:var(--text)}
 .adv-filters{display:none;background:var(--s2);border:1px solid var(--b1);border-radius:var(--r2);padding:0.875rem;margin-bottom:0.875rem}
 .adv-filters.open{display:block}
 .adv-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:0.6rem;align-items:end}
@@ -122,7 +68,7 @@ nav{display:flex;gap:0.15rem;align-items:center;flex:1;justify-content:center}
 
 .disc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:0.75rem}
 .disc-card{background:var(--s1);border:1px solid var(--b1);border-radius:var(--r2);overflow:hidden;cursor:pointer;transition:all 0.2s;display:flex;flex-direction:column}
-.disc-card:hover{border-color:rgba(212,240,64,0.25);transform:translateY(-1px);box-shadow:0 8px 28px rgba(0,0,0,0.15)}
+.disc-card:hover{border-color:rgba(212,240,64,0.25);transform:translateY(-1px);box-shadow:0 8px 28px rgba(0,0,0,0.45)}
 .disc-strip{height:2px}
 .disc-strip.av{background:var(--av)}.disc-strip.re{background:var(--re)}.disc-strip.te{background:var(--te)}.disc-strip.pe{background:var(--pe)}.disc-strip.so{background:var(--so)}
 .disc-photo-wrap{position:relative;height:100px;overflow:hidden;background:var(--s2)}
@@ -176,9 +122,7 @@ nav{display:flex;gap:0.15rem;align-items:center;flex:1;justify-content:center}
 .fg{margin-bottom:0.875rem}
 .fl{display:block;font-size:0.68rem;font-weight:700;color:var(--m1);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:0.35rem}
 .fr{display:grid;grid-template-columns:1fr 1fr;gap:0.75rem}
-input,select,textarea{width:100%;background:var(--s2);border:1px solid var(--b1);border-radius:var(--r);padding:7px 10px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:16px;outline:none;transition:border-color 0.2s}
-input[type=number]{-moz-appearance:textfield}
-input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+input,select,textarea{width:100%;background:var(--s2);border:1px solid var(--b1);border-radius:var(--r);padding:7px 10px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:0.84rem;outline:none;transition:border-color 0.2s}
 input:focus,select:focus,textarea:focus{border-color:var(--lime)}
 select option{background:var(--s2)}
 textarea{resize:vertical;min-height:65px;-webkit-user-select:text;user-select:text}
@@ -193,19 +137,16 @@ input,textarea,select{-webkit-user-select:text;user-select:text}
 .upload-prog{height:2px;background:var(--b1);border-radius:1px;margin-top:0.4rem;overflow:hidden;display:none}
 .upload-prog-fill{height:100%;background:var(--lime);width:0;transition:width 0.3s}
 
-.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);backdrop-filter:blur(8px);z-index:200;align-items:flex-start;justify-content:center;padding:0.75rem;overflow-y:scroll;-webkit-overflow-scrolling:touch}
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.78);backdrop-filter:blur(8px);z-index:200;align-items:center;justify-content:center;padding:0.75rem}
 .overlay.open{display:flex}
-body.modal-open{overflow:hidden}
-.modal{background:var(--s1);border:1px solid var(--b1);border-radius:14px;padding:1.5rem 1.5rem 2rem;width:100%;max-width:480px;max-height:none;overflow-y:visible;position:relative;animation:mIn 0.2s ease;margin:1rem auto 1rem}
+.modal{background:var(--s1);border:1px solid var(--b1);border-radius:14px;padding:1.5rem;width:100%;max-width:480px;max-height:92vh;overflow-y:auto;position:relative;animation:mIn 0.2s ease}
 .modal-wide{max-width:640px}
 @keyframes mIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
-.mc{position:absolute;top:0.6rem;right:0.6rem;background:rgba(0,0,0,0.6);backdrop-filter:blur(4px);border:none;color:#fff;width:32px;height:32px;border-radius:10px;cursor:pointer;font-size:1.1rem;display:flex;align-items:center;justify-content:center;z-index:10;transition:all 0.15s}
-.mc:hover{background:rgba(0,0,0,0.8)}
-.mc-edit{position:absolute;top:3.2rem;right:0.6rem;background:rgba(0,0,0,0.6);backdrop-filter:blur(4px);border:none;color:#fff;width:32px;height:32px;border-radius:10px;cursor:pointer;font-size:1.1rem;display:flex;align-items:center;justify-content:center;z-index:10;transition:all 0.15s}
-.mc-edit:hover{background:rgba(0,0,0,0.8)}
+.mc{position:absolute;top:0.6rem;right:0.6rem;background:rgba(8,10,16,0.7);backdrop-filter:blur(6px);border:1px solid rgba(255,255,255,0.12);color:rgba(255,255,255,0.7);width:30px;height:30px;border-radius:8px;cursor:pointer;font-size:1rem;display:flex;align-items:center;justify-content:center;z-index:10;transition:all 0.15s}
+.mc:hover{color:#fff;background:rgba(8,10,16,0.9);border-color:rgba(255,255,255,0.25)}
 .mt{font-family:'Bebas Neue',sans-serif;font-size:1.5rem;letter-spacing:1.5px;margin-bottom:1.1rem}
 .mt span{color:var(--lime)}
-.detail-photos{position:relative;overflow:hidden;margin:-1.5rem -1.5rem 1.1rem -1.5rem;border-radius:14px 14px 0 0;background:#0a0e14}
+.detail-photos{position:relative;overflow:hidden;margin:-1.5rem -1.5rem 1.1rem -1.5rem;border-radius:14px 14px 0 0;background:var(--s2)}
 .detail-photos img{width:100%;max-height:360px;object-fit:contain;display:none}
 .detail-photos img.active{display:block}
 .detail-photos .photo-nav{opacity:1;width:28px;height:28px;font-size:0.8rem}
@@ -219,10 +160,10 @@ thead th{background:var(--s2);padding:7px 10px;text-align:left;font-size:0.65rem
 tbody tr{border-top:1px solid var(--b1);transition:background 0.1s}
 tbody tr:hover{background:var(--s2)}
 td{padding:8px 10px;font-size:0.8rem}
-.loading-overlay{position:fixed;inset:0;background:var(--bg);z-index:500;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:0.875rem}
+.loading-overlay{position:fixed;inset:0;background:rgba(8,10,16,0.95);z-index:500;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:0.875rem}
 .loading-spinner{width:36px;height:36px;border:3px solid var(--b1);border-top-color:var(--lime);border-radius:50%;animation:spin 0.8s linear infinite}
 .toasts{position:fixed;bottom:1rem;right:1rem;z-index:400;display:flex;flex-direction:column;gap:0.4rem}
-.toast{background:var(--s1);border:1px solid var(--b1);border-left:3px solid var(--lime);border-radius:8px;padding:0.7rem 1rem;font-size:0.82rem;animation:tIn 0.22s ease;box-shadow:0 5px 24px rgba(0,0,0,0.15);min-width:180px}
+.toast{background:var(--s1);border:1px solid var(--b1);border-left:3px solid var(--lime);border-radius:8px;padding:0.7rem 1rem;font-size:0.82rem;animation:tIn 0.22s ease;box-shadow:0 5px 24px rgba(0,0,0,0.5);min-width:180px}
 @keyframes tIn{from{opacity:0;transform:translateX(10px)}to{opacity:1;transform:translateX(0)}}
 .toast.err{border-left-color:var(--orange)}
 .cab-tabs{display:flex;gap:0.4rem;margin-bottom:1rem;background:var(--s2);border:1px solid var(--b1);border-radius:var(--r);padding:3px;overflow-x:auto;scrollbar-width:none}
@@ -236,9 +177,7 @@ input[type=range]::-moz-range-track{height:6px;background:var(--s3);border-radiu
 
 @media(max-width:600px){
   nav{display:none}.hamburger{display:flex}
-  .stats-mini{grid-template-columns:repeat(4,1fr)}
-  .stat-mn{font-size:1.2rem}
-  .stat-ml{font-size:0.55rem}
+  .stats-mini{grid-template-columns:repeat(2,1fr)}
   .disc-grid{grid-template-columns:repeat(2,1fr);gap:0.5rem}
   .fr{grid-template-columns:1fr}
 }
@@ -281,7 +220,6 @@ input[type=range]::-moz-range-track{height:6px;background:var(--s3);border-radiu
     <button class="btn btn-lime btn-sm" onclick="openModal('addDisc')" id="addDiscBtn2">+ Диск</button>
     <button class="btn btn-ghost btn-sm" onclick="CU?null:openModal('login')" id="userBtn" style="display:none">Увійти</button>
     <div class="hamburger" id="hamburger" onclick="toggleNav()"><span></span><span></span><span></span></div>
-    <button class="btn btn-ghost btn-sm" onclick="toggleTheme()" id="themeBtn" style="padding:5px 8px;font-size:0.9rem">🌙</button>
   </div>
 </header>
 
@@ -310,7 +248,7 @@ input[type=range]::-moz-range-track{height:6px;background:var(--s3);border-radiu
         <button class="ft" onclick="setFt(this,'available')">Доступні</button>
         <button class="ft" onclick="setFt(this,'testing')">Тест</button>
         <button class="ft" onclick="setFt(this,'trade')">Обмін</button>
-        <button class="ft" onclick="setFt(this,'fav')">⭐</button>
+        <button class="ft" onclick="setFt(this,'reserved')">Резерв</button>
       </div>
       <button class="btn btn-ghost btn-sm" onclick="toggleAdvFilters()" id="advBtn" style="flex-shrink:0;padding:5px 9px">⚙</button>
     </div>
@@ -325,7 +263,6 @@ input[type=range]::-moz-range-track{height:6px;background:var(--s3);border-radiu
         <div><span class="fl">Turn до</span><input type="number" id="f-turn" placeholder="1" step="0.5" oninput="applyFilters()"></div>
         <div><span class="fl">Fade до</span><input type="number" id="f-fade" placeholder="5" oninput="applyFilters()"></div>
         <div><span class="fl">Ціна до ₴</span><input type="number" id="f-price" placeholder="9999" oninput="applyFilters()"></div>
-        <div><span class="fl">Місто</span><input id="f-city" placeholder="Всі" oninput="applyFilters()"></div>
         <div style="display:flex;align-items:flex-end"><button class="btn btn-ghost btn-sm btn-full" onclick="resetFilters()">✕ Скинути</button></div>
       </div>
     </div>
@@ -365,7 +302,7 @@ input[type=range]::-moz-range-track{height:6px;background:var(--s3);border-radiu
 <div id="page-rules" class="page">
   <div class="content">
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:0.875rem">
-      <div class="card"><div style="font-size:1.5rem;margin-bottom:0.5rem">🥏</div><div style="font-weight:700;margin-bottom:0.35rem">Знайди диск</div><div style="font-size:0.8rem;color:var(--m2);line-height:1.7">Переглядай каталог, фільтруй за характеристиками. Кожен диск має Speed / Glide / Turn / Fade і стан 0-10.</div></div>
+<div class="card"><div style="font-size:1.5rem;margin-bottom:0.5rem">🥏</div><div style="font-weight:700;margin-bottom:0.35rem">Знайди диск</div><div style="font-size:0.8rem;color:var(--m2);line-height:1.7">Переглядай каталог, фільтруй за характеристиками. Кожен диск має Speed / Glide / Turn / Fade і стан 0-10.</div></div>
       <div class="card"><div style="font-size:1.5rem;margin-bottom:0.5rem">📝</div><div style="font-weight:700;margin-bottom:0.35rem">Запит на тест</div><div style="font-size:0.8rem;color:var(--m2);line-height:1.7">Натисни «Тест» - власник отримає сповіщення в Telegram. Пошкодив при тесті - купив. Деталі обговорюйте в особистих.</div></div>
       <div class="card"><div style="font-size:1.5rem;margin-bottom:0.5rem">🔄</div><div style="font-weight:700;margin-bottom:0.35rem">Обмін</div><div style="font-size:0.8rem;color:var(--m2);line-height:1.7">Власник може позначити диск як «Обмін». Деталі в описі диска та в особистих.</div></div>
       <div class="card"><div style="font-size:1.5rem;margin-bottom:0.5rem">💰</div><div style="font-weight:700;margin-bottom:0.35rem">Купівля</div><div style="font-size:0.8rem;color:var(--m2);line-height:1.7">Натисни «Купити» - продавець отримає запит і підтверджує продаж у кабінеті.</div></div>
@@ -417,7 +354,7 @@ input[type=range]::-moz-range-track{height:6px;background:var(--s3);border-radiu
 <!-- MODALS -->
 <div class="overlay" id="ov-login">
   <div class="modal" style="max-width:360px">
-    <button class="mc" onclick="closeModal('login')">❌</button>
+    <button class="mc" onclick="closeModal('login')">✕</button>
     <div class="mt">ВХІД</div>
     <div class="empty" style="padding:1rem 0">
       <div class="empty-icon">🔐</div>
@@ -429,7 +366,7 @@ input[type=range]::-moz-range-track{height:6px;background:var(--s3);border-radiu
 
 <div class="overlay" id="ov-addDisc">
   <div class="modal">
-    <button class="mc" onclick="closeModal('addDisc')">❌</button>
+    <button class="mc" onclick="closeModal('addDisc')">✕</button>
     <div class="mt">ДОДАТИ <span>ДИСК</span></div>
     <div class="fg">
       <label class="fl">Фото (до 3х)</label>
@@ -454,7 +391,6 @@ input[type=range]::-moz-range-track{height:6px;background:var(--s3);border-radiu
     <div class="fr"><div class="fg"><label class="fl">Бренд *</label><input id="ad-brand" placeholder="Innova, Discraft..."></div><div class="fg"><label class="fl">Модель *</label><input id="ad-model" placeholder="Boss, Buzzz..."></div></div>
     <div class="fr"><div class="fg"><label class="fl">Пластик</label><input id="ad-plastic" placeholder="Star, ESP..."></div><div class="fg"><label class="fl">Вага (г)</label><input id="ad-weight" type="number" placeholder="175"></div></div>
     <div class="fr"><div class="fg"><label class="fl">Колір</label><input id="ad-color" placeholder="Жовтий..."></div><div class="fg"><label class="fl">Buyout (UAH)</label><input id="ad-buyout" type="number" placeholder="850"></div></div>
-    <div class="fg"><label class="fl">Місто</label><input id="ad-city" placeholder="Київ, Біла Церква..."></div>
     <div class="fg"><label class="fl">Стан: <span id="condValLabel">7</span>/10</label>
       <div style="display:flex;align-items:center;gap:0.5rem">
         <input type="range" id="ad-cond" min="1" max="10" value="7" step="1" style="flex:1" oninput="document.getElementById('condValLabel').textContent=this.value;document.getElementById('condVal').textContent=this.value;updateCondBar()">
@@ -480,7 +416,7 @@ input[type=range]::-moz-range-track{height:6px;background:var(--s3);border-radiu
 
 <div class="overlay" id="ov-editDisc">
   <div class="modal">
-    <button class="mc" onclick="closeModal('editDisc')">❌</button>
+    <button class="mc" onclick="closeModal('editDisc')">✕</button>
     <div class="mt">РЕДАГУВАТИ <span>ДИСК</span></div>
     <input type="hidden" id="edit-id">
     <div class="fg">
@@ -507,7 +443,6 @@ input[type=range]::-moz-range-track{height:6px;background:var(--s3);border-radiu
     <label class="toggle-row fg"><input type="checkbox" id="edit-trade"><span style="font-size:0.84rem">🔄 Готовий до обміну</span></label>
     <div class="fg" id="editTradeWrap" style="display:none"><label class="fl">Що хочу отримати</label><textarea id="edit-trade-desc"></textarea></div>
     <div class="fg"><label class="fl">Нотатки</label><textarea id="edit-notes"></textarea></div>
-    <div class="fg"><label class="fl">Місто</label><input id="edit-city" placeholder="Київ, Біла Церква..."></div>
     
     <div class="fg"><label class="fl">Статус</label><select id="edit-status"><option value="available">Доступний</option><option value="reserved">Зарезервований</option><option value="testing">На тестуванні</option><option value="sold">Продано</option><option value="unlisted">Знято з продажу</option></select></div>
     <div style="display:flex;gap:0.5rem"><button class="btn btn-lime btn-full" onclick="submitEditDisc()">Зберегти</button></div>
@@ -516,17 +451,17 @@ input[type=range]::-moz-range-track{height:6px;background:var(--s3);border-radiu
 
 <div class="overlay" id="ov-reqTest">
   <div class="modal" style="max-width:400px">
-    <button class="mc" onclick="closeModal('reqTest')">❌</button>
+    <button class="mc" onclick="closeModal('reqTest')">✕</button>
     <div class="mt">ЗАПИТ НА <span>ТЕСТ</span></div>
     <div id="reqDiscInfo" class="info-box cy" style="margin-bottom:0.875rem"></div>
-    <div class="fg"><label class="fl">Коментар (опційно)</label><textarea id="rt-note" placeholder="Залишити коментар"></textarea></div>
+    <div class="fg"><label class="fl">Коментар (опційно)</label><textarea id="rt-note" placeholder="Коментар має бути дотепним!"></textarea></div>
     <button class="btn btn-lime btn-full" id="reqTestBtn" onclick="submitTestReq()">Надіслати запит</button>
   </div>
 </div>
 
 <div class="overlay" id="ov-buy">
   <div class="modal" style="max-width:380px">
-    <button class="mc" onclick="closeModal('buy')">❌</button>
+    <button class="mc" onclick="closeModal('buy')">✕</button>
     <div class="mt">КУПИТИ <span>ДИСК</span></div>
     <div id="buyInfo" class="info-box"></div>
     <div id="buySellerLink" style="display:none;margin-bottom:0.875rem"></div>
@@ -537,7 +472,7 @@ input[type=range]::-moz-range-track{height:6px;background:var(--s3);border-radiu
 
 <div class="overlay" id="ov-return">
   <div class="modal" style="max-width:380px">
-    <button class="mc" onclick="closeModal('return')">❌</button>
+    <button class="mc" onclick="closeModal('return')">✕</button>
     <div class="mt">ПОВЕРНЕННЯ <span>ДИСКА</span></div>
     <div id="retInfo" class="info-box"></div>
     <div class="fg"><label class="fl">Коментар</label><textarea id="ret-note" placeholder="Враження..."></textarea></div>
@@ -546,12 +481,12 @@ input[type=range]::-moz-range-track{height:6px;background:var(--s3);border-radiu
 </div>
 
 <div class="overlay" id="ov-detail">
-  <div class="modal modal-wide"><button class="mc" onclick="closeModal('detail')">❌</button><button class="mc-edit" id="detailEditBtn" style="display:none" onclick="detailEdit()">✏️</button><div id="detailContent"></div></div>
+  <div class="modal modal-wide"><button class="mc" onclick="closeModal('detail')">✕</button><div id="detailContent"></div></div>
 </div>
 
 <div class="overlay" id="ov-adminPhoto">
   <div class="modal" style="max-width:440px">
-    <button class="mc" onclick="closeModal('adminPhoto')">❌</button>
+    <button class="mc" onclick="closeModal('adminPhoto')">✕</button>
     <div class="mt">ФОТО <span>ДИСКА</span></div>
     <input type="hidden" id="ap-disc-id">
     <div id="ap-current" style="margin-bottom:1rem"></div>
@@ -591,72 +526,6 @@ let photoFiles = [null, null, null];
 let isAdmin = false;
 let bannedUsers = [];
 let isTradeReq = false;
-let favorites = [];
-// Load from localStorage as instant cache, then sync from Supabase
-try{favorites=JSON.parse(localStorage.getItem('dc_fav')||'[]');}catch(e){favorites=[];}
-function isFav(id){return favorites.includes(String(id));}
-async function toggleFav(id){
-  id=String(id);
-  if(!CU||!CU.tgId){toast('⚠️ Спочатку увійдіть',true);return;}
-  if(favorites.includes(id)){
-    favorites=favorites.filter(x=>x!==id);
-    sb.from('favorites').delete().eq('disc_id',id).eq('user_tg_id',CU.tgId).then(()=>{});
-  }else{
-    favorites.push(id);
-    sb.from('favorites').insert({disc_id:id,user_tg_id:CU.tgId}).then(()=>{});
-  }
-  localStorage.setItem('dc_fav',JSON.stringify(favorites));
-  applyFilters();
-}
-async function loadFavorites(){
-  if(!CU||!CU.tgId)return;
-  try{
-    const {data}=await sb.from('favorites').select('disc_id').eq('user_tg_id',CU.tgId);
-    if(data){
-      favorites=data.map(r=>String(r.disc_id));
-      localStorage.setItem('dc_fav',JSON.stringify(favorites));
-    }
-  }catch(e){}
-}
-
-// ── LIKES ──
-let likesCache={};// {disc_id: {count, liked}}
-async function loadLikes(){
-  try{
-    const {data,error}=await sb.from('likes').select('disc_id');
-    if(error){console.error('loadLikes err:',error.message);return;}
-    const counts={};
-    (data||[]).forEach(r=>{counts[r.disc_id]=(counts[r.disc_id]||0)+1;});
-    const myId=CU?.tgId||'';
-    let myLikes=[];
-    if(myId){
-      const {data:ml,error:e2}=await sb.from('likes').select('disc_id').eq('user_tg_id',myId);
-      if(!e2)myLikes=(ml||[]).map(r=>r.disc_id);
-    }
-    likesCache={};
-    Object.keys(counts).forEach(id=>{likesCache[id]={count:counts[id],liked:myLikes.includes(id)};});
-    myLikes.forEach(id=>{if(!likesCache[id])likesCache[id]={count:1,liked:true};});
-  }catch(e){console.error('loadLikes catch:',e);}
-}
-function getLikes(id){return likesCache[String(id)]||{count:0,liked:false};}
-async function toggleLike(id,e){
-  if(e)e.stopPropagation();
-  if(!CU||!CU.tgId){toast('⚠️ Спочатку увійдіть',true);return;}
-  id=String(id);
-  const cur=getLikes(id);
-  if(cur.liked){
-    const {error}=await sb.from('likes').delete().eq('disc_id',id).eq('user_tg_id',CU.tgId);
-    if(error){toast('⚠️ '+error.message,true);return;}
-    likesCache[id]={count:Math.max(0,cur.count-1),liked:false};
-  }else{
-    const {error}=await sb.from('likes').insert({disc_id:id,user_tg_id:CU.tgId});
-    if(error){toast('⚠️ '+error.message,true);return;}
-    likesCache[id]={count:cur.count+1,liked:true};
-  }
-  applyFilters();
-  // Refresh detail if open
-  if(document.getElementById('ov-detail')?.classList.contains('open'))showDetail(id);
-}
 
 const ST = {
   available:{l:'Доступний',c:'av',sc:'s-av'},
@@ -670,19 +539,7 @@ const ST = {
 };
 function st(s){return ST[s]||ST.available;}
 function fmtDate(iso){if(!iso)return'—';try{return new Date(iso).toLocaleDateString('uk-UA',{day:'2-digit',month:'2-digit',year:'numeric'});}catch(e){return iso;}}
-function fmtDateTime(iso){if(!iso)return'—';try{const d=new Date(iso);return d.toLocaleDateString('uk-UA',{day:'2-digit',month:'2-digit',year:'numeric'})+' '+d.toLocaleTimeString('uk-UA',{hour:'2-digit',minute:'2-digit'});}catch(e){return iso;}}
 function genId(){return Date.now().toString(36)+Math.random().toString(36).slice(2,5);}
-function hasTgUsername(tg){return tg&&!/^\d+$/.test(String(tg).replace('@','').trim());}
-function tgLinkFull(tg){
-  const clean=String(tg).replace('@','').trim();
-  if(!clean)return'';
-  if(/^\d+$/.test(clean)){
-    const tgApp=window.Telegram?.WebApp;
-    if(tgApp)return` · <a href="#" onclick="event.preventDefault();window.Telegram.WebApp.openTelegramLink('https://t.me/@id${clean}')" style="color:var(--cyan)">написати ↗</a>`;
-    return` · <a href="tg://user?id=${clean}" target="_blank" style="color:var(--cyan)">написати ↗</a>`;
-  }
-  return` · <a href="https://t.me/${clean}" target="_blank" style="color:var(--cyan)">@${clean}</a>`;
-}
 
 // ── LOAD DISCS ──
 const HIDDEN=['sold','deleted','unlisted'];
@@ -736,7 +593,7 @@ function dbToDisc(r){
   return {
     id:r.id, owner:r.owner, ownerTg:r.owner_tg||'',
     brand:r.brand, model:r.model, plastic:r.plastic||'', weight:r.weight||'',
-    color:r.color||'', city:r.city||'', speed:r.speed||0, glide:r.glide||0, turn:r.turn||0, fade:r.fade||0,
+    color:r.color||'', speed:r.speed||0, glide:r.glide||0, turn:r.turn||0, fade:r.fade||0,
     condition:r.condition||7, buyout:r.buyout||0, status:r.status||'available',
     tester:r.tester||'', testerTg:r.tester_tg||'',
     photoUrl:r.photo_url||'', photoUrl2:r.photo_url2||'', photoUrl3:r.photo_url3||'',
@@ -748,7 +605,7 @@ function discToDb(d){
   return {
     id:d.id, owner:d.owner, owner_tg:d.ownerTg||'',
     brand:d.brand, model:d.model, plastic:d.plastic||'', weight:d.weight||175,
-    color:d.color||'', city:d.city||'', speed:d.speed||0, glide:d.glide||0, turn:d.turn||0, fade:d.fade||0,
+    color:d.color||'', speed:d.speed||0, glide:d.glide||0, turn:d.turn||0, fade:d.fade||0,
     condition:d.condition||7, buyout:d.buyout||0, status:d.status||'available',
     tester:d.tester||'', tester_tg:d.testerTg||'',
     photo_url:d.photoUrl||'', photo_url2:d.photoUrl2||'', photo_url3:d.photoUrl3||'',
@@ -794,11 +651,10 @@ function cardHTML(d){
     <div style="position:relative">
       ${photoCarousel(urls,'c'+d.id,d.photoPos)}
       <span class="${s.sc} status-overlay">${s.l}</span>
-      <span onclick="event.stopPropagation();toggleLike('${d.id}',event)" style="position:absolute;bottom:5px;right:6px;cursor:pointer;font-size:0.8rem;z-index:2;background:rgba(0,0,0,0.6);padding:2px 5px;border-radius:10px;display:flex;align-items:center;gap:2px;color:#fff;backdrop-filter:blur(4px)"><span style="font-size:0.75rem">${getLikes(d.id).liked?'❤️':'🤍'}</span><span style="font-size:0.65rem;font-weight:600">${getLikes(d.id).count||''}</span></span>
     </div>
     <div class="disc-body">
       <div class="disc-title">${d.brand} ${d.model}</div>
-      <div class="disc-sub">${[d.plastic,d.weight?d.weight+'г':'',d.city].filter(Boolean).join(' · ')}</div>
+      <div class="disc-sub">${[d.plastic,d.weight?d.weight+'г':''].filter(Boolean).join(' · ')}</div>
       ${condBar(d.condition)}
       <div class="flight-row">
         <div class="fc"><div class="fv">${d.speed||0}</div><div class="fk">Spd</div></div>
@@ -809,10 +665,7 @@ function cardHTML(d){
       <div class="disc-footer">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.35rem">
           <div class="disc-price">${d.buyout?d.buyout+' ₴':'—'}</div>
-          <div style="display:flex;align-items:center;gap:0.4rem">
-            <span onclick="event.stopPropagation();toggleFav('${d.id}')" style="cursor:pointer;font-size:0.85rem">${isFav(d.id)?'⭐':'☆'}</span>
-            <div class="disc-own" onclick="event.stopPropagation();filterByOwner('${d.owner}')">👤 ${(d.owner||'').split(' ')[0]}</div>
-          </div>
+          <div class="disc-own" onclick="event.stopPropagation();filterByOwner('${d.owner}')">👤 ${(d.owner||'').split(' ')[0]}</div>
         </div>
         <div onclick="event.stopPropagation()" style="display:flex;gap:3px;width:100%">
           ${hasTrade?`<button class="btn btn-purple btn-xs" onclick="event.stopPropagation();openTradeOffer('${d.id}')" style="flex:1">Обмін</button>`:''}
@@ -826,19 +679,17 @@ function cardHTML(d){
 
 // ── FILTERS ──
 function toggleAdvFilters(){const el=document.getElementById('advFilters'),btn=document.getElementById('advBtn'),open=!el.classList.contains('open');el.classList.toggle('open',open);btn.style.borderColor=open?'var(--lime)':'var(--b1)';btn.style.color=open?'var(--lime)':'';}
-function resetFilters(){['f-speed','f-glide','f-turn','f-fade','f-price','f-city'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});document.getElementById('f-sort').value='new';document.getElementById('mainSearch').value='';CF='all';document.querySelectorAll('.ft').forEach((b,i)=>b.classList.toggle('active',i===0));applyFilters();}
+function resetFilters(){['f-speed','f-glide','f-price'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});document.getElementById('f-sort').value='new';document.getElementById('mainSearch').value='';CF='all';document.querySelectorAll('.ft').forEach((b,i)=>b.classList.toggle('active',i===0));applyFilters();}
 function applyFilters(){
   const q=(document.getElementById('mainSearch')||{value:''}).value.toLowerCase();
   const fSpeed=parseFloat(document.getElementById('f-speed')?.value)||0;
   const fGlide=parseFloat(document.getElementById('f-glide')?.value)||0;
   const fPrice=parseFloat(document.getElementById('f-price')?.value)||0;
-  const fCity=(document.getElementById('f-city')?.value||'').toLowerCase().trim();
   const sort=document.getElementById('f-sort')?.value||'new';
   let list=allDiscs.filter(d=>d.status!=='sold');
-  if(CF==='fav')list=list.filter(d=>isFav(d.id));
-  else if(CF==='trade')list=list.filter(d=>{const tw=String(d.tradeWant||'').trim();return tw&&tw!=='false';});
+  if(CF==='trade')list=list.filter(d=>{const tw=String(d.tradeWant||'').trim();return tw&&tw!=='false';});
   else if(CF!=='all')list=list.filter(d=>d.status===CF||d.status==='trade'&&CF==='available');
-  if(q)list=list.filter(d=>[d.brand,d.model,d.plastic,d.color,d.owner,d.city].join(' ').toLowerCase().includes(q));
+  if(q)list=list.filter(d=>[d.brand,d.model,d.plastic,d.color,d.owner].join(' ').toLowerCase().includes(q));
   if(fSpeed>0)list=list.filter(d=>parseFloat(d.speed)>=fSpeed);
   if(fGlide>0)list=list.filter(d=>parseFloat(d.glide)>=fGlide);
   const fTurnEl=document.getElementById('f-turn');
@@ -846,7 +697,6 @@ function applyFilters(){
   if(fTurnEl?.value!=='')list=list.filter(d=>parseFloat(d.turn)<=(parseFloat(fTurnEl.value)));
   if(fFadeEl?.value!=='')list=list.filter(d=>parseFloat(d.fade)<=(parseFloat(fFadeEl.value)));
   if(fPrice>0)list=list.filter(d=>parseFloat(d.buyout)<=fPrice);
-  if(fCity)list=list.filter(d=>(d.city||'').toLowerCase().includes(fCity));
   if(sort==='price-asc')list.sort((a,b)=>(parseFloat(a.buyout)||0)-(parseFloat(b.buyout)||0));
   else if(sort==='price-desc')list.sort((a,b)=>(parseFloat(b.buyout)||0)-(parseFloat(a.buyout)||0));
   else if(sort==='speed-desc')list.sort((a,b)=>(parseFloat(b.speed)||0)-(parseFloat(a.speed)||0));
@@ -867,17 +717,12 @@ function showDetail(id){
   const canT=(d.status==='available'||d.status==='trade')&&parseInt(d.condition)<10;
   const canB=d.status!=='sold';
   const hasTrade=String(d.tradeWant||'').trim()&&String(d.tradeWant)!=='false';
-  const photos=urls.length?`<div class="detail-photos" id="pw-d${d.id}" style="position:relative">${urls.map((u,i)=>`<img src="${u}" class="${i===0?'active':''}" alt="">`).join('')}${urls.length>1?`<button class="photo-nav prev" onclick="photoNav('d${d.id}',-1)">‹</button><button class="photo-nav next" onclick="photoNav('d${d.id}',1)">›</button>`:''}
-    <span onclick="toggleLike('${d.id}',event)" style="position:absolute;bottom:10px;right:10px;cursor:pointer;font-size:0.95rem;z-index:2;background:rgba(0,0,0,0.6);padding:4px 8px;border-radius:12px;display:flex;align-items:center;gap:4px;color:#fff;backdrop-filter:blur(4px)"><span>${getLikes(d.id).liked?'❤️':'🤍'}</span><span style="font-size:0.8rem;font-weight:600">${getLikes(d.id).count||''}</span></span>
-  </div>`:`<div style="height:120px;background:var(--s2);border-radius:var(--r2);display:flex;align-items:center;justify-content:center;font-size:3rem;margin-bottom:1rem">🥏</div>`;
+  const photos=urls.length?`<div class="detail-photos" id="pw-d${d.id}">${urls.map((u,i)=>`<img src="${u}" class="${i===0?'active':''}" alt="">`).join('')}${urls.length>1?`<button class="photo-nav prev" onclick="photoNav('d${d.id}',-1)">‹</button><button class="photo-nav next" onclick="photoNav('d${d.id}',1)">›</button>`:''}</div>`:`<div style="height:120px;background:var(--s2);border-radius:var(--r2);display:flex;align-items:center;justify-content:center;font-size:3rem;margin-bottom:1rem">🥏</div>`;
   document.getElementById('detailContent').innerHTML=`
     ${photos}
     <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:0.875rem">
       <div><div style="font-size:0.65rem;color:var(--m1);text-transform:uppercase;letter-spacing:1px">${d.brand}</div><div style="font-family:'Bebas Neue';font-size:1.8rem;letter-spacing:1px;line-height:1">${d.model}</div></div>
-      <div style="display:flex;align-items:center;gap:0.4rem">
-        <span onclick="toggleFav('${d.id}')" style="cursor:pointer;font-size:1.1rem">${isFav(d.id)?'⭐':'☆'}</span>
-        <span class="badge b-${s.c}">${s.l}</span>
-      </div>
+      <span class="badge b-${s.c}">${s.l}</span>
     </div>
     ${condBar(d.condition)}<div style="font-size:0.72rem;color:var(--m1);margin-bottom:0.875rem">Стан: ${d.condition||0}/10</div>
     <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:4px;margin-bottom:0.875rem">
@@ -891,9 +736,8 @@ function showDetail(id){
       <div class="detail-info-item"><span class="di-label">Вага:</span> ${d.weight||'—'}г</div>
       <div class="detail-info-item"><span class="di-label">Колір:</span> ${d.color||'—'}</div>
       ${d.inked?'<div class="detail-info-item"><span style="color:var(--purple)">🖊️ Inked</span></div>':'<div></div>'}
-      ${d.city?`<div class="detail-info-item full"><span class="di-label">Місто:</span> ${d.city}</div>`:''}
-      <div class="detail-info-item full"><span class="di-label">Власник:</span> ${d.owner||'—'}${tgLinkFull(d.ownerTg)}</div>
-      ${d.tester&&d.status==='testing'?`<div class="detail-info-item full"><span class="di-label">Тестер:</span> ${d.tester}</div>`:''}
+      <div class="detail-info-item full"><span class="di-label">Власник:</span> ${d.owner||'—'}${d.ownerTg?` · <a href="https://t.me/${d.ownerTg.replace('@','')}" target="_blank" style="color:var(--cyan)">@${d.ownerTg.replace('@','')}</a>`:''}</div>
+      ${d.tester?`<div class="detail-info-item full"><span class="di-label">Тестер:</span> ${d.tester}</div>`:''}
     </div>
     ${hasTrade?`<div class="info-box" style="border-color:rgba(167,139,250,0.25);background:rgba(167,139,250,0.05);margin-bottom:0.875rem"><strong style="color:var(--purple)">🔄 Обмін:</strong> ${d.tradeWant}</div>`:''}
     ${d.notes?`<div style="font-size:0.8rem;color:var(--m2);padding:0.65rem;background:var(--s2);border-radius:var(--r);margin-bottom:0.875rem">${d.notes}</div>`:''}
@@ -903,43 +747,8 @@ function showDetail(id){
       ${canB?`<button class="btn btn-lime btn-sm" onclick="oBuy('${d.id}');closeModal('detail')" style="flex:1">Купити ${d.buyout||0}₴</button>`:''}
       ${d.status==='testing'&&CU?.name===d.tester?`<button class="btn btn-ghost btn-sm" onclick="oRet('${d.id}');closeModal('detail')" style="flex:1">↩ Повернути</button>`:''}
     </div>
-    <div style="margin-top:0.5rem"><button class="btn btn-ghost btn-xs" onclick="shareDisc('${d.id}')" style="color:var(--m1);width:100%">🔗 Поділитись посиланням</button></div>
-    <div style="margin-top:1rem;border-top:1px solid var(--b1);padding-top:0.75rem">
-      <div style="font-size:0.72rem;font-weight:700;color:var(--m1);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:0.5rem">Коментарі</div>
-      <div id="disc-comments-${d.id}" style="margin-bottom:0.5rem"></div>
-      ${CU?`<div style="display:flex;gap:0.4rem"><textarea id="comment-input-${d.id}" placeholder="Написати коментар..." style="min-height:36px;font-size:0.78rem;flex:1"></textarea><button class="btn btn-ghost btn-xs" onclick="postComment('${d.id}')" style="flex-shrink:0;align-self:flex-end">↗</button></div>`:'<div style="font-size:0.75rem;color:var(--m1)">Увійдіть щоб коментувати</div>'}
-    </div>`;
-  // Show edit button if owner
-  const editBtn=document.getElementById('detailEditBtn');
-  if(editBtn){
-    const isOwner=CU&&String(CU.name).trim()===String(d.owner).trim();
-    editBtn.style.display=isOwner?'flex':'none';
-    editBtn.onclick=()=>{closeModal('detail');openEditDisc(d.id);};
-  }
+    <div style="margin-top:0.5rem"><button class="btn btn-ghost btn-xs" onclick="shareDisc('${d.id}')" style="color:var(--m1);width:100%">🔗 Поділитись посиланням</button></div>`;
   openModal('detail');
-  loadComments(d.id);
-}
-
-// ── COMMENTS ──
-async function loadComments(discId){
-  const el=document.getElementById('disc-comments-'+discId);if(!el)return;
-  try{
-    const {data}=await sb.from('comments').select('*').eq('disc_id',discId).order('created_at',{ascending:true});
-    if(!data||!data.length){el.innerHTML='<div style="font-size:0.75rem;color:var(--m1)">Поки немає коментарів</div>';return;}
-    el.innerHTML=data.map(c=>`<div style="padding:0.4rem 0;border-bottom:1px solid var(--b1);font-size:0.78rem">
-      <div style="display:flex;justify-content:space-between;margin-bottom:2px"><span style="font-weight:600;color:var(--text)">${c.author||'?'}</span><span style="font-size:0.65rem;color:var(--m1)">${fmtDateTime(c.created_at)}</span></div>
-      <div style="color:var(--m2)">${c.text}</div>
-    </div>`).join('');
-  }catch(e){el.innerHTML='';}
-}
-async function postComment(discId){
-  const input=document.getElementById('comment-input-'+discId);
-  const text=input?.value?.trim();if(!text||!CU)return;
-  try{
-    const {error}=await sb.from('comments').insert({disc_id:discId,author:CU.name,author_tg:CU.tg||'',text:text});
-    if(!error){input.value='';loadComments(discId);}
-    else toast('⚠️ Помилка',true);
-  }catch(e){toast('⚠️ Помилка',true);}
 }
 
 // ── ADD DISC ──
@@ -957,7 +766,6 @@ async function submitDisc(){
     plastic:document.getElementById('ad-plastic').value,
     weight:parseInt(document.getElementById('ad-weight').value)||175,
     color:document.getElementById('ad-color').value,
-    city:document.getElementById('ad-city').value.trim(),
     condition:parseInt(document.getElementById('ad-cond').value)||7,
     speed:parseFloat(document.getElementById('ad-speed').value)||0,
     glide:parseFloat(document.getElementById('ad-glide').value)||0,
@@ -991,7 +799,7 @@ function resetAddForm(){
   document.getElementById('condValLabel').textContent='7';
   document.getElementById('ad-cond').value='7';
   document.getElementById('condVal').textContent='7';
-  ['ad-brand','ad-model','ad-plastic','ad-weight','ad-color','ad-city','ad-buyout','ad-speed','ad-glide','ad-turn','ad-fade','ad-notes','ad-trade-desc'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  ['ad-brand','ad-model','ad-plastic','ad-weight','ad-color','ad-buyout','ad-speed','ad-glide','ad-turn','ad-fade','ad-notes','ad-trade-desc'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
 }
 
 document.getElementById('ad-trade').addEventListener('change',function(){document.getElementById('tradeDescWrap').style.display=this.checked?'block':'none';});
@@ -1119,7 +927,6 @@ function openEditDiscWithData(d){
   document.getElementById('edit-trade-desc').value=d.tradeWant||'';
   document.getElementById('editTradeWrap').style.display=d.tradeWant?'block':'none';
   document.getElementById('edit-notes').value=d.notes||'';
-  document.getElementById('edit-city').value=d.city||'';
   document.getElementById('edit-status').value=d.status||'available';
   document.getElementById('edit-speed').value=d.speed||0;
   document.getElementById('edit-glide').value=d.glide||0;
@@ -1144,7 +951,7 @@ function renderEditPhotoCurrent(){
   const el=document.getElementById('edit-photo-current');
   const has=editPhotoExisting.filter(Boolean);
   el.innerHTML=has.length
-    ?`<div style="display:flex;gap:0.4rem">${editPhotoExisting.map((u,i)=>u?`<div style="position:relative"><img src="${u}" style="width:70px;height:50px;object-fit:cover;border-radius:var(--r);border:1px solid var(--b1)"><button class="btn btn-danger btn-xs" style="position:absolute;top:1px;right:1px;padding:0 3px;font-size:0.55rem" onclick="editRemovePhoto(${i})">❌</button></div>`:''
+    ?`<div style="display:flex;gap:0.4rem">${editPhotoExisting.map((u,i)=>u?`<div style="position:relative"><img src="${u}" style="width:70px;height:50px;object-fit:cover;border-radius:var(--r);border:1px solid var(--b1)"><button class="btn btn-danger btn-xs" style="position:absolute;top:1px;right:1px;padding:0 3px;font-size:0.55rem" onclick="editRemovePhoto(${i})">✕</button></div>`:''
     ).join('')}</div>`:'';
 }
 function editRemovePhoto(idx){
@@ -1190,7 +997,6 @@ async function submitEditDisc(){
     status:document.getElementById('edit-status').value,
     trade_want:isTrade?(document.getElementById('edit-trade-desc').value.trim()||'Пропонуйте'):'',
     notes:document.getElementById('edit-notes').value,
-    city:document.getElementById('edit-city').value.trim(),
     speed:parseFloat(document.getElementById('edit-speed').value)||0,
     glide:parseFloat(document.getElementById('edit-glide').value)||0,
     turn:parseFloat(document.getElementById('edit-turn').value)||0,
@@ -1225,10 +1031,10 @@ function openReqTest(id){
   const owTg=(d.ownerTg||'').replace('@','');
   document.getElementById('reqDiscInfo').innerHTML=
     `<strong>${d.brand} ${d.model}</strong> · ${d.plastic||''} · ${d.weight||''}г · <strong style="color:var(--lime)">${d.buyout||0}₴</strong><br>`+
-    `Власник: <strong>${d.owner}</strong>${tgLinkFull(owTg)}<br>`+
-    `<span style="color:var(--m1);font-size:0.75rem">Від: <strong style="color:var(--text)">${CU.name}</strong>${tgLinkFull(CU.tg)}</span>`;
+    `Власник: <strong>${d.owner}</strong>${owTg?` · <a href="https://t.me/${owTg}" target="_blank" style="color:var(--cyan)">@${owTg} ↗</a>`:''}<br>`+
+    `<span style="color:var(--m1);font-size:0.75rem">Від: <strong style="color:var(--text)">${CU.name}</strong>${CU.tg?` · <a href="https://t.me/${CU.tg.replace('@','')}" target="_blank" style="color:var(--cyan)">@${CU.tg.replace('@','')} ↗</a>`:''}</span>`;
   document.getElementById('rt-note').value='';
-  document.getElementById('rt-note').placeholder='Залишити коментар';
+  document.getElementById('rt-note').placeholder='Коротко про себе або питання...';
   document.querySelector('#ov-reqTest .mt').innerHTML='ЗАПИТ НА <span>ТЕСТ</span>';
   document.getElementById('reqTestBtn').textContent='Надіслати запит';
   openModal('reqTest');
@@ -1260,13 +1066,8 @@ function oBuy(id){
   document.getElementById('buyInfo').innerHTML=`<strong>${d.brand} ${d.model}</strong> · ${d.plastic||''}<br>Ціна: <strong>${d.buyout||0} ₴</strong><br>Власник: <strong>${d.owner}</strong>`;
   document.getElementById('buy-note').value='';
   const lEl=document.getElementById('buySellerLink');
-  const owClean=String(d.ownerTg||'').replace('@','').trim();
-  if(owClean){
-    const isNum=/^\d+$/.test(owClean);
-    const href=isNum?'tg://user?id='+owClean:'https://t.me/'+owClean;
-    const label=isNum?'💬 Написати продавцю':'💬 Написати @'+owClean;
-    lEl.style.display='block';lEl.innerHTML=`<a href="${href}" target="_blank" class="btn btn-cyan btn-full">${label}</a>`;
-  }else lEl.style.display='none';
+  if(d.ownerTg){lEl.style.display='block';lEl.innerHTML=`<a href="https://t.me/${d.ownerTg.replace('@','')}" target="_blank" class="btn btn-cyan btn-full">💬 Написати @${d.ownerTg.replace('@','')}</a>`;}
+  else lEl.style.display='none';
   openModal('buy');
 }
 async function submitBuy(){
@@ -1329,8 +1130,6 @@ async function acceptRequest(reqId, discId, testerName, testerTg, reqType){
     if(!error&&!e2){
       await loadDiscs();renderCabinet();
       toast(`✅ ${label.charAt(0).toUpperCase()+label.slice(1)} прийнято!`);
-      // Notify tester that request was accepted
-      notifyAppsScript('accepted',d,{name:testerName,tg:testerTg||''});
     }else toast('⚠️ Помилка',true);
   }catch(e){toast('⚠️ Помилка',true);}
 }
@@ -1356,7 +1155,7 @@ function openTradeOffer(id){
   document.getElementById('reqDiscInfo').innerHTML=
     `<strong>${d.brand} ${d.model}</strong><br>`+
     `Власник шукає: <strong style="color:var(--purple)">${d.tradeWant}</strong><br>`+
-    `Власник: ${d.owner}${tgLinkFull(owTg)}<br>`+
+    `Власник: ${d.owner}${owTg?` · <a href="https://t.me/${owTg}" target="_blank" style="color:var(--cyan)">@${owTg} ↗</a>`:''}<br>`+
     `<span style="color:var(--m1);font-size:0.75rem">Від: ${CU.name}</span>`;
   document.getElementById('rt-note').placeholder='Опиши свій диск для обміну...';
   document.getElementById('rt-note').value='';
@@ -1460,7 +1259,7 @@ async function renderSeller(){
           <div style="display:flex;align-items:center;gap:0.5rem">
             <div style="flex:1;min-width:0">
               <div class="di-title">${r.tester} → ${disc?disc.brand+' '+disc.model:'?'} <span class="badge ${typeBadge}">${typeLabel}</span></div>
-              <div class="di-sub">${fmtDate(r.created_at)}${tgLinkFull(r.tester_tg)}</div>
+              <div class="di-sub">${fmtDate(r.created_at)}${r.tester_tg?' · <a href="https://t.me/'+r.tester_tg.replace('@','')+'" target="_blank" style="color:var(--cyan)">@'+r.tester_tg.replace('@','')+'</a>':''}</div>
             </div>
             ${disc&&isBuy&&r.status==='pending'?`<button class="btn btn-lime btn-xs" onclick="confirmSale('${disc.id}')">✓ Продано</button>`:''}
             ${disc&&!isBuy&&r.status==='pending'?`<button class="btn btn-cyan btn-xs" onclick="acceptRequest('${r.id}','${disc.id}','${(r.tester||'').replace(/'/g,"\\'")}','${(r.tester_tg||'').replace(/'/g,"\\'")}','${r.request_type}')">Прийняти</button>`:''}
@@ -1598,7 +1397,7 @@ async function adminEditPhotos(discId){
   adminPhotoExisting=[d.photoUrl||'',d.photoUrl2||'',d.photoUrl3||''];
   // Show current photos
   document.getElementById('ap-current').innerHTML=adminPhotoExisting.filter(Boolean).length
-    ?`<div style="display:flex;gap:0.4rem;flex-wrap:wrap">${adminPhotoExisting.map((u,i)=>u?`<div style="position:relative"><img src="${u}" style="width:100px;height:70px;object-fit:cover;border-radius:var(--r);border:1px solid var(--b1)"><button class="btn btn-danger btn-xs" style="position:absolute;top:2px;right:2px;padding:1px 4px;font-size:0.6rem" onclick="adminRemovePhoto(${i})">❌</button></div>`:''
+    ?`<div style="display:flex;gap:0.4rem;flex-wrap:wrap">${adminPhotoExisting.map((u,i)=>u?`<div style="position:relative"><img src="${u}" style="width:100px;height:70px;object-fit:cover;border-radius:var(--r);border:1px solid var(--b1)"><button class="btn btn-danger btn-xs" style="position:absolute;top:2px;right:2px;padding:1px 4px;font-size:0.6rem" onclick="adminRemovePhoto(${i})">✕</button></div>`:''
     ).join('')}</div>`
     :'<div style="color:var(--m1);font-size:0.8rem">Немає фото</div>';
   // Reset slots
@@ -1623,7 +1422,7 @@ function adminRemovePhoto(idx){
   document.getElementById('apFile'+idx).value='';
   // Refresh current display
   document.getElementById('ap-current').innerHTML=adminPhotoExisting.filter(Boolean).length
-    ?`<div style="display:flex;gap:0.4rem;flex-wrap:wrap">${adminPhotoExisting.map((u,i)=>u?`<div style="position:relative"><img src="${u}" style="width:100px;height:70px;object-fit:cover;border-radius:var(--r);border:1px solid var(--b1)"><button class="btn btn-danger btn-xs" style="position:absolute;top:2px;right:2px;padding:1px 4px;font-size:0.6rem" onclick="adminRemovePhoto(${i})">❌</button></div>`:''
+    ?`<div style="display:flex;gap:0.4rem;flex-wrap:wrap">${adminPhotoExisting.map((u,i)=>u?`<div style="position:relative"><img src="${u}" style="width:100px;height:70px;object-fit:cover;border-radius:var(--r);border:1px solid var(--b1)"><button class="btn btn-danger btn-xs" style="position:absolute;top:2px;right:2px;padding:1px 4px;font-size:0.6rem" onclick="adminRemovePhoto(${i})">✕</button></div>`:''
     ).join('')}</div>`
     :'<div style="color:var(--m1);font-size:0.8rem">Немає фото</div>';
 }
@@ -1726,38 +1525,42 @@ function toggleNav(){document.getElementById('hamburger').classList.toggle('open
 function closeMobileNav(){document.getElementById('hamburger').classList.remove('open');document.getElementById('mobileNav').classList.remove('open');}
 
 function openModal(n){
-  if(['reqTest','buy','return','addDisc'].includes(n)&&!CU){toast('⚠️ Спочатку увійдіть',true);document.getElementById('ov-login').classList.add('open');document.body.classList.add('modal-open');return;}
-  const ov=document.getElementById('ov-'+n);
-  if(ov){ov.classList.add('open');ov.scrollTop=0;}
-  document.body.classList.add('modal-open');
+  if(['reqTest','buy','return','addDisc'].includes(n)&&!CU){toast('⚠️ Спочатку увійдіть',true);document.getElementById('ov-login').classList.add('open');return;}
+  document.getElementById('ov-'+n)?.classList.add('open');
   if(n==='addDisc'&&CU){const f=document.getElementById('ownerFieldWrap');if(f)f.style.display='none';}
+  // Fix Telegram WebApp textarea focus
   const tg=window.Telegram?.WebApp;
   if(tg){try{tg.expand();}catch(e){}}
 }
-function closeModal(n){document.getElementById('ov-'+n)?.classList.remove('open');if(!document.querySelector('.overlay.open'))document.body.classList.remove('modal-open');}
+function closeModal(n){document.getElementById('ov-'+n)?.classList.remove('open');}
 document.querySelectorAll('.overlay').forEach(o=>o.addEventListener('click',e=>{if(e.target===o)closeModal(o.id.slice(3));}));
 
 // Fix Telegram WebApp input/textarea on Android
 (function(){
-  const isTg=!!window.Telegram?.WebApp;
-  const isAndroid=/android/i.test(navigator.userAgent);
-  function isInput(el){return el&&(el.tagName==='TEXTAREA'||(el.tagName==='INPUT'&&!['file','checkbox','radio','range'].includes(el.type)));}
-  if(isAndroid){
-    document.addEventListener('touchstart',function(e){
-      if(isInput(e.target))setTimeout(()=>e.target.focus(),0);
-    },{passive:true});
-  }
-  if(isTg&&isAndroid){
+  const isTgAndroid=window.Telegram?.WebApp&&/android/i.test(navigator.userAgent);
+  // Method 1: Force focus with blur-refocus cycle
+  document.addEventListener('touchend',function(e){
+    const el=e.target;
+    if(el.tagName==='TEXTAREA'||el.tagName==='INPUT'&&el.type!=='file'&&el.type!=='checkbox'&&el.type!=='radio'){
+      e.preventDefault();
+      el.blur();
+      setTimeout(()=>{el.focus();el.click();},100);
+    }
+  },{passive:false});
+  // Method 2: Remove backdrop-filter on modals when input is focused (Android WebView bug)
+  if(isTgAndroid){
     document.addEventListener('focusin',function(e){
-      if(isInput(e.target)){
-        const ov=e.target.closest('.overlay');
-        if(ov){ov.style.backdropFilter='none';ov.style.webkitBackdropFilter='none';}
+      const el=e.target;
+      if(el.tagName==='TEXTAREA'||el.tagName==='INPUT'){
+        const overlay=el.closest('.overlay');
+        if(overlay){overlay.style.backdropFilter='none';overlay.style.webkitBackdropFilter='none';}
       }
     });
     document.addEventListener('focusout',function(e){
-      if(isInput(e.target)){
-        const ov=e.target.closest('.overlay');
-        if(ov)setTimeout(()=>{ov.style.backdropFilter='';ov.style.webkitBackdropFilter='';},300);
+      const el=e.target;
+      if(el.tagName==='TEXTAREA'||el.tagName==='INPUT'){
+        const overlay=el.closest('.overlay');
+        if(overlay){setTimeout(()=>{overlay.style.backdropFilter='';overlay.style.webkitBackdropFilter='';},200);}
       }
     });
   }
@@ -1799,21 +1602,6 @@ function doLogin(){
   toast(`👋 Привіт, ${name}!`);
 }
 
-// ── THEME ──
-function toggleTheme(){
-  const isLight=document.documentElement.classList.toggle('light');
-  localStorage.setItem('dc_theme',isLight?'light':'dark');
-  document.getElementById('themeBtn').textContent=isLight?'☀️':'🌙';
-}
-function restoreTheme(){
-  const t=localStorage.getItem('dc_theme');
-  if(t==='light'){
-    document.documentElement.classList.add('light');
-    document.getElementById('themeBtn').textContent='☀️';
-  }
-}
-restoreTheme();
-
 // ── INIT ──
 async function init(){
   setTimeout(()=>{document.getElementById('loadingOverlay').style.display='none';},15000);
@@ -1825,8 +1613,6 @@ async function init(){
   const params=new URLSearchParams(location.search);
   const discId=params.get('disc')||window.Telegram?.WebApp?.initDataUnsafe?.start_param;
   await loadDiscs();
-  await Promise.all([loadLikes(),loadFavorites()]);
-  applyFilters();
   subscribeRealtime();
   if(discId)setTimeout(()=>{showDetail(discId);},300);
 }
