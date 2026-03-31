@@ -454,7 +454,7 @@ input[type=range]::-moz-range-track{height:6px;background:var(--s3);border-radiu
     <button class="mc" onclick="closeModal('reqTest')">✕</button>
     <div class="mt">ЗАПИТ НА <span>ТЕСТ</span></div>
     <div id="reqDiscInfo" class="info-box cy" style="margin-bottom:0.875rem"></div>
-    <div class="fg"><label class="fl">Коментар (опційно)</label><textarea id="rt-note" placeholder="Коментар має бути дотепним!"></textarea></div>
+    <div class="fg"><label class="fl">Коментар (опційно)</label><textarea id="rt-note" placeholder="Залишити коментар"></textarea></div>
     <button class="btn btn-lime btn-full" id="reqTestBtn" onclick="submitTestReq()">Надіслати запит</button>
   </div>
 </div>
@@ -1130,6 +1130,8 @@ async function acceptRequest(reqId, discId, testerName, testerTg, reqType){
     if(!error&&!e2){
       await loadDiscs();renderCabinet();
       toast(`✅ ${label.charAt(0).toUpperCase()+label.slice(1)} прийнято!`);
+      // Notify tester that request was accepted
+      notifyAppsScript('accepted',d,{name:testerName,tg:testerTg||''});
     }else toast('⚠️ Помилка',true);
   }catch(e){toast('⚠️ Помилка',true);}
 }
