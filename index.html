@@ -2,7 +2,7 @@
 <html lang="uk">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Disc Central</title>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
@@ -122,7 +122,7 @@ nav{display:flex;gap:0.15rem;align-items:center;flex:1;justify-content:center}
 .fg{margin-bottom:0.875rem}
 .fl{display:block;font-size:0.68rem;font-weight:700;color:var(--m1);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:0.35rem}
 .fr{display:grid;grid-template-columns:1fr 1fr;gap:0.75rem}
-input,select,textarea{width:100%;background:var(--s2);border:1px solid var(--b1);border-radius:var(--r);padding:7px 10px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:0.84rem;outline:none;transition:border-color 0.2s}
+input,select,textarea{width:100%;background:var(--s2);border:1px solid var(--b1);border-radius:var(--r);padding:7px 10px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:16px;outline:none;transition:border-color 0.2s}
 input[type=number]{-moz-appearance:textfield}
 input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
 input:focus,select:focus,textarea:focus{border-color:var(--lime)}
@@ -139,9 +139,9 @@ input,textarea,select{-webkit-user-select:text;user-select:text}
 .upload-prog{height:2px;background:var(--b1);border-radius:1px;margin-top:0.4rem;overflow:hidden;display:none}
 .upload-prog-fill{height:100%;background:var(--lime);width:0;transition:width 0.3s}
 
-.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.78);backdrop-filter:blur(8px);z-index:200;align-items:center;justify-content:center;padding:0.75rem}
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.78);backdrop-filter:blur(8px);z-index:200;align-items:flex-start;justify-content:center;padding:0.75rem;overflow-y:auto}
 .overlay.open{display:flex}
-.modal{background:var(--s1);border:1px solid var(--b1);border-radius:14px;padding:1.5rem;width:100%;max-width:480px;max-height:92vh;overflow-y:auto;position:relative;animation:mIn 0.2s ease}
+.modal{background:var(--s1);border:1px solid var(--b1);border-radius:14px;padding:1.5rem;width:100%;max-width:480px;max-height:none;overflow-y:visible;position:relative;animation:mIn 0.2s ease;margin:auto 0}
 .modal-wide{max-width:640px}
 @keyframes mIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
 .mc{position:absolute;top:0.6rem;right:0.6rem;background:rgba(8,10,16,0.7);backdrop-filter:blur(6px);border:1px solid rgba(255,255,255,0.12);color:rgba(255,255,255,0.7);width:30px;height:30px;border-radius:8px;cursor:pointer;font-size:1rem;display:flex;align-items:center;justify-content:center;z-index:10;transition:all 0.15s}
@@ -304,7 +304,7 @@ input[type=range]::-moz-range-track{height:6px;background:var(--s3);border-radiu
 <div id="page-rules" class="page">
   <div class="content">
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:0.875rem">
-<div class="card"><div style="font-size:1.5rem;margin-bottom:0.5rem">🥏</div><div style="font-weight:700;margin-bottom:0.35rem">Знайди диск</div><div style="font-size:0.8rem;color:var(--m2);line-height:1.7">Переглядай каталог, фільтруй за характеристиками. Кожен диск має Speed / Glide / Turn / Fade і стан 0-10.</div></div>
+      <div class="card"><div style="font-size:1.5rem;margin-bottom:0.5rem">🥏</div><div style="font-weight:700;margin-bottom:0.35rem">Знайди диск</div><div style="font-size:0.8rem;color:var(--m2);line-height:1.7">Переглядай каталог, фільтруй за характеристиками. Кожен диск має Speed / Glide / Turn / Fade і стан 0-10.</div></div>
       <div class="card"><div style="font-size:1.5rem;margin-bottom:0.5rem">📝</div><div style="font-weight:700;margin-bottom:0.35rem">Запит на тест</div><div style="font-size:0.8rem;color:var(--m2);line-height:1.7">Натисни «Тест» - власник отримає сповіщення в Telegram. Пошкодив при тесті - купив. Деталі обговорюйте в особистих.</div></div>
       <div class="card"><div style="font-size:1.5rem;margin-bottom:0.5rem">🔄</div><div style="font-weight:700;margin-bottom:0.35rem">Обмін</div><div style="font-size:0.8rem;color:var(--m2);line-height:1.7">Власник може позначити диск як «Обмін». Деталі в описі диска та в особистих.</div></div>
       <div class="card"><div style="font-size:1.5rem;margin-bottom:0.5rem">💰</div><div style="font-weight:700;margin-bottom:0.35rem">Купівля</div><div style="font-size:0.8rem;color:var(--m2);line-height:1.7">Натисни «Купити» - продавець отримає запит і підтверджує продаж у кабінеті.</div></div>
@@ -1071,7 +1071,7 @@ function openReqTest(id){
     `Власник: <strong>${d.owner}</strong>${owTg?` · <a href="https://t.me/${owTg}" target="_blank" style="color:var(--cyan)">@${owTg} ↗</a>`:''}<br>`+
     `<span style="color:var(--m1);font-size:0.75rem">Від: <strong style="color:var(--text)">${CU.name}</strong>${CU.tg?` · <a href="https://t.me/${CU.tg.replace('@','')}" target="_blank" style="color:var(--cyan)">@${CU.tg.replace('@','')} ↗</a>`:''}</span>`;
   document.getElementById('rt-note').value='';
-  document.getElementById('rt-note').placeholder='Коротко про себе або питання...';
+  document.getElementById('rt-note').placeholder='Залишити коментар';
   document.querySelector('#ov-reqTest .mt').innerHTML='ЗАПИТ НА <span>ТЕСТ</span>';
   document.getElementById('reqTestBtn').textContent='Надіслати запит';
   openModal('reqTest');
@@ -1574,18 +1574,18 @@ function openModal(n){
 function closeModal(n){document.getElementById('ov-'+n)?.classList.remove('open');}
 document.querySelectorAll('.overlay').forEach(o=>o.addEventListener('click',e=>{if(e.target===o)closeModal(o.id.slice(3));}));
 
-// Fix Telegram WebApp input/textarea on Android
+// Fix Telegram WebApp input/textarea on Android & iOS
 (function(){
   const isTg=!!window.Telegram?.WebApp;
   const isAndroid=/android/i.test(navigator.userAgent);
+  const isIOS=/iphone|ipad|ipod/i.test(navigator.userAgent);
   function isInput(el){return el&&(el.tagName==='TEXTAREA'||(el.tagName==='INPUT'&&!['file','checkbox','radio','range'].includes(el.type)));}
-  // Force focus on tap
-  document.addEventListener('touchstart',function(e){
-    if(isInput(e.target)){
-      const el=e.target;
-      setTimeout(()=>{el.focus();},0);
-    }
-  },{passive:true});
+  // Force focus on tap (Android)
+  if(isAndroid){
+    document.addEventListener('touchstart',function(e){
+      if(isInput(e.target))setTimeout(()=>e.target.focus(),0);
+    },{passive:true});
+  }
   // Remove backdrop-filter when input focused (Android WebView bug)
   if(isTg&&isAndroid){
     document.addEventListener('focusin',function(e){
@@ -1601,6 +1601,14 @@ document.querySelectorAll('.overlay').forEach(o=>o.addEventListener('click',e=>{
       }
     });
   }
+  // Scroll input into view when keyboard opens (iOS + Android)
+  document.addEventListener('focusin',function(e){
+    if(isInput(e.target)){
+      setTimeout(()=>{
+        e.target.scrollIntoView({block:'center',behavior:'smooth'});
+      },isIOS?400:200);
+    }
+  });
 })();
 
 function toast(msg,err=false){const c=document.getElementById('toasts'),t=document.createElement('div');t.className='toast'+(err?' err':'');t.textContent=msg;c.appendChild(t);setTimeout(()=>t.remove(),3500);}
