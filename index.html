@@ -123,6 +123,8 @@ nav{display:flex;gap:0.15rem;align-items:center;flex:1;justify-content:center}
 .fl{display:block;font-size:0.68rem;font-weight:700;color:var(--m1);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:0.35rem}
 .fr{display:grid;grid-template-columns:1fr 1fr;gap:0.75rem}
 input,select,textarea{width:100%;background:var(--s2);border:1px solid var(--b1);border-radius:var(--r);padding:7px 10px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:0.84rem;outline:none;transition:border-color 0.2s}
+input[type=number]{-moz-appearance:textfield}
+input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
 input:focus,select:focus,textarea:focus{border-color:var(--lime)}
 select option{background:var(--s2)}
 textarea{resize:vertical;min-height:65px;-webkit-user-select:text;user-select:text}
@@ -481,7 +483,7 @@ input[type=range]::-moz-range-track{height:6px;background:var(--s3);border-radiu
 </div>
 
 <div class="overlay" id="ov-detail">
-  <div class="modal modal-wide"><button class="mc" onclick="closeModal('detail')">✕</button><div id="detailContent"></div></div>
+  <div class="modal modal-wide"><button class="mc" onclick="closeModal('detail')">✕</button><button class="mc" id="detailEditBtn" style="right:2.8rem;display:none" onclick="detailEdit()">✏️</button><div id="detailContent"></div></div>
 </div>
 
 <div class="overlay" id="ov-adminPhoto">
@@ -747,8 +749,43 @@ function showDetail(id){
       ${canB?`<button class="btn btn-lime btn-sm" onclick="oBuy('${d.id}');closeModal('detail')" style="flex:1">Купити ${d.buyout||0}₴</button>`:''}
       ${d.status==='testing'&&CU?.name===d.tester?`<button class="btn btn-ghost btn-sm" onclick="oRet('${d.id}');closeModal('detail')" style="flex:1">↩ Повернути</button>`:''}
     </div>
-    <div style="margin-top:0.5rem"><button class="btn btn-ghost btn-xs" onclick="shareDisc('${d.id}')" style="color:var(--m1);width:100%">🔗 Поділитись посиланням</button></div>`;
+    <div style="margin-top:0.5rem"><button class="btn btn-ghost btn-xs" onclick="shareDisc('${d.id}')" style="color:var(--m1);width:100%">🔗 Поділитись посиланням</button></div>
+    <div style="margin-top:1rem;border-top:1px solid var(--b1);padding-top:0.75rem">
+      <div style="font-size:0.72rem;font-weight:700;color:var(--m1);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:0.5rem">Коментарі</div>
+      <div id="disc-comments-${d.id}" style="margin-bottom:0.5rem"></div>
+      ${CU?`<div style="display:flex;gap:0.4rem"><textarea id="comment-input-${d.id}" placeholder="Написати коментар..." style="min-height:36px;font-size:0.78rem;flex:1"></textarea><button class="btn btn-ghost btn-xs" onclick="postComment('${d.id}')" style="flex-shrink:0;align-self:flex-end">↗</button></div>`:'<div style="font-size:0.75rem;color:var(--m1)">Увійдіть щоб коментувати</div>'}
+    </div>`;
+  // Show edit button if owner
+  const editBtn=document.getElementById('detailEditBtn');
+  if(editBtn){
+    const isOwner=CU&&String(CU.name).trim()===String(d.owner).trim();
+    editBtn.style.display=isOwner?'flex':'none';
+    editBtn.onclick=()=>{closeModal('detail');openEditDisc(d.id);};
+  }
   openModal('detail');
+  loadComments(d.id);
+}
+
+// ── COMMENTS ──
+async function loadComments(discId){
+  const el=document.getElementById('disc-comments-'+discId);if(!el)return;
+  try{
+    const {data}=await sb.from('comments').select('*').eq('disc_id',discId).order('created_at',{ascending:true});
+    if(!data||!data.length){el.innerHTML='<div style="font-size:0.75rem;color:var(--m1)">Поки немає коментарів</div>';return;}
+    el.innerHTML=data.map(c=>`<div style="padding:0.4rem 0;border-bottom:1px solid var(--b1);font-size:0.78rem">
+      <div style="display:flex;justify-content:space-between;margin-bottom:2px"><span style="font-weight:600;color:var(--text)">${c.author||'?'}</span><span style="font-size:0.65rem;color:var(--m1)">${fmtDate(c.created_at)}</span></div>
+      <div style="color:var(--m2)">${c.text}</div>
+    </div>`).join('');
+  }catch(e){el.innerHTML='';}
+}
+async function postComment(discId){
+  const input=document.getElementById('comment-input-'+discId);
+  const text=input?.value?.trim();if(!text||!CU)return;
+  try{
+    const {error}=await sb.from('comments').insert({disc_id:discId,author:CU.name,author_tg:CU.tg||'',text:text});
+    if(!error){input.value='';loadComments(discId);}
+    else toast('⚠️ Помилка',true);
+  }catch(e){toast('⚠️ Помилка',true);}
 }
 
 // ── ADD DISC ──
@@ -1539,30 +1576,28 @@ document.querySelectorAll('.overlay').forEach(o=>o.addEventListener('click',e=>{
 
 // Fix Telegram WebApp input/textarea on Android
 (function(){
-  const isTgAndroid=window.Telegram?.WebApp&&/android/i.test(navigator.userAgent);
-  // Method 1: Force focus with blur-refocus cycle
-  document.addEventListener('touchend',function(e){
-    const el=e.target;
-    if(el.tagName==='TEXTAREA'||el.tagName==='INPUT'&&el.type!=='file'&&el.type!=='checkbox'&&el.type!=='radio'){
-      e.preventDefault();
-      el.blur();
-      setTimeout(()=>{el.focus();el.click();},100);
-    }
-  },{passive:false});
-  // Method 2: Remove backdrop-filter on modals when input is focused (Android WebView bug)
-  if(isTgAndroid){
-    document.addEventListener('focusin',function(e){
+  const isTg=!!window.Telegram?.WebApp;
+  const isAndroid=/android/i.test(navigator.userAgent);
+  function isInput(el){return el&&(el.tagName==='TEXTAREA'||(el.tagName==='INPUT'&&!['file','checkbox','radio','range'].includes(el.type)));}
+  // Force focus on tap
+  document.addEventListener('touchstart',function(e){
+    if(isInput(e.target)){
       const el=e.target;
-      if(el.tagName==='TEXTAREA'||el.tagName==='INPUT'){
-        const overlay=el.closest('.overlay');
-        if(overlay){overlay.style.backdropFilter='none';overlay.style.webkitBackdropFilter='none';}
+      setTimeout(()=>{el.focus();},0);
+    }
+  },{passive:true});
+  // Remove backdrop-filter when input focused (Android WebView bug)
+  if(isTg&&isAndroid){
+    document.addEventListener('focusin',function(e){
+      if(isInput(e.target)){
+        const ov=e.target.closest('.overlay');
+        if(ov){ov.style.backdropFilter='none';ov.style.webkitBackdropFilter='none';}
       }
     });
     document.addEventListener('focusout',function(e){
-      const el=e.target;
-      if(el.tagName==='TEXTAREA'||el.tagName==='INPUT'){
-        const overlay=el.closest('.overlay');
-        if(overlay){setTimeout(()=>{overlay.style.backdropFilter='';overlay.style.webkitBackdropFilter='';},200);}
+      if(isInput(e.target)){
+        const ov=e.target.closest('.overlay');
+        if(ov)setTimeout(()=>{ov.style.backdropFilter='';ov.style.webkitBackdropFilter='';},300);
       }
     });
   }
