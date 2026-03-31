@@ -593,6 +593,13 @@ const ST = {
 function st(s){return ST[s]||ST.available;}
 function fmtDate(iso){if(!iso)return'—';try{return new Date(iso).toLocaleDateString('uk-UA',{day:'2-digit',month:'2-digit',year:'numeric'});}catch(e){return iso;}}
 function genId(){return Date.now().toString(36)+Math.random().toString(36).slice(2,5);}
+function hasTgUsername(tg){return tg&&!/^\d+$/.test(String(tg).replace('@','').trim());}
+function tgLinkFull(tg){
+  const clean=String(tg).replace('@','').trim();
+  if(!clean)return'';
+  if(/^\d+$/.test(clean))return` · <a href="tg://user?id=${clean}" target="_blank" style="color:var(--cyan)">написати ↗</a>`;
+  return` · <a href="https://t.me/${clean}" target="_blank" style="color:var(--cyan)">@${clean}</a>`;
+}
 
 // ── LOAD DISCS ──
 const HIDDEN=['sold','deleted','unlisted'];
@@ -802,7 +809,7 @@ function showDetail(id){
       <div class="detail-info-item"><span class="di-label">Колір:</span> ${d.color||'—'}</div>
       ${d.inked?'<div class="detail-info-item"><span style="color:var(--purple)">🖊️ Inked</span></div>':'<div></div>'}
       ${d.city?`<div class="detail-info-item full"><span class="di-label">Місто:</span> ${d.city}</div>`:''}
-      <div class="detail-info-item full"><span class="di-label">Власник:</span> ${d.owner||'—'}${d.ownerTg?` · <a href="https://t.me/${d.ownerTg.replace('@','')}" target="_blank" style="color:var(--cyan)">@${d.ownerTg.replace('@','')}</a>`:''}</div>
+      <div class="detail-info-item full"><span class="di-label">Власник:</span> ${d.owner||'—'}${tgLinkFull(d.ownerTg)}</div>
       ${d.tester&&d.status==='testing'?`<div class="detail-info-item full"><span class="di-label">Тестер:</span> ${d.tester}</div>`:''}
     </div>
     ${hasTrade?`<div class="info-box" style="border-color:rgba(167,139,250,0.25);background:rgba(167,139,250,0.05);margin-bottom:0.875rem"><strong style="color:var(--purple)">🔄 Обмін:</strong> ${d.tradeWant}</div>`:''}
@@ -1135,8 +1142,8 @@ function openReqTest(id){
   const owTg=(d.ownerTg||'').replace('@','');
   document.getElementById('reqDiscInfo').innerHTML=
     `<strong>${d.brand} ${d.model}</strong> · ${d.plastic||''} · ${d.weight||''}г · <strong style="color:var(--lime)">${d.buyout||0}₴</strong><br>`+
-    `Власник: <strong>${d.owner}</strong>${owTg?` · <a href="https://t.me/${owTg}" target="_blank" style="color:var(--cyan)">@${owTg} ↗</a>`:''}<br>`+
-    `<span style="color:var(--m1);font-size:0.75rem">Від: <strong style="color:var(--text)">${CU.name}</strong>${CU.tg?` · <a href="https://t.me/${CU.tg.replace('@','')}" target="_blank" style="color:var(--cyan)">@${CU.tg.replace('@','')} ↗</a>`:''}</span>`;
+    `Власник: <strong>${d.owner}</strong>${tgLinkFull(owTg)}<br>`+
+    `<span style="color:var(--m1);font-size:0.75rem">Від: <strong style="color:var(--text)">${CU.name}</strong>${tgLinkFull(CU.tg)}</span>`;
   document.getElementById('rt-note').value='';
   document.getElementById('rt-note').placeholder='Залишити коментар';
   document.querySelector('#ov-reqTest .mt').innerHTML='ЗАПИТ НА <span>ТЕСТ</span>';
@@ -1170,8 +1177,13 @@ function oBuy(id){
   document.getElementById('buyInfo').innerHTML=`<strong>${d.brand} ${d.model}</strong> · ${d.plastic||''}<br>Ціна: <strong>${d.buyout||0} ₴</strong><br>Власник: <strong>${d.owner}</strong>`;
   document.getElementById('buy-note').value='';
   const lEl=document.getElementById('buySellerLink');
-  if(d.ownerTg){lEl.style.display='block';lEl.innerHTML=`<a href="https://t.me/${d.ownerTg.replace('@','')}" target="_blank" class="btn btn-cyan btn-full">💬 Написати @${d.ownerTg.replace('@','')}</a>`;}
-  else lEl.style.display='none';
+  const owClean=String(d.ownerTg||'').replace('@','').trim();
+  if(owClean){
+    const isNum=/^\d+$/.test(owClean);
+    const href=isNum?'tg://user?id='+owClean:'https://t.me/'+owClean;
+    const label=isNum?'💬 Написати продавцю':'💬 Написати @'+owClean;
+    lEl.style.display='block';lEl.innerHTML=`<a href="${href}" target="_blank" class="btn btn-cyan btn-full">${label}</a>`;
+  }else lEl.style.display='none';
   openModal('buy');
 }
 async function submitBuy(){
@@ -1261,7 +1273,7 @@ function openTradeOffer(id){
   document.getElementById('reqDiscInfo').innerHTML=
     `<strong>${d.brand} ${d.model}</strong><br>`+
     `Власник шукає: <strong style="color:var(--purple)">${d.tradeWant}</strong><br>`+
-    `Власник: ${d.owner}${owTg?` · <a href="https://t.me/${owTg}" target="_blank" style="color:var(--cyan)">@${owTg} ↗</a>`:''}<br>`+
+    `Власник: ${d.owner}${tgLinkFull(owTg)}<br>`+
     `<span style="color:var(--m1);font-size:0.75rem">Від: ${CU.name}</span>`;
   document.getElementById('rt-note').placeholder='Опиши свій диск для обміну...';
   document.getElementById('rt-note').value='';
@@ -1365,7 +1377,7 @@ async function renderSeller(){
           <div style="display:flex;align-items:center;gap:0.5rem">
             <div style="flex:1;min-width:0">
               <div class="di-title">${r.tester} → ${disc?disc.brand+' '+disc.model:'?'} <span class="badge ${typeBadge}">${typeLabel}</span></div>
-              <div class="di-sub">${fmtDate(r.created_at)}${r.tester_tg?' · <a href="https://t.me/'+r.tester_tg.replace('@','')+'" target="_blank" style="color:var(--cyan)">@'+r.tester_tg.replace('@','')+'</a>':''}</div>
+              <div class="di-sub">${fmtDate(r.created_at)}${tgLinkFull(r.tester_tg)}</div>
             </div>
             ${disc&&isBuy&&r.status==='pending'?`<button class="btn btn-lime btn-xs" onclick="confirmSale('${disc.id}')">✓ Продано</button>`:''}
             ${disc&&!isBuy&&r.status==='pending'?`<button class="btn btn-cyan btn-xs" onclick="acceptRequest('${r.id}','${disc.id}','${(r.tester||'').replace(/'/g,"\\'")}','${(r.tester_tg||'').replace(/'/g,"\\'")}','${r.request_type}')">Прийняти</button>`:''}
