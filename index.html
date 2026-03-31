@@ -221,6 +221,7 @@ td{padding:8px 10px;font-size:0.8rem}
 .loading-overlay{position:fixed;inset:0;background:var(--bg);z-index:500;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:0.875rem}
 .loading-spinner{width:36px;height:36px;border:3px solid var(--b1);border-top-color:var(--lime);border-radius:50%;animation:spin 0.8s linear infinite}
 .toasts{position:fixed;bottom:1rem;right:1rem;z-index:400;display:flex;flex-direction:column;gap:0.4rem}
+@media(max-width:600px){.toasts{bottom:5rem}}
 .toast{background:var(--s1);border:1px solid var(--b1);border-left:3px solid var(--lime);border-radius:8px;padding:0.7rem 1rem;font-size:0.82rem;animation:tIn 0.22s ease;box-shadow:0 5px 24px rgba(0,0,0,0.15);min-width:180px}
 @keyframes tIn{from{opacity:0;transform:translateX(10px)}to{opacity:1;transform:translateX(0)}}
 .toast.err{border-left-color:var(--orange)}
@@ -234,13 +235,22 @@ input[type=range]::-webkit-slider-runnable-track{height:6px;border-radius:3px}
 input[type=range]::-moz-range-track{height:6px;background:var(--s3);border-radius:3px}
 
 @media(max-width:600px){
-  nav{display:none}.hamburger{display:flex}
+  nav{display:none}.hamburger{display:none}
+  #addDiscBtn2{display:none}
   .stats-mini{grid-template-columns:repeat(4,1fr)}
   .stat-mn{font-size:1.2rem}
   .stat-ml{font-size:0.55rem}
   .disc-grid{grid-template-columns:repeat(2,1fr);gap:0.5rem}
   .fr{grid-template-columns:1fr}
+  .content{padding-bottom:4.5rem}
 }
+.bottom-nav{display:none;position:fixed;bottom:0;left:0;right:0;background:var(--s1);border-top:1px solid var(--b1);z-index:100;padding:4px 0 3px;justify-content:space-around;align-items:flex-end}
+@media(max-width:600px){.bottom-nav{display:flex}}
+.bnav-item{display:flex;flex-direction:column;align-items:center;gap:0px;cursor:pointer;border:none;background:none;padding:2px 4px;color:var(--m1);font-size:0.5rem;font-family:'DM Sans',sans-serif;font-weight:600;transition:color 0.15s;-webkit-tap-highlight-color:transparent;min-width:40px}
+.bnav-item.active{color:var(--lime)}
+.bnav-item svg{width:22px;height:22px}
+.bnav-add{background:var(--lime);width:46px;height:46px;border-radius:50%;display:flex;align-items:center;justify-content:center;border:3px solid var(--bg);box-shadow:0 2px 10px rgba(0,0,0,0.25);margin-top:-28px}
+.bnav-add svg{width:20px;height:20px}
 </style>
 </head>
 <body>
@@ -278,20 +288,34 @@ input[type=range]::-moz-range-track{height:6px;background:var(--s3);border-radiu
   </nav>
   <div class="header-right">
     <button class="btn btn-lime btn-sm" onclick="openModal('addDisc')" id="addDiscBtn2">+ Диск</button>
-    <button class="btn btn-ghost btn-sm" onclick="CU?null:openModal('login')" id="userBtn" style="display:none">Увійти</button>
-    <div class="hamburger" id="hamburger" onclick="toggleNav()"><span></span><span></span><span></span></div>
-    <button class="btn btn-ghost btn-sm" onclick="toggleTheme()" id="themeBtn" style="padding:5px 8px;font-size:0.9rem">🌙</button>
+    <button class="btn btn-ghost btn-sm" onclick="toggleTheme()" id="themeBtn" style="padding:5px 8px;font-size:0.9rem;position:absolute;right:0.5rem;top:50%;transform:translateY(-50%)">🌙</button>
   </div>
 </header>
 
-<div class="mobile-nav" id="mobileNav">
-  <div id="mobileUserInfo" style="padding:0.5rem 0.75rem;font-size:0.82rem;color:var(--m2);border-bottom:1px solid var(--b1);margin-bottom:0.25rem;display:none"></div>
-  <button class="nav-a" onclick="goPageM('catalog')">🥏 Каталог</button>
-  <button class="nav-a" onclick="goPageM('cabinet')">👤 Кабінет</button>
-  <button class="nav-a" onclick="goPageM('rules')">📋 Правила</button>
-  <button class="nav-a" onclick="goPageM('admin')">🔐 Адмін</button>
-  <hr style="border-color:var(--b1);margin:0.2rem 0">
-  <button class="nav-a" onclick="openModal('addDisc');closeMobileNav()">+ Додати диск</button>
+<!-- BOTTOM NAV (mobile) -->
+<div class="bottom-nav" id="bottomNav">
+  <button class="bnav-item active" id="bn-catalog" onclick="goPageBn('catalog')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><ellipse cx="12" cy="12" rx="6" ry="2"/><path d="M12 3v18"/></svg>
+    <span>Каталог</span>
+  </button>
+  <button class="bnav-item" id="bn-cabinet" onclick="goPageBn('cabinet')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+    <span>Кабінет</span>
+  </button>
+  <button class="bnav-item" onclick="openModal('addDisc')">
+    <div class="bnav-add">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#1a1d24" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+    </div>
+    <span>Додати диск</span>
+  </button>
+  <button class="bnav-item" id="bn-auctions" onclick="goPageBn('auctions')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="10" r="6"/><path d="M9 7v6M7 10h4"/><circle cx="16" cy="14" r="6"/><path d="M16 11v6M14 14h4"/></svg>
+    <span>Аукціони</span>
+  </button>
+  <button class="bnav-item" id="bn-settings" onclick="goPageBn('settings')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+    <span>Спільнота</span>
+  </button>
 </div>
 
 <!-- CATALOG -->
@@ -410,6 +434,36 @@ input[type=range]::-moz-range-track{height:6px;background:var(--s3);border-radiu
         </div>
       </div>
     </div>
+  </div>
+</div>
+
+<!-- AUCTIONS -->
+<div id="page-auctions" class="page">
+  <div class="content">
+    <div class="empty" style="padding:3rem 1rem">
+      <div style="font-size:3rem;margin-bottom:1rem">🏆</div>
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:1.5rem;letter-spacing:1px;margin-bottom:0.5rem">АУКЦІОНИ</div>
+      <div style="color:var(--m2);font-size:0.85rem;line-height:1.6;max-width:280px;margin:0 auto">Скоро тут з'являться аукціони</div>
+    </div>
+  </div>
+</div>
+
+<!-- COMMUNITY -->
+<div id="page-settings" class="page">
+  <div class="content">
+    <div style="display:flex;justify-content:flex-end;margin-bottom:0.75rem" id="postBtnWrap">
+      <button class="btn btn-lime btn-sm" onclick="togglePostForm()">+ Публікація</button>
+    </div>
+    <!-- Post form -->
+    <div class="card" style="margin-bottom:1rem;display:none" id="postFormWrap">
+      <div class="fg" style="margin-bottom:0.4rem"><input id="post-url" placeholder="Посилання YouTube, TikTok, Instagram..." style="font-size:14px"></div>
+      <div class="fg" style="margin-bottom:0.5rem"><input id="post-desc" placeholder="Опис (опційно)" style="font-size:14px"></div>
+      <div style="display:flex;gap:0.4rem">
+        <button class="btn btn-lime btn-full" onclick="submitPost()">Опублікувати</button>
+        <button class="btn btn-ghost btn-sm" onclick="togglePostForm()" style="flex-shrink:0">✕</button>
+      </div>
+    </div>
+    <div id="feedList"><div style="text-align:center;color:var(--m1);padding:2rem;font-size:0.85rem">Завантаження...</div></div>
   </div>
 </div>
 
@@ -635,7 +689,7 @@ async function loadLikes(){
     likesCache={};
     Object.keys(counts).forEach(id=>{likesCache[id]={count:counts[id],liked:myLikes.includes(id)};});
     myLikes.forEach(id=>{if(!likesCache[id])likesCache[id]={count:1,liked:true};});
-  }catch(e){console.error('loadLikes catch:',e);}
+  }catch(e){if(!String(e).includes('DataClone'))console.error('loadLikes catch:',e);}
 }
 function getLikes(id){return likesCache[String(id)]||{count:0,liked:false};}
 async function toggleLike(id,e){
@@ -1719,10 +1773,23 @@ function goPage(page,btn){
   if(page==='cabinet'){const ok=!!CU;document.getElementById('cabinetNoAuth').style.display=ok?'none':'block';document.getElementById('cabinetContent').style.display=ok?'block':'none';if(ok)renderCabinet();}
   if(page==='admin')setTimeout(checkAdminAccess,200);
   if(page==='catalog')applyFilters();
+  if(page==='settings'){
+    loadFeed();
+    const pf=document.getElementById('postFormWrap');
+    const pb=document.getElementById('postBtnWrap');
+    if(pf)pf.style.display='none';
+    if(pb)pb.style.display=CU?'flex':'none';
+  }
+  // Update bottom nav
+  document.querySelectorAll('.bnav-item').forEach(b=>b.classList.remove('active'));
+  const bnBtn=document.getElementById('bn-'+page);
+  if(bnBtn)bnBtn.classList.add('active');
 }
-function goPageM(page){closeMobileNav();goPage(page);}
-function toggleNav(){document.getElementById('hamburger').classList.toggle('open');document.getElementById('mobileNav').classList.toggle('open');}
-function closeMobileNav(){document.getElementById('hamburger').classList.remove('open');document.getElementById('mobileNav').classList.remove('open');}
+function goPageBn(page){
+  goPage(page);
+  window.scrollTo(0,0);
+}
+function goPageM(page){goPage(page);}
 
 function openModal(n){
   if(['reqTest','buy','return','addDisc'].includes(n)&&!CU){toast('⚠️ Спочатку увійдіть',true);document.getElementById('ov-login').classList.add('open');document.body.classList.add('modal-open');return;}
@@ -1796,6 +1863,112 @@ function doLogin(){
   localStorage.setItem('dcUser',JSON.stringify(CU));
   updateUserBtn();closeModal('login');renderCabinet();
   toast(`👋 Привіт, ${name}!`);
+}
+
+// ── COMMUNITY FEED ──
+let feedPosts=[], feedLikes={};
+function togglePostForm(){
+  const f=document.getElementById('postFormWrap');
+  const b=document.getElementById('postBtnWrap');
+  if(f.style.display==='none'){f.style.display='block';b.style.display='none';}
+  else{f.style.display='none';b.style.display='flex';}
+}
+function detectPlatform(url){
+  if(/youtube\.com|youtu\.be/i.test(url))return'youtube';
+  if(/tiktok\.com/i.test(url))return'tiktok';
+  if(/instagram\.com/i.test(url))return'instagram';
+  return'link';
+}
+function getEmbed(url,platform){
+  if(platform==='youtube'){
+    const m=url.match(/(?:youtu\.be\/|v=|\/embed\/)([a-zA-Z0-9_-]{11})/);
+    if(m)return`<iframe src="https://www.youtube.com/embed/${m[1]}" style="width:100%;aspect-ratio:16/9;border:none;border-radius:var(--r)" allowfullscreen loading="lazy"></iframe>`;
+  }
+  if(platform==='tiktok'){
+    return`<blockquote class="tiktok-embed" data-video-url="${url}" style="max-width:100%"><a href="${url}" target="_blank" style="color:var(--cyan);font-size:0.8rem">Відкрити в TikTok ↗</a></blockquote>`;
+  }
+  if(platform==='instagram'){
+    return`<a href="${url}" target="_blank" style="display:block;padding:0.75rem;background:var(--s2);border:1px solid var(--b1);border-radius:var(--r);color:var(--cyan);font-size:0.82rem">📷 Відкрити в Instagram ↗</a>`;
+  }
+  return`<a href="${url}" target="_blank" style="display:block;padding:0.75rem;background:var(--s2);border:1px solid var(--b1);border-radius:var(--r);color:var(--cyan);font-size:0.82rem;word-break:break-all">🔗 ${url}</a>`;
+}
+async function submitPost(){
+  if(!CU||!CU.tgId){toast('⚠️ Спочатку увійдіть',true);return;}
+  const url=document.getElementById('post-url').value.trim();
+  if(!url){toast('⚠️ Вставте посилання',true);return;}
+  const desc=document.getElementById('post-desc').value.trim();
+  const platform=detectPlatform(url);
+  const {error}=await sb.from('posts').insert({author:CU.name,author_tg:CU.tg||'',author_tg_id:CU.tgId,url,platform,description:desc});
+  if(!error){document.getElementById('post-url').value='';document.getElementById('post-desc').value='';toast('✅ Опубліковано!');loadFeed();}
+  else toast('⚠️ '+error.message,true);
+}
+async function loadFeed(){
+  try{
+    const {data}=await sb.from('posts').select('*').order('created_at',{ascending:false}).limit(50);
+    feedPosts=data||[];
+    // Load likes counts
+    const {data:lk}=await sb.from('post_likes').select('post_id');
+    const counts={};(lk||[]).forEach(r=>{counts[r.post_id]=(counts[r.post_id]||0)+1;});
+    let myPostLikes=[];
+    if(CU?.tgId){const {data:ml}=await sb.from('post_likes').select('post_id').eq('user_tg_id',CU.tgId);myPostLikes=(ml||[]).map(r=>r.post_id);}
+    feedLikes={};
+    Object.keys(counts).forEach(id=>{feedLikes[id]={count:counts[id],liked:myPostLikes.includes(id)};});
+    myPostLikes.forEach(id=>{if(!feedLikes[id])feedLikes[id]={count:1,liked:true};});
+    renderFeed();
+  }catch(e){}
+}
+function getFeedLike(id){return feedLikes[id]||{count:0,liked:false};}
+async function togglePostLike(postId){
+  if(!CU||!CU.tgId){toast('⚠️ Спочатку увійдіть',true);return;}
+  const cur=getFeedLike(postId);
+  if(cur.liked){
+    await sb.from('post_likes').delete().eq('post_id',postId).eq('user_tg_id',CU.tgId);
+    feedLikes[postId]={count:Math.max(0,cur.count-1),liked:false};
+  }else{
+    await sb.from('post_likes').insert({post_id:postId,user_tg_id:CU.tgId});
+    feedLikes[postId]={count:cur.count+1,liked:true};
+  }
+  renderFeed();
+}
+function renderFeed(){
+  const el=document.getElementById('feedList');
+  if(!feedPosts.length){el.innerHTML='<div style="text-align:center;color:var(--m1);padding:2rem;font-size:0.85rem">Поки немає публікацій</div>';return;}
+  el.innerHTML=feedPosts.map(p=>{
+    const lk=getFeedLike(p.id);
+    const platformIcon=p.platform==='youtube'?'▶️':p.platform==='tiktok'?'🎵':p.platform==='instagram'?'📷':'🔗';
+    return`<div class="card" style="margin-bottom:0.75rem">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.5rem">
+        <div style="font-size:0.78rem"><span style="font-weight:700">${p.author}</span> <span style="color:var(--m1)">${fmtDateTime(p.created_at)}</span></div>
+        <span style="font-size:0.7rem;color:var(--m1)">${platformIcon}</span>
+      </div>
+      ${p.description?`<div style="font-size:0.82rem;margin-bottom:0.5rem;color:var(--m2)">${p.description}</div>`:''}
+      <div style="margin-bottom:0.5rem">${getEmbed(p.url,p.platform)}</div>
+      <div style="display:flex;align-items:center;gap:0.75rem;font-size:0.78rem">
+        <span onclick="togglePostLike('${p.id}')" style="cursor:pointer">${lk.liked?'❤️':'🤍'} ${lk.count||''}</span>
+        <span onclick="togglePostComments('${p.id}')" style="cursor:pointer;color:var(--m1)">💬 Коментарі</span>
+      </div>
+      <div id="post-comments-${p.id}" style="display:none;margin-top:0.5rem;border-top:1px solid var(--b1);padding-top:0.5rem"></div>
+    </div>`;
+  }).join('');
+}
+async function togglePostComments(postId){
+  const el=document.getElementById('post-comments-'+postId);
+  if(!el)return;
+  if(el.style.display==='none'){
+    el.style.display='block';
+    const {data}=await sb.from('post_comments').select('*').eq('post_id',postId).order('created_at',{ascending:true});
+    let html=(data||[]).map(c=>`<div style="padding:0.3rem 0;font-size:0.75rem"><span style="font-weight:600">${c.author}</span> <span style="color:var(--m1)">${fmtDateTime(c.created_at)}</span><div style="color:var(--m2)">${c.text}</div></div>`).join('');
+    if(!data||!data.length)html='<div style="font-size:0.75rem;color:var(--m1)">Поки немає коментарів</div>';
+    if(CU)html+=`<div style="display:flex;gap:0.3rem;margin-top:0.4rem"><input id="pc-${postId}" placeholder="Коментар..." style="flex:1;font-size:14px"><button class="btn btn-ghost btn-xs" onclick="submitPostComment('${postId}')">↗</button></div>`;
+    el.innerHTML=html;
+  }else{el.style.display='none';}
+}
+async function submitPostComment(postId){
+  const input=document.getElementById('pc-'+postId);
+  const text=input?.value?.trim();if(!text||!CU)return;
+  const {error}=await sb.from('post_comments').insert({post_id:postId,author:CU.name,author_tg:CU.tg||'',text});
+  if(!error){input.value='';togglePostComments(postId);togglePostComments(postId);}
+  else toast('⚠️ '+error.message,true);
 }
 
 // ── THEME ──
