@@ -58,7 +58,7 @@ nav{display:flex;gap:0.15rem;align-items:center;flex:1;justify-content:center}
 
 .filter-bar{display:flex;gap:0.4rem;align-items:center;margin-bottom:0.5rem}
 .ftabs{display:flex;gap:2px;overflow-x:auto;-webkit-overflow-scrolling:touch;flex:1;background:var(--s2);border:1px solid var(--b1);border-radius:var(--r);padding:3px;scrollbar-width:none}
-.ft{padding:3px 9px;border-radius:6px;font-size:0.71rem;font-weight:600;cursor:pointer;border:none;background:transparent;color:var(--m1);font-family:'DM Sans',sans-serif;transition:all 0.15s;white-space:nowrap;flex-shrink:0}
+.ft{padding:3px 9px;border-radius:6px;font-size:0.71rem;font-weight:600;cursor:pointer;border:none;background:transparent;color:var(--m1);font-family:'DM Sans',sans-serif;transition:all 0.15s;white-space:nowrap;flex:1;text-align:center}
 .ft.active{background:var(--lime);color:#080a10}.ft:hover:not(.active){color:var(--text)}
 .adv-filters{display:none;background:var(--s2);border:1px solid var(--b1);border-radius:var(--r2);padding:0.875rem;margin-bottom:0.875rem}
 .adv-filters.open{display:block}
@@ -784,7 +784,10 @@ function showDetail(id){
     ${photos}
     <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:0.875rem">
       <div><div style="font-size:0.65rem;color:var(--m1);text-transform:uppercase;letter-spacing:1px">${d.brand}</div><div style="font-family:'Bebas Neue';font-size:1.8rem;letter-spacing:1px;line-height:1">${d.model}</div></div>
-      <span class="badge b-${s.c}">${s.l}</span>
+      <div style="display:flex;align-items:center;gap:0.4rem">
+        <span onclick="toggleFav('${d.id}')" style="cursor:pointer;font-size:1.1rem">${isFav(d.id)?'⭐':'☆'}</span>
+        <span class="badge b-${s.c}">${s.l}</span>
+      </div>
     </div>
     ${condBar(d.condition)}<div style="font-size:0.72rem;color:var(--m1);margin-bottom:0.875rem">Стан: ${d.condition||0}/10</div>
     <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:4px;margin-bottom:0.875rem">
