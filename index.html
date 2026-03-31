@@ -253,7 +253,7 @@ input[type=range]::-moz-range-track{height:6px;background:var(--s3);border-radiu
         <button class="ft" onclick="setFt(this,'available')">Доступні</button>
         <button class="ft" onclick="setFt(this,'testing')">Тест</button>
         <button class="ft" onclick="setFt(this,'trade')">Обмін</button>
-        <button class="ft" onclick="setFt(this,'fav')">❤️</button>
+        <button class="ft" onclick="setFt(this,'fav')">⭐</button>
       </div>
       <button class="btn btn-ghost btn-sm" onclick="toggleAdvFilters()" id="advBtn" style="flex-shrink:0;padding:5px 9px">⚙</button>
     </div>
@@ -545,6 +545,41 @@ function toggleFav(id){
   applyFilters();
 }
 
+// ── LIKES ──
+let likesCache={};// {disc_id: {count, liked}}
+async function loadLikes(){
+  try{
+    const {data}=await sb.from('likes').select('disc_id');
+    const counts={};
+    (data||[]).forEach(r=>{counts[r.disc_id]=(counts[r.disc_id]||0)+1;});
+    const myId=CU?.tgId||'';
+    let myLikes=[];
+    if(myId){
+      const {data:ml}=await sb.from('likes').select('disc_id').eq('user_tg_id',myId);
+      myLikes=(ml||[]).map(r=>r.disc_id);
+    }
+    likesCache={};
+    Object.keys(counts).forEach(id=>{likesCache[id]={count:counts[id],liked:myLikes.includes(id)};});
+    myLikes.forEach(id=>{if(!likesCache[id])likesCache[id]={count:1,liked:true};});
+  }catch(e){}
+}
+function getLikes(id){return likesCache[id]||{count:0,liked:false};}
+async function toggleLike(id,e){
+  if(e)e.stopPropagation();
+  if(!CU||!CU.tgId){toast('⚠️ Спочатку увійдіть',true);return;}
+  const cur=getLikes(id);
+  if(cur.liked){
+    await sb.from('likes').delete().eq('disc_id',id).eq('user_tg_id',CU.tgId);
+    likesCache[id]={count:Math.max(0,cur.count-1),liked:false};
+  }else{
+    await sb.from('likes').insert({disc_id:id,user_tg_id:CU.tgId});
+    likesCache[id]={count:cur.count+1,liked:true};
+  }
+  applyFilters();
+  // Refresh detail if open
+  if(document.getElementById('ov-detail')?.classList.contains('open'))showDetail(id);
+}
+
 const ST = {
   available:{l:'Доступний',c:'av',sc:'s-av'},
   reserved:{l:'Зарезервований',c:'re',sc:'s-re'},
@@ -669,6 +704,7 @@ function cardHTML(d){
     <div style="position:relative">
       ${photoCarousel(urls,'c'+d.id,d.photoPos)}
       <span class="${s.sc} status-overlay">${s.l}</span>
+      <span onclick="event.stopPropagation();toggleLike('${d.id}',event)" style="position:absolute;bottom:5px;right:6px;cursor:pointer;font-size:0.8rem;z-index:2;background:rgba(0,0,0,0.6);padding:2px 5px;border-radius:10px;display:flex;align-items:center;gap:2px;color:#fff;backdrop-filter:blur(4px)"><span style="font-size:0.75rem">${getLikes(d.id).liked?'❤️':'🤍'}</span><span style="font-size:0.65rem;font-weight:600">${getLikes(d.id).count||''}</span></span>
     </div>
     <div class="disc-body">
       <div class="disc-title">${d.brand} ${d.model}</div>
@@ -684,7 +720,7 @@ function cardHTML(d){
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.35rem">
           <div class="disc-price">${d.buyout?d.buyout+' ₴':'—'}</div>
           <div style="display:flex;align-items:center;gap:0.4rem">
-            <span onclick="event.stopPropagation();toggleFav('${d.id}')" style="cursor:pointer;font-size:0.85rem">${isFav(d.id)?'❤️':'🤍'}</span>
+            <span onclick="event.stopPropagation();toggleFav('${d.id}')" style="cursor:pointer;font-size:0.85rem">${isFav(d.id)?'⭐':'☆'}</span>
             <div class="disc-own" onclick="event.stopPropagation();filterByOwner('${d.owner}')">👤 ${(d.owner||'').split(' ')[0]}</div>
           </div>
         </div>
@@ -741,7 +777,9 @@ function showDetail(id){
   const canT=(d.status==='available'||d.status==='trade')&&parseInt(d.condition)<10;
   const canB=d.status!=='sold';
   const hasTrade=String(d.tradeWant||'').trim()&&String(d.tradeWant)!=='false';
-  const photos=urls.length?`<div class="detail-photos" id="pw-d${d.id}">${urls.map((u,i)=>`<img src="${u}" class="${i===0?'active':''}" alt="">`).join('')}${urls.length>1?`<button class="photo-nav prev" onclick="photoNav('d${d.id}',-1)">‹</button><button class="photo-nav next" onclick="photoNav('d${d.id}',1)">›</button>`:''}</div>`:`<div style="height:120px;background:var(--s2);border-radius:var(--r2);display:flex;align-items:center;justify-content:center;font-size:3rem;margin-bottom:1rem">🥏</div>`;
+  const photos=urls.length?`<div class="detail-photos" id="pw-d${d.id}" style="position:relative">${urls.map((u,i)=>`<img src="${u}" class="${i===0?'active':''}" alt="">`).join('')}${urls.length>1?`<button class="photo-nav prev" onclick="photoNav('d${d.id}',-1)">‹</button><button class="photo-nav next" onclick="photoNav('d${d.id}',1)">›</button>`:''}
+    <span onclick="toggleLike('${d.id}',event)" style="position:absolute;bottom:10px;right:10px;cursor:pointer;font-size:0.95rem;z-index:2;background:rgba(0,0,0,0.6);padding:4px 8px;border-radius:12px;display:flex;align-items:center;gap:4px;color:#fff;backdrop-filter:blur(4px)"><span>${getLikes(d.id).liked?'❤️':'🤍'}</span><span style="font-size:0.8rem;font-weight:600">${getLikes(d.id).count||''}</span></span>
+  </div>`:`<div style="height:120px;background:var(--s2);border-radius:var(--r2);display:flex;align-items:center;justify-content:center;font-size:3rem;margin-bottom:1rem">🥏</div>`;
   document.getElementById('detailContent').innerHTML=`
     ${photos}
     <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:0.875rem">
@@ -1674,6 +1712,7 @@ async function init(){
   const params=new URLSearchParams(location.search);
   const discId=params.get('disc')||window.Telegram?.WebApp?.initDataUnsafe?.start_param;
   await loadDiscs();
+  await loadLikes();
   subscribeRealtime();
   if(discId)setTimeout(()=>{showDetail(discId);},300);
 }
