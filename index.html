@@ -253,7 +253,6 @@ input[type=range]::-moz-range-track{height:6px;background:var(--s3);border-radiu
         <button class="ft" onclick="setFt(this,'available')">Доступні</button>
         <button class="ft" onclick="setFt(this,'testing')">Тест</button>
         <button class="ft" onclick="setFt(this,'trade')">Обмін</button>
-        <button class="ft" onclick="setFt(this,'reserved')">Резерв</button>
         <button class="ft" onclick="setFt(this,'fav')">❤️</button>
       </div>
       <button class="btn btn-ghost btn-sm" onclick="toggleAdvFilters()" id="advBtn" style="flex-shrink:0;padding:5px 9px">⚙</button>
@@ -685,7 +684,7 @@ function cardHTML(d){
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.35rem">
           <div class="disc-price">${d.buyout?d.buyout+' ₴':'—'}</div>
           <div style="display:flex;align-items:center;gap:0.4rem">
-            <span onclick="event.stopPropagation();toggleFav('${d.id}')" style="cursor:pointer;font-size:0.85rem;opacity:${isFav(d.id)?1:0.3}">${isFav(d.id)?'❤️':'🤍'}</span>
+            <span onclick="event.stopPropagation();toggleFav('${d.id}')" style="cursor:pointer;font-size:0.85rem">${isFav(d.id)?'❤️':'🤍'}</span>
             <div class="disc-own" onclick="event.stopPropagation();filterByOwner('${d.owner}')">👤 ${(d.owner||'').split(' ')[0]}</div>
           </div>
         </div>
