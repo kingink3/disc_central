@@ -2068,7 +2068,7 @@ function renderAuctions(){
     const isActive=a.status==='active'&&end>now;
     const timeLeft=isActive?fmtTimeLeft(end-now):'';
     const statusClass=isActive?'av':a.status==='sold'?'so':'so';
-    const statusLabel=isActive?'Активний':a.status==='sold'?'Продано':'Завершено';
+    const statusLabel=isActive?'Активний':(a.status==='sold'||a.winner)?'Продано':'Завершено';
     const curPrice=a.auction_type==='reverse'&&isActive?getReverseCurPrice(a):(a.current_price||a.start_price);
     const desc=a.description||'';
     // Parse description for disc info
@@ -2109,7 +2109,7 @@ function renderAuctions(){
           ${a.auction_type==='reverse'&&isActive?`<div style="font-size:0.65rem;color:var(--purple);margin-bottom:0.3rem">📉 -${a.reverse_drop}₴ / ${a.reverse_interval||60}хв</div>`:''}
           ${isActive&&CU&&a.owner_tg_id===CU.tgId?`<div style="font-size:0.7rem;color:var(--m1);text-align:center">Ваш аукціон</div>`
             :isActive?`<div style="display:flex;gap:3px">${a.auction_type==='reverse'?`<button class="btn btn-lime btn-xs auc-rev-btn" data-auc="${a.id}" data-created="${a.created_at}" data-rstart="${a.reverse_start}" data-rend="${a.reverse_end}" data-rdrop="${a.reverse_drop}" data-rint="${a.reverse_interval||60}" onclick="event.stopPropagation();buyoutAuction('${a.id}')" style="flex:1">Купити ${curPrice}₴</button><button class="btn btn-cyan btn-xs" onclick="event.stopPropagation();showAucDetail('${a.id}')" style="flex:1">Ставка</button>`:a.buyout_price>0?`<button class="btn btn-lime btn-xs" onclick="event.stopPropagation();buyoutAuction('${a.id}')" style="flex:1">Купити ${a.buyout_price}₴</button><button class="btn btn-cyan btn-xs" onclick="event.stopPropagation();showAucDetail('${a.id}')" style="flex:1">Ставка</button>`:`<button class="btn btn-cyan btn-xs btn-full" onclick="event.stopPropagation();showAucDetail('${a.id}')">Ставка</button>`}</div>`
-            :a.status==='sold'?`<div style="font-size:0.7rem;color:var(--av);text-align:center">🏆 ${a.winner||''}</div>`
+            :(a.status==='sold'||a.winner)?`<div style="font-size:0.7rem;color:var(--av);text-align:center">🏆 ${a.winner||''}</div>`
             :`<div style="font-size:0.7rem;color:var(--m1);text-align:center">Не продано</div>`}
         </div>
       </div>
@@ -2276,7 +2276,7 @@ async function showAucDetail(id){
   const {data:bids}=await sb.from('bids').select('*').eq('auction_id',id).order('amount',{ascending:false});
   const minBid=isReverse?curPrice:(curPrice+(a.min_step||10));
   const typeLabel=a.auction_type==='buyout'?'💰 Купити зараз + Аукціон':isReverse?'📉 Зворотній аукціон':'📈 Класичний аукціон';
-  const statusLabel=isActive?'Активний':a.status==='sold'?'Продано':'Завершено';
+  const statusLabel=isActive?'Активний':(a.status==='sold'||a.winner)?'Продано':'Завершено';
   const statusClass=isActive?'b-av':a.status==='sold'?'b-so':'b-so';
   // Parse description fields
   const desc=a.description||'';
