@@ -1992,8 +1992,13 @@ async function loadAuctions(){
     const now=new Date();
     allAuctions.forEach(a=>{
       if(a.status==='active'&&new Date(a.ends_at)<=now){
-        a.status='expired';
-        sb.from('auctions').update({status:a.winner?'sold':'expired'}).eq('id',a.id).then(()=>{});
+        const newStatus=a.winner?'sold':'expired';
+        a.status=newStatus;
+        sb.from('auctions').update({status:newStatus}).eq('id',a.id).then(()=>{});
+        // Notify on completed auction
+        if(a.winner&&newStatus==='sold'){
+          notifyAuction('ended',a,{name:a.winner,tg:a.winner_tg_id||a.winner_tg},a.current_price);
+        }
       }
     });
     renderAuctions();
