@@ -1948,12 +1948,28 @@ function getEmbed(url,platform){
     <div style="color:var(--cyan);font-size:0.82rem;flex-shrink:0">↗</div>
   </div>`;
 }
+async function resolveTikTokUrl(url){
+  try{
+    const resp=await fetch('https://www.tiktok.com/oembed?url='+encodeURIComponent(url));
+    const data=await resp.json();
+    if(data&&data.embed_product_id){
+      const author=data.author_unique_id||'';
+      return`https://www.tiktok.com/@${author}/video/${data.embed_product_id}`;
+    }
+  }catch(e){}
+  return url;
+}
 async function submitPost(){
   if(!CU||!CU.tgId){toast('⚠️ Спочатку увійдіть',true);return;}
-  const url=document.getElementById('post-url').value.trim();
+  let url=document.getElementById('post-url').value.trim();
   if(!url){toast('⚠️ Вставте посилання',true);return;}
   const desc=document.getElementById('post-desc').value.trim();
   const platform=detectPlatform(url);
+  // Resolve short TikTok URLs to get video ID
+  if(platform==='tiktok'&&!url.match(/\/video\/(\d+)/)){
+    toast('⏳ Обробка TikTok...');
+    url=await resolveTikTokUrl(url);
+  }
   const {error}=await sb.from('posts').insert({author:CU.name,author_tg:CU.tg||'',author_tg_id:CU.tgId,url,platform,description:desc});
   if(!error){document.getElementById('post-url').value='';document.getElementById('post-desc').value='';toast('✅ Опубліковано!');loadFeed();}
   else toast('⚠️ '+error.message,true);
