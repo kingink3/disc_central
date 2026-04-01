@@ -1896,7 +1896,7 @@ function openExtLink(url){
 }
 function getEmbed(url,platform){
   if(platform==='youtube'){
-    const m=url.match(/(?:youtu\.be\/|v=|\/embed\/)([a-zA-Z0-9_-]{11})/);
+    const m=url.match(/(?:youtu\.be\/|v=|\/embed\/|\/shorts\/)([a-zA-Z0-9_-]{11})/);
     if(m){
       const thumb=`https://img.youtube.com/vi/${m[1]}/hqdefault.jpg`;
       return`<div style="position:relative;border-radius:var(--r);overflow:hidden;aspect-ratio:16/9;background:#000">
