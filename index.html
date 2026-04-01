@@ -2002,6 +2002,7 @@ async function loadAuctions(){
       }
     });
     renderAuctions();
+    startAucGridTimer();
   }catch(e){}
 }
 
@@ -2029,24 +2030,60 @@ function renderAuctions(){
   grid.innerHTML=list.map(a=>{
     const end=new Date(a.ends_at);
     const isActive=a.status==='active'&&end>now;
-    const timeLeft=isActive?fmtTimeLeft(end-now):'Завершено';
-    const statusClass=isActive?'av':a.status==='sold'?'re':'so';
-    const statusLabel=isActive?timeLeft:a.status==='sold'?'Продано':'Завершено';
+    const timeLeft=isActive?fmtTimeLeft(end-now):'';
+    const statusClass=isActive?'av':a.status==='sold'?'so':'so';
+    const statusLabel=isActive?'Активний':a.status==='sold'?'Продано':'Завершено';
     const curPrice=a.auction_type==='reverse'&&isActive?getReverseCurPrice(a):(a.current_price||a.start_price);
+    const desc=a.description||'';
+    // Parse description for disc info
+    const plastic=(desc.match(/Пластик:\s*(.+)/)||[])[1]||'';
+    const weight=(desc.match(/Вага:\s*(\d+)/)||[])[1]||'';
+    const city=(desc.match(/Місто:\s*(.+)/)||[])[1]||'';
+    const cond=(desc.match(/Стан:\s*(\d+)/)||[])[1]||'';
+    const sub=[plastic,weight?weight+'г':'',city].filter(Boolean).join(' · ');
     return`<div class="disc-card" onclick="showAucDetail('${a.id}')">
       <div class="disc-strip ${statusClass}"></div>
-      ${a.photo_url?`<div style="position:relative"><img src="${a.photo_url}" style="width:100%;height:140px;object-fit:cover" loading="lazy"><span class="s-${statusClass} status-overlay">${statusLabel}</span></div>`:`<div style="height:80px;background:var(--s2);display:flex;align-items:center;justify-content:center;font-size:2rem;position:relative">🏆<span class="s-${statusClass} status-overlay">${statusLabel}</span></div>`}
+      <div style="position:relative">
+        ${a.photo_url?`<div class="disc-photo-wrap"><img src="${a.photo_url}" class="active" alt="" loading="lazy"></div>`:`<div class="disc-photo-placeholder">🏆</div>`}
+        <span class="s-${statusClass} status-overlay">${statusLabel}</span>
+        ${aucTypeBadge(a.auction_type)?`<span style="position:absolute;top:5px;right:6px;z-index:2">${aucTypeBadge(a.auction_type)}</span>`:''}
+      </div>
       <div class="disc-body">
-        <div style="display:flex;justify-content:space-between;align-items:center"><div class="disc-title">${a.title}</div>${aucTypeBadge(a.auction_type)}</div>
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:0.4rem">
-          <div class="disc-price">${curPrice} ₴</div>
-          <div style="font-size:0.65rem;color:var(--m1)">${a.bid_count||0} ставок</div>
+        <div class="disc-title">${a.title}</div>
+        ${sub?`<div class="disc-sub">${sub}</div>`:''}
+        ${cond?condBar(cond):''}
+        <div class="disc-footer" style="margin-top:auto">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.3rem">
+            <div class="disc-price">${curPrice} ₴</div>
+            <div class="disc-own">👤 ${(a.owner||'').split(' ')[0]}</div>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.4rem">
+            <span style="font-size:0.65rem;color:var(--m1)">${a.bid_count||0} ставок</span>
+            ${isActive?`<span class="auc-card-timer" data-ends="${a.ends_at}" style="font-size:0.65rem;color:var(--cyan);font-weight:600">⏱ ${timeLeft}</span>`:''}
+          </div>
+          ${a.buyout_price>0&&isActive?`<div style="font-size:0.65rem;color:var(--orange);margin-bottom:0.3rem">Купити зараз: ${a.buyout_price} ₴</div>`:''}
+          ${a.auction_type==='reverse'&&isActive?`<div style="font-size:0.65rem;color:var(--purple);margin-bottom:0.3rem">📉 -${a.reverse_drop}₴ / ${a.reverse_interval||60}хв</div>`:''}
+          ${isActive?`<button class="btn btn-lime btn-xs btn-full" onclick="event.stopPropagation();showAucDetail('${a.id}')">Зробити ставку</button>`
+            :a.status==='sold'?`<div style="font-size:0.7rem;color:var(--av);text-align:center">🏆 ${a.winner||''}</div>`
+            :`<div style="font-size:0.7rem;color:var(--m1);text-align:center">Не продано</div>`}
         </div>
-        ${a.buyout_price>0&&isActive?`<div style="font-size:0.65rem;color:var(--orange);margin-top:2px">Купити зараз: ${a.buyout_price} ₴</div>`:''}
-        ${a.auction_type==='reverse'&&isActive?`<div style="font-size:0.65rem;color:var(--purple);margin-top:2px">Мін: ${a.reverse_end} ₴ · -${a.reverse_drop}₴/${a.reverse_interval||60}хв</div>`:''}
       </div>
     </div>`;
   }).join('');
+}
+
+let aucGridInterval=null;
+function startAucGridTimer(){
+  if(aucGridInterval)clearInterval(aucGridInterval);
+  aucGridInterval=setInterval(()=>{
+    document.querySelectorAll('.auc-card-timer').forEach(el=>{
+      const ends=el.dataset.ends;
+      if(!ends)return;
+      const left=new Date(ends)-new Date();
+      if(left<=0){el.textContent='Завершено';el.style.color='var(--m1)';}
+      else el.textContent='⏱ '+fmtTimeLeft(left);
+    });
+  },1000);
 }
 
 function fmtTimeLeft(ms){
@@ -2063,6 +2100,7 @@ function setAucFilter(btn,val){
   btn.parentElement.querySelectorAll('.ft').forEach(b=>b.classList.remove('active'));
   btn.classList.add('active');
   renderAuctions();
+  startAucGridTimer();
 }
 
 function handleAucPhoto(i,input){
@@ -2165,28 +2203,33 @@ async function showAucDetail(id){
   const isActive=a.status==='active'&&end>now;
   const isReverse=a.auction_type==='reverse';
   const curPrice=isReverse&&isActive?getReverseCurPrice(a):(a.current_price||a.start_price);
-  // Load bids
   const {data:bids}=await sb.from('bids').select('*').eq('auction_id',id).order('amount',{ascending:false});
   const minBid=isReverse?curPrice:(curPrice+(a.min_step||10));
   const typeLabel=a.auction_type==='buyout'?'💰 Купити зараз + Аукціон':isReverse?'📉 Зворотній аукціон':'📈 Класичний аукціон';
-  
+  const statusLabel=isActive?'Активний':a.status==='sold'?'Продано':'Завершено';
+  const statusClass=isActive?'b-av':a.status==='sold'?'b-so':'b-so';
+  // Parse description
+  const desc=a.description||'';
+  const photos=[a.photo_url,a.photo_url2,a.photo_url3].filter(Boolean);
+  const photoHtml=photos.length?`<div class="detail-photos" style="position:relative;margin:-1.5rem -1.5rem 1rem;border-radius:14px 14px 0 0;overflow:hidden;background:#0a0e14">${photos.map((u,i)=>`<img src="${u}" style="width:100%;max-height:300px;object-fit:contain;display:${i===0?'block':'none'}" class="${i===0?'active':''}">`).join('')}${photos.length>1?`<button class="photo-nav prev" onclick="photoNav('aucD',-1)">‹</button><button class="photo-nav next" onclick="photoNav('aucD',1)">›</button>`:''}</div>`:'';
+
   document.getElementById('aucDetailContent').innerHTML=`
-    ${a.photo_url?`<div style="margin:-1.5rem -1.5rem 1rem;border-radius:14px 14px 0 0;overflow:hidden;background:#0a0e14"><img src="${a.photo_url}" style="width:100%;max-height:300px;object-fit:contain;display:block"></div>`:''}
+    ${photos.length?`<div class="detail-photos" id="pw-aucD" style="margin:-1.5rem -1.5rem 1rem;border-radius:14px 14px 0 0;overflow:hidden;background:#0a0e14">${photos.map((u,i)=>`<img src="${u}" style="width:100%;max-height:300px;object-fit:contain" class="${i===0?'active':''}" alt="">`).join('')}${photos.length>1?`<button class="photo-nav prev" onclick="photoNav('aucD',-1)">‹</button><button class="photo-nav next" onclick="photoNav('aucD',1)">›</button>`:''}</div>`:''}
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.3rem">
-      <div style="font-family:'Bebas Neue';font-size:1.6rem;letter-spacing:1px">${a.title}</div>
-      ${aucTypeBadge(a.auction_type)}
+      <div style="font-family:'Bebas Neue';font-size:1.6rem;letter-spacing:1px;line-height:1">${a.title}</div>
+      <span class="badge ${statusClass}">${statusLabel}</span>
     </div>
-    <div style="font-size:0.7rem;color:var(--m1);margin-bottom:0.5rem">${typeLabel}</div>
-    ${a.description?`<div style="font-size:0.82rem;color:var(--m2);margin-bottom:0.75rem;white-space:pre-line">${a.description}</div>`:''}
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.5rem;margin-bottom:0.75rem">
-      <div class="stat-m"><div class="stat-mn" id="aucPrice">${curPrice}</div><div class="stat-ml">${isReverse?'Поточна ціна ₴':'Поточна ₴'}</div></div>
+    <div style="font-size:0.7rem;color:var(--m1);margin-bottom:0.75rem">${typeLabel}</div>
+    ${desc?`<div style="font-size:0.82rem;color:var(--m2);margin-bottom:0.75rem;white-space:pre-line">${desc}</div>`:''}
+    <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:0.5rem;margin-bottom:0.75rem">
+      <div class="stat-m"><div class="stat-mn" id="aucPrice">${curPrice} ₴</div><div class="stat-ml">${isReverse?'Поточна ціна':'Поточна ціна'}</div></div>
       <div class="stat-m"><div class="stat-mn ${isActive?'cy':'so'}" id="aucTimer">${isActive?fmtTimeLeft(end-now):'Завершено'}</div><div class="stat-ml">${isActive?'Залишилось':'Статус'}</div></div>
+      <div class="stat-m"><div class="stat-mn">${a.start_price} ₴</div><div class="stat-ml">Стартова</div></div>
+      <div class="stat-m"><div class="stat-mn">${a.bid_count||0}</div><div class="stat-ml">Ставок</div></div>
     </div>
-    <div style="font-size:0.78rem;color:var(--m2);margin-bottom:0.5rem">
-      ${isReverse?`Старт: ${a.reverse_start} ₴ → Мін: ${a.reverse_end} ₴ · -${a.reverse_drop}₴ кожні ${a.reverse_interval||60} хв`
-        :`Стартова: ${a.start_price} ₴ · Крок: ${a.min_step} ₴`} · Ставок: ${a.bid_count||0}
-      ${a.buyout_price>0?` · Купити зараз: <strong style="color:var(--orange)">${a.buyout_price} ₴</strong>`:''}
-    </div>
+    ${isReverse?`<div style="font-size:0.78rem;color:var(--purple);margin-bottom:0.5rem;padding:0.4rem;background:rgba(168,85,247,0.1);border-radius:var(--r)">📉 ${a.reverse_start} ₴ → ${a.reverse_end} ₴ · Зниження ${a.reverse_drop} ₴ кожні ${a.reverse_interval||60} хв</div>`:''}
+    ${a.buyout_price>0?`<div style="font-size:0.78rem;color:var(--orange);margin-bottom:0.5rem">Купити зараз: <strong>${a.buyout_price} ₴</strong></div>`:''}
+    <div style="font-size:0.78rem;color:var(--m2);margin-bottom:0.5rem">Крок: ${a.min_step||'-'} ₴</div>
     <div style="font-size:0.78rem;color:var(--m1);margin-bottom:0.75rem">Продавець: <strong style="color:var(--text)">${a.owner}</strong>${tgLinkFull(a.owner_tg||a.owner_tg_id)}</div>
     ${isActive&&CU?`
       ${isReverse?`
@@ -2199,11 +2242,11 @@ async function showAucDetail(id){
       `}
       ${a.buyout_price>0?`<button class="btn btn-orange btn-full" onclick="buyoutAuction('${a.id}')" style="margin-bottom:0.75rem">Купити зараз за ${a.buyout_price} ₴</button>`:''}
     `:`
-      ${a.winner?`<div class="info-box" style="margin-bottom:0.75rem"><strong style="color:var(--lime)">🏆 Переможець:</strong> ${a.winner}${tgLinkFull(a.winner_tg||a.winner_tg_id)}</div>`:'<div style="color:var(--m1);margin-bottom:0.75rem">Ніхто не зробив ставку</div>'}
+      ${a.winner?`<div style="padding:0.5rem;background:rgba(74,222,128,0.1);border:1px solid var(--av);border-radius:var(--r);font-size:0.82rem;margin-bottom:0.75rem">🏆 Переможець: <strong>${a.winner}</strong>${tgLinkFull(a.winner_tg||a.winner_tg_id)}</div>`:'<div style="color:var(--m1);margin-bottom:0.75rem">Ніхто не зробив ставку</div>'}
     `}
     <div style="font-size:0.72rem;font-weight:700;color:var(--m1);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:0.4rem">Історія ставок</div>
-    ${bids&&bids.length?bids.map((b,i)=>`<div style="display:flex;justify-content:space-between;padding:0.3rem 0;border-bottom:1px solid var(--b1);font-size:0.78rem">
-      <span>${i===0?'🏆 ':''}${b.bidder}</span><span style="font-weight:700;color:var(--lime)">${b.amount} ₴</span>
+    ${bids&&bids.length?bids.map((b,i)=>`<div style="display:flex;justify-content:space-between;padding:0.35rem 0;border-bottom:1px solid var(--b1);font-size:0.78rem">
+      <span>${i===0?'🏆 ':''}${b.bidder}${tgLinkFull(b.bidder_tg||b.bidder_tg_id)}</span><span style="font-weight:700;color:var(--lime)">${b.amount} ₴</span>
     </div>`).join(''):'<div style="font-size:0.78rem;color:var(--m1)">Ще немає ставок</div>'}
   `;
   openModal('aucDetail');
@@ -2216,14 +2259,15 @@ async function showAucDetail(id){
         if(left<=0){el.textContent='Завершено';clearInterval(aucTimerInterval);loadAuctions();}
         else el.textContent=fmtTimeLeft(left);
       }
-      if(isReverse){const pe=document.getElementById('aucPrice');if(pe)pe.textContent=getReverseCurPrice(a);}
+      if(isReverse){const pe=document.getElementById('aucPrice');if(pe)pe.textContent=getReverseCurPrice(a)+' ₴';}
     },1000);
   }
 }
 
 async function placeBid(aucId,minBid){
   if(!CU||!CU.tgId){toast('⚠️ Спочатку увійдіть',true);return;}
-  const amount=parseInt(document.getElementById('bidAmount').value);
+  const bidEl=document.getElementById('bidAmount');
+  const amount=bidEl?parseInt(bidEl.value):minBid;
   if(!amount||amount<minBid){toast(`⚠️ Мінімальна ставка: ${minBid} ₴`,true);return;}
   const a=allAuctions.find(x=>x.id===aucId);
   if(!a||a.status!=='active'){toast('⚠️ Аукціон завершено',true);return;}
@@ -2234,9 +2278,19 @@ async function placeBid(aucId,minBid){
   // Insert bid
   const {error}=await sb.from('bids').insert({auction_id:aucId,bidder:CU.name,bidder_tg:CU.tg||'',bidder_tg_id:CU.tgId,amount});
   if(error){toast('⚠️ '+error.message,true);return;}
-  // Update auction
-  await sb.from('auctions').update({current_price:amount,bid_count:(a.bid_count||0)+1,winner:CU.name,winner_tg:CU.tg||'',winner_tg_id:CU.tgId}).eq('id',aucId);
-  toast('✅ Ставка '+amount+' ₴!');
+  // Anti-snipe: extend by 5 min if less than 5 min left
+  const ANTI_SNIPE_MS=5*60*1000;
+  const timeLeft=new Date(a.ends_at)-new Date();
+  let updateFields={current_price:amount,bid_count:(a.bid_count||0)+1,winner:CU.name,winner_tg:CU.tg||'',winner_tg_id:CU.tgId};
+  if(timeLeft>0&&timeLeft<ANTI_SNIPE_MS){
+    const newEnds=new Date(Date.now()+ANTI_SNIPE_MS).toISOString();
+    updateFields.ends_at=newEnds;
+    a.ends_at=newEnds;
+    toast('✅ Ставка '+amount+' ₴! ⏱ +5 хвилин');
+  }else{
+    toast('✅ Ставка '+amount+' ₴!');
+  }
+  await sb.from('auctions').update(updateFields).eq('id',aucId);
   // Notifications
   notifyAuction('new_bid',a,CU,amount);
   if(prevTop&&prevTop.bidder_tg_id&&prevTop.bidder_tg_id!==CU.tgId){
