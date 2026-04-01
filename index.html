@@ -2090,7 +2090,7 @@ function renderAuctions(){
         </div>`:''}
         <div class="disc-footer" style="margin-top:auto">
           <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.3rem">
-            <div class="disc-price">${curPrice} ₴</div>
+            <div class="disc-price ${a.auction_type==='reverse'&&isActive?'auc-rev-price':''}" ${a.auction_type==='reverse'&&isActive?`data-created="${a.created_at}" data-rstart="${a.reverse_start}" data-rend="${a.reverse_end}" data-rdrop="${a.reverse_drop}" data-rint="${a.reverse_interval||60}"`:``}>${curPrice} ₴</div>
             ${a.winner?`<div style="font-size:0.65rem;color:var(--cyan)">🏆 ${(a.winner||'').split(' ')[0]}</div>`:`<div class="disc-own">👤 ${(a.owner||'').split(' ')[0]}</div>`}
           </div>
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.4rem">
@@ -2098,7 +2098,8 @@ function renderAuctions(){
             ${isActive?`<span class="auc-card-timer" data-ends="${a.ends_at}" style="font-size:0.65rem;color:var(--cyan);font-weight:600">⏱ ${timeLeft}</span>`:''}
           </div>
           ${a.auction_type==='reverse'&&isActive?`<div style="font-size:0.65rem;color:var(--purple);margin-bottom:0.3rem">📉 -${a.reverse_drop}₴ / ${a.reverse_interval||60}хв</div>`:''}
-          ${isActive?`<div style="display:flex;gap:3px">${a.buyout_price>0?`<button class="btn btn-lime btn-xs" onclick="event.stopPropagation();buyoutAuction('${a.id}')" style="flex:1">Купити ${a.buyout_price}₴</button>`:''}<button class="btn btn-cyan btn-xs" onclick="event.stopPropagation();showAucDetail('${a.id}')" style="flex:1">Ставка</button></div>`
+          ${isActive&&CU&&a.owner_tg_id===CU.tgId?`<div style="font-size:0.7rem;color:var(--m1);text-align:center">Ваш аукціон</div>`
+            :isActive?`<div style="display:flex;gap:3px">${a.auction_type==='reverse'?`<button class="btn btn-lime btn-xs auc-rev-btn" data-auc="${a.id}" data-created="${a.created_at}" data-rstart="${a.reverse_start}" data-rend="${a.reverse_end}" data-rdrop="${a.reverse_drop}" data-rint="${a.reverse_interval||60}" onclick="event.stopPropagation();buyoutAuction('${a.id}')" style="flex:1">Купити ${curPrice}₴</button><button class="btn btn-cyan btn-xs" onclick="event.stopPropagation();showAucDetail('${a.id}')" style="flex:1">Ставка</button>`:a.buyout_price>0?`<button class="btn btn-lime btn-xs" onclick="event.stopPropagation();buyoutAuction('${a.id}')" style="flex:1">Купити ${a.buyout_price}₴</button><button class="btn btn-cyan btn-xs" onclick="event.stopPropagation();showAucDetail('${a.id}')" style="flex:1">Ставка</button>`:`<button class="btn btn-cyan btn-xs btn-full" onclick="event.stopPropagation();showAucDetail('${a.id}')">Ставка</button>`}</div>`
             :a.status==='sold'?`<div style="font-size:0.7rem;color:var(--av);text-align:center">🏆 ${a.winner||''}</div>`
             :`<div style="font-size:0.7rem;color:var(--m1);text-align:center">Не продано</div>`}
         </div>
@@ -2108,6 +2109,11 @@ function renderAuctions(){
 }
 
 let aucGridInterval=null;
+function calcRevPrice(el){
+  const elapsed=Math.max(0,(Date.now()-new Date(el.dataset.created).getTime())/1000);
+  const drops=Math.floor(elapsed/((parseInt(el.dataset.rint)||60)*60));
+  return Math.max(parseInt(el.dataset.rend)||0,(parseInt(el.dataset.rstart)||0)-(drops*(parseInt(el.dataset.rdrop)||0)));
+}
 function startAucGridTimer(){
   if(aucGridInterval)clearInterval(aucGridInterval);
   aucGridInterval=setInterval(()=>{
@@ -2117,6 +2123,13 @@ function startAucGridTimer(){
       const left=new Date(ends)-new Date();
       if(left<=0){el.textContent='Завершено';el.style.color='var(--m1)';}
       else el.textContent='⏱ '+fmtTimeLeft(left);
+    });
+    // Update reverse prices on cards
+    document.querySelectorAll('.auc-rev-price').forEach(el=>{
+      el.textContent=calcRevPrice(el)+' ₴';
+    });
+    document.querySelectorAll('.auc-rev-btn').forEach(el=>{
+      el.textContent='Купити '+calcRevPrice(el)+'₴';
     });
   },1000);
 }
