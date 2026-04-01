@@ -2086,7 +2086,7 @@ function renderAuctions(){
             ${isActive?`<span class="auc-card-timer" data-ends="${a.ends_at}" style="font-size:0.65rem;color:var(--cyan);font-weight:600">⏱ ${timeLeft}</span>`:''}
           </div>
           ${a.auction_type==='reverse'&&isActive?`<div style="font-size:0.65rem;color:var(--purple);margin-bottom:0.3rem">📉 -${a.reverse_drop}₴ / ${a.reverse_interval||60}хв</div>`:''}
-          ${isActive?`<div style="display:flex;gap:3px">${a.buyout_price>0?`<button class="btn btn-lime btn-xs" onclick="event.stopPropagation();buyoutAuction('${a.id}')" style="flex:1">Купити ${a.buyout_price}₴</button>`:''}<button class="btn ${a.buyout_price>0?'btn-cyan':'btn-lime'} btn-xs" onclick="event.stopPropagation();showAucDetail('${a.id}')" style="flex:1">Ставка</button></div>`
+          ${isActive?`<div style="display:flex;gap:3px">${a.buyout_price>0?`<button class="btn btn-lime btn-xs" onclick="event.stopPropagation();buyoutAuction('${a.id}')" style="flex:1">Купити ${a.buyout_price}₴</button>`:''}<button class="btn btn-cyan btn-xs" onclick="event.stopPropagation();showAucDetail('${a.id}')" style="flex:1">Ставка</button></div>`
             :a.status==='sold'?`<div style="font-size:0.7rem;color:var(--av);text-align:center">🏆 ${a.winner||''}</div>`
             :`<div style="font-size:0.7rem;color:var(--m1);text-align:center">Не продано</div>`}
         </div>
@@ -2288,7 +2288,7 @@ async function showAucDetail(id){
       `:`
         <div style="display:flex;gap:0.4rem;margin-bottom:0.5rem">
           <input type="number" id="bidAmount" placeholder="Мін: ${minBid} ₴" value="${minBid}" style="flex:1;font-size:14px">
-          <button class="btn btn-lime btn-sm" onclick="placeBid('${a.id}',${minBid})" style="flex-shrink:0">Ставка</button>
+          <button class="btn btn-cyan btn-sm" onclick="placeBid('${a.id}',${minBid})" style="flex-shrink:0">Ставка</button>
         </div>
         ${a.buyout_price>0?`<button class="btn btn-lime btn-full" onclick="buyoutAuction('${a.id}')" style="margin-bottom:0.75rem">Купити зараз за ${a.buyout_price} ₴</button>`:''}
       `}
