@@ -2166,7 +2166,13 @@ async function submitAuction(){
   btn.disabled=true;btn.textContent='Створення...';
   const photos=['','',''];
   for(let i=0;i<3;i++){
-    if(aucPhotoFiles[i]){try{photos[i]=await uploadToCloudinary(aucPhotoFiles[i]);}catch(e){}}
+    if(aucPhotoFiles[i]){
+      try{
+        const fd=new FormData();fd.append('file',aucPhotoFiles[i]);fd.append('upload_preset',CLOUDINARY_PRESET);
+        const r=await fetch('https://api.cloudinary.com/v1_1/'+CLOUDINARY_CLOUD+'/image/upload',{method:'POST',body:fd});
+        const data=await r.json();photos[i]=data.secure_url||'';
+      }catch(e){}
+    }
   }
   const totalMs=getAucDurationMs();
   if(totalMs<60000){toast('⚠️ Мінімальна тривалість: 1 хвилина',true);btn.disabled=false;btn.textContent='Створити аукціон';return;}
