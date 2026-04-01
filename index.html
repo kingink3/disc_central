@@ -256,10 +256,10 @@ input[type=range]::-moz-range-track{height:6px;background:rgba(255,255,255,0.06)
 @media(max-width:600px){.bottom-nav{display:flex}}
 .bottom-nav-glass{position:relative;display:flex;align-items:center;width:100%;max-width:500px;margin:0 auto;padding:8px 10px;border-radius:34px;background:linear-gradient(135deg,rgba(255,255,255,0.09) 0%,rgba(255,255,255,0.03) 40%,rgba(255,255,255,0.07) 100%);backdrop-filter:blur(40px) saturate(1.8) brightness(1.1);-webkit-backdrop-filter:blur(40px) saturate(1.8) brightness(1.1);border:0.5px solid rgba(255,255,255,0.14);box-shadow:0 8px 32px rgba(0,0,0,0.4),0 2px 8px rgba(0,0,0,0.2),inset 0 1px 0 rgba(255,255,255,0.12),inset 0 -1px 0 rgba(255,255,255,0.03)}
 .light .bottom-nav-glass{background:linear-gradient(135deg,rgba(255,255,255,0.62) 0%,rgba(255,255,255,0.4) 40%,rgba(255,255,255,0.55) 100%);border:0.5px solid rgba(255,255,255,0.7);box-shadow:0 8px 32px rgba(0,0,0,0.07),0 2px 8px rgba(0,0,0,0.04),inset 0 1px 0 rgba(255,255,255,0.9),inset 0 -1px 0 rgba(255,255,255,0.3)}
-.bnav-pill{position:absolute;border-radius:18px;background:linear-gradient(160deg,rgba(255,255,255,0.16) 0%,rgba(255,255,255,0.05) 100%);border:0.5px solid rgba(255,255,255,0.2);box-shadow:0 4px 16px rgba(0,0,0,0.25),inset 0 1px 0 rgba(255,255,255,0.18),inset 0 -0.5px 0 rgba(255,255,255,0.05);transition:left 0.45s cubic-bezier(0.4,0,0.1,1),width 0.45s cubic-bezier(0.4,0,0.1,1),top 0.45s cubic-bezier(0.4,0,0.1,1),height 0.45s cubic-bezier(0.4,0,0.1,1);pointer-events:none;z-index:0;will-change:left,width}
+.bnav-pill{position:absolute;border-radius:26px;background:linear-gradient(160deg,rgba(255,255,255,0.16) 0%,rgba(255,255,255,0.05) 100%);border:0.5px solid rgba(255,255,255,0.2);box-shadow:0 4px 16px rgba(0,0,0,0.25),inset 0 1px 0 rgba(255,255,255,0.18),inset 0 -0.5px 0 rgba(255,255,255,0.05);transition:left 0.45s cubic-bezier(0.4,0,0.1,1),width 0.45s cubic-bezier(0.4,0,0.1,1),top 0.45s cubic-bezier(0.4,0,0.1,1),height 0.45s cubic-bezier(0.4,0,0.1,1);pointer-events:none;z-index:0;will-change:left,width}
 .light .bnav-pill{background:linear-gradient(160deg,rgba(255,255,255,0.75) 0%,rgba(255,255,255,0.4) 100%);border:0.5px solid rgba(255,255,255,0.85);box-shadow:0 4px 16px rgba(0,0,0,0.06),inset 0 1px 0 rgba(255,255,255,0.95),inset 0 -0.5px 0 rgba(255,255,255,0.3)}
 .bnav-items{display:flex;justify-content:space-around;align-items:center;width:100%;position:relative;z-index:1}
-.bnav-item{display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;border:none;background:none;padding:7px 16px 6px;color:rgba(255,255,255,0.35);font-size:0.6rem;font-family:'DM Sans',sans-serif;font-weight:600;transition:color 0.35s ease;-webkit-tap-highlight-color:transparent;min-width:62px;position:relative;z-index:1}
+.bnav-item{display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;border:none;background:none;padding:8px 8px 6px;color:rgba(255,255,255,0.35);font-size:0.6rem;font-family:'DM Sans',sans-serif;font-weight:600;transition:color 0.35s ease;-webkit-tap-highlight-color:transparent;min-width:52px;position:relative;z-index:1}
 .light .bnav-item{color:rgba(0,0,0,0.3)}
 .bnav-item.active{color:#fff}
 .light .bnav-item.active{color:var(--text)}
@@ -372,7 +372,7 @@ input[type=range]::-moz-range-track{height:6px;background:rgba(255,255,255,0.06)
         <div><span class="fl">Turn до</span><input type="number" id="f-turn" placeholder="1" step="0.5" oninput="applyFilters()"></div>
         <div><span class="fl">Fade до</span><input type="number" id="f-fade" placeholder="5" oninput="applyFilters()"></div>
         <div><span class="fl">Ціна до ₴</span><input type="number" id="f-price" placeholder="9999" oninput="applyFilters()"></div>
-        <div><span class="fl">Місто</span><input id="f-city" placeholder="Всі" oninput="applyFilters()"></div>
+        <div><span class="fl">Місто</span><input id="f-city" placeholder="Київ, Луцьк, Кременчук..." oninput="applyFilters()"></div>
         <div style="display:flex;align-items:flex-end"><button class="btn btn-ghost btn-sm btn-full" onclick="resetFilters()">✕ Скинути</button></div>
       </div>
     </div>
@@ -518,7 +518,7 @@ input[type=range]::-moz-range-track{height:6px;background:rgba(255,255,255,0.06)
     </div>
     <div class="fr"><div class="fg"><label class="fl">Бренд *</label><input id="auc-brand" placeholder="Innova, Discraft..." style="font-size:14px"></div><div class="fg"><label class="fl">Модель *</label><input id="auc-model" placeholder="Boss, Buzzz..." style="font-size:14px"></div></div>
     <div class="fr"><div class="fg"><label class="fl">Пластик</label><input id="auc-plastic" placeholder="Star, ESP..." style="font-size:14px"></div><div class="fg"><label class="fl">Вага (г)</label><input id="auc-weight" type="number" placeholder="175" style="font-size:14px"></div></div>
-    <div class="fr"><div class="fg"><label class="fl">Колір</label><input id="auc-color" placeholder="Жовтий..." style="font-size:14px"></div><div class="fg"><label class="fl">Місто</label><input id="auc-city" placeholder="Київ..." style="font-size:14px"></div></div>
+    <div class="fr"><div class="fg"><label class="fl">Колір</label><input id="auc-color" placeholder="Жовтий..." style="font-size:14px"></div><div class="fg"><label class="fl">Місто</label><input id="auc-city" placeholder="Київ, Луцьк, Одеса..." style="font-size:14px"></div></div>
     <div class="fg"><label class="fl">Стан: <span id="aucCondLabel">7</span>/10</label>
       <div style="display:flex;align-items:center;gap:0.5rem">
         <input type="range" id="auc-cond" min="1" max="10" value="7" step="1" style="flex:1" oninput="document.getElementById('aucCondLabel').textContent=this.value">
@@ -631,7 +631,7 @@ input[type=range]::-moz-range-track{height:6px;background:rgba(255,255,255,0.06)
     <div class="fr"><div class="fg"><label class="fl">Бренд *</label><input id="ad-brand" placeholder="Innova, Discraft..."></div><div class="fg"><label class="fl">Модель *</label><input id="ad-model" placeholder="Boss, Buzzz..."></div></div>
     <div class="fr"><div class="fg"><label class="fl">Пластик</label><input id="ad-plastic" placeholder="Star, ESP..."></div><div class="fg"><label class="fl">Вага (г)</label><input id="ad-weight" type="number" placeholder="175"></div></div>
     <div class="fr"><div class="fg"><label class="fl">Колір</label><input id="ad-color" placeholder="Жовтий..."></div><div class="fg"><label class="fl">Buyout (UAH)</label><input id="ad-buyout" type="number" placeholder="850"></div></div>
-    <div class="fg"><label class="fl">Місто</label><input id="ad-city" placeholder="Київ, Біла Церква..."></div>
+    <div class="fg"><label class="fl">Місто</label><input id="ad-city" placeholder="Київ, Луцьк, Кременчук, Одеса, Львів..."></div>
     <div class="fg"><label class="fl">Стан: <span id="condValLabel">7</span>/10</label>
       <div style="display:flex;align-items:center;gap:0.5rem">
         <input type="range" id="ad-cond" min="1" max="10" value="7" step="1" style="flex:1" oninput="document.getElementById('condValLabel').textContent=this.value;document.getElementById('condVal').textContent=this.value;updateCondBar()">
@@ -684,7 +684,7 @@ input[type=range]::-moz-range-track{height:6px;background:rgba(255,255,255,0.06)
     <label class="toggle-row fg"><input type="checkbox" id="edit-trade"><span style="font-size:0.84rem">🔄 Готовий до обміну</span></label>
     <div class="fg" id="editTradeWrap" style="display:none"><label class="fl">Що хочу отримати</label><textarea id="edit-trade-desc"></textarea></div>
     <div class="fg"><label class="fl">Нотатки</label><textarea id="edit-notes"></textarea></div>
-    <div class="fg"><label class="fl">Місто</label><input id="edit-city" placeholder="Київ, Біла Церква..."></div>
+    <div class="fg"><label class="fl">Місто</label><input id="edit-city" placeholder="Київ, Луцьк, Кременчук, Одеса, Львів..."></div>
     
     <div class="fg"><label class="fl">Статус</label><select id="edit-status"><option value="available">Доступний</option><option value="reserved">Зарезервований</option><option value="testing">На тестуванні</option><option value="sold">Продано</option><option value="unlisted">Знято з продажу</option></select></div>
     <div style="display:flex;gap:0.5rem"><button class="btn btn-lime btn-full" onclick="submitEditDisc()">Зберегти</button></div>
