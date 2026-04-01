@@ -252,6 +252,7 @@ input[type=range]::-moz-range-track{height:6px;background:var(--s3);border-radiu
 .bnav-item svg{width:24px;height:24px}
 .bnav-add{background:var(--lime);width:46px;height:46px;border-radius:50%;display:flex;align-items:center;justify-content:center;border:3px solid var(--bg);box-shadow:0 2px 10px rgba(0,0,0,0.25);margin-top:-28px}
 .bnav-add svg{width:20px;height:20px}
+.bnav-badge{position:absolute;top:-2px;right:2px;background:#f44;color:#fff;font-size:0.5rem;font-weight:700;min-width:14px;height:14px;border-radius:7px;display:flex;align-items:center;justify-content:center;padding:0 3px;line-height:1}
 </style>
 </head>
 <body>
@@ -1774,6 +1775,7 @@ function goPage(page,btn){
   if(page==='cabinet'){const ok=!!CU;document.getElementById('cabinetNoAuth').style.display=ok?'none':'block';document.getElementById('cabinetContent').style.display=ok?'block':'none';if(ok)renderCabinet();}
   if(page==='admin')setTimeout(checkAdminAccess,200);
   if(page==='catalog')applyFilters();
+  if(page==='catalog'||page==='settings'||page==='auctions')markSeen(page);
   if(page==='settings'){
     loadFeed();
     const pf=document.getElementById('postFormWrap');
@@ -1876,6 +1878,54 @@ function doLogin(){
   toast(`👋 Привіт, ${name}!`);
 }
 
+// ── UNSEEN BADGES ──
+let unseenCounts={catalog:0,auctions:0,settings:0};
+let lastSeen={catalog:null,auctions:null,settings:null};
+async function loadLastSeen(){
+  if(!CU?.tgId)return;
+  try{
+    const {data}=await sb.from('user_seen').select('section,last_seen_at').eq('user_tg_id',CU.tgId);
+    (data||[]).forEach(r=>{lastSeen[r.section]=r.last_seen_at;});
+  }catch(e){}
+}
+async function markSeen(section){
+  if(!CU?.tgId)return;
+  const now=new Date().toISOString();
+  lastSeen[section]=now;
+  unseenCounts[section]=0;
+  updateBadges();
+  try{
+    await sb.from('user_seen').upsert({user_tg_id:CU.tgId,section,last_seen_at:now},{onConflict:'user_tg_id,section'});
+  }catch(e){}
+}
+async function countUnseen(){
+  try{
+    // Catalog - new discs
+    const catTs=lastSeen.catalog||'2000-01-01T00:00:00Z';
+    const {count:catCount}=await sb.from('discs').select('id',{count:'exact',head:true}).gt('created_at',catTs).not('status','in','("sold","deleted","unlisted")');
+    unseenCounts.catalog=catCount||0;
+    // Community - new posts
+    const setTs=lastSeen.settings||'2000-01-01T00:00:00Z';
+    const {count:postCount}=await sb.from('posts').select('id',{count:'exact',head:true}).gt('created_at',setTs);
+    unseenCounts.settings=postCount||0;
+    // Auctions - placeholder (0 for now)
+    unseenCounts.auctions=0;
+    updateBadges();
+  }catch(e){}
+}
+function updateBadges(){
+  ['catalog','cabinet','auctions','settings'].forEach(s=>{
+    const btn=document.getElementById('bn-'+s);
+    if(!btn)return;
+    let badge=btn.querySelector('.bnav-badge');
+    const c=unseenCounts[s]||0;
+    if(c>0){
+      if(!badge){badge=document.createElement('span');badge.className='bnav-badge';btn.style.position='relative';btn.appendChild(badge);}
+      badge.textContent=c>99?'99+':c;
+    }else if(badge){badge.remove();}
+  });
+}
+
 // ── COMMUNITY FEED ──
 let feedPosts=[], feedLikes={};
 function togglePostForm(){
@@ -1937,7 +1987,7 @@ function getEmbed(url,platform){
   }
   if(platform==='instagram'){
     const m=url.match(/\/(p|reel|reels)\/([a-zA-Z0-9_-]+)/);
-    if(m)return`<div style="border-radius:var(--r);overflow:hidden;position:relative;max-width:400px;margin:0 auto;max-height:550px">
+    if(m)return`<div style="border-radius:var(--r);overflow:hidden;position:relative;max-width:400px;margin:0 auto;max-height:420px">
         <div style="margin-top:-54px">
           <iframe src="https://www.instagram.com/${m[1]}/${m[2]}/embed/" style="width:100%;height:1200px;border:none" scrolling="no" allowfullscreen loading="lazy"></iframe>
         </div>
@@ -2094,8 +2144,10 @@ async function init(){
   const params=new URLSearchParams(location.search);
   const discId=params.get('disc')||window.Telegram?.WebApp?.initDataUnsafe?.start_param;
   await loadDiscs();
-  await Promise.all([loadLikes(),loadFavorites()]);
+  await Promise.all([loadLikes(),loadFavorites(),loadLastSeen()]);
   applyFilters();
+  await countUnseen();
+  markSeen('catalog');
   subscribeRealtime();
   if(discId)setTimeout(()=>{showDetail(discId);},300);
   else{
