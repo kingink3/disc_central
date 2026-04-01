@@ -194,7 +194,7 @@ input,textarea,select{-webkit-user-select:text;user-select:text}
 
 .overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);backdrop-filter:blur(8px);z-index:200;align-items:flex-start;justify-content:center;padding:0.75rem;overflow-y:scroll;-webkit-overflow-scrolling:touch}
 .overlay.open{display:flex}
-body.modal-open{overflow:hidden}
+body.modal-open{overflow:hidden;position:fixed;width:100%;left:0}
 .modal{background:var(--s1);border:1px solid var(--b1);border-radius:14px;padding:1.5rem 1.5rem 2rem;width:100%;max-width:480px;max-height:none;overflow-y:visible;position:relative;animation:mIn 0.2s ease;margin:1rem auto 1rem}
 .modal-wide{max-width:640px}
 @keyframes mIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
@@ -244,7 +244,7 @@ input[type=range]::-moz-range-track{height:6px;background:var(--s3);border-radiu
   .fr{grid-template-columns:1fr}
   .content{padding-bottom:4.5rem}
 }
-.bottom-nav{display:none;position:fixed;bottom:0;left:0;right:0;background:var(--s1);border-top:1px solid var(--b1);z-index:100;padding:4px 0 calc(3px + env(safe-area-inset-bottom, 8px));justify-content:space-around;align-items:flex-end}
+.bottom-nav{display:none;position:fixed;bottom:0;left:0;right:0;background:var(--s1);border-top:1px solid var(--b1);z-index:100;padding:4px 0 calc(6px + env(safe-area-inset-bottom, 12px));justify-content:space-around;align-items:flex-end}
 @media(max-width:600px){.bottom-nav{display:flex}}
 .bnav-item{display:flex;flex-direction:column;align-items:center;gap:0px;cursor:pointer;border:none;background:none;padding:2px 4px;color:var(--m1);font-size:0.5rem;font-family:'DM Sans',sans-serif;font-weight:600;transition:color 0.15s;-webkit-tap-highlight-color:transparent;min-width:40px}
 .bnav-item.active{color:var(--lime)}
@@ -1791,16 +1791,24 @@ function goPageBn(page){
 }
 function goPageM(page){goPage(page);}
 
+let _scrollY=0;
 function openModal(n){
-  if(['reqTest','buy','return','addDisc'].includes(n)&&!CU){toast('⚠️ Спочатку увійдіть',true);document.getElementById('ov-login').classList.add('open');document.body.classList.add('modal-open');return;}
+  if(['reqTest','buy','return','addDisc'].includes(n)&&!CU){toast('⚠️ Спочатку увійдіть',true);document.getElementById('ov-login').classList.add('open');_scrollY=window.scrollY;document.body.style.top=-_scrollY+'px';document.body.classList.add('modal-open');return;}
   const ov=document.getElementById('ov-'+n);
   if(ov){ov.classList.add('open');ov.scrollTop=0;}
-  document.body.classList.add('modal-open');
+  if(!document.body.classList.contains('modal-open')){_scrollY=window.scrollY;document.body.style.top=-_scrollY+'px';document.body.classList.add('modal-open');}
   if(n==='addDisc'&&CU){const f=document.getElementById('ownerFieldWrap');if(f)f.style.display='none';}
   const tg=window.Telegram?.WebApp;
   if(tg){try{tg.expand();}catch(e){}}
 }
-function closeModal(n){document.getElementById('ov-'+n)?.classList.remove('open');if(!document.querySelector('.overlay.open'))document.body.classList.remove('modal-open');}
+function closeModal(n){
+  document.getElementById('ov-'+n)?.classList.remove('open');
+  if(!document.querySelector('.overlay.open')){
+    document.body.classList.remove('modal-open');
+    document.body.style.top='';
+    window.scrollTo(0,_scrollY);
+  }
+}
 document.querySelectorAll('.overlay').forEach(o=>o.addEventListener('click',e=>{if(e.target===o)closeModal(o.id.slice(3));}));
 
 // Fix Telegram WebApp input/textarea on Android
@@ -1892,7 +1900,7 @@ function getEmbed(url,platform){
   }
   if(platform==='instagram'){
     const m=url.match(/\/(p|reel|reels)\/([a-zA-Z0-9_-]+)/);
-    if(m)return`<iframe src="https://www.instagram.com/${m[1]}/${m[2]}/embed/" style="width:100%;min-height:480px;border:none;border-radius:var(--r)" allowfullscreen loading="lazy"></iframe>`;
+    if(m)return`<iframe src="https://www.instagram.com/${m[1]}/${m[2]}/embed/" style="width:100%;min-height:500px;border:none;border-radius:var(--r);overflow:hidden" scrolling="no" allowfullscreen loading="lazy"></iframe>`;
     return`<a href="${url}" target="_blank" style="display:flex;align-items:center;gap:0.5rem;padding:0.75rem;background:var(--s2);border:1px solid var(--b1);border-radius:var(--r);color:var(--cyan);font-size:0.82rem">📷 Відкрити в Instagram ↗</a>`;
   }
   if(platform==='facebook'){
@@ -1937,7 +1945,9 @@ async function togglePostLike(postId){
     await sb.from('post_likes').insert({post_id:postId,user_tg_id:CU.tgId});
     feedLikes[postId]={count:cur.count+1,liked:true};
   }
-  renderFeed();
+  // Update like button in place without re-rendering
+  const likeEl=document.getElementById('post-like-'+postId);
+  if(likeEl){const lk=getFeedLike(postId);likeEl.innerHTML=`${lk.liked?'❤️':'🤍'} ${lk.count||''}`;}
 }
 function renderFeed(){
   const el=document.getElementById('feedList');
@@ -1953,7 +1963,7 @@ function renderFeed(){
       ${p.description?`<div style="font-size:0.82rem;margin-bottom:0.5rem;color:var(--m2)">${p.description}</div>`:''}
       <div style="margin-bottom:0.5rem">${getEmbed(p.url,p.platform)}</div>
       <div style="display:flex;align-items:center;gap:0.75rem;font-size:0.78rem">
-        <span onclick="togglePostLike('${p.id}')" style="cursor:pointer">${lk.liked?'❤️':'🤍'} ${lk.count||''}</span>
+        <span id="post-like-${p.id}" onclick="togglePostLike('${p.id}')" style="cursor:pointer">${lk.liked?'❤️':'🤍'} ${lk.count||''}</span>
         <span onclick="togglePostComments('${p.id}')" style="cursor:pointer;color:var(--m1)">💬 Коментарі</span>
       </div>
       <div id="post-comments-${p.id}" style="display:none;margin-top:0.5rem;border-top:1px solid var(--b1);padding-top:0.5rem"></div>
