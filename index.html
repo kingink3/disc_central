@@ -2372,7 +2372,7 @@ function notifyAuction(type,auction,user,amount){
   try{
     const tg=user.tg||user.tgId||'';
     const ownerTg=auction.owner_tg_id||auction.owner_tg||'';
-    let url=APPS_SCRIPT+'?notify=1&type=auc_'+type+'&aucTitle='+encodeURIComponent(auction.title)+'&amount='+amount+'&ownerTg='+encodeURIComponent(ownerTg)+'&testerName='+encodeURIComponent(user.name)+'&testerTg='+encodeURIComponent(tg)+'&callback=cb_notify';
+    let url=APPS_SCRIPT+'?notify=1&type=auc_'+type+'&aucTitle='+encodeURIComponent(auction.title)+'&aucId='+encodeURIComponent(auction.id||'')+'&amount='+amount+'&ownerTg='+encodeURIComponent(ownerTg)+'&testerName='+encodeURIComponent(user.name)+'&testerTg='+encodeURIComponent(tg)+'&callback=cb_notify';
     const s=document.createElement('script');
     window.cb_notify=d=>{delete window.cb_notify;s.remove();};
     s.src=url;document.head.appendChild(s);
