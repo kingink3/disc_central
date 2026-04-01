@@ -442,11 +442,16 @@ input[type=range]::-moz-range-track{height:6px;background:var(--s3);border-radiu
 <!-- AUCTIONS -->
 <div id="page-auctions" class="page">
   <div class="content">
-    <div class="empty" style="padding:3rem 1rem">
-      <div style="font-size:3rem;margin-bottom:1rem">🏆</div>
-      <div style="font-family:'Bebas Neue',sans-serif;font-size:1.5rem;letter-spacing:1px;margin-bottom:0.5rem">АУКЦІОНИ</div>
-      <div style="color:var(--m2);font-size:0.85rem;line-height:1.6;max-width:280px;margin:0 auto">Скоро тут з'являться аукціони</div>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.75rem">
+      <div class="ftabs" style="flex:1">
+        <button class="ft active" onclick="setAucFilter(this,'active')">Активні</button>
+        <button class="ft" onclick="setAucFilter(this,'my')">Мої</button>
+        <button class="ft" onclick="setAucFilter(this,'mybids')">Мої ставки</button>
+        <button class="ft" onclick="setAucFilter(this,'ended')">Завершені</button>
+      </div>
+      <button class="btn btn-lime btn-sm" onclick="openModal('addAuction')" style="flex-shrink:0;margin-left:0.4rem">+ Аукціон</button>
     </div>
+    <div id="auctionGrid" class="disc-grid"><div style="text-align:center;color:var(--m1);padding:2rem;font-size:0.85rem">Завантаження...</div></div>
   </div>
 </div>
 
@@ -470,6 +475,96 @@ input[type=range]::-moz-range-track{height:6px;background:var(--s3);border-radiu
 </div>
 
 <!-- MODALS -->
+
+<!-- Create Auction -->
+<div class="overlay" id="ov-addAuction">
+  <div class="modal">
+    <button class="mc" onclick="closeModal('addAuction')">❌</button>
+    <div class="mt">НОВИЙ <span>АУКЦІОН</span></div>
+    <div class="fg">
+      <label class="fl">Фото (до 3х)</label>
+      <div class="photo-upload-grid">
+        <div class="photo-slot" id="auc-slot0" onclick="document.getElementById('aucFile0').click()"><span class="slot-icon">📸</span></div>
+        <div class="photo-slot" id="auc-slot1" onclick="document.getElementById('aucFile1').click()"><span class="slot-icon">📸</span></div>
+        <div class="photo-slot" id="auc-slot2" onclick="document.getElementById('aucFile2').click()"><span class="slot-icon">📸</span></div>
+      </div>
+      <input type="file" id="aucFile0" accept="image/*" style="display:none" onchange="handleAucPhoto(0,this)">
+      <input type="file" id="aucFile1" accept="image/*" style="display:none" onchange="handleAucPhoto(1,this)">
+      <input type="file" id="aucFile2" accept="image/*" style="display:none" onchange="handleAucPhoto(2,this)">
+    </div>
+    <div class="fr"><div class="fg"><label class="fl">Бренд *</label><input id="auc-brand" placeholder="Innova, Discraft..." style="font-size:14px"></div><div class="fg"><label class="fl">Модель *</label><input id="auc-model" placeholder="Boss, Buzzz..." style="font-size:14px"></div></div>
+    <div class="fr"><div class="fg"><label class="fl">Пластик</label><input id="auc-plastic" placeholder="Star, ESP..." style="font-size:14px"></div><div class="fg"><label class="fl">Вага (г)</label><input id="auc-weight" type="number" placeholder="175" style="font-size:14px"></div></div>
+    <div class="fr"><div class="fg"><label class="fl">Колір</label><input id="auc-color" placeholder="Жовтий..." style="font-size:14px"></div><div class="fg"><label class="fl">Місто</label><input id="auc-city" placeholder="Київ..." style="font-size:14px"></div></div>
+    <div class="fg"><label class="fl">Стан: <span id="aucCondLabel">7</span>/10</label>
+      <div style="display:flex;align-items:center;gap:0.5rem">
+        <input type="range" id="auc-cond" min="1" max="10" value="7" step="1" style="flex:1" oninput="document.getElementById('aucCondLabel').textContent=this.value">
+        <span style="font-family:'Space Mono';font-size:0.9rem;font-weight:700;color:var(--lime);min-width:20px;text-align:center">7</span>
+      </div>
+    </div>
+    <div class="fg"><label class="fl">Speed / Glide / Turn / Fade</label>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:0.4rem">
+        <input id="auc-speed" type="number" placeholder="S" style="font-size:14px"><input id="auc-glide" type="number" placeholder="G" style="font-size:14px"><input id="auc-turn" type="number" placeholder="T" step="0.5" style="font-size:14px"><input id="auc-fade" type="number" placeholder="F" style="font-size:14px">
+      </div>
+    </div>
+    <label class="toggle-row fg"><input type="checkbox" id="auc-inked"><span style="font-size:0.84rem">🖊️ Inked</span></label>
+    <div class="fg"><label class="fl">Нотатки</label><textarea id="auc-desc" placeholder="Додаткова інформація..." style="font-size:14px"></textarea></div>
+    <div style="border-top:2px solid var(--lime);margin:0.75rem 0;padding-top:0.75rem">
+      <div style="font-family:'Bebas Neue';font-size:1.1rem;letter-spacing:1px;color:var(--lime);margin-bottom:0.5rem">⚡ ПАРАМЕТРИ АУКЦІОНУ</div>
+      <div class="fg"><label class="fl">Тип аукціону</label>
+        <select id="auc-type" style="font-size:14px" onchange="toggleAucTypeFields()">
+          <option value="classic">📈 Класичний (ставки вгору)</option>
+          <option value="buyout">💰 Купити зараз + аукціон</option>
+          <option value="reverse">📉 Зворотній (ціна падає)</option>
+        </select>
+      </div>
+      <div id="auc-fields-classic">
+        <div class="fr">
+          <div class="fg"><label class="fl">Стартова ціна ₴ *</label><input id="auc-start" type="number" placeholder="100" style="font-size:14px"></div>
+          <div class="fg"><label class="fl">Мін. крок ₴</label><input id="auc-step" type="number" placeholder="10" value="10" style="font-size:14px"></div>
+        </div>
+      </div>
+      <div id="auc-fields-buyout" style="display:none">
+        <div class="fr">
+          <div class="fg"><label class="fl">Стартова ціна ₴ *</label><input id="auc-start-b" type="number" placeholder="100" style="font-size:14px"></div>
+          <div class="fg"><label class="fl">Мін. крок ₴</label><input id="auc-step-b" type="number" placeholder="10" value="10" style="font-size:14px"></div>
+        </div>
+        <div class="fg"><label class="fl">Купити зараз ₴ *</label><input id="auc-buyout-b" type="number" placeholder="500" style="font-size:14px"></div>
+      </div>
+      <div id="auc-fields-reverse" style="display:none">
+        <div class="fr">
+          <div class="fg"><label class="fl">Початкова ціна ₴ *</label><input id="auc-reverse-start" type="number" placeholder="1000" style="font-size:14px"></div>
+          <div class="fg"><label class="fl">Мінімальна ціна ₴ *</label><input id="auc-reverse-end" type="number" placeholder="100" style="font-size:14px"></div>
+        </div>
+        <div class="fr">
+          <div class="fg"><label class="fl">Зниження ₴</label><input id="auc-reverse-drop" type="number" placeholder="50" style="font-size:14px"></div>
+          <div class="fg"><label class="fl">Кожні (хвилин)</label><input id="auc-reverse-interval" type="number" placeholder="60" value="60" style="font-size:14px"></div>
+        </div>
+      </div>
+      <div class="fg"><label class="fl">Тривалість</label>
+        <select id="auc-duration" style="font-size:14px">
+          <option value="1">1 година</option>
+          <option value="3">3 години</option>
+          <option value="6">6 годин</option>
+          <option value="12">12 годин</option>
+          <option value="24" selected>24 години</option>
+          <option value="48">2 дні</option>
+          <option value="72">3 дні</option>
+          <option value="168">7 днів</option>
+        </select>
+      </div>
+    </div>
+    <button class="btn btn-lime btn-full" id="aucSubmitBtn" onclick="submitAuction()">Створити аукціон</button>
+  </div>
+</div>
+
+<!-- Auction Detail -->
+<div class="overlay" id="ov-aucDetail">
+  <div class="modal modal-wide">
+    <button class="mc" onclick="closeModal('aucDetail')">❌</button>
+    <div id="aucDetailContent"></div>
+  </div>
+</div>
+
 <div class="overlay" id="ov-login">
   <div class="modal" style="max-width:360px">
     <button class="mc" onclick="closeModal('login')">❌</button>
@@ -1776,6 +1871,7 @@ function goPage(page,btn){
   if(page==='admin')setTimeout(checkAdminAccess,200);
   if(page==='catalog')applyFilters();
   if(page==='catalog'||page==='settings'||page==='auctions')markSeen(page);
+  if(page==='auctions')loadAuctions();
   if(page==='settings'){
     loadFeed();
     const pf=document.getElementById('postFormWrap');
@@ -1798,7 +1894,7 @@ function goPageM(page){goPage(page);}
 
 let _scrollY=0;
 function openModal(n){
-  if(['reqTest','buy','return','addDisc'].includes(n)&&!CU){toast('⚠️ Спочатку увійдіть',true);document.getElementById('ov-login').classList.add('open');_scrollY=window.scrollY;document.body.style.top=-_scrollY+'px';document.body.classList.add('modal-open');return;}
+  if(['reqTest','buy','return','addDisc','addAuction'].includes(n)&&!CU){toast('⚠️ Спочатку увійдіть',true);document.getElementById('ov-login').classList.add('open');_scrollY=window.scrollY;document.body.style.top=-_scrollY+'px';document.body.classList.add('modal-open');return;}
   const ov=document.getElementById('ov-'+n);
   if(ov){ov.classList.add('open');ov.scrollTop=0;}
   if(!document.body.classList.contains('modal-open')){_scrollY=window.scrollY;document.body.style.top=-_scrollY+'px';document.body.classList.add('modal-open');}
@@ -1878,6 +1974,299 @@ function doLogin(){
   toast(`👋 Привіт, ${name}!`);
 }
 
+// ── AUCTIONS ──
+let allAuctions=[], aucFilter='active', aucPhotoFiles=[null,null,null], aucTimerInterval=null;
+
+function toggleAucTypeFields(){
+  const t=document.getElementById('auc-type').value;
+  document.getElementById('auc-fields-classic').style.display=t==='classic'?'block':'none';
+  document.getElementById('auc-fields-buyout').style.display=t==='buyout'?'block':'none';
+  document.getElementById('auc-fields-reverse').style.display=t==='reverse'?'block':'none';
+}
+
+async function loadAuctions(){
+  try{
+    const {data}=await sb.from('auctions').select('*').order('created_at',{ascending:false});
+    allAuctions=data||[];
+    // Auto-expire
+    const now=new Date();
+    allAuctions.forEach(a=>{
+      if(a.status==='active'&&new Date(a.ends_at)<=now){
+        a.status='expired';
+        sb.from('auctions').update({status:a.winner?'sold':'expired'}).eq('id',a.id).then(()=>{});
+      }
+    });
+    renderAuctions();
+  }catch(e){}
+}
+
+function getReverseCurPrice(a){
+  if(a.auction_type!=='reverse')return a.current_price||a.start_price;
+  const elapsed=Math.max(0,(Date.now()-new Date(a.created_at).getTime())/1000);
+  const drops=Math.floor(elapsed/((a.reverse_interval||60)*60));
+  const price=Math.max(a.reverse_end||0,(a.reverse_start||0)-(drops*(a.reverse_drop||0)));
+  return price;
+}
+function aucTypeBadge(t){
+  if(t==='buyout')return'<span style="font-size:0.55rem;background:var(--orange);color:#000;padding:1px 4px;border-radius:3px;font-weight:700">BUYOUT</span>';
+  if(t==='reverse')return'<span style="font-size:0.55rem;background:var(--purple);color:#fff;padding:1px 4px;border-radius:3px;font-weight:700">📉 REVERSE</span>';
+  return'';
+}
+function renderAuctions(){
+  const now=new Date();
+  let list=allAuctions;
+  if(aucFilter==='active')list=list.filter(a=>a.status==='active'&&new Date(a.ends_at)>now);
+  else if(aucFilter==='my')list=list.filter(a=>CU&&a.owner_tg_id===CU.tgId);
+  else if(aucFilter==='mybids')list=list.filter(a=>CU&&a._myBid);
+  else if(aucFilter==='ended')list=list.filter(a=>a.status!=='active'||new Date(a.ends_at)<=now);
+  const grid=document.getElementById('auctionGrid');
+  if(!list.length){grid.innerHTML='<div style="text-align:center;color:var(--m1);padding:2rem;font-size:0.85rem;grid-column:1/-1">Немає аукціонів</div>';return;}
+  grid.innerHTML=list.map(a=>{
+    const end=new Date(a.ends_at);
+    const isActive=a.status==='active'&&end>now;
+    const timeLeft=isActive?fmtTimeLeft(end-now):'Завершено';
+    const statusClass=isActive?'av':a.status==='sold'?'re':'so';
+    const statusLabel=isActive?timeLeft:a.status==='sold'?'Продано':'Завершено';
+    const curPrice=a.auction_type==='reverse'&&isActive?getReverseCurPrice(a):(a.current_price||a.start_price);
+    return`<div class="disc-card" onclick="showAucDetail('${a.id}')">
+      <div class="disc-strip ${statusClass}"></div>
+      ${a.photo_url?`<div style="position:relative"><img src="${a.photo_url}" style="width:100%;height:140px;object-fit:cover" loading="lazy"><span class="s-${statusClass} status-overlay">${statusLabel}</span></div>`:`<div style="height:80px;background:var(--s2);display:flex;align-items:center;justify-content:center;font-size:2rem;position:relative">🏆<span class="s-${statusClass} status-overlay">${statusLabel}</span></div>`}
+      <div class="disc-body">
+        <div style="display:flex;justify-content:space-between;align-items:center"><div class="disc-title">${a.title}</div>${aucTypeBadge(a.auction_type)}</div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:0.4rem">
+          <div class="disc-price">${curPrice} ₴</div>
+          <div style="font-size:0.65rem;color:var(--m1)">${a.bid_count||0} ставок</div>
+        </div>
+        ${a.buyout_price>0&&isActive?`<div style="font-size:0.65rem;color:var(--orange);margin-top:2px">Купити зараз: ${a.buyout_price} ₴</div>`:''}
+        ${a.auction_type==='reverse'&&isActive?`<div style="font-size:0.65rem;color:var(--purple);margin-top:2px">Мін: ${a.reverse_end} ₴ · -${a.reverse_drop}₴/${a.reverse_interval||60}хв</div>`:''}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function fmtTimeLeft(ms){
+  if(ms<=0)return'Завершено';
+  const s=Math.floor(ms/1000),m=Math.floor(s/60),h=Math.floor(m/60),d=Math.floor(h/24);
+  if(d>0)return d+'д '+h%24+'г';
+  if(h>0)return h+'г '+m%60+'хв';
+  if(m>0)return m+'хв '+s%60+'с';
+  return s+'с';
+}
+
+function setAucFilter(btn,val){
+  aucFilter=val;
+  btn.parentElement.querySelectorAll('.ft').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  renderAuctions();
+}
+
+function handleAucPhoto(i,input){
+  const file=input.files[0];if(!file)return;
+  compressImage(file,1200,0.8).then(compressed=>{
+    aucPhotoFiles[i]=compressed;
+    const reader=new FileReader();
+    reader.onload=e=>{
+      const slot=document.getElementById('auc-slot'+i);
+      slot.style.backgroundImage='url('+e.target.result+')';
+      slot.style.backgroundSize='cover';slot.style.backgroundPosition='center';
+      slot.querySelector('.slot-icon').style.display='none';
+    };
+    reader.readAsDataURL(compressed);
+  });
+}
+
+async function submitAuction(){
+  if(!CU||!CU.tgId){toast('⚠️ Спочатку увійдіть',true);return;}
+  const brand=document.getElementById('auc-brand').value.trim();
+  const model=document.getElementById('auc-model').value.trim();
+  if(!brand||!model){toast('⚠️ Введіть бренд і модель',true);return;}
+  const aucType=document.getElementById('auc-type').value;
+  // Validate type-specific fields
+  let startPrice=0,minStep=10,buyoutPrice=0,reverseStart=0,reverseEnd=0,reverseDrop=0,reverseInterval=60;
+  if(aucType==='classic'){
+    startPrice=parseInt(document.getElementById('auc-start').value);
+    if(!startPrice||startPrice<=0){toast('⚠️ Введіть стартову ціну',true);return;}
+    minStep=parseInt(document.getElementById('auc-step').value)||10;
+  }else if(aucType==='buyout'){
+    startPrice=parseInt(document.getElementById('auc-start-b').value);
+    if(!startPrice||startPrice<=0){toast('⚠️ Введіть стартову ціну',true);return;}
+    minStep=parseInt(document.getElementById('auc-step-b').value)||10;
+    buyoutPrice=parseInt(document.getElementById('auc-buyout-b').value);
+    if(!buyoutPrice||buyoutPrice<=startPrice){toast('⚠️ Ціна "Купити зараз" має бути більше стартової',true);return;}
+  }else if(aucType==='reverse'){
+    reverseStart=parseInt(document.getElementById('auc-reverse-start').value);
+    reverseEnd=parseInt(document.getElementById('auc-reverse-end').value);
+    reverseDrop=parseInt(document.getElementById('auc-reverse-drop').value);
+    reverseInterval=parseInt(document.getElementById('auc-reverse-interval').value)||60;
+    if(!reverseStart||!reverseEnd||!reverseDrop){toast('⚠️ Заповніть всі поля зворотнього аукціону',true);return;}
+    if(reverseEnd>=reverseStart){toast('⚠️ Мінімальна ціна має бути менше початкової',true);return;}
+    startPrice=reverseStart;
+  }
+  const btn=document.getElementById('aucSubmitBtn');
+  btn.disabled=true;btn.textContent='Створення...';
+  const photos=['','',''];
+  for(let i=0;i<3;i++){
+    if(aucPhotoFiles[i]){try{photos[i]=await uploadToCloudinary(aucPhotoFiles[i]);}catch(e){}}
+  }
+  const hours=parseInt(document.getElementById('auc-duration').value)||24;
+  const endsAt=new Date(Date.now()+hours*3600000).toISOString();
+  const title=brand+' '+model;
+  const auction={
+    owner:CU.name,owner_tg:CU.tg||'',owner_tg_id:CU.tgId,
+    title,
+    description:[
+      document.getElementById('auc-plastic').value.trim()?'Пластик: '+document.getElementById('auc-plastic').value.trim():'',
+      document.getElementById('auc-weight').value?'Вага: '+document.getElementById('auc-weight').value+'г':'',
+      document.getElementById('auc-color').value.trim()?'Колір: '+document.getElementById('auc-color').value.trim():'',
+      document.getElementById('auc-cond')?'Стан: '+document.getElementById('auc-cond').value+'/10':'',
+      (()=>{const s=document.getElementById('auc-speed').value,g=document.getElementById('auc-glide').value,t=document.getElementById('auc-turn').value,f=document.getElementById('auc-fade').value;return(s||g||t||f)?'Flight: '+[s||'-',g||'-',t||'-',f||'-'].join(' / '):'';})(),
+      document.getElementById('auc-inked')?.checked?'Inked: Так':'',
+      document.getElementById('auc-city').value.trim()?'Місто: '+document.getElementById('auc-city').value.trim():'',
+      document.getElementById('auc-desc').value.trim()
+    ].filter(Boolean).join('\n'),
+    photo_url:photos[0],photo_url2:photos[1],photo_url3:photos[2],
+    auction_type:aucType,
+    start_price:startPrice,current_price:startPrice,
+    min_step:minStep,buyout_price:buyoutPrice,
+    reverse_start:reverseStart,reverse_end:reverseEnd,
+    reverse_drop:reverseDrop,reverse_interval:reverseInterval,
+    ends_at:endsAt,status:'active'
+  };
+  const {error}=await sb.from('auctions').insert(auction);
+  if(!error){
+    closeModal('addAuction');toast('✅ Аукціон створено!');
+    resetAucForm();loadAuctions();
+  }else toast('⚠️ '+error.message,true);
+  btn.disabled=false;btn.textContent='Створити аукціон';
+}
+
+function resetAucForm(){
+  aucPhotoFiles=[null,null,null];
+  ['auc-brand','auc-model','auc-plastic','auc-weight','auc-color','auc-city','auc-desc','auc-start','auc-buyout','auc-speed','auc-glide','auc-turn','auc-fade','auc-start-b','auc-step-b','auc-buyout-b','auc-reverse-start','auc-reverse-end','auc-reverse-drop','auc-reverse-interval'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  document.getElementById('auc-step').value='10';
+  document.getElementById('auc-duration').value='24';
+  document.getElementById('auc-type').value='classic';
+  toggleAucTypeFields();
+  document.getElementById('auc-cond').value='7';
+  document.getElementById('aucCondLabel').textContent='7';
+  const ink=document.getElementById('auc-inked');if(ink)ink.checked=false;
+  [0,1,2].forEach(i=>{const s=document.getElementById('auc-slot'+i);if(s){s.style.backgroundImage='';const ic=s.querySelector('.slot-icon');if(ic)ic.style.display='';}const f=document.getElementById('aucFile'+i);if(f)f.value='';});
+}
+
+async function showAucDetail(id){
+  const a=allAuctions.find(x=>x.id===id);if(!a)return;
+  const now=new Date();
+  const end=new Date(a.ends_at);
+  const isActive=a.status==='active'&&end>now;
+  const isReverse=a.auction_type==='reverse';
+  const curPrice=isReverse&&isActive?getReverseCurPrice(a):(a.current_price||a.start_price);
+  // Load bids
+  const {data:bids}=await sb.from('bids').select('*').eq('auction_id',id).order('amount',{ascending:false});
+  const minBid=isReverse?curPrice:(curPrice+(a.min_step||10));
+  const typeLabel=a.auction_type==='buyout'?'💰 Купити зараз + Аукціон':isReverse?'📉 Зворотній аукціон':'📈 Класичний аукціон';
+  
+  document.getElementById('aucDetailContent').innerHTML=`
+    ${a.photo_url?`<div style="margin:-1.5rem -1.5rem 1rem;border-radius:14px 14px 0 0;overflow:hidden;background:#0a0e14"><img src="${a.photo_url}" style="width:100%;max-height:300px;object-fit:contain;display:block"></div>`:''}
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.3rem">
+      <div style="font-family:'Bebas Neue';font-size:1.6rem;letter-spacing:1px">${a.title}</div>
+      ${aucTypeBadge(a.auction_type)}
+    </div>
+    <div style="font-size:0.7rem;color:var(--m1);margin-bottom:0.5rem">${typeLabel}</div>
+    ${a.description?`<div style="font-size:0.82rem;color:var(--m2);margin-bottom:0.75rem;white-space:pre-line">${a.description}</div>`:''}
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.5rem;margin-bottom:0.75rem">
+      <div class="stat-m"><div class="stat-mn" id="aucPrice">${curPrice}</div><div class="stat-ml">${isReverse?'Поточна ціна ₴':'Поточна ₴'}</div></div>
+      <div class="stat-m"><div class="stat-mn ${isActive?'cy':'so'}" id="aucTimer">${isActive?fmtTimeLeft(end-now):'Завершено'}</div><div class="stat-ml">${isActive?'Залишилось':'Статус'}</div></div>
+    </div>
+    <div style="font-size:0.78rem;color:var(--m2);margin-bottom:0.5rem">
+      ${isReverse?`Старт: ${a.reverse_start} ₴ → Мін: ${a.reverse_end} ₴ · -${a.reverse_drop}₴ кожні ${a.reverse_interval||60} хв`
+        :`Стартова: ${a.start_price} ₴ · Крок: ${a.min_step} ₴`} · Ставок: ${a.bid_count||0}
+      ${a.buyout_price>0?` · Купити зараз: <strong style="color:var(--orange)">${a.buyout_price} ₴</strong>`:''}
+    </div>
+    <div style="font-size:0.78rem;color:var(--m1);margin-bottom:0.75rem">Продавець: <strong style="color:var(--text)">${a.owner}</strong>${tgLinkFull(a.owner_tg||a.owner_tg_id)}</div>
+    ${isActive&&CU?`
+      ${isReverse?`
+        <button class="btn btn-lime btn-full" onclick="placeBid('${a.id}',${curPrice})" style="margin-bottom:0.5rem">Купити за ${curPrice} ₴</button>
+      `:`
+        <div style="display:flex;gap:0.4rem;margin-bottom:0.5rem">
+          <input type="number" id="bidAmount" placeholder="Мін: ${minBid} ₴" value="${minBid}" style="flex:1;font-size:14px">
+          <button class="btn btn-lime btn-sm" onclick="placeBid('${a.id}',${minBid})" style="flex-shrink:0">Ставка</button>
+        </div>
+      `}
+      ${a.buyout_price>0?`<button class="btn btn-orange btn-full" onclick="buyoutAuction('${a.id}')" style="margin-bottom:0.75rem">Купити зараз за ${a.buyout_price} ₴</button>`:''}
+    `:`
+      ${a.winner?`<div class="info-box" style="margin-bottom:0.75rem"><strong style="color:var(--lime)">🏆 Переможець:</strong> ${a.winner}${tgLinkFull(a.winner_tg||a.winner_tg_id)}</div>`:'<div style="color:var(--m1);margin-bottom:0.75rem">Ніхто не зробив ставку</div>'}
+    `}
+    <div style="font-size:0.72rem;font-weight:700;color:var(--m1);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:0.4rem">Історія ставок</div>
+    ${bids&&bids.length?bids.map((b,i)=>`<div style="display:flex;justify-content:space-between;padding:0.3rem 0;border-bottom:1px solid var(--b1);font-size:0.78rem">
+      <span>${i===0?'🏆 ':''}${b.bidder}</span><span style="font-weight:700;color:var(--lime)">${b.amount} ₴</span>
+    </div>`).join(''):'<div style="font-size:0.78rem;color:var(--m1)">Ще немає ставок</div>'}
+  `;
+  openModal('aucDetail');
+  if(aucTimerInterval)clearInterval(aucTimerInterval);
+  if(isActive){
+    aucTimerInterval=setInterval(()=>{
+      const left=new Date(a.ends_at)-new Date();
+      const el=document.getElementById('aucTimer');
+      if(el){
+        if(left<=0){el.textContent='Завершено';clearInterval(aucTimerInterval);loadAuctions();}
+        else el.textContent=fmtTimeLeft(left);
+      }
+      if(isReverse){const pe=document.getElementById('aucPrice');if(pe)pe.textContent=getReverseCurPrice(a);}
+    },1000);
+  }
+}
+
+async function placeBid(aucId,minBid){
+  if(!CU||!CU.tgId){toast('⚠️ Спочатку увійдіть',true);return;}
+  const amount=parseInt(document.getElementById('bidAmount').value);
+  if(!amount||amount<minBid){toast(`⚠️ Мінімальна ставка: ${minBid} ₴`,true);return;}
+  const a=allAuctions.find(x=>x.id===aucId);
+  if(!a||a.status!=='active'){toast('⚠️ Аукціон завершено',true);return;}
+  if(a.owner_tg_id===CU.tgId){toast('⚠️ Не можна ставити на свій аукціон',true);return;}
+  // Get previous top bidder for notification
+  const {data:prevBids}=await sb.from('bids').select('bidder_tg_id,bidder').eq('auction_id',aucId).order('amount',{ascending:false}).limit(1);
+  const prevTop=prevBids&&prevBids.length?prevBids[0]:null;
+  // Insert bid
+  const {error}=await sb.from('bids').insert({auction_id:aucId,bidder:CU.name,bidder_tg:CU.tg||'',bidder_tg_id:CU.tgId,amount});
+  if(error){toast('⚠️ '+error.message,true);return;}
+  // Update auction
+  await sb.from('auctions').update({current_price:amount,bid_count:(a.bid_count||0)+1,winner:CU.name,winner_tg:CU.tg||'',winner_tg_id:CU.tgId}).eq('id',aucId);
+  toast('✅ Ставка '+amount+' ₴!');
+  // Notifications
+  notifyAuction('new_bid',a,CU,amount);
+  if(prevTop&&prevTop.bidder_tg_id&&prevTop.bidder_tg_id!==CU.tgId){
+    notifyAuction('outbid',a,{name:prevTop.bidder,tg:prevTop.bidder_tg_id},amount);
+  }
+  await loadAuctions();
+  showAucDetail(aucId);
+}
+
+async function buyoutAuction(aucId){
+  if(!CU||!CU.tgId){toast('⚠️ Спочатку увійдіть',true);return;}
+  const a=allAuctions.find(x=>x.id===aucId);
+  if(!a||!a.buyout_price){return;}
+  if(a.owner_tg_id===CU.tgId){toast('⚠️ Не можна купити свій аукціон',true);return;}
+  if(!confirm('Купити зараз за '+a.buyout_price+' ₴?'))return;
+  await sb.from('bids').insert({auction_id:aucId,bidder:CU.name,bidder_tg:CU.tg||'',bidder_tg_id:CU.tgId,amount:a.buyout_price});
+  await sb.from('auctions').update({current_price:a.buyout_price,status:'sold',winner:CU.name,winner_tg:CU.tg||'',winner_tg_id:CU.tgId,bid_count:(a.bid_count||0)+1}).eq('id',aucId);
+  toast('🎉 Куплено за '+a.buyout_price+' ₴!');
+  notifyAuction('sold',a,CU,a.buyout_price);
+  closeModal('aucDetail');
+  loadAuctions();
+}
+
+function notifyAuction(type,auction,user,amount){
+  try{
+    const tg=user.tg||user.tgId||'';
+    const ownerTg=auction.owner_tg_id||auction.owner_tg||'';
+    let url=APPS_SCRIPT+'?notify=1&type=auc_'+type+'&aucTitle='+encodeURIComponent(auction.title)+'&amount='+amount+'&ownerTg='+encodeURIComponent(ownerTg)+'&testerName='+encodeURIComponent(user.name)+'&testerTg='+encodeURIComponent(tg)+'&callback=cb_notify';
+    const s=document.createElement('script');
+    window.cb_notify=d=>{delete window.cb_notify;s.remove();};
+    s.src=url;document.head.appendChild(s);
+    setTimeout(()=>{delete window.cb_notify;s.remove();},8000);
+  }catch(e){}
+}
+
 // ── UNSEEN BADGES ──
 let unseenCounts={catalog:0,auctions:0,settings:0};
 let lastSeen={catalog:null,auctions:null,settings:null};
@@ -1908,8 +2297,10 @@ async function countUnseen(){
     const setTs=lastSeen.settings||'2000-01-01T00:00:00Z';
     const {count:postCount}=await sb.from('posts').select('id',{count:'exact',head:true}).gt('created_at',setTs);
     unseenCounts.settings=postCount||0;
-    // Auctions - placeholder (0 for now)
-    unseenCounts.auctions=0;
+    // Auctions - new auctions
+    const aucTs=lastSeen.auctions||'2000-01-01T00:00:00Z';
+    const {count:aucCount}=await sb.from('auctions').select('id',{count:'exact',head:true}).gt('created_at',aucTs).eq('status','active');
+    unseenCounts.auctions=aucCount||0;
     updateBadges();
   }catch(e){}
 }
