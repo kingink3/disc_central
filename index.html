@@ -1889,26 +1889,63 @@ function detectPlatform(url){
   if(/facebook\.com|fb\.watch/i.test(url))return'facebook';
   return'link';
 }
+function openExtLink(url){
+  const tg=window.Telegram?.WebApp;
+  if(tg)try{tg.openLink(url);return;}catch(e){}
+  window.open(url,'_blank');
+}
 function getEmbed(url,platform){
   if(platform==='youtube'){
     const m=url.match(/(?:youtu\.be\/|v=|\/embed\/)([a-zA-Z0-9_-]{11})/);
-    if(m)return`<iframe src="https://www.youtube.com/embed/${m[1]}" style="width:100%;aspect-ratio:16/9;border:none;border-radius:var(--r)" allowfullscreen loading="lazy"></iframe>`;
+    if(m){
+      const thumb=`https://img.youtube.com/vi/${m[1]}/hqdefault.jpg`;
+      return`<div onclick="openExtLink('${url}')" style="position:relative;cursor:pointer;border-radius:var(--r);overflow:hidden;aspect-ratio:16/9;background:#000">
+        <img src="${thumb}" style="width:100%;height:100%;object-fit:cover;opacity:0.85" loading="lazy">
+        <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center">
+          <div style="width:52px;height:36px;background:rgba(255,0,0,0.9);border-radius:8px;display:flex;align-items:center;justify-content:center">
+            <div style="width:0;height:0;border-left:16px solid #fff;border-top:9px solid transparent;border-bottom:9px solid transparent;margin-left:3px"></div>
+          </div>
+        </div>
+        <div style="position:absolute;bottom:6px;left:8px;font-size:0.65rem;color:#fff;background:rgba(0,0,0,0.6);padding:2px 6px;border-radius:4px">▶ YouTube</div>
+      </div>`;
+    }
   }
   if(platform==='tiktok'){
-    const m=url.match(/\/video\/(\d+)/)||url.match(/\/v\/(\d+)/);
-    if(m)return`<iframe src="https://www.tiktok.com/embed/v2/${m[1]}" style="width:100%;height:740px;border:none;border-radius:var(--r)" allowfullscreen loading="lazy"></iframe>`;
-    return`<a href="${url}" target="_blank" style="display:flex;align-items:center;gap:0.5rem;padding:0.75rem;background:var(--s2);border:1px solid var(--b1);border-radius:var(--r);color:var(--cyan);font-size:0.82rem">🎵 Відкрити в TikTok ↗</a>`;
+    return`<div onclick="openExtLink('${url}')" style="cursor:pointer;padding:1rem;background:var(--s2);border:1px solid var(--b1);border-radius:var(--r);display:flex;align-items:center;gap:0.75rem">
+      <div style="width:44px;height:44px;background:#000;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+        <span style="font-size:1.4rem">🎵</span>
+      </div>
+      <div style="flex:1;min-width:0"><div style="font-weight:700;font-size:0.82rem;color:var(--text)">TikTok відео</div><div style="font-size:0.72rem;color:var(--m1);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${url}</div></div>
+      <div style="color:var(--cyan);font-size:0.82rem;flex-shrink:0">↗</div>
+    </div>`;
   }
   if(platform==='instagram'){
     const m=url.match(/\/(p|reel|reels)\/([a-zA-Z0-9_-]+)/);
     if(m)return`<iframe src="https://www.instagram.com/${m[1]}/${m[2]}/embed/" style="width:100%;min-height:500px;border:none;border-radius:var(--r);overflow:hidden" scrolling="no" allowfullscreen loading="lazy"></iframe>`;
-    return`<a href="${url}" target="_blank" style="display:flex;align-items:center;gap:0.5rem;padding:0.75rem;background:var(--s2);border:1px solid var(--b1);border-radius:var(--r);color:var(--cyan);font-size:0.82rem">📷 Відкрити в Instagram ↗</a>`;
+    return`<div onclick="openExtLink('${url}')" style="cursor:pointer;padding:1rem;background:var(--s2);border:1px solid var(--b1);border-radius:var(--r);display:flex;align-items:center;gap:0.75rem">
+      <div style="width:44px;height:44px;background:linear-gradient(45deg,#f09433,#e6683c,#dc2743,#cc2366,#bc1888);border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+        <span style="font-size:1.2rem">📷</span>
+      </div>
+      <div style="flex:1"><div style="font-weight:700;font-size:0.82rem;color:var(--text)">Instagram</div><div style="font-size:0.72rem;color:var(--m1)">Відкрити публікацію</div></div>
+      <div style="color:var(--cyan);font-size:0.82rem;flex-shrink:0">↗</div>
+    </div>`;
   }
   if(platform==='facebook'){
-    const encoded=encodeURIComponent(url);
-    return`<iframe src="https://www.facebook.com/plugins/video.php?href=${encoded}&show_text=false" style="width:100%;aspect-ratio:16/9;border:none;border-radius:var(--r);overflow:hidden" allowfullscreen loading="lazy"></iframe>`;
+    return`<div onclick="openExtLink('${url}')" style="cursor:pointer;padding:1rem;background:var(--s2);border:1px solid var(--b1);border-radius:var(--r);display:flex;align-items:center;gap:0.75rem">
+      <div style="width:44px;height:44px;background:#1877f2;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+        <span style="font-size:1.4rem;color:#fff;font-weight:700">f</span>
+      </div>
+      <div style="flex:1;min-width:0"><div style="font-weight:700;font-size:0.82rem;color:var(--text)">Facebook відео</div><div style="font-size:0.72rem;color:var(--m1);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${url}</div></div>
+      <div style="color:var(--cyan);font-size:0.82rem;flex-shrink:0">↗</div>
+    </div>`;
   }
-  return`<a href="${url}" target="_blank" style="display:block;padding:0.75rem;background:var(--s2);border:1px solid var(--b1);border-radius:var(--r);color:var(--cyan);font-size:0.82rem;word-break:break-all">🔗 ${url}</a>`;
+  return`<div onclick="openExtLink('${url}')" style="cursor:pointer;padding:1rem;background:var(--s2);border:1px solid var(--b1);border-radius:var(--r);display:flex;align-items:center;gap:0.75rem">
+    <div style="width:44px;height:44px;background:var(--s3);border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+      <span style="font-size:1.2rem">🔗</span>
+    </div>
+    <div style="flex:1;min-width:0"><div style="font-weight:700;font-size:0.82rem;color:var(--text)">Посилання</div><div style="font-size:0.72rem;color:var(--m1);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${url}</div></div>
+    <div style="color:var(--cyan);font-size:0.82rem;flex-shrink:0">↗</div>
+  </div>`;
 }
 async function submitPost(){
   if(!CU||!CU.tgId){toast('⚠️ Спочатку увійдіть',true);return;}
