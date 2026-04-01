@@ -2004,19 +2004,31 @@ async function loadAuctions(){
   try{
     const {data}=await sb.from('auctions').select('*').order('created_at',{ascending:false});
     allAuctions=data||[];
-    // Auto-expire
     const now=new Date();
-    allAuctions.forEach(a=>{
-      if(a.status==='active'&&new Date(a.ends_at)<=now){
+    for(const a of allAuctions){
+      if(a.status!=='active')continue;
+      // Check time expiry
+      if(new Date(a.ends_at)<=now){
         const newStatus=a.winner?'sold':'expired';
         a.status=newStatus;
-        sb.from('auctions').update({status:newStatus}).eq('id',a.id).then(()=>{});
-        // Notify on completed auction
+        await sb.from('auctions').update({status:newStatus}).eq('id',a.id);
         if(a.winner&&newStatus==='sold'){
           notifyAuction('ended',a,{name:a.winner,tg:a.winner_tg_id||a.winner_tg},a.current_price);
         }
+        continue;
       }
-    });
+      // Check reverse auction - has price dropped to any bid?
+      if(a.auction_type==='reverse'){
+        const curPrice=getReverseCurPrice(a);
+        const {data:topBids}=await sb.from('bids').select('*').eq('auction_id',a.id).gte('amount',curPrice).order('amount',{ascending:false}).limit(1);
+        if(topBids&&topBids.length){
+          const winner=topBids[0];
+          a.status='sold';a.winner=winner.bidder;a.winner_tg=winner.bidder_tg;a.winner_tg_id=winner.bidder_tg_id;a.current_price=winner.amount;
+          await sb.from('auctions').update({status:'sold',current_price:winner.amount,winner:winner.bidder,winner_tg:winner.bidder_tg,winner_tg_id:winner.bidder_tg_id}).eq('id',a.id);
+          notifyAuction('sold',a,{name:winner.bidder,tg:winner.bidder_tg_id||winner.bidder_tg},winner.amount);
+        }
+      }
+    }
     renderAuctions();
     startAucGridTimer();
   }catch(e){}
@@ -2284,7 +2296,12 @@ async function showAucDetail(id){
     <div style="font-size:0.78rem;color:var(--m1);margin-bottom:0.75rem">Продавець: <strong style="color:var(--text)">${a.owner}</strong>${tgLinkFull(a.owner_tg||a.owner_tg_id)}</div>
     ${isActive&&CU&&a.owner_tg_id!==CU.tgId?`
       ${isReverse?`
-        <button class="btn btn-lime btn-full" onclick="placeBid('${a.id}',${curPrice})" style="margin-bottom:0.5rem">Купити за ${curPrice} ₴</button>
+        <div style="font-size:0.72rem;color:var(--m1);margin-bottom:0.3rem">Ваша ціна — коли падаюча ціна дійде до вашої ставки, ви автоматично виграєте</div>
+        <div style="display:flex;gap:0.4rem;margin-bottom:0.5rem">
+          <input type="number" id="bidAmount" placeholder="Ваша ціна ₴" style="flex:1;font-size:14px">
+          <button class="btn btn-cyan btn-sm" onclick="placeReverseBid('${a.id}')" style="flex-shrink:0">Ставка</button>
+        </div>
+        <button class="btn btn-lime btn-full" onclick="buyoutAuction('${a.id}')" style="margin-bottom:0.75rem" id="reverseBuyBtn">Купити зараз за <span id="reverseBuyPrice">${curPrice}</span> ₴</button>
       `:`
         <div style="display:flex;gap:0.4rem;margin-bottom:0.5rem">
           <input type="number" id="bidAmount" placeholder="Мін: ${minBid} ₴" value="${minBid}" style="flex:1;font-size:14px">
@@ -2311,7 +2328,10 @@ async function showAucDetail(id){
         if(left<=0){el.textContent='Завершено';clearInterval(aucTimerInterval);loadAuctions();}
         else el.textContent=fmtTimeLeft(left);
       }
-      if(isReverse){const pe=document.getElementById('aucPrice');if(pe)pe.textContent=getReverseCurPrice(a)+' ₴';}
+      if(isReverse){
+        const pe=document.getElementById('aucPrice');if(pe)pe.textContent=getReverseCurPrice(a)+' ₴';
+        const rb=document.getElementById('reverseBuyPrice');if(rb)rb.textContent=getReverseCurPrice(a);
+      }
     },1000);
   }
 }
@@ -2352,18 +2372,58 @@ async function placeBid(aucId,minBid){
   showAucDetail(aucId);
 }
 
+async function placeReverseBid(aucId){
+  if(!CU||!CU.tgId){toast('⚠️ Спочатку увійдіть',true);return;}
+  const a=allAuctions.find(x=>x.id===aucId);
+  if(!a||a.status!=='active'){toast('⚠️ Аукціон завершено',true);return;}
+  if(a.owner_tg_id===CU.tgId){toast('⚠️ Не можна ставити на свій аукціон',true);return;}
+  const amount=parseInt(document.getElementById('bidAmount').value);
+  if(!amount||amount<=0){toast('⚠️ Введіть вашу ціну',true);return;}
+  if(amount>(a.reverse_end||0)&&amount>=(a.reverse_start||0)){toast('⚠️ Ціна має бути менше початкової',true);return;}
+  const curPrice=getReverseCurPrice(a);
+  // If bid >= current price, instant buy
+  if(amount>=curPrice){
+    if(!confirm('Поточна ціна '+curPrice+' ₴. Купити зараз?'))return;
+    await sb.from('bids').insert({auction_id:aucId,bidder:CU.name,bidder_tg:CU.tg||'',bidder_tg_id:CU.tgId,amount:curPrice});
+    await sb.from('auctions').update({current_price:curPrice,status:'sold',winner:CU.name,winner_tg:CU.tg||'',winner_tg_id:CU.tgId,bid_count:(a.bid_count||0)+1}).eq('id',aucId);
+    toast('🎉 Куплено за '+curPrice+' ₴!');
+    notifyAuction('sold',a,CU,curPrice);
+    closeModal('aucDetail');await loadAuctions();startAucGridTimer();
+    return;
+  }
+  // Otherwise place a waiting bid
+  const {error}=await sb.from('bids').insert({auction_id:aucId,bidder:CU.name,bidder_tg:CU.tg||'',bidder_tg_id:CU.tgId,amount});
+  if(error){toast('⚠️ '+error.message,true);return;}
+  await sb.from('auctions').update({bid_count:(a.bid_count||0)+1,winner:CU.name,winner_tg:CU.tg||'',winner_tg_id:CU.tgId}).eq('id',aucId);
+  toast('✅ Ставка '+amount+' ₴! Ви виграєте коли ціна впаде до '+amount+' ₴');
+  notifyAuction('new_bid',a,CU,amount);
+  await loadAuctions();
+  showAucDetail(aucId);
+}
+
 async function buyoutAuction(aucId){
   if(!CU||!CU.tgId){toast('⚠️ Спочатку увійдіть',true);return;}
   const a=allAuctions.find(x=>x.id===aucId);
-  if(!a||!a.buyout_price){return;}
   if(a.owner_tg_id===CU.tgId){toast('⚠️ Не можна купити свій аукціон',true);return;}
+  // For reverse auction - buy at current dropping price
+  if(a.auction_type==='reverse'){
+    const curPrice=getReverseCurPrice(a);
+    if(!confirm('Купити зараз за '+curPrice+' ₴?'))return;
+    await sb.from('bids').insert({auction_id:aucId,bidder:CU.name,bidder_tg:CU.tg||'',bidder_tg_id:CU.tgId,amount:curPrice});
+    await sb.from('auctions').update({current_price:curPrice,status:'sold',winner:CU.name,winner_tg:CU.tg||'',winner_tg_id:CU.tgId,bid_count:(a.bid_count||0)+1}).eq('id',aucId);
+    toast('🎉 Куплено за '+curPrice+' ₴!');
+    notifyAuction('sold',a,CU,curPrice);
+    closeModal('aucDetail');await loadAuctions();startAucGridTimer();
+    return;
+  }
+  // For buyout auction
+  if(!a.buyout_price){return;}
   if(!confirm('Купити зараз за '+a.buyout_price+' ₴?'))return;
   await sb.from('bids').insert({auction_id:aucId,bidder:CU.name,bidder_tg:CU.tg||'',bidder_tg_id:CU.tgId,amount:a.buyout_price});
   await sb.from('auctions').update({current_price:a.buyout_price,status:'sold',winner:CU.name,winner_tg:CU.tg||'',winner_tg_id:CU.tgId,bid_count:(a.bid_count||0)+1}).eq('id',aucId);
   toast('🎉 Куплено за '+a.buyout_price+' ₴!');
   notifyAuction('sold',a,CU,a.buyout_price);
-  closeModal('aucDetail');
-  loadAuctions();
+  closeModal('aucDetail');await loadAuctions();startAucGridTimer();
 }
 
 function notifyAuction(type,auction,user,amount){
