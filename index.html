@@ -235,7 +235,8 @@ input[type=range]::-webkit-slider-runnable-track{height:6px;border-radius:3px}
 input[type=range]::-moz-range-track{height:6px;background:var(--s3);border-radius:3px}
 
 @media(max-width:600px){
-  nav{display:none}.hamburger{display:none}
+  nav{display:none}
+  .header-right{margin-left:auto}
   #addDiscBtn2{display:none}
   .stats-mini{grid-template-columns:repeat(4,1fr)}
   .stat-mn{font-size:1.2rem}
@@ -244,7 +245,7 @@ input[type=range]::-moz-range-track{height:6px;background:var(--s3);border-radiu
   .fr{grid-template-columns:1fr}
   .content{padding-bottom:4.5rem}
 }
-.bottom-nav{display:none;position:fixed;bottom:0;left:0;right:0;background:var(--s1);border-top:1px solid var(--b1);z-index:100;padding:4px 0 calc(16px + env(safe-area-inset-bottom, 28px));justify-content:space-around;align-items:flex-end}
+.bottom-nav{display:none;position:fixed;bottom:0;left:0;right:0;background:var(--s1);border-top:1px solid var(--b1);z-index:100;padding:4px 0 calc(20px + env(safe-area-inset-bottom, 34px));justify-content:space-around;align-items:flex-end}
 @media(max-width:600px){.bottom-nav{display:flex}}
 .bnav-item{display:flex;flex-direction:column;align-items:center;gap:0px;cursor:pointer;border:none;background:none;padding:2px 4px;color:var(--m1);font-size:0.5rem;font-family:'DM Sans',sans-serif;font-weight:600;transition:color 0.15s;-webkit-tap-highlight-color:transparent;min-width:40px}
 .bnav-item.active{color:var(--lime)}
@@ -295,7 +296,7 @@ input[type=range]::-moz-range-track{height:6px;background:var(--s3);border-radiu
 <!-- BOTTOM NAV (mobile) -->
 <div class="bottom-nav" id="bottomNav">
   <button class="bnav-item active" id="bn-catalog" onclick="goPageBn('catalog')">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><ellipse cx="12" cy="12" rx="6" ry="2"/><path d="M12 3v18"/></svg>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="3" y="3" width="8" height="7" rx="1.5"/><rect x="13" y="3" width="8" height="7" rx="1.5"/><rect x="3" y="14" width="8" height="7" rx="1.5"/><rect x="13" y="14" width="8" height="7" rx="1.5"/></svg>
     <span>Каталог</span>
   </button>
   <button class="bnav-item" id="bn-cabinet" onclick="goPageBn('cabinet')">
@@ -304,12 +305,12 @@ input[type=range]::-moz-range-track{height:6px;background:var(--s3);border-radiu
   </button>
   <button class="bnav-item" onclick="openModal('addDisc')">
     <div class="bnav-add">
-      <svg viewBox="0 0 24 24" fill="none" stroke="#1a1d24" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      <svg viewBox="0 0 24 24" fill="none" stroke="#1a1d24" stroke-linecap="round"><circle cx="12" cy="12" r="9" stroke-width="1.5" opacity="0.4"/><line x1="8" y1="12" x2="16" y2="12" stroke-width="2.5"/><line x1="12" y1="8" x2="12" y2="16" stroke-width="2.5"/></svg>
     </div>
     <span>Додати диск</span>
   </button>
   <button class="bnav-item" id="bn-auctions" onclick="goPageBn('auctions')">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="10" r="6"/><path d="M9 7v6M7 10h4"/><circle cx="16" cy="14" r="6"/><path d="M16 11v6M14 14h4"/></svg>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><ellipse cx="12" cy="16" rx="8" ry="3"/><ellipse cx="12" cy="12" rx="8" ry="3"/><ellipse cx="12" cy="8" rx="8" ry="3"/></svg>
     <span>Аукціони</span>
   </button>
   <button class="bnav-item" id="bn-settings" onclick="goPageBn('settings')">
