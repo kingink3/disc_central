@@ -888,6 +888,9 @@ function subscribeRealtime(){
     .on('postgres_changes',{event:'*',schema:'public',table:'auctions'},()=>{
       loadAuctions();
     })
+    .on('postgres_changes',{event:'*',schema:'public',table:'bids'},()=>{
+      loadAuctions();
+    })
     .subscribe();
 }
 
@@ -2728,9 +2731,9 @@ async function init(){
   const savedToken=sessionStorage.getItem('adminToken');
   if(savedToken)ADMIN_TOKEN=savedToken;
   const params=new URLSearchParams(location.search);
-  const startParam=params.get('disc')||window.Telegram?.WebApp?.initDataUnsafe?.start_param||'';
+  const startParam=params.get('disc')||params.get('startapp')||window.Telegram?.WebApp?.initDataUnsafe?.start_param||'';
   const isAucLink=startParam.startsWith('auc_');
-  const discId=isAucLink?null:startParam;
+  const discId=isAucLink?null:(startParam||null);
   const aucDeepId=isAucLink?startParam.replace('auc_',''):null;
   // Preload all tabs in parallel
   await Promise.all([
