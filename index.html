@@ -1898,9 +1898,15 @@ function getEmbed(url,platform){
   if(platform==='youtube'){
     const m=url.match(/(?:youtu\.be\/|v=|\/embed\/|\/shorts\/)([a-zA-Z0-9_-]{11})/);
     if(m){
-      const thumb=`https://img.youtube.com/vi/${m[1]}/hqdefault.jpg`;
-      return`<div style="position:relative;border-radius:var(--r);overflow:hidden;aspect-ratio:16/9;background:#000">
-        <iframe src="https://www.youtube-nocookie.com/embed/${m[1]}?rel=0&modestbranding=1" style="position:absolute;inset:0;width:100%;height:100%;border:none" allow="accelerometer;autoplay;encrypted-media;gyroscope;picture-in-picture" allowfullscreen loading="lazy"></iframe>
+      const vid=m[1];
+      const cid='yt-'+vid+'-'+Math.random().toString(36).slice(2,6);
+      return`<div id="${cid}" onclick="this.innerHTML='<iframe src=\\'https://www.youtube-nocookie.com/embed/${vid}?rel=0&autoplay=1\\' style=\\'width:100%;height:100%;border:none\\' allow=\\'accelerometer;autoplay;encrypted-media;gyroscope;picture-in-picture\\' allowfullscreen></iframe>';this.onclick=null;this.style.cursor='default'" style="position:relative;border-radius:var(--r);overflow:hidden;aspect-ratio:16/9;background:#000;cursor:pointer">
+        <img src="https://img.youtube.com/vi/${vid}/hqdefault.jpg" style="width:100%;height:100%;object-fit:cover" loading="lazy">
+        <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center">
+          <div style="width:56px;height:40px;background:rgba(255,0,0,0.9);border-radius:10px;display:flex;align-items:center;justify-content:center">
+            <div style="width:0;height:0;border-left:18px solid #fff;border-top:10px solid transparent;border-bottom:10px solid transparent;margin-left:4px"></div>
+          </div>
+        </div>
       </div>`;
     }
   }
@@ -1916,7 +1922,7 @@ function getEmbed(url,platform){
           }).catch(()=>{});
       },100);
       return`<div style="border-radius:var(--r);overflow:hidden;aspect-ratio:9/16;max-height:500px;background:#000;margin:0 auto;max-width:300px;position:relative">
-        <video id="${posterId}" src="https://www.tikwm.com/video/media/hdplay/${vid}.mp4" style="width:100%;height:100%;object-fit:contain" controls playsinline preload="metadata"></video>
+        <video id="${posterId}" src="https://www.tikwm.com/video/media/hdplay/${vid}.mp4#t=0.1" style="width:100%;height:100%;object-fit:contain" controls playsinline preload="metadata"></video>
       </div>`;
     }
     return`<div onclick="openExtLink('${url}')" style="cursor:pointer;padding:0.75rem;background:var(--s2);border:1px solid var(--b1);border-radius:var(--r);display:flex;align-items:center;gap:0.75rem">
@@ -1930,8 +1936,8 @@ function getEmbed(url,platform){
   if(platform==='instagram'){
     const m=url.match(/\/(p|reel|reels)\/([a-zA-Z0-9_-]+)/);
     if(m)return`<div style="border-radius:var(--r);overflow:hidden;position:relative;max-width:400px;margin:0 auto">
-        <div style="overflow:hidden;margin-top:-54px;margin-bottom:-46px">
-          <iframe src="https://www.instagram.com/${m[1]}/${m[2]}/embed/" style="width:100%;height:620px;border:none" scrolling="no" allowfullscreen loading="lazy"></iframe>
+        <div style="overflow:hidden;margin-top:-54px;margin-bottom:-160px">
+          <iframe src="https://www.instagram.com/${m[1]}/${m[2]}/embed/" style="width:100%;height:730px;border:none" scrolling="no" allowfullscreen loading="lazy"></iframe>
         </div>
       </div>`;
     return`<div onclick="openExtLink('${url}')" style="cursor:pointer;padding:0.75rem;background:var(--s2);border:1px solid var(--b1);border-radius:var(--r);display:flex;align-items:center;gap:0.75rem">
@@ -2028,7 +2034,7 @@ function renderFeed(){
     return`<div class="card" style="margin-bottom:0.75rem">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.5rem">
         <div style="font-size:0.78rem"><span style="font-weight:700">${p.author}</span> <span style="color:var(--m1)">${fmtDateTime(p.created_at)}</span></div>
-        ${pIcon}
+        <span onclick="openExtLink('${p.url}')" style="cursor:pointer">${pIcon}</span>
       </div>
       ${p.description?`<div style="font-size:0.82rem;margin-bottom:0.5rem;color:var(--m2)">${p.description}</div>`:''}
       <div style="margin-bottom:0.5rem">${getEmbed(p.url,p.platform)}</div>
