@@ -1938,8 +1938,8 @@ function getEmbed(url,platform){
   if(platform==='instagram'){
     const m=url.match(/\/(p|reel|reels)\/([a-zA-Z0-9_-]+)/);
     if(m)return`<div style="border-radius:var(--r);overflow:hidden;position:relative;max-width:400px;margin:0 auto">
-        <div style="overflow:hidden;margin-top:-54px;margin-bottom:-380px">
-          <iframe src="https://www.instagram.com/${m[1]}/${m[2]}/embed/" style="width:100%;height:880px;border:none" scrolling="no" allowfullscreen loading="lazy"></iframe>
+        <div style="overflow:hidden;margin-top:-54px;margin-bottom:-500px">
+          <iframe src="https://www.instagram.com/${m[1]}/${m[2]}/embed/" style="width:100%;height:1000px;border:none" scrolling="no" allowfullscreen loading="lazy"></iframe>
         </div>
       </div>`;
     return`<div onclick="openExtLink('${url}')" style="cursor:pointer;padding:0.75rem;background:var(--s2);border:1px solid var(--b1);border-radius:var(--r);display:flex;align-items:center;gap:0.75rem">
@@ -2099,7 +2099,7 @@ async function init(){
   subscribeRealtime();
   if(discId)setTimeout(()=>{showDetail(discId);},300);
   else{
-    try{const sp=sessionStorage.getItem('dc_page');if(sp&&sp!=='catalog')goPage(sp);}catch(e){}
+    try{const sp=sessionStorage.getItem('dc_page');if(sp&&sp!=='catalog')setTimeout(()=>goPage(sp),2000);}catch(e){}
   }
 }
 init();
