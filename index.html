@@ -2030,7 +2030,6 @@ function getReverseCurPrice(a){
   return price;
 }
 function aucTypeBadge(t){
-  if(t==='buyout')return'<span style="font-size:0.55rem;background:var(--orange);color:#000;padding:1px 4px;border-radius:3px;font-weight:700">BUYOUT</span>';
   if(t==='reverse')return'<span style="font-size:0.55rem;background:var(--purple);color:#fff;padding:1px 4px;border-radius:3px;font-weight:700">📉 REVERSE</span>';
   return'';
 }
@@ -2086,9 +2085,8 @@ function renderAuctions(){
             <span style="font-size:0.65rem;color:var(--m1)">${bidWord(a.bid_count||0)}</span>
             ${isActive?`<span class="auc-card-timer" data-ends="${a.ends_at}" style="font-size:0.65rem;color:var(--cyan);font-weight:600">⏱ ${timeLeft}</span>`:''}
           </div>
-          ${a.buyout_price>0&&isActive?`<div style="font-size:0.65rem;color:var(--orange);margin-bottom:0.3rem">Купити зараз: ${a.buyout_price} ₴</div>`:''}
           ${a.auction_type==='reverse'&&isActive?`<div style="font-size:0.65rem;color:var(--purple);margin-bottom:0.3rem">📉 -${a.reverse_drop}₴ / ${a.reverse_interval||60}хв</div>`:''}
-          ${isActive?`<button class="btn btn-lime btn-xs btn-full" onclick="event.stopPropagation();showAucDetail('${a.id}')">Зробити ставку</button>`
+          ${isActive?`<div style="display:flex;gap:3px">${a.buyout_price>0?`<button class="btn btn-lime btn-xs" onclick="event.stopPropagation();buyoutAuction('${a.id}')" style="flex:1">Купити ${a.buyout_price}₴</button>`:''}<button class="btn ${a.buyout_price>0?'btn-cyan':'btn-lime'} btn-xs" onclick="event.stopPropagation();showAucDetail('${a.id}')" style="flex:1">Ставка</button></div>`
             :a.status==='sold'?`<div style="font-size:0.7rem;color:var(--av);text-align:center">🏆 ${a.winner||''}</div>`
             :`<div style="font-size:0.7rem;color:var(--m1);text-align:center">Не продано</div>`}
         </div>
@@ -2211,7 +2209,7 @@ async function submitAuction(){
   const {error}=await sb.from('auctions').insert(auction);
   if(!error){
     closeModal('addAuction');toast('✅ Аукціон створено!');
-    resetAucForm();loadAuctions();
+    resetAucForm();await loadAuctions();startAucGridTimer();
   }else toast('⚠️ '+error.message,true);
   btn.disabled=false;btn.textContent='Створити аукціон';
 }
@@ -2282,10 +2280,9 @@ async function showAucDetail(id){
       </div>
     </div>
     ${isReverse?`<div style="font-size:0.78rem;color:var(--purple);margin-bottom:0.5rem;padding:0.4rem;background:rgba(168,85,247,0.1);border-radius:var(--r)">📉 ${a.reverse_start} ₴ → ${a.reverse_end} ₴ · -${a.reverse_drop} ₴ кожні ${a.reverse_interval||60} хв</div>`:''}
-    ${a.buyout_price>0?`<div style="font-size:0.78rem;color:var(--orange);margin-bottom:0.5rem">Купити зараз: <strong>${a.buyout_price} ₴</strong></div>`:''}
     ${!isReverse?`<div style="font-size:0.78rem;color:var(--m2);margin-bottom:0.5rem">Крок: ${a.min_step||10} ₴</div>`:''}
     <div style="font-size:0.78rem;color:var(--m1);margin-bottom:0.75rem">Продавець: <strong style="color:var(--text)">${a.owner}</strong>${tgLinkFull(a.owner_tg||a.owner_tg_id)}</div>
-    ${isActive&&CU?`
+    ${isActive&&CU&&a.owner_tg_id!==CU.tgId?`
       ${isReverse?`
         <button class="btn btn-lime btn-full" onclick="placeBid('${a.id}',${curPrice})" style="margin-bottom:0.5rem">Купити за ${curPrice} ₴</button>
       `:`
@@ -2293,11 +2290,12 @@ async function showAucDetail(id){
           <input type="number" id="bidAmount" placeholder="Мін: ${minBid} ₴" value="${minBid}" style="flex:1;font-size:14px">
           <button class="btn btn-lime btn-sm" onclick="placeBid('${a.id}',${minBid})" style="flex-shrink:0">Ставка</button>
         </div>
+        ${a.buyout_price>0?`<button class="btn btn-lime btn-full" onclick="buyoutAuction('${a.id}')" style="margin-bottom:0.75rem">Купити зараз за ${a.buyout_price} ₴</button>`:''}
       `}
-      ${a.buyout_price>0?`<button class="btn btn-orange btn-full" onclick="buyoutAuction('${a.id}')" style="margin-bottom:0.75rem">Купити зараз за ${a.buyout_price} ₴</button>`:''}
-    `:`
+    `:isActive&&CU&&a.owner_tg_id===CU.tgId?`<div style="font-size:0.78rem;color:var(--m1);margin-bottom:0.75rem;text-align:center">Це ваш аукціон</div>`:``}
+    ${!isActive?`
       ${a.winner?`<div style="padding:0.5rem;background:rgba(74,222,128,0.1);border:1px solid var(--av);border-radius:var(--r);font-size:0.82rem;margin-bottom:0.75rem">🏆 Переможець: <strong>${a.winner}</strong>${tgLinkFull(a.winner_tg||a.winner_tg_id)}</div>`:'<div style="color:var(--m1);margin-bottom:0.75rem">Ніхто не зробив ставку</div>'}
-    `}
+    `:''}
     <div style="font-size:0.72rem;font-weight:700;color:var(--m1);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:0.4rem">Історія ставок</div>
     ${bids&&bids.length?bids.map((b,i)=>`<div style="display:flex;justify-content:space-between;padding:0.35rem 0;border-bottom:1px solid var(--b1);font-size:0.78rem">
       <span>${i===0?'🏆 ':''}${b.bidder}${tgLinkFull(b.bidder_tg||b.bidder_tg_id)}</span><span style="font-weight:700;color:var(--lime)">${b.amount} ₴</span>
