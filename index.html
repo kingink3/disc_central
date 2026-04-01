@@ -1874,9 +1874,9 @@ function goPage(page,btn){
   if(page==='admin')setTimeout(checkAdminAccess,200);
   if(page==='catalog')applyFilters();
   if(page==='catalog'||page==='settings'||page==='auctions')markSeen(page);
-  if(page==='auctions')loadAuctions();
+  if(page==='auctions'){renderAuctions();startAucGridTimer();}
   if(page==='settings'){
-    loadFeed();
+    renderFeed();
     const pf=document.getElementById('postFormWrap');
     const pb=document.getElementById('postBtnWrap');
     if(pf)pf.style.display='none';
@@ -2638,12 +2638,22 @@ async function init(){
   if(savedToken)ADMIN_TOKEN=savedToken;
   const params=new URLSearchParams(location.search);
   const discId=params.get('disc')||window.Telegram?.WebApp?.initDataUnsafe?.start_param;
-  await loadDiscs();
-  await Promise.all([loadLikes(),loadFavorites(),loadLastSeen()]);
+  // Preload all tabs in parallel
+  await Promise.all([
+    loadDiscs(),
+    loadLikes(),
+    loadFavorites(),
+    loadLastSeen(),
+    loadAuctions(),
+    loadFeed()
+  ]);
   applyFilters();
+  startAucGridTimer();
   await countUnseen();
   markSeen('catalog');
   subscribeRealtime();
+  // Hide loading
+  document.getElementById('loadingOverlay').style.display='none';
   if(discId)setTimeout(()=>{showDetail(discId);},300);
   else{
     try{const sp=sessionStorage.getItem('dc_page');if(sp&&sp!=='catalog')goPage(sp);}catch(e){}
