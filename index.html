@@ -541,15 +541,18 @@ input[type=range]::-moz-range-track{height:6px;background:var(--s3);border-radiu
         </div>
       </div>
       <div class="fg"><label class="fl">Тривалість</label>
-        <select id="auc-duration" style="font-size:14px">
-          <option value="1">1 година</option>
-          <option value="3">3 години</option>
-          <option value="6">6 годин</option>
-          <option value="12">12 годин</option>
-          <option value="24" selected>24 години</option>
-          <option value="48">2 дні</option>
-          <option value="72">3 дні</option>
-          <option value="168">7 днів</option>
+        <select id="auc-dur-preset" style="font-size:14px">
+          <option value="5m">⚡ 5 хвилин</option>
+          <option value="15m">⚡ 15 хвилин</option>
+          <option value="30m">⚡ 30 хвилин</option>
+          <option value="1h">1 година</option>
+          <option value="3h">3 години</option>
+          <option value="6h">6 годин</option>
+          <option value="12h">12 годин</option>
+          <option value="24h" selected>24 години</option>
+          <option value="48h">2 дні</option>
+          <option value="72h">3 дні</option>
+          <option value="168h">7 днів</option>
         </select>
       </div>
     </div>
@@ -1983,6 +1986,11 @@ function toggleAucTypeFields(){
   document.getElementById('auc-fields-buyout').style.display=t==='buyout'?'block':'none';
   document.getElementById('auc-fields-reverse').style.display=t==='reverse'?'block':'none';
 }
+function getAucDurationMs(){
+  const v=document.getElementById('auc-dur-preset').value;
+  const map={'5m':300000,'15m':900000,'30m':1800000,'1h':3600000,'3h':10800000,'6h':21600000,'12h':43200000,'24h':86400000,'48h':172800000,'72h':259200000,'168h':604800000};
+  return map[v]||86400000;
+}
 
 async function loadAuctions(){
   try{
@@ -2041,6 +2049,8 @@ function renderAuctions(){
     const city=(desc.match(/Місто:\s*(.+)/)||[])[1]||'';
     const cond=(desc.match(/Стан:\s*(\d+)/)||[])[1]||'';
     const sub=[plastic,weight?weight+'г':'',city].filter(Boolean).join(' · ');
+    const flight=(desc.match(/Flight:\s*(.+)/)||[])[1]||'';
+    const flightParts=flight?flight.split('/').map(v=>v.trim()):[];
     return`<div class="disc-card" onclick="showAucDetail('${a.id}')">
       <div class="disc-strip ${statusClass}"></div>
       <div style="position:relative">
@@ -2052,6 +2062,12 @@ function renderAuctions(){
         <div class="disc-title">${a.title}</div>
         ${sub?`<div class="disc-sub">${sub}</div>`:''}
         ${cond?condBar(cond):''}
+        ${flightParts.length===4?`<div class="flight-row">
+          <div class="fc"><div class="fv">${flightParts[0]}</div><div class="fk">Spd</div></div>
+          <div class="fc"><div class="fv">${flightParts[1]}</div><div class="fk">Gli</div></div>
+          <div class="fc"><div class="fv">${flightParts[2]}</div><div class="fk">Trn</div></div>
+          <div class="fc"><div class="fv">${flightParts[3]}</div><div class="fk">Fde</div></div>
+        </div>`:''}
         <div class="disc-footer" style="margin-top:auto">
           <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.3rem">
             <div class="disc-price">${curPrice} ₴</div>
@@ -2146,13 +2162,15 @@ async function submitAuction(){
     startPrice=reverseStart;
   }
   const btn=document.getElementById('aucSubmitBtn');
+  if(!aucPhotoFiles[0]){toast('⚠️ Додайте хоча б одне фото',true);return;}
   btn.disabled=true;btn.textContent='Створення...';
   const photos=['','',''];
   for(let i=0;i<3;i++){
     if(aucPhotoFiles[i]){try{photos[i]=await uploadToCloudinary(aucPhotoFiles[i]);}catch(e){}}
   }
-  const hours=parseInt(document.getElementById('auc-duration').value)||24;
-  const endsAt=new Date(Date.now()+hours*3600000).toISOString();
+  const totalMs=getAucDurationMs();
+  if(totalMs<60000){toast('⚠️ Мінімальна тривалість: 1 хвилина',true);btn.disabled=false;btn.textContent='Створити аукціон';return;}
+  const endsAt=new Date(Date.now()+totalMs).toISOString();
   const title=brand+' '+model;
   const auction={
     owner:CU.name,owner_tg:CU.tg||'',owner_tg_id:CU.tgId,
@@ -2187,7 +2205,7 @@ function resetAucForm(){
   aucPhotoFiles=[null,null,null];
   ['auc-brand','auc-model','auc-plastic','auc-weight','auc-color','auc-city','auc-desc','auc-start','auc-buyout','auc-speed','auc-glide','auc-turn','auc-fade','auc-start-b','auc-step-b','auc-buyout-b','auc-reverse-start','auc-reverse-end','auc-reverse-drop','auc-reverse-interval'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
   document.getElementById('auc-step').value='10';
-  document.getElementById('auc-duration').value='24';
+  document.getElementById('auc-dur-preset').value='24h';
   document.getElementById('auc-type').value='classic';
   toggleAucTypeFields();
   document.getElementById('auc-cond').value='7';
@@ -2208,28 +2226,49 @@ async function showAucDetail(id){
   const typeLabel=a.auction_type==='buyout'?'💰 Купити зараз + Аукціон':isReverse?'📉 Зворотній аукціон':'📈 Класичний аукціон';
   const statusLabel=isActive?'Активний':a.status==='sold'?'Продано':'Завершено';
   const statusClass=isActive?'b-av':a.status==='sold'?'b-so':'b-so';
-  // Parse description
+  // Parse description fields
   const desc=a.description||'';
+  const plastic=(desc.match(/Пластик:\s*(.+)/)||[])[1]||'';
+  const weight=(desc.match(/Вага:\s*(\d+)/)||[])[1]||'';
+  const color=(desc.match(/Колір:\s*(.+)/)||[])[1]||'';
+  const cond=(desc.match(/Стан:\s*(\d+)/)||[])[1]||'';
+  const flight=(desc.match(/Flight:\s*(.+)/)||[])[1]||'';
+  const flightParts=flight?flight.split('/').map(v=>v.trim()):[];
+  const inked=/Inked:\s*Так/.test(desc);
+  const city=(desc.match(/Місто:\s*(.+)/)||[])[1]||'';
+  // Remove parsed lines from description to get notes
+  const notes=desc.replace(/Пластик:.*|Вага:.*|Колір:.*|Стан:.*|Flight:.*|Inked:.*|Місто:.*/g,'').trim();
   const photos=[a.photo_url,a.photo_url2,a.photo_url3].filter(Boolean);
-  const photoHtml=photos.length?`<div class="detail-photos" style="position:relative;margin:-1.5rem -1.5rem 1rem;border-radius:14px 14px 0 0;overflow:hidden;background:#0a0e14">${photos.map((u,i)=>`<img src="${u}" style="width:100%;max-height:300px;object-fit:contain;display:${i===0?'block':'none'}" class="${i===0?'active':''}">`).join('')}${photos.length>1?`<button class="photo-nav prev" onclick="photoNav('aucD',-1)">‹</button><button class="photo-nav next" onclick="photoNav('aucD',1)">›</button>`:''}</div>`:'';
+  const sub=[plastic,weight?weight+'г':'',color,city].filter(Boolean).join(' · ');
 
   document.getElementById('aucDetailContent').innerHTML=`
-    ${photos.length?`<div class="detail-photos" id="pw-aucD" style="margin:-1.5rem -1.5rem 1rem;border-radius:14px 14px 0 0;overflow:hidden;background:#0a0e14">${photos.map((u,i)=>`<img src="${u}" style="width:100%;max-height:300px;object-fit:contain" class="${i===0?'active':''}" alt="">`).join('')}${photos.length>1?`<button class="photo-nav prev" onclick="photoNav('aucD',-1)">‹</button><button class="photo-nav next" onclick="photoNav('aucD',1)">›</button>`:''}</div>`:''}
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.3rem">
+    ${photos.length?`<div id="pw-aucD" style="margin:-1.5rem -1.5rem 1rem;border-radius:14px 14px 0 0;overflow:hidden;background:#0a0e14;position:relative">${photos.map((u,i)=>`<img src="${u}" style="width:100%;max-height:300px;object-fit:contain" class="${i===0?'active':''}" alt="">`).join('')}${photos.length>1?`<button class="photo-nav prev" onclick="photoNav('aucD',-1)">‹</button><button class="photo-nav next" onclick="photoNav('aucD',1)">›</button>`:''}</div>`:''}
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.2rem">
       <div style="font-family:'Bebas Neue';font-size:1.6rem;letter-spacing:1px;line-height:1">${a.title}</div>
       <span class="badge ${statusClass}">${statusLabel}</span>
     </div>
-    <div style="font-size:0.7rem;color:var(--m1);margin-bottom:0.75rem">${typeLabel}</div>
-    ${desc?`<div style="font-size:0.82rem;color:var(--m2);margin-bottom:0.75rem;white-space:pre-line">${desc}</div>`:''}
-    <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:0.5rem;margin-bottom:0.75rem">
-      <div class="stat-m"><div class="stat-mn" id="aucPrice">${curPrice} ₴</div><div class="stat-ml">${isReverse?'Поточна ціна':'Поточна ціна'}</div></div>
-      <div class="stat-m"><div class="stat-mn ${isActive?'cy':'so'}" id="aucTimer">${isActive?fmtTimeLeft(end-now):'Завершено'}</div><div class="stat-ml">${isActive?'Залишилось':'Статус'}</div></div>
-      <div class="stat-m"><div class="stat-mn">${a.start_price} ₴</div><div class="stat-ml">Стартова</div></div>
-      <div class="stat-m"><div class="stat-mn">${a.bid_count||0}</div><div class="stat-ml">Ставок</div></div>
+    <div style="font-size:0.7rem;color:var(--m1);margin-bottom:0.5rem">${typeLabel}</div>
+    ${sub?`<div style="font-size:0.82rem;color:var(--m2);margin-bottom:0.4rem">${sub}</div>`:''}
+    ${cond?`<div style="margin-bottom:0.4rem"><span style="font-size:0.72rem;color:var(--m1)">Стан: ${cond}/10</span>${condBar(cond)}</div>`:''}
+    ${flightParts.length===4?`<div class="flight-row" style="margin-bottom:0.5rem">
+      <div class="fc"><div class="fv">${flightParts[0]}</div><div class="fk">Spd</div></div>
+      <div class="fc"><div class="fv">${flightParts[1]}</div><div class="fk">Gli</div></div>
+      <div class="fc"><div class="fv">${flightParts[2]}</div><div class="fk">Trn</div></div>
+      <div class="fc"><div class="fv">${flightParts[3]}</div><div class="fk">Fde</div></div>
+    </div>`:''}
+    ${inked?`<div style="font-size:0.78rem;color:var(--m2);margin-bottom:0.4rem">🖊️ Inked</div>`:''}
+    ${notes?`<div style="font-size:0.82rem;color:var(--m2);margin-bottom:0.5rem">${notes}</div>`:''}
+    <div style="border-top:1px solid var(--b1);padding-top:0.75rem;margin-top:0.5rem">
+      <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:0.5rem;margin-bottom:0.75rem">
+        <div class="stat-m"><div class="stat-mn" id="aucPrice">${curPrice} ₴</div><div class="stat-ml">Поточна ціна</div></div>
+        <div class="stat-m"><div class="stat-mn ${isActive?'cy':'so'}" id="aucTimer">${isActive?fmtTimeLeft(end-now):'Завершено'}</div><div class="stat-ml">${isActive?'Залишилось':'Статус'}</div></div>
+        <div class="stat-m"><div class="stat-mn">${a.start_price} ₴</div><div class="stat-ml">Стартова</div></div>
+        <div class="stat-m"><div class="stat-mn">${a.bid_count||0}</div><div class="stat-ml">Ставок</div></div>
+      </div>
     </div>
-    ${isReverse?`<div style="font-size:0.78rem;color:var(--purple);margin-bottom:0.5rem;padding:0.4rem;background:rgba(168,85,247,0.1);border-radius:var(--r)">📉 ${a.reverse_start} ₴ → ${a.reverse_end} ₴ · Зниження ${a.reverse_drop} ₴ кожні ${a.reverse_interval||60} хв</div>`:''}
+    ${isReverse?`<div style="font-size:0.78rem;color:var(--purple);margin-bottom:0.5rem;padding:0.4rem;background:rgba(168,85,247,0.1);border-radius:var(--r)">📉 ${a.reverse_start} ₴ → ${a.reverse_end} ₴ · -${a.reverse_drop} ₴ кожні ${a.reverse_interval||60} хв</div>`:''}
     ${a.buyout_price>0?`<div style="font-size:0.78rem;color:var(--orange);margin-bottom:0.5rem">Купити зараз: <strong>${a.buyout_price} ₴</strong></div>`:''}
-    <div style="font-size:0.78rem;color:var(--m2);margin-bottom:0.5rem">Крок: ${a.min_step||'-'} ₴</div>
+    ${!isReverse?`<div style="font-size:0.78rem;color:var(--m2);margin-bottom:0.5rem">Крок: ${a.min_step||10} ₴</div>`:''}
     <div style="font-size:0.78rem;color:var(--m1);margin-bottom:0.75rem">Продавець: <strong style="color:var(--text)">${a.owner}</strong>${tgLinkFull(a.owner_tg||a.owner_tg_id)}</div>
     ${isActive&&CU?`
       ${isReverse?`
