@@ -883,6 +883,12 @@ function subscribeRealtime(){
       applyFilters();updateStats();
     })
     .subscribe();
+  // Auctions realtime
+  sb.channel('auctions-changes')
+    .on('postgres_changes',{event:'*',schema:'public',table:'auctions'},()=>{
+      loadAuctions();
+    })
+    .subscribe();
 }
 
 function dbToDisc(r){
@@ -2234,7 +2240,12 @@ async function submitAuction(){
   const {error}=await sb.from('auctions').insert(auction);
   if(!error){
     closeModal('addAuction');toast('✅ Аукціон створено!');
-    resetAucForm();await loadAuctions();startAucGridTimer();
+    resetAucForm();
+    aucFilter='active';
+    document.querySelectorAll('#page-auctions .ft').forEach(b=>b.classList.remove('active'));
+    document.querySelector('#page-auctions .ft')?.classList.add('active');
+    await loadAuctions();
+    goPage('auctions');
   }else toast('⚠️ '+error.message,true);
   btn.disabled=false;btn.textContent='Створити аукціон';
 }
@@ -2717,7 +2728,10 @@ async function init(){
   const savedToken=sessionStorage.getItem('adminToken');
   if(savedToken)ADMIN_TOKEN=savedToken;
   const params=new URLSearchParams(location.search);
-  const discId=params.get('disc')||window.Telegram?.WebApp?.initDataUnsafe?.start_param;
+  const startParam=params.get('disc')||window.Telegram?.WebApp?.initDataUnsafe?.start_param||'';
+  const isAucLink=startParam.startsWith('auc_');
+  const discId=isAucLink?null:startParam;
+  const aucDeepId=isAucLink?startParam.replace('auc_',''):null;
   // Preload all tabs in parallel
   await Promise.all([
     loadDiscs(),
@@ -2736,6 +2750,7 @@ async function init(){
   // Hide loading
   document.getElementById('loadingOverlay').style.display='none';
   if(discId)setTimeout(()=>{showDetail(discId);},300);
+  else if(aucDeepId)setTimeout(()=>{goPage('auctions');showAucDetail(aucDeepId);},300);
   else{
     try{const sp=sessionStorage.getItem('dc_page');if(sp&&sp!=='catalog')goPage(sp);}catch(e){}
   }
