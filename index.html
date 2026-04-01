@@ -1532,31 +1532,32 @@ function setCabTab(tab){
   document.getElementById('cab-tab-'+tab).classList.add('active');
 }
 
-async function renderCabinet(){await renderSeller();await renderTester();}
-
-async function renderSeller(){
-  const name=CU?.name;if(!name)return;
-  // Fetch ALL my discs including sold/unlisted (they're filtered out of allDiscs)
-  let my=[];
+let cabinetCache={myDiscs:[],allReqs:[],loaded:false};
+async function preloadCabinet(){
+  if(!CU?.name)return;
   try{
-    const {data}=await sb.from('discs').select('*').eq('owner',name).neq('status','deleted').order('created_at',{ascending:false});
-    my=(data||[]).map(dbToDisc);
-  }catch(e){
-    my=allDiscs.filter(d=>String(d.owner).trim()===String(name).trim());
-  }
+    const {data}=await sb.from('discs').select('*').eq('owner',CU.name).neq('status','deleted').order('created_at',{ascending:false});
+    cabinetCache.myDiscs=(data||[]).map(dbToDisc);
+    if(cabinetCache.myDiscs.length){
+      const {data:reqs}=await sb.from('requests').select('*').in('disc_id',cabinetCache.myDiscs.map(d=>d.id)).order('created_at',{ascending:false});
+      cabinetCache.allReqs=reqs||[];
+    }
+    cabinetCache.loaded=true;
+  }catch(e){}
+}
+async function renderCabinet(){
+  if(!cabinetCache.loaded)await preloadCabinet();
+  renderSeller();renderTester();
+}
+
+function renderSeller(){
+  const name=CU?.name;if(!name)return;
+  const my=cabinetCache.myDiscs;
+  const allReqs=cabinetCache.allReqs;
 
   const rev=my.filter(d=>d.status==='sold').reduce((a,d)=>a+(Number(d.buyout)||0),0);
   if(document.getElementById('sel-total'))document.getElementById('sel-total').textContent=my.filter(d=>d.status!=='sold').length;
   if(document.getElementById('sel-revenue'))document.getElementById('sel-revenue').textContent=rev+'₴';
-
-  // Fetch all requests for my discs
-  let allReqs=[];
-  try{
-    if(my.length){
-      const {data}=await sb.from('requests').select('*').in('disc_id',my.map(d=>d.id)).order('created_at',{ascending:false});
-      allReqs=data||[];
-    }
-  }catch(e){}
 
   document.getElementById('sellerDiscList').innerHTML=my.length
     ?my.map(d=>{
@@ -1979,6 +1980,13 @@ function doLogin(){
 
 // ── AUCTIONS ──
 let allAuctions=[], aucFilter='active', aucPhotoFiles=[null,null,null], aucTimerInterval=null;
+function bidWord(n){
+  n=Math.abs(n)%100;const n1=n%10;
+  if(n>10&&n<20)return n+' ставок';
+  if(n1>1&&n1<5)return n+' ставки';
+  if(n1===1)return n+' ставка';
+  return n+' ставок';
+}
 
 function toggleAucTypeFields(){
   const t=document.getElementById('auc-type').value;
@@ -2048,7 +2056,8 @@ function renderAuctions(){
     const weight=(desc.match(/Вага:\s*(\d+)/)||[])[1]||'';
     const city=(desc.match(/Місто:\s*(.+)/)||[])[1]||'';
     const cond=(desc.match(/Стан:\s*(\d+)/)||[])[1]||'';
-    const sub=[plastic,weight?weight+'г':'',city].filter(Boolean).join(' · ');
+    const color=(desc.match(/Колір:\s*(.+)/)||[])[1]||'';
+    const sub=[plastic,weight?weight+'г':'',color,city].filter(Boolean).join(' · ');
     const flight=(desc.match(/Flight:\s*(.+)/)||[])[1]||'';
     const flightParts=flight?flight.split('/').map(v=>v.trim()):[];
     return`<div class="disc-card" onclick="showAucDetail('${a.id}')">
@@ -2071,10 +2080,10 @@ function renderAuctions(){
         <div class="disc-footer" style="margin-top:auto">
           <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.3rem">
             <div class="disc-price">${curPrice} ₴</div>
-            <div class="disc-own">👤 ${(a.owner||'').split(' ')[0]}</div>
+            ${a.winner?`<div style="font-size:0.65rem;color:var(--cyan)">🏆 ${(a.winner||'').split(' ')[0]}</div>`:`<div class="disc-own">👤 ${(a.owner||'').split(' ')[0]}</div>`}
           </div>
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.4rem">
-            <span style="font-size:0.65rem;color:var(--m1)">${a.bid_count||0} ставок</span>
+            <span style="font-size:0.65rem;color:var(--m1)">${bidWord(a.bid_count||0)}</span>
             ${isActive?`<span class="auc-card-timer" data-ends="${a.ends_at}" style="font-size:0.65rem;color:var(--cyan);font-weight:600">⏱ ${timeLeft}</span>`:''}
           </div>
           ${a.buyout_price>0&&isActive?`<div style="font-size:0.65rem;color:var(--orange);margin-bottom:0.3rem">Купити зараз: ${a.buyout_price} ₴</div>`:''}
@@ -2269,7 +2278,7 @@ async function showAucDetail(id){
         <div class="stat-m"><div class="stat-mn" id="aucPrice">${curPrice} ₴</div><div class="stat-ml">Поточна ціна</div></div>
         <div class="stat-m"><div class="stat-mn ${isActive?'cy':'so'}" id="aucTimer">${isActive?fmtTimeLeft(end-now):'Завершено'}</div><div class="stat-ml">${isActive?'Залишилось':'Статус'}</div></div>
         <div class="stat-m"><div class="stat-mn">${a.start_price} ₴</div><div class="stat-ml">Стартова</div></div>
-        <div class="stat-m"><div class="stat-mn">${a.bid_count||0}</div><div class="stat-ml">Ставок</div></div>
+        <div class="stat-m"><div class="stat-mn">${a.bid_count||0}</div><div class="stat-ml">${bidWord(a.bid_count||0).replace(/^\d+\s/,'')}</div></div>
       </div>
     </div>
     ${isReverse?`<div style="font-size:0.78rem;color:var(--purple);margin-bottom:0.5rem;padding:0.4rem;background:rgba(168,85,247,0.1);border-radius:var(--r)">📉 ${a.reverse_start} ₴ → ${a.reverse_end} ₴ · -${a.reverse_drop} ₴ кожні ${a.reverse_interval||60} хв</div>`:''}
@@ -2645,7 +2654,8 @@ async function init(){
     loadFavorites(),
     loadLastSeen(),
     loadAuctions(),
-    loadFeed()
+    loadFeed(),
+    preloadCabinet()
   ]);
   applyFilters();
   startAucGridTimer();
