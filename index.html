@@ -510,7 +510,7 @@ input[type=range]::-moz-range-track{height:6px;background:rgba(255,255,255,0.06)
         <div class="ftabs-pill"></div>
         <button class="ft active" onclick="setAucFilter(this,'active')">Активні</button>
         <button class="ft" onclick="setAucFilter(this,'my')">Мої</button>
-        <button class="ft" onclick="setAucFilter(this,'mybids')">Мої ставки</button>
+        <button class="ft" onclick="setAucFilter(this,'mybids')">Ставки</button>
         <button class="ft" onclick="setAucFilter(this,'ended')">Завершені</button>
       </div>
       <button class="btn btn-lime btn-sm" onclick="openModal('addAuction')" style="flex-shrink:0;margin-left:0.4rem">+ Аукціон</button>
@@ -560,9 +560,8 @@ input[type=range]::-moz-range-track{height:6px;background:rgba(255,255,255,0.06)
     <div class="fr"><div class="fg"><label class="fl">Пластик</label><input id="auc-plastic" placeholder="Star, ESP..." style="font-size:14px"></div><div class="fg"><label class="fl">Вага (г)</label><input id="auc-weight" type="number" placeholder="175" style="font-size:14px"></div></div>
     <div class="fr"><div class="fg"><label class="fl">Колір</label><input id="auc-color" placeholder="Жовтий..." style="font-size:14px"></div><div class="fg"><label class="fl">Місто</label><input id="auc-city" placeholder="Київ, Луцьк, Одеса..." style="font-size:14px"></div></div>
     <div class="fg"><label class="fl">Стан: <span id="aucCondLabel">7</span>/10</label>
-      <div style="display:flex;align-items:center;gap:0.5rem">
+      <div style="display:flex;align-items:center">
         <input type="range" id="auc-cond" min="1" max="10" value="7" step="1" style="flex:1" oninput="document.getElementById('aucCondLabel').textContent=this.value">
-        <span style="font-family:'Space Mono';font-size:0.9rem;font-weight:700;color:var(--lime);min-width:20px;text-align:center">7</span>
       </div>
     </div>
     <div class="fg"><label class="fl">Speed / Glide / Turn / Fade</label>
@@ -726,7 +725,7 @@ input[type=range]::-moz-range-track{height:6px;background:rgba(255,255,255,0.06)
     <div class="fg"><label class="fl">Нотатки</label><textarea id="edit-notes"></textarea></div>
     <div class="fg"><label class="fl">Місто</label><input id="edit-city" placeholder="Київ, Луцьк, Кременчук, Одеса, Львів..."></div>
     
-    <div class="fg"><label class="fl">Статус</label><select id="edit-status"><option value="available">Доступний</option><option value="reserved">Зарезервований</option><option value="testing">На тестуванні</option><option value="sold">Продано</option><option value="unlisted">Знято з продажу</option></select></div>
+    <div class="fg"><label class="fl">Статус</label><select id="edit-status"><option value="available">Доступний</option><option value="reserved">Резерв</option><option value="testing">На тестуванні</option><option value="sold">Продано</option><option value="unlisted">Знято з продажу</option></select></div>
     <div style="display:flex;gap:0.5rem"><button class="btn btn-lime btn-full" onclick="submitEditDisc()">Зберегти</button></div>
   </div>
 </div>
@@ -877,7 +876,7 @@ async function toggleLike(id,e){
 
 const ST = {
   available:{l:'Доступний',c:'av',sc:'s-av'},
-  reserved:{l:'Зарезервований',c:'re',sc:'s-re'},
+  reserved:{l:'Резерв',c:'re',sc:'s-re'},
   testing:{l:'На тестуванні',c:'te',sc:'s-te'},
   pending:{l:'Очікує повернення',c:'pe',sc:'s-pe'},
   sold:{l:'Продано',c:'so',sc:'s-so'},
@@ -1055,11 +1054,11 @@ function cardHTML(d){
             <div class="disc-own" onclick="event.stopPropagation();filterByOwner('${d.owner}')">👤 ${(d.owner||'').split(' ')[0]}</div>
           </div>
         </div>
-        <div onclick="event.stopPropagation()" style="display:flex;gap:3px;width:100%">
-          ${isOwn?'':(hasTrade?`<button class="btn btn-purple btn-xs" onclick="event.stopPropagation();openTradeOffer('${d.id}')" style="flex:1">Обмін</button>`:'')}
-          ${isOwn?'':(canT?`<button class="btn btn-cyan btn-xs" onclick="openReqTest('${d.id}')" style="flex:1">Тест</button>`:'')}
-          ${isOwn?'':(canB?`<button class="btn btn-lime btn-xs" onclick="oBuy('${d.id}')" style="flex:1">Купити</button>`:'')}
-        </div>
+        ${isOwn?'':`<div onclick="event.stopPropagation()" style="display:flex;gap:3px;width:100%">
+          ${hasTrade?`<button class="btn btn-purple btn-xs" onclick="event.stopPropagation();openTradeOffer('${d.id}')" style="flex:1">Обмін</button>`:''}
+          ${canT?`<button class="btn btn-cyan btn-xs" onclick="openReqTest('${d.id}')" style="flex:1">Тест</button>`:''}
+          ${canB?`<button class="btn btn-lime btn-xs" onclick="oBuy('${d.id}')" style="flex:1">Купити</button>`:''}
+        </div>`}
       </div>
     </div>
   </div>`;
@@ -2195,7 +2194,7 @@ function toggleAucTypeFields(){
   document.getElementById('auc-fields-classic').style.display=t==='classic'?'block':'none';
   document.getElementById('auc-fields-buyout').style.display=t==='buyout'?'block':'none';
   document.getElementById('auc-fields-reverse').style.display=t==='reverse'?'block':'none';
-  const descs={classic:'Ціна росте зі ставками. Перемагає найвища ставка.',buyout:'Ціна росте зі ставками або можна купити одразу за фіксовану ціну.',reverse:'Ціна знижується автоматично. Перший хто купить — забирає.'};
+  const descs={classic:'Ціна росте зі ставками. Перемагає найвища ставка.',buyout:'Ціна росте зі ставками або можна купити одразу за фіксовану ціну.',reverse:'Ціна знижується автоматично. Перший хто купить - забирає.'};
   const d=document.getElementById('auc-type-desc');if(d)d.textContent=descs[t]||'';
 }
 function getAucDurationMs(){
