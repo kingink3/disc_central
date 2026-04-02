@@ -231,8 +231,8 @@ td{padding:8px 10px;font-size:0.8rem}
 .loading-logo{animation:loadPulse 2s ease-in-out infinite}
 @keyframes loadPulse{0%,100%{transform:scale(1);opacity:0.9}50%{transform:scale(1.06);opacity:1}}
 .loading-bar{width:120px;height:3px;background:rgba(255,255,255,0.06);border-radius:2px;overflow:hidden}
-.loading-bar-fill{height:100%;width:0%;background:linear-gradient(90deg,var(--lime),#e8ff70);border-radius:2px;animation:loadBar 2.5s ease-in-out forwards}
-@keyframes loadBar{0%{width:0%}30%{width:45%}60%{width:70%}90%{width:85%}100%{width:100%}}
+.loading-bar-fill{height:100%;width:0%;background:linear-gradient(90deg,var(--lime),#e8ff70);border-radius:2px;animation:loadBar 2s ease-in-out forwards}
+@keyframes loadBar{0%{width:0%}30%{width:45%}60%{width:70%}90%{width:88%}100%{width:100%}}
 .toasts{position:fixed;bottom:1rem;right:1rem;z-index:400;display:flex;flex-direction:column;gap:0.4rem}
 @media(max-width:600px){.toasts{bottom:5rem}}
 .toast{background:var(--glass);backdrop-filter:var(--glass-blur);-webkit-backdrop-filter:var(--glass-blur);border:0.5px solid var(--glass-border);border-left:3px solid var(--lime);border-radius:14px;padding:0.7rem 1rem;font-size:0.82rem;animation:tIn 0.22s ease;box-shadow:0 8px 32px rgba(0,0,0,0.25),inset 0 1px 0 rgba(255,255,255,0.1);min-width:180px}
@@ -895,7 +895,7 @@ function tgLinkFull(tg){
 const HIDDEN=['sold','deleted','unlisted'];
 async function loadDiscs(){
   // Show cache instantly
-  try{const c=localStorage.getItem('dc_discs');if(c){allDiscs=JSON.parse(c);applyFilters();updateStats();document.getElementById('loadingOverlay').classList.add('fade-out');setTimeout(()=>{document.getElementById('loadingOverlay').style.display='none'},500);}}catch(e){}
+  try{const c=localStorage.getItem('dc_discs');if(c){allDiscs=JSON.parse(c);applyFilters();updateStats();}}catch(e){}
   try{
     const {data,error}=await sb.from('discs').select('*').not('status','in','("sold","deleted","unlisted")').order('created_at',{ascending:false});
     if(!error&&data){
@@ -905,7 +905,6 @@ async function loadDiscs(){
       updateStats();
     }
   }catch(e){console.error(e);}
-  document.getElementById('loadingOverlay').classList.add('fade-out');setTimeout(()=>{document.getElementById('loadingOverlay').style.display='none'},500);
 }
 
 // ── REALTIME ──
@@ -2843,6 +2842,7 @@ restoreTheme();
 
 // ── INIT ──
 async function init(){
+  window._loadStart=Date.now();
   setTimeout(()=>{document.getElementById('loadingOverlay').classList.add('fade-out');setTimeout(()=>{document.getElementById('loadingOverlay').style.display='none'},500);},15000);
   // Telegram Fullscreen + disable swipe-to-close
   const _tg=window.Telegram?.WebApp;
@@ -2894,8 +2894,11 @@ async function init(){
   await countUnseen();
   markSeen('catalog');
   subscribeRealtime();
-  // Hide loading
-  document.getElementById('loadingOverlay').classList.add('fade-out');setTimeout(()=>{document.getElementById('loadingOverlay').style.display='none'},500);
+  // Hide loading after minimum 2s
+  const _loadStart=window._loadStart||Date.now();
+  const _elapsed=Date.now()-_loadStart;
+  const _delay=Math.max(0,2000-_elapsed);
+  setTimeout(()=>{document.getElementById('loadingOverlay').classList.add('fade-out');setTimeout(()=>{document.getElementById('loadingOverlay').style.display='none'},500);},_delay);
   if(discId)setTimeout(()=>{showDetail(discId);},300);
   else if(aucDeepId)setTimeout(()=>{goPage('auctions');showAucDetail(aucDeepId);},300);
   else{
