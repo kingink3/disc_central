@@ -108,6 +108,7 @@ nav{display:flex;gap:0.15rem;align-items:center;flex:1;justify-content:center}
 .mobile-nav.open{display:flex}
 .mobile-nav .nav-a{text-align:left;padding:9px 12px;font-size:0.86rem}
 .page{display:none}.page.active{display:block}
+.page.preloading{display:block!important;visibility:hidden;position:absolute;left:-9999px;width:100%;pointer-events:none}
 .content{max-width:1100px;margin:0 auto;padding:0.6rem 0.875rem}
 
 .stats-mini{display:grid;grid-template-columns:repeat(4,1fr);gap:0.5rem;margin-bottom:0.75rem}
@@ -2895,6 +2896,8 @@ async function init(){
   restoreUser();
   if(await checkBanned())return;
   setTimeout(updateCondBar,100);
+  // Preload: make all pages render offscreen so embeds/videos load
+  document.querySelectorAll('.page:not(.active)').forEach(p=>p.classList.add('preloading'));
   const savedToken=sessionStorage.getItem('adminToken');
   if(savedToken)ADMIN_TOKEN=savedToken;
   const params=new URLSearchParams(location.search);
@@ -2913,10 +2916,13 @@ async function init(){
     preloadCabinet()
   ]);
   applyFilters();
+  renderAuctions();
   startAucGridTimer();
   await countUnseen();
   markSeen('catalog');
   subscribeRealtime();
+  // Remove preloading after everything rendered
+  setTimeout(()=>{document.querySelectorAll('.page.preloading').forEach(p=>p.classList.remove('preloading'));},500);
   // Hide loading after minimum 2s
   const _loadStart=window._loadStart||Date.now();
   const _elapsed=Date.now()-_loadStart;
