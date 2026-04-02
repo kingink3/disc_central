@@ -2684,15 +2684,23 @@ function getEmbed(url,platform){
     const m=url.match(/\/video\/(\d+)/)||url.match(/\/v\/(\d+)/);
     if(m){
       const vid=m[1];
-      const posterId='ttposter-'+vid;
+      const cid='tt-'+vid+'-'+Math.random().toString(36).slice(2,6);
       setTimeout(()=>{
         fetch('https://www.tiktok.com/oembed?url='+encodeURIComponent(url))
           .then(r=>r.json()).then(d=>{
-            if(d&&d.thumbnail_url){const v=document.getElementById(posterId);if(v)v.poster=d.thumbnail_url;}
+            if(d&&d.thumbnail_url){
+              const el=document.getElementById(cid);
+              if(el){const img=el.querySelector('.tt-poster');if(img){img.src=d.thumbnail_url;img.style.display='block';}}
+            }
           }).catch(()=>{});
       },100);
-      return`<div style="border-radius:var(--r);overflow:hidden;aspect-ratio:9/16;max-height:500px;background:#000;margin:0 auto;max-width:300px;position:relative">
-        <video id="${posterId}" src="https://www.tikwm.com/video/media/hdplay/${vid}.mp4#t=0.1" style="width:100%;height:100%;object-fit:contain" controls playsinline preload="metadata"></video>
+      return`<div id="${cid}" style="border-radius:var(--r);overflow:hidden;aspect-ratio:9/16;max-height:500px;background:#111;margin:0 auto;max-width:300px;position:relative;cursor:pointer" onclick="var v=document.createElement('video');v.src='https://www.tikwm.com/video/media/hdplay/${vid}.mp4';v.style.cssText='width:100%;height:100%;object-fit:contain';v.controls=true;v.playsInline=true;v.autoplay=true;this.innerHTML='';this.appendChild(v);this.style.cursor='default';this.onclick=null">
+        <img class="tt-poster" src="" style="width:100%;height:100%;object-fit:cover;display:none">
+        <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center">
+          <div style="width:56px;height:56px;background:rgba(255,255,255,0.12);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-radius:50%;display:flex;align-items:center;justify-content:center;border:0.5px solid rgba(255,255,255,0.2);transition:transform 0.2s">
+            <div style="width:0;height:0;border-left:20px solid #fff;border-top:12px solid transparent;border-bottom:12px solid transparent;margin-left:5px"></div>
+          </div>
+        </div>
       </div>`;
     }
     return`<div onclick="openExtLink('${url}')" style="cursor:pointer;padding:0.75rem;background:var(--s2);border:1px solid var(--b1);border-radius:var(--r);display:flex;align-items:center;gap:0.75rem">
