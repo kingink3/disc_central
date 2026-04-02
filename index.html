@@ -2670,27 +2670,15 @@ function getEmbed(url,platform){
     const m=url.match(/\/video\/(\d+)/)||url.match(/\/v\/(\d+)/);
     if(m){
       const vid=m[1];
-      const cid='tt-'+vid+'-'+Math.random().toString(36).slice(2,6);
-      // Fetch thumbnail via oembed
+      const posterId='ttposter-'+vid;
       setTimeout(()=>{
         fetch('https://www.tiktok.com/oembed?url='+encodeURIComponent(url))
           .then(r=>r.json()).then(d=>{
-            if(d&&d.thumbnail_url){
-              const el=document.getElementById(cid);
-              if(el){
-                const img=el.querySelector('.tt-thumb');
-                if(img)img.src=d.thumbnail_url;
-              }
-            }
+            if(d&&d.thumbnail_url){const v=document.getElementById(posterId);if(v)v.poster=d.thumbnail_url;}
           }).catch(()=>{});
       },100);
-      return`<div id="${cid}" onclick="this.innerHTML='<video src=\\'https://www.tikwm.com/video/media/hdplay/${vid}.mp4\\' style=\\'width:100%;height:100%;object-fit:contain\\' controls playsinline autoplay></video>';this.onclick=null;this.style.cursor='default'" style="border-radius:var(--r);overflow:hidden;aspect-ratio:9/16;max-height:500px;background:#000;margin:0 auto;max-width:300px;position:relative;cursor:pointer">
-        <img class="tt-thumb" src="" style="width:100%;height:100%;object-fit:cover;display:block" onerror="this.style.display='none'">
-        <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center">
-          <div style="width:56px;height:56px;background:rgba(255,255,255,0.15);backdrop-filter:blur(8px);border-radius:50%;display:flex;align-items:center;justify-content:center;border:1px solid rgba(255,255,255,0.2)">
-            <div style="width:0;height:0;border-left:20px solid #fff;border-top:12px solid transparent;border-bottom:12px solid transparent;margin-left:4px"></div>
-          </div>
-        </div>
+      return`<div style="border-radius:var(--r);overflow:hidden;aspect-ratio:9/16;max-height:500px;background:#000;margin:0 auto;max-width:300px;position:relative">
+        <video id="${posterId}" src="https://www.tikwm.com/video/media/hdplay/${vid}.mp4#t=0.1" style="width:100%;height:100%;object-fit:contain" controls playsinline preload="metadata"></video>
       </div>`;
     }
     return`<div onclick="openExtLink('${url}')" style="cursor:pointer;padding:0.75rem;background:var(--s2);border:1px solid var(--b1);border-radius:var(--r);display:flex;align-items:center;gap:0.75rem">
@@ -2789,89 +2777,30 @@ async function togglePostLike(postId){
   const likeEl=document.getElementById('post-like-'+postId);
   if(likeEl){const lk=getFeedLike(postId);likeEl.innerHTML=`${lk.liked?'❤️':'🤍'} ${lk.count||''}`;}
 }
-let feedRendered=0;
-const FEED_BATCH=10;
-const FEED_PRELOAD=5;
 function renderFeed(){
   const el=document.getElementById('feedList');
   if(!feedPosts.length){el.innerHTML='<div style="text-align:center;color:var(--m1);padding:2rem;font-size:0.85rem">Поки немає публікацій</div>';return;}
-  feedRendered=0;
-  el.innerHTML='';
-  renderFeedBatch();
-  setupFeedObserver();
-}
-function renderFeedBatch(){
-  const el=document.getElementById('feedList');
-  const end=Math.min(feedRendered+FEED_BATCH,feedPosts.length);
-  let html='';
-  for(let i=feedRendered;i<end;i++){
-    const p=feedPosts[i];
+  el.innerHTML=feedPosts.map(p=>{
     const lk=getFeedLike(p.id);
     const pIcon=p.platform==='youtube'?'<svg width="18" height="18" viewBox="0 0 24 24" style="vertical-align:middle"><rect width="24" height="24" rx="4" fill="#FF0000"/><polygon points="10,7 17,12 10,17" fill="#fff"/></svg>'
       :p.platform==='tiktok'?'<svg width="18" height="18" viewBox="0 0 24 24" style="vertical-align:middle"><rect width="24" height="24" rx="4" fill="#010101"/><path d="M16.6 5.82A4.27 4.27 0 0115.54 3h-2.68l-.01 13.27a2.56 2.56 0 01-2.54 2.42 2.56 2.56 0 01-2.56-2.57 2.56 2.56 0 012.56-2.57c.26 0 .5.04.74.1v-2.72a5.26 5.26 0 00-.74-.05A5.28 5.28 0 005 16.12a5.28 5.28 0 005.31 5.25 5.28 5.28 0 005.31-5.25V10.2a6.9 6.9 0 004.03 1.29V8.77a4.28 4.28 0 01-3.05-2.95z" fill="#fff"/></svg>'
       :p.platform==='instagram'?'<svg width="18" height="18" viewBox="0 0 24 24" style="vertical-align:middle"><defs><linearGradient id="ig" x1="0" y1="1" x2="1" y2="0"><stop offset="0%" stop-color="#feda75"/><stop offset="25%" stop-color="#fa7e1e"/><stop offset="50%" stop-color="#d62976"/><stop offset="75%" stop-color="#962fbf"/><stop offset="100%" stop-color="#4f5bd5"/></linearGradient></defs><rect width="24" height="24" rx="6" fill="url(#ig)"/><rect x="5" y="5" width="14" height="14" rx="4" fill="none" stroke="#fff" stroke-width="1.5"/><circle cx="12" cy="12" r="3.5" fill="none" stroke="#fff" stroke-width="1.5"/><circle cx="17" cy="7" r="1" fill="#fff"/></svg>'
       :p.platform==='facebook'?'<svg width="18" height="18" viewBox="0 0 24 24" style="vertical-align:middle"><rect width="24" height="24" rx="4" fill="#1877F2"/><path d="M16.5 12.5h-2.5v7h-3v-7H9v-2.5h2v-1.8c0-2 1.2-3.2 3-3.2.9 0 1.5.1 1.5.1v2h-1c-.8 0-1 .4-1 1v1.9h2.5l-.5 2.5z" fill="#fff"/></svg>'
       :'<svg width="18" height="18" viewBox="0 0 24 24" style="vertical-align:middle"><rect width="24" height="24" rx="4" fill="var(--s3)"/><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71" fill="none" stroke="var(--m1)" stroke-width="1.5" stroke-linecap="round"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71" fill="none" stroke="var(--m1)" stroke-width="1.5" stroke-linecap="round"/></svg>';
-    html+=`<div class="card feed-card" data-feed-idx="${i}" style="margin-bottom:0.75rem">
+    return`<div class="card" style="margin-bottom:0.75rem">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.5rem">
         <div style="font-size:0.78rem"><span style="font-weight:700">${p.author}</span> <span style="color:var(--m1)">${fmtDateTime(p.created_at)}</span></div>
         <span onclick="openExtLink('${p.url}')" style="cursor:pointer">${pIcon}</span>
       </div>
       ${p.description?`<div style="font-size:0.82rem;margin-bottom:0.5rem;color:var(--m2)">${p.description}</div>`:''}
-      <div class="feed-embed-placeholder" data-url="${encodeURIComponent(p.url)}" data-platform="${p.platform}" style="margin-bottom:0.5rem;min-height:200px;background:rgba(255,255,255,0.03);border-radius:var(--r);display:flex;align-items:center;justify-content:center">
-        <div style="width:48px;height:48px;border-radius:50%;background:rgba(255,255,255,0.08);display:flex;align-items:center;justify-content:center"><div style="width:0;height:0;border-left:16px solid rgba(255,255,255,0.5);border-top:10px solid transparent;border-bottom:10px solid transparent;margin-left:3px"></div></div>
-      </div>
+      <div style="margin-bottom:0.5rem">${getEmbed(p.url,p.platform)}</div>
       <div style="display:flex;align-items:center;gap:0.75rem;font-size:0.78rem">
         <span id="post-like-${p.id}" onclick="togglePostLike('${p.id}')" style="cursor:pointer">${lk.liked?'❤️':'🤍'} ${lk.count||''}</span>
         <span onclick="togglePostComments('${p.id}')" style="cursor:pointer;color:var(--m1)">💬 Коментарі</span>
       </div>
       <div id="post-comments-${p.id}" style="display:none;margin-top:0.5rem;border-top:1px solid var(--b1);padding-top:0.5rem"></div>
     </div>`;
-  }
-  el.insertAdjacentHTML('beforeend',html);
-  feedRendered=end;
-  // Observe new placeholders for lazy embed loading
-  document.querySelectorAll('.feed-embed-placeholder').forEach(ph=>{
-    if(ph.dataset.loaded)return;
-    feedEmbedObserver.observe(ph);
-  });
-}
-// Lazy load embeds when visible
-let feedEmbedObserver=new IntersectionObserver((entries)=>{
-  entries.forEach(e=>{
-    if(e.isIntersecting){
-      const ph=e.target;
-      if(ph.dataset.loaded)return;
-      ph.dataset.loaded='1';
-      const url=decodeURIComponent(ph.dataset.url);
-      const platform=ph.dataset.platform;
-      ph.innerHTML=getEmbed(url,platform);
-      feedEmbedObserver.unobserve(ph);
-    }
-  });
-},{rootMargin:'300px'});
-// Load more feed items when scrolling near bottom
-function setupFeedObserver(){
-  if(window._feedScrollObs)window._feedScrollObs.disconnect();
-  window._feedScrollObs=new IntersectionObserver((entries)=>{
-    entries.forEach(e=>{
-      if(e.isIntersecting&&feedRendered<feedPosts.length){
-        renderFeedBatch();
-        // Re-observe new sentinel
-        const cards=document.querySelectorAll('.feed-card');
-        if(cards.length>=FEED_PRELOAD){
-          window._feedScrollObs.disconnect();
-          const sentinel=cards[cards.length-FEED_PRELOAD];
-          if(sentinel)window._feedScrollObs.observe(sentinel);
-        }
-      }
-    });
-  });
-  const cards=document.querySelectorAll('.feed-card');
-  if(cards.length>=FEED_PRELOAD){
-    const sentinel=cards[cards.length-FEED_PRELOAD];
-    if(sentinel)window._feedScrollObs.observe(sentinel);
-  }
+  }).join('');
 }
 async function togglePostComments(postId){
   const el=document.getElementById('post-comments-'+postId);
