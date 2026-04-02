@@ -2913,14 +2913,10 @@ async function init(){
     preloadCabinet()
   ]);
   applyFilters();
-  renderAuctions();
   startAucGridTimer();
   await countUnseen();
   markSeen('catalog');
   subscribeRealtime();
-  // Briefly flash community page behind loading overlay so videos start loading
-  const _settingsPage=document.getElementById('page-settings');
-  if(_settingsPage){_settingsPage.style.display='block';requestAnimationFrame(()=>{requestAnimationFrame(()=>{_settingsPage.style.display='';});});}
   // Hide loading after minimum 2s
   const _loadStart=window._loadStart||Date.now();
   const _elapsed=Date.now()-_loadStart;
