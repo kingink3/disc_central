@@ -226,8 +226,13 @@ thead th{background:rgba(255,255,255,0.04);padding:7px 10px;text-align:left;font
 tbody tr{border-top:0.5px solid var(--glass-border);transition:background 0.15s}
 tbody tr:hover{background:rgba(255,255,255,0.04)}
 td{padding:8px 10px;font-size:0.8rem}
-.loading-overlay{position:fixed;inset:0;background:var(--bg);z-index:500;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:0.875rem}
-.loading-spinner{width:36px;height:36px;border:3px solid rgba(255,255,255,0.08);border-top-color:var(--lime);border-radius:50%;animation:spin 0.8s linear infinite}
+.loading-overlay{position:fixed;inset:0;background:#060810;z-index:500;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:1.2rem;transition:opacity 0.4s ease}
+.loading-overlay.fade-out{opacity:0;pointer-events:none}
+.loading-logo{animation:loadPulse 2s ease-in-out infinite}
+@keyframes loadPulse{0%,100%{transform:scale(1);opacity:0.9}50%{transform:scale(1.06);opacity:1}}
+.loading-bar{width:120px;height:3px;background:rgba(255,255,255,0.06);border-radius:2px;overflow:hidden}
+.loading-bar-fill{height:100%;width:0%;background:linear-gradient(90deg,var(--lime),#e8ff70);border-radius:2px;animation:loadBar 2.5s ease-in-out forwards}
+@keyframes loadBar{0%{width:0%}30%{width:45%}60%{width:70%}90%{width:85%}100%{width:100%}}
 .toasts{position:fixed;bottom:1rem;right:1rem;z-index:400;display:flex;flex-direction:column;gap:0.4rem}
 @media(max-width:600px){.toasts{bottom:5rem}}
 .toast{background:var(--glass);backdrop-filter:var(--glass-blur);-webkit-backdrop-filter:var(--glass-blur);border:0.5px solid var(--glass-border);border-left:3px solid var(--lime);border-radius:14px;padding:0.7rem 1rem;font-size:0.82rem;animation:tIn 0.22s ease;box-shadow:0 8px 32px rgba(0,0,0,0.25),inset 0 1px 0 rgba(255,255,255,0.1);min-width:180px}
@@ -266,7 +271,8 @@ input[type=range]::-moz-range-track{height:6px;background:rgba(255,255,255,0.06)
 .light .bnav-item.active{color:var(--text)}
 .bnav-item svg{width:24px;height:24px;transition:transform 0.35s cubic-bezier(0.4,0,0.1,1)}
 .bnav-item.active svg{transform:scale(1.1)}
-.bnav-add{background:var(--lime);width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;border:none;box-shadow:0 4px 20px rgba(212,240,64,0.4),inset 0 1px 0 rgba(255,255,255,0.3);margin-top:-8px;transition:transform 0.2s,box-shadow 0.2s}
+.bnav-add{background:var(--lime);width:50px;height:50px;border-radius:50%;display:flex;align-items:center;justify-content:center;border:none;box-shadow:0 4px 20px rgba(212,240,64,0.4),inset 0 1px 0 rgba(255,255,255,0.3);margin:0;transition:transform 0.2s,box-shadow 0.2s}
+.bnav-item-add{padding:0;align-self:center;min-width:auto}
 .bnav-add:active{transform:scale(0.9)}
 .bnav-add svg{width:22px;height:22px}
 .bnav-badge{position:absolute;top:2px;right:4px;background:#f44;color:#fff;font-size:0.5rem;font-weight:700;min-width:14px;height:14px;border-radius:7px;display:flex;align-items:center;justify-content:center;padding:0 3px;line-height:1;z-index:2}
@@ -275,8 +281,32 @@ input[type=range]::-moz-range-track{height:6px;background:rgba(255,255,255,0.06)
 <body>
 
 <div class="loading-overlay" id="loadingOverlay">
-  <div class="loading-spinner"></div>
-  <div style="color:var(--m2);font-size:0.85rem">Завантаження...</div>
+  <svg class="loading-logo" viewBox="0 0 512 420" width="200" height="164" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <line x1="249.86" y1="77.55" x2="249.86" y2="291.83" stroke="#d4f040" stroke-width="5" opacity="0.35" stroke-linecap="round"/>
+    <rect x="239.86" y="288.81" width="20" height="12" rx="3" fill="#d4f040" opacity="0.2"/>
+    <ellipse cx="249.86" cy="94.81" rx="88" ry="20" fill="none" stroke="#d4f040" stroke-width="5"/>
+    <ellipse cx="249.86" cy="94.81" rx="52" ry="13" fill="none" stroke="#d4f040" stroke-width="2" opacity="0.2"/>
+    <line x1="166.7" y1="102" x2="152.08" y2="232.83" stroke="#d4f040" stroke-width="3" opacity="0.5"/>
+    <line x1="184.67" y1="110.24" x2="169.54" y2="255.93" stroke="#d4f040" stroke-width="3" opacity="0.55"/>
+    <line x1="205.67" y1="114.76" x2="196.29" y2="259.68" stroke="#d4f040" stroke-width="3" opacity="0.6"/>
+    <line x1="227.61" y1="114.77" x2="222.79" y2="262.1" stroke="#d4f040" stroke-width="3" opacity="0.6"/>
+    <line x1="272.02" y1="114.77" x2="276.57" y2="264.3" stroke="#d4f040" stroke-width="3" opacity="0.6"/>
+    <line x1="294.67" y1="114.76" x2="308.5" y2="260.56" stroke="#d4f040" stroke-width="3" opacity="0.6"/>
+    <line x1="313.26" y1="111.57" x2="333.28" y2="252.85" stroke="#d4f040" stroke-width="3" opacity="0.55"/>
+    <line x1="330.16" y1="105.09" x2="347.41" y2="232.83" stroke="#d4f040" stroke-width="3" opacity="0.5"/>
+    <ellipse cx="249.86" cy="240.81" rx="104" ry="24" fill="none" stroke="#d4f040" stroke-width="5"/>
+    <path d="m149.86,246.81 28,46h144l28,-46" fill="none" stroke="#d4f040" stroke-width="4" opacity="0.35" stroke-linejoin="round"/>
+    <path d="m159.86,250.81 22,38h136l22,-38" fill="none" stroke="#d4f040" stroke-width="2" opacity="0.12"/>
+    <ellipse cx="249.86" cy="94.81" rx="88" ry="20" fill="none" stroke="#d4f040" stroke-width="2" opacity="0.2">
+      <animate attributeName="opacity" values="0.15;0.35;0.15" dur="2.5s" repeatCount="indefinite"/>
+    </ellipse>
+    <ellipse cx="249.86" cy="240.81" rx="104" ry="24" fill="none" stroke="#d4f040" stroke-width="2" opacity="0.15">
+      <animate attributeName="opacity" values="0.1;0.3;0.1" dur="2.5s" repeatCount="indefinite"/>
+    </ellipse>
+    <text x="249.86" y="354.81" text-anchor="middle" font-family="'Bebas Neue','Segoe UI',sans-serif" font-weight="800" font-size="50" letter-spacing="8" fill="#edf0f8">DISC</text>
+    <text x="249.86" y="404.81" text-anchor="middle" font-family="'Bebas Neue','Segoe UI',sans-serif" font-weight="800" font-size="50" letter-spacing="8" fill="#d4f040">CENTRAL</text>
+  </svg>
+  <div class="loading-bar"><div class="loading-bar-fill"></div></div>
 </div>
 
 <header>
@@ -328,7 +358,6 @@ input[type=range]::-moz-range-track{height:6px;background:rgba(255,255,255,0.06)
       <div class="bnav-add">
         <svg viewBox="0 0 24 24" fill="none" stroke="#1a1d24" stroke-linecap="round"><circle cx="12" cy="12" r="9" stroke-width="1.5" opacity="0.4"/><line x1="8" y1="12" x2="16" y2="12" stroke-width="2.5"/><line x1="12" y1="8" x2="12" y2="16" stroke-width="2.5"/></svg>
       </div>
-      <span>Додати</span>
     </button>
     <button class="bnav-item" id="bn-auctions" onclick="goPageBn('auctions')">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><ellipse cx="12" cy="16" rx="8" ry="3"/><ellipse cx="12" cy="12" rx="8" ry="3"/><ellipse cx="12" cy="8" rx="8" ry="3"/></svg>
@@ -866,7 +895,7 @@ function tgLinkFull(tg){
 const HIDDEN=['sold','deleted','unlisted'];
 async function loadDiscs(){
   // Show cache instantly
-  try{const c=localStorage.getItem('dc_discs');if(c){allDiscs=JSON.parse(c);applyFilters();updateStats();document.getElementById('loadingOverlay').style.display='none';}}catch(e){}
+  try{const c=localStorage.getItem('dc_discs');if(c){allDiscs=JSON.parse(c);applyFilters();updateStats();document.getElementById('loadingOverlay').classList.add('fade-out');setTimeout(()=>{document.getElementById('loadingOverlay').style.display='none'},500);}}catch(e){}
   try{
     const {data,error}=await sb.from('discs').select('*').not('status','in','("sold","deleted","unlisted")').order('created_at',{ascending:false});
     if(!error&&data){
@@ -876,7 +905,7 @@ async function loadDiscs(){
       updateStats();
     }
   }catch(e){console.error(e);}
-  document.getElementById('loadingOverlay').style.display='none';
+  document.getElementById('loadingOverlay').classList.add('fade-out');setTimeout(()=>{document.getElementById('loadingOverlay').style.display='none'},500);
 }
 
 // ── REALTIME ──
@@ -2814,7 +2843,7 @@ restoreTheme();
 
 // ── INIT ──
 async function init(){
-  setTimeout(()=>{document.getElementById('loadingOverlay').style.display='none';},15000);
+  setTimeout(()=>{document.getElementById('loadingOverlay').classList.add('fade-out');setTimeout(()=>{document.getElementById('loadingOverlay').style.display='none'},500);},15000);
   // Telegram Fullscreen + disable swipe-to-close
   const _tg=window.Telegram?.WebApp;
   if(_tg){
@@ -2866,7 +2895,7 @@ async function init(){
   markSeen('catalog');
   subscribeRealtime();
   // Hide loading
-  document.getElementById('loadingOverlay').style.display='none';
+  document.getElementById('loadingOverlay').classList.add('fade-out');setTimeout(()=>{document.getElementById('loadingOverlay').style.display='none'},500);
   if(discId)setTimeout(()=>{showDetail(discId);},300);
   else if(aucDeepId)setTimeout(()=>{goPage('auctions');showAucDetail(aucDeepId);},300);
   else{
