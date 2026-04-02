@@ -576,10 +576,11 @@ input[type=range]::-moz-range-track{height:6px;background:rgba(255,255,255,0.06)
       <div style="font-family:'Bebas Neue';font-size:1.1rem;letter-spacing:1px;color:var(--lime);margin-bottom:0.5rem">⚡ ПАРАМЕТРИ АУКЦІОНУ</div>
       <div class="fg"><label class="fl">Тип аукціону</label>
         <select id="auc-type" style="font-size:14px" onchange="toggleAucTypeFields()">
-          <option value="classic">📈 Класичний (ставки вгору)</option>
-          <option value="buyout">💰 Купити зараз + аукціон</option>
-          <option value="reverse">📉 Зворотній (ціна падає)</option>
+          <option value="classic">📈 Англійський</option>
+          <option value="buyout">💰 Англійський + Купити зараз</option>
+          <option value="reverse">📉 Голландський</option>
         </select>
+        <div id="auc-type-desc" style="font-size:0.68rem;color:var(--m1);margin-top:0.3rem;line-height:1.5">Ціна росте зі ставками. Перемагає найвища ставка.</div>
       </div>
       <div id="auc-fields-classic">
         <div class="fr">
@@ -1028,6 +1029,7 @@ function cardHTML(d){
   const canT=(d.status==='available'||d.status==='trade')&&parseInt(d.condition)<10;
   const canB=d.status!=='sold';
   const hasTrade=String(d.tradeWant||'').trim().length>0&&String(d.tradeWant)!=='false';
+  const isOwn=CU&&String(CU.name).trim()===String(d.owner||'').trim();
   return`<div class="disc-card" onclick="showDetail('${d.id}')">
     <div class="disc-strip ${s.c}"></div>
     <div style="position:relative">
@@ -1054,9 +1056,9 @@ function cardHTML(d){
           </div>
         </div>
         <div onclick="event.stopPropagation()" style="display:flex;gap:3px;width:100%">
-          ${hasTrade?`<button class="btn btn-purple btn-xs" onclick="event.stopPropagation();openTradeOffer('${d.id}')" style="flex:1">Обмін</button>`:''}
-          ${canT?`<button class="btn btn-cyan btn-xs" onclick="openReqTest('${d.id}')" style="flex:1">Тест</button>`:''}
-          ${canB?`<button class="btn btn-lime btn-xs" onclick="oBuy('${d.id}')" style="flex:1">Купити</button>`:''}
+          ${isOwn?'':(hasTrade?`<button class="btn btn-purple btn-xs" onclick="event.stopPropagation();openTradeOffer('${d.id}')" style="flex:1">Обмін</button>`:'')}
+          ${isOwn?'':(canT?`<button class="btn btn-cyan btn-xs" onclick="openReqTest('${d.id}')" style="flex:1">Тест</button>`:'')}
+          ${isOwn?'':(canB?`<button class="btn btn-lime btn-xs" onclick="oBuy('${d.id}')" style="flex:1">Купити</button>`:'')}
         </div>
       </div>
     </div>
@@ -2193,6 +2195,8 @@ function toggleAucTypeFields(){
   document.getElementById('auc-fields-classic').style.display=t==='classic'?'block':'none';
   document.getElementById('auc-fields-buyout').style.display=t==='buyout'?'block':'none';
   document.getElementById('auc-fields-reverse').style.display=t==='reverse'?'block':'none';
+  const descs={classic:'Ціна росте зі ставками. Перемагає найвища ставка.',buyout:'Ціна росте зі ставками або можна купити одразу за фіксовану ціну.',reverse:'Ціна знижується автоматично. Перший хто купить — забирає.'};
+  const d=document.getElementById('auc-type-desc');if(d)d.textContent=descs[t]||'';
 }
 function getAucDurationMs(){
   const v=document.getElementById('auc-dur-preset').value;
@@ -2242,7 +2246,8 @@ function getReverseCurPrice(a){
   return price;
 }
 function aucTypeBadge(t){
-  if(t==='reverse')return'<span style="font-size:0.55rem;background:var(--purple);color:#fff;padding:1px 4px;border-radius:3px;font-weight:700">📉 REVERSE</span>';
+  if(t==='reverse')return'<span style="font-size:0.55rem;background:var(--purple);color:#fff;padding:1px 4px;border-radius:3px;font-weight:700">📉 Голландський</span>';
+  if(t==='buyout')return'<span style="font-size:0.55rem;background:var(--cyan);color:#fff;padding:1px 4px;border-radius:3px;font-weight:700">💰 + Купити</span>';
   return'';
 }
 function renderAuctions(){
@@ -2684,13 +2689,18 @@ async function markSeen(section){
 }
 async function countUnseen(){
   try{
-    // Catalog - new discs
+    const myTgId=CU?.tgId||'';
+    // Catalog - new discs (exclude own)
     const catTs=lastSeen.catalog||'2000-01-01T00:00:00Z';
-    const {count:catCount}=await sb.from('discs').select('id',{count:'exact',head:true}).gt('created_at',catTs).not('status','in','("sold","deleted","unlisted")');
+    let catQ=sb.from('discs').select('id',{count:'exact',head:true}).gt('created_at',catTs).not('status','in','("sold","deleted","unlisted")');
+    if(myTgId)catQ=catQ.neq('owner_tg',myTgId);
+    const {count:catCount}=await catQ;
     unseenCounts.catalog=catCount||0;
-    // Community - new posts
+    // Community - new posts (exclude own)
     const setTs=lastSeen.settings||'2000-01-01T00:00:00Z';
-    const {count:postCount}=await sb.from('posts').select('id',{count:'exact',head:true}).gt('created_at',setTs);
+    let postQ=sb.from('posts').select('id',{count:'exact',head:true}).gt('created_at',setTs);
+    if(myTgId)postQ=postQ.neq('author_tg_id',myTgId);
+    const {count:postCount}=await postQ;
     unseenCounts.settings=postCount||0;
     // Auctions - new auctions
     const aucTs=lastSeen.auctions||'2000-01-01T00:00:00Z';
