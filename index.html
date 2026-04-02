@@ -1086,6 +1086,7 @@ function applyFilters(){
   else if(sort==='old')list.reverse();
   const g=document.getElementById('discGrid');
   g.innerHTML=list.length?list.map(cardHTML).join(''):`<div class="empty" style="grid-column:1/-1"><div class="empty-icon">🥏</div>${allDiscs.length?'Нічого не знайдено':'Каталог порожній!'}</div>`;
+  window._filteredDiscIds=list.map(d=>d.id);
 }
 function setFt(btn,val){CF=val;btn.closest('.ftabs,.cab-tabs').querySelectorAll('.ft').forEach(b=>b.classList.remove('active'));btn.classList.add('active');moveFtabsPill(btn);applyFilters();}
 function filterByOwner(owner){const tabs=document.getElementById('ftabs-catalog');if(tabs){tabs.querySelectorAll('.ft').forEach((b,i)=>b.classList.toggle('active',i===0));const first=tabs.querySelector('.ft.active');if(first)moveFtabsPill(first);}CF='all';const s=document.getElementById('mainSearch');s.value=owner;document.getElementById('advFilters').classList.add('open');applyFilters();goPage('catalog');}
@@ -1149,6 +1150,54 @@ function showDetail(id){
   }
   openModal('detail');
   loadComments(d.id);
+  // Setup swipe between discs
+  window._currentDetailId=d.id;
+  setupDetailSwipe();
+}
+
+function navigateDisc(dir){
+  const ids=window._filteredDiscIds||allDiscs.map(d=>d.id);
+  const cur=ids.indexOf(window._currentDetailId);
+  if(cur===-1)return;
+  const next=cur+dir;
+  if(next<0||next>=ids.length)return;
+  const content=document.getElementById('detailContent');
+  if(content){
+    content.style.transition='transform 0.2s ease, opacity 0.2s ease';
+    content.style.transform='translateX('+(dir>0?'-30':'30')+'px)';
+    content.style.opacity='0';
+    setTimeout(()=>{
+      showDetail(ids[next]);
+      content.style.transform='translateX('+(dir>0?'30':'-30')+'px)';
+      content.style.opacity='0';
+      requestAnimationFrame(()=>{requestAnimationFrame(()=>{
+        content.style.transform='translateX(0)';
+        content.style.opacity='1';
+      });});
+    },180);
+  }else{
+    showDetail(ids[next]);
+  }
+}
+function setupDetailSwipe(){
+  const modal=document.querySelector('#ov-detail .modal');
+  if(!modal||modal._swipeSetup)return;
+  modal._swipeSetup=true;
+  let startX=0,startY=0,tracking=false;
+  modal.addEventListener('touchstart',(e)=>{
+    startX=e.touches[0].clientX;
+    startY=e.touches[0].clientY;
+    tracking=true;
+  },{passive:true});
+  modal.addEventListener('touchend',(e)=>{
+    if(!tracking)return;
+    tracking=false;
+    const dx=e.changedTouches[0].clientX-startX;
+    const dy=e.changedTouches[0].clientY-startY;
+    if(Math.abs(dx)>60&&Math.abs(dx)>Math.abs(dy)*1.5){
+      navigateDisc(dx<0?1:-1);
+    }
+  },{passive:true});
 }
 
 // ── COMMENTS ──
