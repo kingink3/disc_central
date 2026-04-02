@@ -11,6 +11,7 @@
 :root{
   --bg:#060810;--s1:rgba(255,255,255,0.05);--s2:rgba(255,255,255,0.03);--s3:rgba(255,255,255,0.07);
   --b1:rgba(255,255,255,0.08);--b2:rgba(255,255,255,0.14);
+  --tg-safe-top:0px;
   --glass:rgba(255,255,255,0.06);--glass-hi:rgba(255,255,255,0.1);--glass-border:rgba(255,255,255,0.12);
   --glass-shadow:0 8px 32px rgba(0,0,0,0.3),inset 0 1px 0 rgba(255,255,255,0.1);
   --glass-blur:blur(30px) saturate(1.6);
@@ -79,7 +80,7 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
 ::-webkit-scrollbar{width:0;height:0}
 @media(min-width:601px){::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.1);border-radius:2px}}
 
-header{position:sticky;top:0;z-index:100;background:linear-gradient(135deg,var(--glass) 0%,rgba(255,255,255,0.02) 100%);backdrop-filter:var(--glass-blur);-webkit-backdrop-filter:var(--glass-blur);border-bottom:0.5px solid var(--glass-border);min-height:54px;display:flex;align-items:center;padding:env(safe-area-inset-top, 0px) 1rem 0 1rem;gap:0.75rem;box-shadow:var(--glass-shadow)}
+header{position:sticky;top:0;z-index:100;background:linear-gradient(135deg,var(--glass) 0%,rgba(255,255,255,0.02) 100%);backdrop-filter:var(--glass-blur);-webkit-backdrop-filter:var(--glass-blur);border-bottom:0.5px solid var(--glass-border);min-height:54px;display:flex;align-items:center;padding:var(--tg-safe-top) 1rem 0 1rem;gap:0.75rem;box-shadow:var(--glass-shadow)}
 .logo{display:flex;align-items:center;gap:8px;cursor:pointer;flex-shrink:0}
 .logo-basket{width:32px;height:34px;flex-shrink:0}
 .logo-text{font-family:'Bebas Neue',sans-serif;font-size:1.3rem;letter-spacing:2px}
@@ -103,7 +104,7 @@ nav{display:flex;gap:0.15rem;align-items:center;flex:1;justify-content:center}
 .hamburger.open span:nth-child(1){transform:translateY(6px) rotate(45deg)}
 .hamburger.open span:nth-child(2){opacity:0}
 .hamburger.open span:nth-child(3){transform:translateY(-6px) rotate(-45deg)}
-.mobile-nav{display:none;position:fixed;top:54px;left:0;right:0;background:var(--glass);backdrop-filter:var(--glass-blur);-webkit-backdrop-filter:var(--glass-blur);border-bottom:0.5px solid var(--glass-border);z-index:99;padding:0.75rem;flex-direction:column;gap:0.2rem;box-shadow:var(--glass-shadow)}
+.mobile-nav{display:none;position:fixed;top:calc(54px + var(--tg-safe-top));left:0;right:0;background:var(--glass);backdrop-filter:var(--glass-blur);-webkit-backdrop-filter:var(--glass-blur);border-bottom:0.5px solid var(--glass-border);z-index:99;padding:0.75rem;flex-direction:column;gap:0.2rem;box-shadow:var(--glass-shadow)}
 .mobile-nav.open{display:flex}
 .mobile-nav .nav-a{text-align:left;padding:9px 12px;font-size:0.86rem}
 .page{display:none}.page.active{display:block}
@@ -2822,6 +2823,22 @@ async function init(){
     try{_tg.disableVerticalSwipes();}catch(e){}
     try{_tg.requestFullscreen();}catch(e){}
     try{_tg.setHeaderColor('#060810');_tg.setBackgroundColor('#060810');}catch(e){}
+    // Apply safe area insets for fullscreen
+    function applyTgSafeArea(){
+      const sa=_tg.safeAreaInset||{};
+      const csa=_tg.contentSafeAreaInset||{};
+      const topInset=(sa.top||0)+(csa.top||0);
+      if(topInset>0){
+        document.documentElement.style.setProperty('--tg-safe-top',topInset+'px');
+      }
+    }
+    try{
+      _tg.onEvent('safeAreaChanged',applyTgSafeArea);
+      _tg.onEvent('contentSafeAreaChanged',applyTgSafeArea);
+      _tg.onEvent('fullscreenChanged',applyTgSafeArea);
+      setTimeout(applyTgSafeArea,300);
+      setTimeout(applyTgSafeArea,1000);
+    }catch(e){}
   }
   restoreUser();
   if(await checkBanned())return;
