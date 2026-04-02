@@ -33,7 +33,7 @@
   --av:#15803d;--re:#a16207;--te:#1d4ed8;--pe:#c2410c;--so:rgba(0,0,0,0.2);
   --r:12px;--r2:16px
 }
-.light header{box-shadow:0 1px 8px rgba(0,0,0,0.05);background:var(--bg)}
+.light header{box-shadow:0 1px 8px rgba(0,0,0,0.05)}
 .light .disc-card{box-shadow:0 2px 12px rgba(0,0,0,0.04)}
 .light .disc-card:hover{box-shadow:0 8px 28px rgba(0,0,0,0.08);border-color:rgba(255,255,255,0.8)}
 .light .stat-m,.light .stat-card,.light .card{box-shadow:0 2px 12px rgba(0,0,0,0.04)}
@@ -82,7 +82,7 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
 ::-webkit-scrollbar{width:0;height:0}
 @media(min-width:601px){::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.1);border-radius:2px}}
 
-header{position:sticky;top:0;z-index:100;background:var(--bg);border-bottom:0.5px solid var(--glass-border);min-height:54px;display:flex;align-items:center;padding:var(--tg-safe-top) 1rem 4px 1rem;gap:0.75rem;box-shadow:inset 0 -1px 0 rgba(255,255,255,0.06)}
+header{position:sticky;top:0;z-index:100;background:linear-gradient(135deg,var(--glass) 0%,rgba(255,255,255,0.02) 100%);backdrop-filter:var(--glass-blur);-webkit-backdrop-filter:var(--glass-blur);border-bottom:0.5px solid var(--glass-border);min-height:54px;display:flex;align-items:center;padding:var(--tg-safe-top) 1rem 4px 1rem;gap:0.75rem;box-shadow:var(--glass-glow);transform:translateZ(0);will-change:transform}
 .logo{display:flex;align-items:center;gap:8px;cursor:pointer;flex-shrink:0}
 .logo-basket{width:32px;height:34px;flex-shrink:0}
 .logo-text{font-family:'Bebas Neue',sans-serif;font-size:1.3rem;letter-spacing:2px}
@@ -331,14 +331,14 @@ input[type=range]::-moz-range-track{height:6px;background:rgba(255,255,255,0.06)
     <span class="logo-text">DISC <b>CENTRAL</b></span>
   </div>
   <nav>
-    <button class="nav-a active" onclick="goPage('catalog',this)">ðŸ¥ ÐšÐ°Ñ‚Ð°Ð»Ð¾Ð³</button>
-    <button class="nav-a" onclick="goPage('cabinet',this)">ðŸ‘¤ ÐšÐ°Ð±Ñ–Ð½ÐµÑ‚</button>
-    <button class="nav-a" onclick="goPage('rules',this)">ðŸ“‹ ÐŸÑ€Ð°Ð²Ð¸Ð»Ð°</button>
-    <button class="nav-a" onclick="goPage('admin',this)">ðŸ” ÐÐ´Ð¼Ñ–Ð½</button>
+    <button class="nav-a active" onclick="goPage('catalog',this)">🥏 Каталог</button>
+    <button class="nav-a" onclick="goPage('cabinet',this)">👤 Кабінет</button>
+    <button class="nav-a" onclick="goPage('rules',this)">📋 Правила</button>
+    <button class="nav-a" onclick="goPage('admin',this)">🔐 Адмін</button>
   </nav>
   <div class="header-right">
-    <button class="btn btn-lime btn-sm" onclick="openModal('addDisc')" id="addDiscBtn2">+ Ð”Ð¸ÑÐº</button>
-    <button class="btn btn-ghost btn-sm" onclick="toggleTheme()" id="themeBtn" style="padding:5px 8px;font-size:0.9rem">ðŸŒ™</button>
+    <button class="btn btn-lime btn-sm" onclick="openModal('addDisc')" id="addDiscBtn2">+ Диск</button>
+    <button class="btn btn-ghost btn-sm" onclick="toggleTheme()" id="themeBtn" style="padding:5px 8px;font-size:0.9rem">🌙</button>
   </div>
 </header>
 
@@ -349,11 +349,11 @@ input[type=range]::-moz-range-track{height:6px;background:rgba(255,255,255,0.06)
   <div class="bnav-items">
     <button class="bnav-item active" id="bn-catalog" onclick="goPageBn('catalog')">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="3" y="3" width="8" height="7" rx="1.5"/><rect x="13" y="3" width="8" height="7" rx="1.5"/><rect x="3" y="14" width="8" height="7" rx="1.5"/><rect x="13" y="14" width="8" height="7" rx="1.5"/></svg>
-      <span>ÐšÐ°Ñ‚Ð°Ð»Ð¾Ð³</span>
+      <span>Каталог</span>
     </button>
     <button class="bnav-item" id="bn-cabinet" onclick="goPageBn('cabinet')">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-      <span>ÐšÐ°Ð±Ñ–Ð½ÐµÑ‚</span>
+      <span>Кабінет</span>
     </button>
     <button class="bnav-item bnav-item-add" onclick="openModal('addDisc')">
       <div class="bnav-add">
@@ -362,11 +362,11 @@ input[type=range]::-moz-range-track{height:6px;background:rgba(255,255,255,0.06)
     </button>
     <button class="bnav-item" id="bn-auctions" onclick="goPageBn('auctions')">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><ellipse cx="12" cy="16" rx="8" ry="3"/><ellipse cx="12" cy="12" rx="8" ry="3"/><ellipse cx="12" cy="8" rx="8" ry="3"/></svg>
-      <span>ÐÑƒÐºÑ†Ñ–Ð¾Ð½Ð¸</span>
+      <span>Аукціони</span>
     </button>
     <button class="bnav-item" id="bn-settings" onclick="goPageBn('settings')">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
-      <span>Ð¡Ð¿Ñ–Ð»ÑŒÐ½Ð¾Ñ‚Ð°</span>
+      <span>Спільнота</span>
     </button>
   </div>
 </div>
@@ -376,66 +376,66 @@ input[type=range]::-moz-range-track{height:6px;background:rgba(255,255,255,0.06)
 <div id="page-catalog" class="page active">
   <div class="content">
     <div class="stats-mini">
-      <div class="stat-m"><div class="stat-mn" id="hs-total">â€”</div><div class="stat-ml">Ð’ÑÑŒÐ¾Ð³Ð¾</div></div>
-      <div class="stat-m"><div class="stat-mn cy" id="hs-av">â€”</div><div class="stat-ml">Ð”Ð¾ÑÑ‚ÑƒÐ¿Ð½Ð¾</div></div>
-      <div class="stat-m"><div class="stat-mn or" id="hs-te">â€”</div><div class="stat-ml">ÐÐ° Ñ‚ÐµÑÑ‚Ñ–</div></div>
-      <div class="stat-m"><div class="stat-mn wh" id="hs-tr">â€”</div><div class="stat-ml">ÐžÐ±Ð¼Ñ–Ð½</div></div>
+      <div class="stat-m"><div class="stat-mn" id="hs-total">—</div><div class="stat-ml">Всього</div></div>
+      <div class="stat-m"><div class="stat-mn cy" id="hs-av">—</div><div class="stat-ml">Доступно</div></div>
+      <div class="stat-m"><div class="stat-mn or" id="hs-te">—</div><div class="stat-ml">На тесті</div></div>
+      <div class="stat-m"><div class="stat-mn wh" id="hs-tr">—</div><div class="stat-ml">Обмін</div></div>
     </div>
     <div class="filter-bar">
       <div class="ftabs" id="ftabs-catalog">
         <div class="ftabs-pill"></div>
-        <button class="ft active" onclick="setFt(this,'all')">Ð’ÑÑ–</button>
-        <button class="ft" onclick="setFt(this,'available')">Ð”Ð¾ÑÑ‚ÑƒÐ¿Ð½Ñ–</button>
-        <button class="ft" onclick="setFt(this,'testing')">Ð¢ÐµÑÑ‚</button>
-        <button class="ft" onclick="setFt(this,'trade')">ÐžÐ±Ð¼Ñ–Ð½</button>
-        <button class="ft" onclick="setFt(this,'fav')">â­</button>
+        <button class="ft active" onclick="setFt(this,'all')">Всі</button>
+        <button class="ft" onclick="setFt(this,'available')">Доступні</button>
+        <button class="ft" onclick="setFt(this,'testing')">Тест</button>
+        <button class="ft" onclick="setFt(this,'trade')">Обмін</button>
+        <button class="ft" onclick="setFt(this,'fav')">⭐</button>
       </div>
-      <button class="btn btn-ghost btn-sm" onclick="toggleAdvFilters()" id="advBtn" style="flex-shrink:0;padding:5px 9px">âš™</button>
+      <button class="btn btn-ghost btn-sm" onclick="toggleAdvFilters()" id="advBtn" style="flex-shrink:0;padding:5px 9px">⚙</button>
     </div>
     <div class="adv-filters" id="advFilters">
       <div class="adv-row" style="margin-bottom:0.6rem">
-        <div style="grid-column:1/-1"><span class="fl">ÐŸÐ¾ÑˆÑƒÐº</span><input id="mainSearch" placeholder="ðŸ” Ð‘Ñ€ÐµÐ½Ð´, Ð¼Ð¾Ð´ÐµÐ»ÑŒ, Ð¿Ð»Ð°ÑÑ‚Ð¸Ðº..." oninput="applyFilters()"></div>
+        <div style="grid-column:1/-1"><span class="fl">Пошук</span><input id="mainSearch" placeholder="🔍 Бренд, модель, пластик..." oninput="applyFilters()"></div>
       </div>
       <div class="adv-row">
-        <div><span class="fl">Ð¡Ð¾Ñ€Ñ‚ÑƒÐ²Ð°Ð½Ð½Ñ</span><select id="f-sort" onchange="applyFilters()"><option value="new">ÐÐ¾Ð²Ñ–ÑˆÑ–</option><option value="old">Ð¡Ñ‚Ð°Ñ€Ñ–ÑˆÑ–</option><option value="price-asc">Ð¦Ñ–Ð½Ð° â†‘</option><option value="price-desc">Ð¦Ñ–Ð½Ð° â†“</option><option value="speed-desc">Speed â†“</option><option value="speed-asc">Speed â†‘</option><option value="cond-desc">Ð¡Ñ‚Ð°Ð½ â†“</option></select></div>
-        <div><span class="fl">Speed Ð²Ñ–Ð´</span><input type="number" id="f-speed" placeholder="0" oninput="applyFilters()"></div>
-        <div><span class="fl">Glide Ð²Ñ–Ð´</span><input type="number" id="f-glide" placeholder="0" oninput="applyFilters()"></div>
-        <div><span class="fl">Turn Ð´Ð¾</span><input type="number" id="f-turn" placeholder="1" step="0.5" oninput="applyFilters()"></div>
-        <div><span class="fl">Fade Ð´Ð¾</span><input type="number" id="f-fade" placeholder="5" oninput="applyFilters()"></div>
-        <div><span class="fl">Ð¦Ñ–Ð½Ð° Ð´Ð¾ â‚´</span><input type="number" id="f-price" placeholder="9999" oninput="applyFilters()"></div>
-        <div><span class="fl">ÐœÑ–ÑÑ‚Ð¾</span><input id="f-city" placeholder="ÐšÐ¸Ñ—Ð², Ð›ÑƒÑ†ÑŒÐº, ÐšÑ€ÐµÐ¼ÐµÐ½Ñ‡ÑƒÐº..." oninput="applyFilters()"></div>
-        <div style="display:flex;align-items:flex-end"><button class="btn btn-ghost btn-sm btn-full" onclick="resetFilters()">âœ• Ð¡ÐºÐ¸Ð½ÑƒÑ‚Ð¸</button></div>
+        <div><span class="fl">Сортування</span><select id="f-sort" onchange="applyFilters()"><option value="new">Новіші</option><option value="old">Старіші</option><option value="price-asc">Ціна ↑</option><option value="price-desc">Ціна ↓</option><option value="speed-desc">Speed ↓</option><option value="speed-asc">Speed ↑</option><option value="cond-desc">Стан ↓</option></select></div>
+        <div><span class="fl">Speed від</span><input type="number" id="f-speed" placeholder="0" oninput="applyFilters()"></div>
+        <div><span class="fl">Glide від</span><input type="number" id="f-glide" placeholder="0" oninput="applyFilters()"></div>
+        <div><span class="fl">Turn до</span><input type="number" id="f-turn" placeholder="1" step="0.5" oninput="applyFilters()"></div>
+        <div><span class="fl">Fade до</span><input type="number" id="f-fade" placeholder="5" oninput="applyFilters()"></div>
+        <div><span class="fl">Ціна до ₴</span><input type="number" id="f-price" placeholder="9999" oninput="applyFilters()"></div>
+        <div><span class="fl">Місто</span><input id="f-city" placeholder="Київ, Луцьк, Кременчук..." oninput="applyFilters()"></div>
+        <div style="display:flex;align-items:flex-end"><button class="btn btn-ghost btn-sm btn-full" onclick="resetFilters()">✕ Скинути</button></div>
       </div>
     </div>
-    <div class="disc-grid" id="discGrid"><div class="empty"><div class="empty-icon">ðŸ¥</div>Ð—Ð°Ð²Ð°Ð½Ñ‚Ð°Ð¶ÐµÐ½Ð½Ñ...</div></div>
+    <div class="disc-grid" id="discGrid"><div class="empty"><div class="empty-icon">🥏</div>Завантаження...</div></div>
   </div>
 </div>
 
 <!-- CABINET -->
 <div id="page-cabinet" class="page">
   <div class="content">
-    <div id="cabinetNoAuth"><div class="empty"><div class="empty-icon">ðŸ”</div>Ð£Ð²Ñ–Ð¹Ð´Ñ–Ñ‚ÑŒ Ñ‰Ð¾Ð± Ð¿Ð¾Ð±Ð°Ñ‡Ð¸Ñ‚Ð¸ ÐºÐ°Ð±Ñ–Ð½ÐµÑ‚<br><br><button class="btn btn-lime" onclick="openModal('login')">Ð£Ð²Ñ–Ð¹Ñ‚Ð¸</button></div></div>
+    <div id="cabinetNoAuth"><div class="empty"><div class="empty-icon">🔐</div>Увійдіть щоб побачити кабінет<br><br><button class="btn btn-lime" onclick="openModal('login')">Увійти</button></div></div>
     <div id="cabinetContent" style="display:none">
       <div class="stats-mini" style="grid-template-columns:repeat(4,1fr);margin-bottom:0.75rem">
-        <div class="stat-m"><div class="stat-mn" id="sel-total">0</div><div class="stat-ml">ÐœÐ¾Ñ—Ñ… Ð´Ð¸ÑÐºÑ–Ð²</div></div>
-        <div class="stat-m"><div class="stat-mn cy" id="te-active">0</div><div class="stat-ml">ÐÐ° Ñ‚ÐµÑÑ‚Ñ–</div></div>
-        <div class="stat-m"><div class="stat-mn wh" id="sel-sold">0</div><div class="stat-ml">ÐŸÑ€Ð¾Ð´Ð°Ð½Ð¾</div></div>
-        <div class="stat-m"><div class="stat-mn or" id="sel-revenue">0â‚´</div><div class="stat-ml">Ð—Ð°Ñ€Ð¾Ð±Ð»ÐµÐ½Ð¾</div></div>
+        <div class="stat-m"><div class="stat-mn" id="sel-total">0</div><div class="stat-ml">Моїх дисків</div></div>
+        <div class="stat-m"><div class="stat-mn cy" id="te-active">0</div><div class="stat-ml">На тесті</div></div>
+        <div class="stat-m"><div class="stat-mn wh" id="sel-sold">0</div><div class="stat-ml">Продано</div></div>
+        <div class="stat-m"><div class="stat-mn or" id="sel-revenue">0₴</div><div class="stat-ml">Зароблено</div></div>
       </div>
       <div class="cab-tabs" id="ftabs-cabinet">
         <div class="ftabs-pill"></div>
-        <button class="ft active" id="cab-tab-discs" onclick="setCabTab('discs')" style="flex-shrink:0">Ð”Ð¸ÑÐºÐ¸</button>
-        <button class="ft" id="cab-tab-requests" onclick="setCabTab('requests')" style="flex-shrink:0">Ð—Ð°Ð¿Ð¸Ñ‚Ð¸</button>
-        <button class="ft" id="cab-tab-testing" onclick="setCabTab('testing')" style="flex-shrink:0">Ð¢ÐµÑÑ‚ÑƒÑŽ</button>
+        <button class="ft active" id="cab-tab-discs" onclick="setCabTab('discs')" style="flex-shrink:0">Диски</button>
+        <button class="ft" id="cab-tab-requests" onclick="setCabTab('requests')" style="flex-shrink:0">Запити</button>
+        <button class="ft" id="cab-tab-testing" onclick="setCabTab('testing')" style="flex-shrink:0">Тестую</button>
       </div>
       <div id="cab-discs" class="cab-tab-content active">
-        <div class="card"><div class="sec-hdr"><div class="sec-ttl">ÐœÐžÐ‡ Ð”Ð˜Ð¡ÐšÐ˜</div><button class="btn btn-lime btn-sm" onclick="openModal('addDisc')">+ Ð”Ð¾Ð´Ð°Ñ‚Ð¸</button></div><div class="dash-list" id="sellerDiscList"></div></div>
+        <div class="card"><div class="sec-hdr"><div class="sec-ttl">МОЇ ДИСКИ</div><button class="btn btn-lime btn-sm" onclick="openModal('addDisc')">+ Додати</button></div><div class="dash-list" id="sellerDiscList"></div></div>
       </div>
       <div id="cab-requests" class="cab-tab-content">
-        <div class="card"><div class="sec-hdr"><div class="sec-ttl">Ð—ÐÐŸÐ˜Ð¢Ð˜ Ð”Ðž ÐœÐ•ÐÐ•</div><button class="btn btn-ghost btn-sm" onclick="renderCabinet()">â†»</button></div><div class="dash-list" id="sellerRequests"></div></div>
+        <div class="card"><div class="sec-hdr"><div class="sec-ttl">ЗАПИТИ ДО МЕНЕ</div><button class="btn btn-ghost btn-sm" onclick="renderCabinet()">↻</button></div><div class="dash-list" id="sellerRequests"></div></div>
       </div>
       <div id="cab-testing" class="cab-tab-content">
-        <div class="card"><div class="sec-hdr"><div class="sec-ttl">Ð¯ Ð¢Ð•Ð¡Ð¢Ð£Ð®</div></div><div id="testerActiveList"></div></div>
+        <div class="card"><div class="sec-hdr"><div class="sec-ttl">Я ТЕСТУЮ</div></div><div id="testerActiveList"></div></div>
       </div>
     </div>
   </div>
@@ -445,12 +445,12 @@ input[type=range]::-moz-range-track{height:6px;background:rgba(255,255,255,0.06)
 <div id="page-rules" class="page">
   <div class="content">
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:0.875rem">
-      <div class="card"><div style="font-size:1.5rem;margin-bottom:0.5rem">ðŸ¥</div><div style="font-weight:700;margin-bottom:0.35rem">Ð—Ð½Ð°Ð¹Ð´Ð¸ Ð´Ð¸ÑÐº</div><div style="font-size:0.8rem;color:var(--m2);line-height:1.7">ÐŸÐµÑ€ÐµÐ³Ð»ÑÐ´Ð°Ð¹ ÐºÐ°Ñ‚Ð°Ð»Ð¾Ð³, Ñ„Ñ–Ð»ÑŒÑ‚Ñ€ÑƒÐ¹ Ð·Ð° Ñ…Ð°Ñ€Ð°ÐºÑ‚ÐµÑ€Ð¸ÑÑ‚Ð¸ÐºÐ°Ð¼Ð¸. ÐšÐ¾Ð¶ÐµÐ½ Ð´Ð¸ÑÐº Ð¼Ð°Ñ” Speed / Glide / Turn / Fade Ñ– ÑÑ‚Ð°Ð½ 0-10.</div></div>
-      <div class="card"><div style="font-size:1.5rem;margin-bottom:0.5rem">ðŸ“</div><div style="font-weight:700;margin-bottom:0.35rem">Ð—Ð°Ð¿Ð¸Ñ‚ Ð½Ð° Ñ‚ÐµÑÑ‚</div><div style="font-size:0.8rem;color:var(--m2);line-height:1.7">ÐÐ°Ñ‚Ð¸ÑÐ½Ð¸ Â«Ð¢ÐµÑÑ‚Â» - Ð²Ð»Ð°ÑÐ½Ð¸Ðº Ð¾Ñ‚Ñ€Ð¸Ð¼Ð°Ñ” ÑÐ¿Ð¾Ð²Ñ–Ñ‰ÐµÐ½Ð½Ñ Ð² Telegram. ÐŸÐ¾ÑˆÐºÐ¾Ð´Ð¸Ð² Ð¿Ñ€Ð¸ Ñ‚ÐµÑÑ‚Ñ– - ÐºÑƒÐ¿Ð¸Ð². Ð”ÐµÑ‚Ð°Ð»Ñ– Ð¾Ð±Ð³Ð¾Ð²Ð¾Ñ€ÑŽÐ¹Ñ‚Ðµ Ð² Ð¾ÑÐ¾Ð±Ð¸ÑÑ‚Ð¸Ñ….</div></div>
-      <div class="card"><div style="font-size:1.5rem;margin-bottom:0.5rem">ðŸ”„</div><div style="font-weight:700;margin-bottom:0.35rem">ÐžÐ±Ð¼Ñ–Ð½</div><div style="font-size:0.8rem;color:var(--m2);line-height:1.7">Ð’Ð»Ð°ÑÐ½Ð¸Ðº Ð¼Ð¾Ð¶Ðµ Ð¿Ð¾Ð·Ð½Ð°Ñ‡Ð¸Ñ‚Ð¸ Ð´Ð¸ÑÐº ÑÐº Â«ÐžÐ±Ð¼Ñ–Ð½Â». Ð”ÐµÑ‚Ð°Ð»Ñ– Ð² Ð¾Ð¿Ð¸ÑÑ– Ð´Ð¸ÑÐºÐ° Ñ‚Ð° Ð² Ð¾ÑÐ¾Ð±Ð¸ÑÑ‚Ð¸Ñ….</div></div>
-      <div class="card"><div style="font-size:1.5rem;margin-bottom:0.5rem">ðŸ’°</div><div style="font-weight:700;margin-bottom:0.35rem">ÐšÑƒÐ¿Ñ–Ð²Ð»Ñ</div><div style="font-size:0.8rem;color:var(--m2);line-height:1.7">ÐÐ°Ñ‚Ð¸ÑÐ½Ð¸ Â«ÐšÑƒÐ¿Ð¸Ñ‚Ð¸Â» - Ð¿Ñ€Ð¾Ð´Ð°Ð²ÐµÑ†ÑŒ Ð¾Ñ‚Ñ€Ð¸Ð¼Ð°Ñ” Ð·Ð°Ð¿Ð¸Ñ‚ Ñ– Ð¿Ñ–Ð´Ñ‚Ð²ÐµÑ€Ð´Ð¶ÑƒÑ” Ð¿Ñ€Ð¾Ð´Ð°Ð¶ Ñƒ ÐºÐ°Ð±Ñ–Ð½ÐµÑ‚Ñ–.</div></div>
-      <div class="card"><div style="font-size:1.5rem;margin-bottom:0.5rem">â­</div><div style="font-weight:700;margin-bottom:0.35rem">Ð¡Ñ‚Ð°Ð½ 0â€“10</div><div style="font-size:0.8rem;color:var(--m2);line-height:1.7">10 - Ñ‰Ð¾Ð¹Ð½Ð¾ Ð· Ñ„Ð°Ð±Ñ€Ð¸ÐºÐ¸, 8-9 - Ð¼Ð°Ð¹Ð¶Ðµ Ð±ÐµÐ· Ð¿Ð¾Ð´Ñ€ÑÐ¿Ð¸Ð½, 6-7 - Ð¿Ñ–ÑÐ»Ñ Ð¿Ð¾Ð»ÑŒÐ¾Ð²Ð¸Ñ… Ð²Ð¸Ð¿Ñ€Ð¾Ð±ÑƒÐ²Ð°Ð½ÑŒ, 4-5 - Ð· Ñ‡Ð¸ÑÐ»ÐµÐ½Ð½Ð¸Ð¼Ð¸ Ð¿Ð¾Ð´Ñ€ÑÐ¿Ð¸Ð½Ð°Ð¼Ð¸, 1-3 - Ð¿Ð¾Ð½Ñ–Ð²ÐµÑ‡ÐµÐ½Ð¾ Ñƒ Ð¿Ð¾Ð»ÑÑ….</div></div>
-      <div class="card"><div style="font-size:1.5rem;margin-bottom:0.5rem">ðŸ¤</div><div style="font-weight:700;margin-bottom:0.35rem">Ð”Ð¾Ð²Ñ–Ñ€Ð°</div><div style="font-size:0.8rem;color:var(--m2);line-height:1.7">Ð¡Ð¿Ñ–Ð»ÑŒÐ½Ð¾Ñ‚Ð° Ð½Ð° Ð´Ð¾Ð²Ñ–Ñ€Ñ–. ÐŸÐ¾Ñ€ÑƒÑˆÐ½Ð¸ÐºÐ¸ Ð¼Ð¾Ð¶ÑƒÑ‚ÑŒ Ð±ÑƒÑ‚Ð¸ Ð·Ð°Ð±Ð»Ð¾ÐºÐ¾Ð²Ð°Ð½Ñ– Ð°Ð´Ð¼Ñ–Ð½Ð¾Ð¼.</div></div>
+      <div class="card"><div style="font-size:1.5rem;margin-bottom:0.5rem">🥏</div><div style="font-weight:700;margin-bottom:0.35rem">Знайди диск</div><div style="font-size:0.8rem;color:var(--m2);line-height:1.7">Переглядай каталог, фільтруй за характеристиками. Кожен диск має Speed / Glide / Turn / Fade і стан 0-10.</div></div>
+      <div class="card"><div style="font-size:1.5rem;margin-bottom:0.5rem">📝</div><div style="font-weight:700;margin-bottom:0.35rem">Запит на тест</div><div style="font-size:0.8rem;color:var(--m2);line-height:1.7">Натисни «Тест» - власник отримає сповіщення в Telegram. Пошкодив при тесті - купив. Деталі обговорюйте в особистих.</div></div>
+      <div class="card"><div style="font-size:1.5rem;margin-bottom:0.5rem">🔄</div><div style="font-weight:700;margin-bottom:0.35rem">Обмін</div><div style="font-size:0.8rem;color:var(--m2);line-height:1.7">Власник може позначити диск як «Обмін». Деталі в описі диска та в особистих.</div></div>
+      <div class="card"><div style="font-size:1.5rem;margin-bottom:0.5rem">💰</div><div style="font-weight:700;margin-bottom:0.35rem">Купівля</div><div style="font-size:0.8rem;color:var(--m2);line-height:1.7">Натисни «Купити» - продавець отримає запит і підтверджує продаж у кабінеті.</div></div>
+      <div class="card"><div style="font-size:1.5rem;margin-bottom:0.5rem">⭐</div><div style="font-weight:700;margin-bottom:0.35rem">Стан 0–10</div><div style="font-size:0.8rem;color:var(--m2);line-height:1.7">10 - щойно з фабрики, 8-9 - майже без подряпин, 6-7 - після польових випробувань, 4-5 - з численними подряпинами, 1-3 - понівечено у полях.</div></div>
+      <div class="card"><div style="font-size:1.5rem;margin-bottom:0.5rem">🤝</div><div style="font-weight:700;margin-bottom:0.35rem">Довіра</div><div style="font-size:0.8rem;color:var(--m2);line-height:1.7">Спільнота на довірі. Порушники можуть бути заблоковані адміном.</div></div>
     </div>
   </div>
 </div>
@@ -459,35 +459,35 @@ input[type=range]::-moz-range-track{height:6px;background:rgba(255,255,255,0.06)
 <div id="page-admin" class="page">
   <div class="content">
     <div id="adminNoAuth">
-      <div class="empty"><div class="empty-icon">ðŸ”</div><div id="adminNoAuthMsg">ÐÐ´Ð¼Ñ–Ð½-Ð¿Ð°Ð½ÐµÐ»ÑŒ</div><br>
+      <div class="empty"><div class="empty-icon">🔐</div><div id="adminNoAuthMsg">Адмін-панель</div><br>
         <div style="max-width:260px;margin:0 auto">
-          <div class="fg"><label class="fl">ÐŸÐ°Ñ€Ð¾Ð»ÑŒ</label><input type="password" id="adminPassInput" placeholder="ÐŸÐ°Ñ€Ð¾Ð»ÑŒ" onkeydown="if(event.key==='Enter')adminLoginPass()"></div>
-          <button class="btn btn-lime btn-full" onclick="adminLoginPass()">Ð£Ð²Ñ–Ð¹Ñ‚Ð¸</button>
+          <div class="fg"><label class="fl">Пароль</label><input type="password" id="adminPassInput" placeholder="Пароль" onkeydown="if(event.key==='Enter')adminLoginPass()"></div>
+          <button class="btn btn-lime btn-full" onclick="adminLoginPass()">Увійти</button>
         </div>
       </div>
     </div>
     <div id="adminContent" style="display:none">
-      <div class="sec-hdr"><div class="sec-ttl">ÐÐ”ÐœÐ†Ð</div><div style="display:flex;gap:0.4rem"><button class="btn btn-ghost btn-sm" onclick="loadAdminData()">â†»</button><button class="btn btn-danger btn-sm" onclick="adminLogout()">Ð’Ð¸Ð¹Ñ‚Ð¸</button></div></div>
+      <div class="sec-hdr"><div class="sec-ttl">АДМІН</div><div style="display:flex;gap:0.4rem"><button class="btn btn-ghost btn-sm" onclick="loadAdminData()">↻</button><button class="btn btn-danger btn-sm" onclick="adminLogout()">Вийти</button></div></div>
       <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:0.6rem;margin-bottom:1rem">
-        <div class="stat-card"><div class="stat-n" id="adm-total">0</div><div class="stat-l">Ð”Ð¸ÑÐºÑ–Ð²</div></div>
-        <div class="stat-card"><div class="stat-n cy" id="adm-av">0</div><div class="stat-l">Ð”Ð¾ÑÑ‚ÑƒÐ¿Ð½Ð¸Ñ…</div></div>
-        <div class="stat-card"><div class="stat-n or" id="adm-te">0</div><div class="stat-l">ÐÐ° Ñ‚ÐµÑÑ‚Ñ–</div></div>
-        <div class="stat-card"><div class="stat-n wh" id="adm-rev">0â‚´</div><div class="stat-l">Ð’Ð¸Ñ€ÑƒÑ‡ÐºÐ°</div></div>
+        <div class="stat-card"><div class="stat-n" id="adm-total">0</div><div class="stat-l">Дисків</div></div>
+        <div class="stat-card"><div class="stat-n cy" id="adm-av">0</div><div class="stat-l">Доступних</div></div>
+        <div class="stat-card"><div class="stat-n or" id="adm-te">0</div><div class="stat-l">На тесті</div></div>
+        <div class="stat-card"><div class="stat-n wh" id="adm-rev">0₴</div><div class="stat-l">Виручка</div></div>
       </div>
       <div class="card" style="margin-bottom:1rem">
-        <div class="sec-hdr"><div class="sec-ttl">Ð£Ð¡Ð† Ð”Ð˜Ð¡ÐšÐ˜</div></div>
-        <div class="tw"><table><thead><tr><th>Ð”Ð¸ÑÐº</th><th>Ð’Ð»Ð°ÑÐ½Ð¸Ðº</th><th>Ð¡Ñ‚Ð°Ð½</th><th>Ð¡Ñ‚Ð°Ñ‚ÑƒÑ</th><th>Ð¦Ñ–Ð½Ð°</th><th>Ð”Ñ–Ñ—</th></tr></thead><tbody id="adminDiscTable"></tbody></table></div>
+        <div class="sec-hdr"><div class="sec-ttl">УСІ ДИСКИ</div></div>
+        <div class="tw"><table><thead><tr><th>Диск</th><th>Власник</th><th>Стан</th><th>Статус</th><th>Ціна</th><th>Дії</th></tr></thead><tbody id="adminDiscTable"></tbody></table></div>
       </div>
       <div class="card" style="margin-bottom:1rem">
-        <div class="sec-hdr"><div class="sec-ttl">Ð—ÐÐŸÐ˜Ð¢Ð˜</div></div>
-        <div class="tw"><table><thead><tr><th>Ð’Ñ–Ð´</th><th>Ð”Ð¸ÑÐº</th><th>Ð¢Ð¸Ð¿</th><th>Ð”Ð°Ñ‚Ð°</th><th>Ð¡Ñ‚Ð°Ñ‚ÑƒÑ</th></tr></thead><tbody id="adminReqTable"></tbody></table></div>
+        <div class="sec-hdr"><div class="sec-ttl">ЗАПИТИ</div></div>
+        <div class="tw"><table><thead><tr><th>Від</th><th>Диск</th><th>Тип</th><th>Дата</th><th>Статус</th></tr></thead><tbody id="adminReqTable"></tbody></table></div>
       </div>
       <div class="card">
-        <div class="sec-hdr"><div class="sec-ttl">Ð—ÐÐ‘Ð›ÐžÐšÐžÐ’ÐÐÐ†</div></div>
+        <div class="sec-hdr"><div class="sec-ttl">ЗАБЛОКОВАНІ</div></div>
         <div id="bannedList"></div>
         <div style="margin-top:0.875rem;display:flex;gap:0.5rem">
-          <input id="banInput" placeholder="Telegram ID Ð°Ð±Ð¾ username">
-          <button class="btn btn-danger btn-sm" onclick="banUser()">Ð‘Ð°Ð½</button>
+          <input id="banInput" placeholder="Telegram ID або username">
+          <button class="btn btn-danger btn-sm" onclick="banUser()">Бан</button>
         </div>
       </div>
     </div>
@@ -500,14 +500,14 @@ input[type=range]::-moz-range-track{height:6px;background:rgba(255,255,255,0.06)
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.75rem">
       <div class="ftabs" style="flex:1" id="ftabs-auctions">
         <div class="ftabs-pill"></div>
-        <button class="ft active" onclick="setAucFilter(this,'active')">ÐÐºÑ‚Ð¸Ð²Ð½Ñ–</button>
-        <button class="ft" onclick="setAucFilter(this,'my')">ÐœÐ¾Ñ—</button>
-        <button class="ft" onclick="setAucFilter(this,'mybids')">ÐœÐ¾Ñ— ÑÑ‚Ð°Ð²ÐºÐ¸</button>
-        <button class="ft" onclick="setAucFilter(this,'ended')">Ð—Ð°Ð²ÐµÑ€ÑˆÐµÐ½Ñ–</button>
+        <button class="ft active" onclick="setAucFilter(this,'active')">Активні</button>
+        <button class="ft" onclick="setAucFilter(this,'my')">Мої</button>
+        <button class="ft" onclick="setAucFilter(this,'mybids')">Мої ставки</button>
+        <button class="ft" onclick="setAucFilter(this,'ended')">Завершені</button>
       </div>
-      <button class="btn btn-lime btn-sm" onclick="openModal('addAuction')" style="flex-shrink:0;margin-left:0.4rem">+ ÐÑƒÐºÑ†Ñ–Ð¾Ð½</button>
+      <button class="btn btn-lime btn-sm" onclick="openModal('addAuction')" style="flex-shrink:0;margin-left:0.4rem">+ Аукціон</button>
     </div>
-    <div id="auctionGrid" class="disc-grid"><div style="text-align:center;color:var(--m1);padding:2rem;font-size:0.85rem">Ð—Ð°Ð²Ð°Ð½Ñ‚Ð°Ð¶ÐµÐ½Ð½Ñ...</div></div>
+    <div id="auctionGrid" class="disc-grid"><div style="text-align:center;color:var(--m1);padding:2rem;font-size:0.85rem">Завантаження...</div></div>
   </div>
 </div>
 
@@ -515,18 +515,18 @@ input[type=range]::-moz-range-track{height:6px;background:rgba(255,255,255,0.06)
 <div id="page-settings" class="page">
   <div class="content">
     <div style="display:flex;justify-content:flex-end;margin-bottom:0.75rem" id="postBtnWrap">
-      <button class="btn btn-lime btn-sm" onclick="togglePostForm()">+ ÐŸÑƒÐ±Ð»Ñ–ÐºÐ°Ñ†Ñ–Ñ</button>
+      <button class="btn btn-lime btn-sm" onclick="togglePostForm()">+ Публікація</button>
     </div>
     <!-- Post form -->
     <div class="card" style="margin-bottom:1rem;display:none" id="postFormWrap">
       <div class="fg" style="margin-bottom:0.4rem"><input id="post-url" placeholder="YouTube, TikTok, Instagram, Facebook..." style="font-size:14px"></div>
-      <div class="fg" style="margin-bottom:0.5rem"><input id="post-desc" placeholder="ÐžÐ¿Ð¸Ñ (Ð¾Ð¿Ñ†Ñ–Ð¹Ð½Ð¾)" style="font-size:14px"></div>
+      <div class="fg" style="margin-bottom:0.5rem"><input id="post-desc" placeholder="Опис (опційно)" style="font-size:14px"></div>
       <div style="display:flex;gap:0.4rem">
-        <button class="btn btn-lime btn-full" onclick="submitPost()">ÐžÐ¿ÑƒÐ±Ð»Ñ–ÐºÑƒÐ²Ð°Ñ‚Ð¸</button>
-        <button class="btn btn-ghost btn-sm" onclick="togglePostForm()" style="flex-shrink:0">âœ•</button>
+        <button class="btn btn-lime btn-full" onclick="submitPost()">Опублікувати</button>
+        <button class="btn btn-ghost btn-sm" onclick="togglePostForm()" style="flex-shrink:0">✕</button>
       </div>
     </div>
-    <div id="feedList"><div style="text-align:center;color:var(--m1);padding:2rem;font-size:0.85rem">Ð—Ð°Ð²Ð°Ð½Ñ‚Ð°Ð¶ÐµÐ½Ð½Ñ...</div></div>
+    <div id="feedList"><div style="text-align:center;color:var(--m1);padding:2rem;font-size:0.85rem">Завантаження...</div></div>
   </div>
 </div>
 
@@ -535,23 +535,23 @@ input[type=range]::-moz-range-track{height:6px;background:rgba(255,255,255,0.06)
 <!-- Create Auction -->
 <div class="overlay" id="ov-addAuction">
   <div class="modal">
-    <button class="mc" onclick="closeModal('addAuction')">âŒ</button>
-    <div class="mt">ÐÐžÐ’Ð˜Ð™ <span>ÐÐ£ÐšÐ¦Ð†ÐžÐ</span></div>
+    <button class="mc" onclick="closeModal('addAuction')">❌</button>
+    <div class="mt">НОВИЙ <span>АУКЦІОН</span></div>
     <div class="fg">
-      <label class="fl">Ð¤Ð¾Ñ‚Ð¾ (Ð´Ð¾ 3Ñ…)</label>
+      <label class="fl">Фото (до 3х)</label>
       <div class="photo-upload-grid">
-        <div class="photo-slot" id="auc-slot0" onclick="document.getElementById('aucFile0').click()"><span class="slot-icon">ðŸ“¸</span></div>
-        <div class="photo-slot" id="auc-slot1" onclick="document.getElementById('aucFile1').click()"><span class="slot-icon">ðŸ“¸</span></div>
-        <div class="photo-slot" id="auc-slot2" onclick="document.getElementById('aucFile2').click()"><span class="slot-icon">ðŸ“¸</span></div>
+        <div class="photo-slot" id="auc-slot0" onclick="document.getElementById('aucFile0').click()"><span class="slot-icon">📸</span></div>
+        <div class="photo-slot" id="auc-slot1" onclick="document.getElementById('aucFile1').click()"><span class="slot-icon">📸</span></div>
+        <div class="photo-slot" id="auc-slot2" onclick="document.getElementById('aucFile2').click()"><span class="slot-icon">📸</span></div>
       </div>
       <input type="file" id="aucFile0" accept="image/*" style="display:none" onchange="handleAucPhoto(0,this)">
       <input type="file" id="aucFile1" accept="image/*" style="display:none" onchange="handleAucPhoto(1,this)">
       <input type="file" id="aucFile2" accept="image/*" style="display:none" onchange="handleAucPhoto(2,this)">
     </div>
-    <div class="fr"><div class="fg"><label class="fl">Ð‘Ñ€ÐµÐ½Ð´ *</label><input id="auc-brand" placeholder="Innova, Discraft..." style="font-size:14px"></div><div class="fg"><label class="fl">ÐœÐ¾Ð´ÐµÐ»ÑŒ *</label><input id="auc-model" placeholder="Boss, Buzzz..." style="font-size:14px"></div></div>
-    <div class="fr"><div class="fg"><label class="fl">ÐŸÐ»Ð°ÑÑ‚Ð¸Ðº</label><input id="auc-plastic" placeholder="Star, ESP..." style="font-size:14px"></div><div class="fg"><label class="fl">Ð’Ð°Ð³Ð° (Ð³)</label><input id="auc-weight" type="number" placeholder="175" style="font-size:14px"></div></div>
-    <div class="fr"><div class="fg"><label class="fl">ÐšÐ¾Ð»Ñ–Ñ€</label><input id="auc-color" placeholder="Ð–Ð¾Ð²Ñ‚Ð¸Ð¹..." style="font-size:14px"></div><div class="fg"><label class="fl">ÐœÑ–ÑÑ‚Ð¾</label><input id="auc-city" placeholder="ÐšÐ¸Ñ—Ð², Ð›ÑƒÑ†ÑŒÐº, ÐžÐ´ÐµÑÐ°..." style="font-size:14px"></div></div>
-    <div class="fg"><label class="fl">Ð¡Ñ‚Ð°Ð½: <span id="aucCondLabel">7</span>/10</label>
+    <div class="fr"><div class="fg"><label class="fl">Бренд *</label><input id="auc-brand" placeholder="Innova, Discraft..." style="font-size:14px"></div><div class="fg"><label class="fl">Модель *</label><input id="auc-model" placeholder="Boss, Buzzz..." style="font-size:14px"></div></div>
+    <div class="fr"><div class="fg"><label class="fl">Пластик</label><input id="auc-plastic" placeholder="Star, ESP..." style="font-size:14px"></div><div class="fg"><label class="fl">Вага (г)</label><input id="auc-weight" type="number" placeholder="175" style="font-size:14px"></div></div>
+    <div class="fr"><div class="fg"><label class="fl">Колір</label><input id="auc-color" placeholder="Жовтий..." style="font-size:14px"></div><div class="fg"><label class="fl">Місто</label><input id="auc-city" placeholder="Київ, Луцьк, Одеса..." style="font-size:14px"></div></div>
+    <div class="fg"><label class="fl">Стан: <span id="aucCondLabel">7</span>/10</label>
       <div style="display:flex;align-items:center;gap:0.5rem">
         <input type="range" id="auc-cond" min="1" max="10" value="7" step="1" style="flex:1" oninput="document.getElementById('aucCondLabel').textContent=this.value">
         <span style="font-family:'Space Mono';font-size:0.9rem;font-weight:700;color:var(--lime);min-width:20px;text-align:center">7</span>
@@ -562,97 +562,97 @@ input[type=range]::-moz-range-track{height:6px;background:rgba(255,255,255,0.06)
         <input id="auc-speed" type="number" placeholder="S" style="font-size:14px"><input id="auc-glide" type="number" placeholder="G" style="font-size:14px"><input id="auc-turn" type="number" placeholder="T" step="0.5" style="font-size:14px"><input id="auc-fade" type="number" placeholder="F" style="font-size:14px">
       </div>
     </div>
-    <label class="toggle-row fg"><input type="checkbox" id="auc-inked"><span style="font-size:0.84rem">ðŸ–Šï¸ Inked</span></label>
-    <div class="fg"><label class="fl">ÐÐ¾Ñ‚Ð°Ñ‚ÐºÐ¸</label><textarea id="auc-desc" placeholder="Ð”Ð¾Ð´Ð°Ñ‚ÐºÐ¾Ð²Ð° Ñ–Ð½Ñ„Ð¾Ñ€Ð¼Ð°Ñ†Ñ–Ñ..." style="font-size:14px"></textarea></div>
+    <label class="toggle-row fg"><input type="checkbox" id="auc-inked"><span style="font-size:0.84rem">🖊️ Inked</span></label>
+    <div class="fg"><label class="fl">Нотатки</label><textarea id="auc-desc" placeholder="Додаткова інформація..." style="font-size:14px"></textarea></div>
     <div style="border-top:2px solid var(--lime);margin:0.75rem 0;padding-top:0.75rem">
-      <div style="font-family:'Bebas Neue';font-size:1.1rem;letter-spacing:1px;color:var(--lime);margin-bottom:0.5rem">âš¡ ÐŸÐÐ ÐÐœÐ•Ð¢Ð Ð˜ ÐÐ£ÐšÐ¦Ð†ÐžÐÐ£</div>
-      <div class="fg"><label class="fl">Ð¢Ð¸Ð¿ Ð°ÑƒÐºÑ†Ñ–Ð¾Ð½Ñƒ</label>
+      <div style="font-family:'Bebas Neue';font-size:1.1rem;letter-spacing:1px;color:var(--lime);margin-bottom:0.5rem">⚡ ПАРАМЕТРИ АУКЦІОНУ</div>
+      <div class="fg"><label class="fl">Тип аукціону</label>
         <select id="auc-type" style="font-size:14px" onchange="toggleAucTypeFields()">
-          <option value="classic">ðŸ“ˆ ÐšÐ»Ð°ÑÐ¸Ñ‡Ð½Ð¸Ð¹ (ÑÑ‚Ð°Ð²ÐºÐ¸ Ð²Ð³Ð¾Ñ€Ñƒ)</option>
-          <option value="buyout">ðŸ’° ÐšÑƒÐ¿Ð¸Ñ‚Ð¸ Ð·Ð°Ñ€Ð°Ð· + Ð°ÑƒÐºÑ†Ñ–Ð¾Ð½</option>
-          <option value="reverse">ðŸ“‰ Ð—Ð²Ð¾Ñ€Ð¾Ñ‚Ð½Ñ–Ð¹ (Ñ†Ñ–Ð½Ð° Ð¿Ð°Ð´Ð°Ñ”)</option>
+          <option value="classic">📈 Класичний (ставки вгору)</option>
+          <option value="buyout">💰 Купити зараз + аукціон</option>
+          <option value="reverse">📉 Зворотній (ціна падає)</option>
         </select>
       </div>
       <div id="auc-fields-classic">
         <div class="fr">
-          <div class="fg"><label class="fl">Ð¡Ñ‚Ð°Ñ€Ñ‚Ð¾Ð²Ð° Ñ†Ñ–Ð½Ð° â‚´ *</label><input id="auc-start" type="number" placeholder="100" style="font-size:14px"></div>
-          <div class="fg"><label class="fl">ÐœÑ–Ð½. ÐºÑ€Ð¾Ðº â‚´</label><input id="auc-step" type="number" placeholder="10" value="10" style="font-size:14px"></div>
+          <div class="fg"><label class="fl">Стартова ціна ₴ *</label><input id="auc-start" type="number" placeholder="100" style="font-size:14px"></div>
+          <div class="fg"><label class="fl">Мін. крок ₴</label><input id="auc-step" type="number" placeholder="10" value="10" style="font-size:14px"></div>
         </div>
       </div>
       <div id="auc-fields-buyout" style="display:none">
         <div class="fr">
-          <div class="fg"><label class="fl">Ð¡Ñ‚Ð°Ñ€Ñ‚Ð¾Ð²Ð° Ñ†Ñ–Ð½Ð° â‚´ *</label><input id="auc-start-b" type="number" placeholder="100" style="font-size:14px"></div>
-          <div class="fg"><label class="fl">ÐœÑ–Ð½. ÐºÑ€Ð¾Ðº â‚´</label><input id="auc-step-b" type="number" placeholder="10" value="10" style="font-size:14px"></div>
+          <div class="fg"><label class="fl">Стартова ціна ₴ *</label><input id="auc-start-b" type="number" placeholder="100" style="font-size:14px"></div>
+          <div class="fg"><label class="fl">Мін. крок ₴</label><input id="auc-step-b" type="number" placeholder="10" value="10" style="font-size:14px"></div>
         </div>
-        <div class="fg"><label class="fl">ÐšÑƒÐ¿Ð¸Ñ‚Ð¸ Ð·Ð°Ñ€Ð°Ð· â‚´ *</label><input id="auc-buyout-b" type="number" placeholder="500" style="font-size:14px"></div>
+        <div class="fg"><label class="fl">Купити зараз ₴ *</label><input id="auc-buyout-b" type="number" placeholder="500" style="font-size:14px"></div>
       </div>
       <div id="auc-fields-reverse" style="display:none">
         <div class="fr">
-          <div class="fg"><label class="fl">ÐŸÐ¾Ñ‡Ð°Ñ‚ÐºÐ¾Ð²Ð° Ñ†Ñ–Ð½Ð° â‚´ *</label><input id="auc-reverse-start" type="number" placeholder="1000" style="font-size:14px"></div>
-          <div class="fg"><label class="fl">ÐœÑ–Ð½Ñ–Ð¼Ð°Ð»ÑŒÐ½Ð° Ñ†Ñ–Ð½Ð° â‚´ *</label><input id="auc-reverse-end" type="number" placeholder="100" style="font-size:14px"></div>
+          <div class="fg"><label class="fl">Початкова ціна ₴ *</label><input id="auc-reverse-start" type="number" placeholder="1000" style="font-size:14px"></div>
+          <div class="fg"><label class="fl">Мінімальна ціна ₴ *</label><input id="auc-reverse-end" type="number" placeholder="100" style="font-size:14px"></div>
         </div>
         <div class="fr">
-          <div class="fg"><label class="fl">Ð—Ð½Ð¸Ð¶ÐµÐ½Ð½Ñ â‚´</label><input id="auc-reverse-drop" type="number" placeholder="50" style="font-size:14px"></div>
-          <div class="fg"><label class="fl">ÐšÐ¾Ð¶Ð½Ñ– (Ñ…Ð²Ð¸Ð»Ð¸Ð½)</label><input id="auc-reverse-interval" type="number" placeholder="60" value="60" style="font-size:14px"></div>
+          <div class="fg"><label class="fl">Зниження ₴</label><input id="auc-reverse-drop" type="number" placeholder="50" style="font-size:14px"></div>
+          <div class="fg"><label class="fl">Кожні (хвилин)</label><input id="auc-reverse-interval" type="number" placeholder="60" value="60" style="font-size:14px"></div>
         </div>
       </div>
-      <div class="fg"><label class="fl">Ð¢Ñ€Ð¸Ð²Ð°Ð»Ñ–ÑÑ‚ÑŒ</label>
+      <div class="fg"><label class="fl">Тривалість</label>
         <select id="auc-dur-preset" style="font-size:14px">
-          <option value="5m">âš¡ 5 Ñ…Ð²Ð¸Ð»Ð¸Ð½</option>
-          <option value="15m">âš¡ 15 Ñ…Ð²Ð¸Ð»Ð¸Ð½</option>
-          <option value="30m">âš¡ 30 Ñ…Ð²Ð¸Ð»Ð¸Ð½</option>
-          <option value="1h">1 Ð³Ð¾Ð´Ð¸Ð½Ð°</option>
-          <option value="3h">3 Ð³Ð¾Ð´Ð¸Ð½Ð¸</option>
-          <option value="6h">6 Ð³Ð¾Ð´Ð¸Ð½</option>
-          <option value="12h">12 Ð³Ð¾Ð´Ð¸Ð½</option>
-          <option value="24h" selected>24 Ð³Ð¾Ð´Ð¸Ð½Ð¸</option>
-          <option value="48h">2 Ð´Ð½Ñ–</option>
-          <option value="72h">3 Ð´Ð½Ñ–</option>
-          <option value="168h">7 Ð´Ð½Ñ–Ð²</option>
+          <option value="5m">⚡ 5 хвилин</option>
+          <option value="15m">⚡ 15 хвилин</option>
+          <option value="30m">⚡ 30 хвилин</option>
+          <option value="1h">1 година</option>
+          <option value="3h">3 години</option>
+          <option value="6h">6 годин</option>
+          <option value="12h">12 годин</option>
+          <option value="24h" selected>24 години</option>
+          <option value="48h">2 дні</option>
+          <option value="72h">3 дні</option>
+          <option value="168h">7 днів</option>
         </select>
       </div>
     </div>
-    <button class="btn btn-lime btn-full" id="aucSubmitBtn" onclick="submitAuction()">Ð¡Ñ‚Ð²Ð¾Ñ€Ð¸Ñ‚Ð¸ Ð°ÑƒÐºÑ†Ñ–Ð¾Ð½</button>
+    <button class="btn btn-lime btn-full" id="aucSubmitBtn" onclick="submitAuction()">Створити аукціон</button>
   </div>
 </div>
 
 <!-- Auction Detail -->
 <div class="overlay" id="ov-aucDetail">
   <div class="modal modal-wide">
-    <button class="mc" onclick="closeModal('aucDetail')">âŒ</button>
+    <button class="mc" onclick="closeModal('aucDetail')">❌</button>
     <div id="aucDetailContent"></div>
   </div>
 </div>
 
 <div class="overlay" id="ov-login">
   <div class="modal" style="max-width:360px">
-    <button class="mc" onclick="closeModal('login')">âŒ</button>
-    <div class="mt">Ð’Ð¥Ð†Ð”</div>
+    <button class="mc" onclick="closeModal('login')">❌</button>
+    <div class="mt">ВХІД</div>
     <div class="empty" style="padding:1rem 0">
-      <div class="empty-icon">ðŸ”</div>
-      <div style="font-size:0.9rem;margin-bottom:1rem">Ð’Ñ–Ð´ÐºÑ€Ð¸Ð¹ Ñ‡ÐµÑ€ÐµÐ· Telegram Ð±Ð¾Ñ‚Ð°</div>
-      <a href="https://t.me/disc_central_bot/app" class="btn btn-lime btn-full" style="text-decoration:none">Ð’Ñ–Ð´ÐºÑ€Ð¸Ñ‚Ð¸ Ð² Telegram</a>
+      <div class="empty-icon">🔐</div>
+      <div style="font-size:0.9rem;margin-bottom:1rem">Відкрий через Telegram бота</div>
+      <a href="https://t.me/disc_central_bot/app" class="btn btn-lime btn-full" style="text-decoration:none">Відкрити в Telegram</a>
     </div>
   </div>
 </div>
 
 <div class="overlay" id="ov-addDisc">
   <div class="modal">
-    <button class="mc" onclick="closeModal('addDisc')">âŒ</button>
-    <div class="mt">Ð”ÐžÐ”ÐÐ¢Ð˜ <span>Ð”Ð˜Ð¡Ðš</span></div>
+    <button class="mc" onclick="closeModal('addDisc')">❌</button>
+    <div class="mt">ДОДАТИ <span>ДИСК</span></div>
     <div class="fg">
-      <label class="fl">Ð¤Ð¾Ñ‚Ð¾ (Ð´Ð¾ 3Ñ…)</label>
+      <label class="fl">Фото (до 3х)</label>
       <div class="photo-upload-grid">
-        <div class="photo-slot" id="slot0" onclick="triggerUpload(0)"><span class="slot-icon">ðŸ“¸</span></div>
-        <div class="photo-slot" id="slot1" onclick="triggerUpload(1)"><span class="slot-icon">ðŸ“¸</span></div>
-        <div class="photo-slot" id="slot2" onclick="triggerUpload(2)"><span class="slot-icon">ðŸ“¸</span></div>
+        <div class="photo-slot" id="slot0" onclick="triggerUpload(0)"><span class="slot-icon">📸</span></div>
+        <div class="photo-slot" id="slot1" onclick="triggerUpload(1)"><span class="slot-icon">📸</span></div>
+        <div class="photo-slot" id="slot2" onclick="triggerUpload(2)"><span class="slot-icon">📸</span></div>
       </div>
       <div id="cropWrap" style="display:none;margin-top:0.5rem">
-        <label class="fl">ÐžÐ±Ð»Ð°ÑÑ‚ÑŒ Ð¿Ñ€ÐµÐ²'ÑŽ (Ð¿ÐµÑ€ÐµÑ‚ÑÐ³Ð½Ñ–Ñ‚ÑŒ Ñ„Ð¾Ñ‚Ð¾)</label>
+        <label class="fl">Область прев'ю (перетягніть фото)</label>
         <div id="cropBox" style="width:100%;height:90px;overflow:hidden;border-radius:var(--r);border:2px solid var(--lime);position:relative;cursor:grab;touch-action:none">
           <img id="cropImg" style="width:100%;position:absolute;left:0;user-select:none;pointer-events:none" draggable="false">
         </div>
-        <div style="font-size:0.6rem;color:var(--m1);margin-top:3px;text-align:center">â†• ÐŸÐµÑ€ÐµÑ‚ÑÐ³Ð½Ñ–Ñ‚ÑŒ Ð²Ð³Ð¾Ñ€Ñƒ/Ð²Ð½Ð¸Ð·</div>
+        <div style="font-size:0.6rem;color:var(--m1);margin-top:3px;text-align:center">↕ Перетягніть вгору/вниз</div>
       </div>
       <input type="file" id="photoFile0" accept="image/*" style="display:none" onchange="handlePhoto(0,this)">
       <input type="file" id="photoFile1" accept="image/*" style="display:none" onchange="handlePhoto(1,this)">
@@ -660,11 +660,11 @@ input[type=range]::-moz-range-track{height:6px;background:rgba(255,255,255,0.06)
       <div class="upload-prog" id="uploadProg"><div class="upload-prog-fill" id="uploadProgFill"></div></div>
       <div style="font-size:0.68rem;color:var(--m1);margin-top:0.25rem" id="uploadStatus"></div>
     </div>
-    <div class="fr"><div class="fg"><label class="fl">Ð‘Ñ€ÐµÐ½Ð´ *</label><input id="ad-brand" placeholder="Innova, Discraft..."></div><div class="fg"><label class="fl">ÐœÐ¾Ð´ÐµÐ»ÑŒ *</label><input id="ad-model" placeholder="Boss, Buzzz..."></div></div>
-    <div class="fr"><div class="fg"><label class="fl">ÐŸÐ»Ð°ÑÑ‚Ð¸Ðº</label><input id="ad-plastic" placeholder="Star, ESP..."></div><div class="fg"><label class="fl">Ð’Ð°Ð³Ð° (Ð³)</label><input id="ad-weight" type="number" placeholder="175"></div></div>
-    <div class="fr"><div class="fg"><label class="fl">ÐšÐ¾Ð»Ñ–Ñ€</label><input id="ad-color" placeholder="Ð–Ð¾Ð²Ñ‚Ð¸Ð¹..."></div><div class="fg"><label class="fl">Buyout (UAH)</label><input id="ad-buyout" type="number" placeholder="850"></div></div>
-    <div class="fg"><label class="fl">ÐœÑ–ÑÑ‚Ð¾</label><input id="ad-city" placeholder="ÐšÐ¸Ñ—Ð², Ð›ÑƒÑ†ÑŒÐº, ÐšÑ€ÐµÐ¼ÐµÐ½Ñ‡ÑƒÐº, ÐžÐ´ÐµÑÐ°, Ð›ÑŒÐ²Ñ–Ð²..."></div>
-    <div class="fg"><label class="fl">Ð¡Ñ‚Ð°Ð½: <span id="condValLabel">7</span>/10</label>
+    <div class="fr"><div class="fg"><label class="fl">Бренд *</label><input id="ad-brand" placeholder="Innova, Discraft..."></div><div class="fg"><label class="fl">Модель *</label><input id="ad-model" placeholder="Boss, Buzzz..."></div></div>
+    <div class="fr"><div class="fg"><label class="fl">Пластик</label><input id="ad-plastic" placeholder="Star, ESP..."></div><div class="fg"><label class="fl">Вага (г)</label><input id="ad-weight" type="number" placeholder="175"></div></div>
+    <div class="fr"><div class="fg"><label class="fl">Колір</label><input id="ad-color" placeholder="Жовтий..."></div><div class="fg"><label class="fl">Buyout (UAH)</label><input id="ad-buyout" type="number" placeholder="850"></div></div>
+    <div class="fg"><label class="fl">Місто</label><input id="ad-city" placeholder="Київ, Луцьк, Кременчук, Одеса, Львів..."></div>
+    <div class="fg"><label class="fl">Стан: <span id="condValLabel">7</span>/10</label>
       <div style="display:flex;align-items:center">
         <input type="range" id="ad-cond" min="1" max="10" value="7" step="1" style="flex:1" oninput="document.getElementById('condValLabel').textContent=this.value;updateCondBar()">
       </div>
@@ -677,33 +677,33 @@ input[type=range]::-moz-range-track{height:6px;background:rgba(255,255,255,0.06)
       </div>
     </div>
     <div style="display:flex;gap:0.5rem">
-      <label class="toggle-row fg" style="flex:1"><input type="checkbox" id="ad-trade"><span style="font-size:0.84rem">ðŸ”„ ÐžÐ±Ð¼Ñ–Ð½</span></label>
-      <label class="toggle-row fg" style="flex:1"><input type="checkbox" id="ad-inked"><span style="font-size:0.84rem">ðŸ–Šï¸ Inked</span></label>
+      <label class="toggle-row fg" style="flex:1"><input type="checkbox" id="ad-trade"><span style="font-size:0.84rem">🔄 Обмін</span></label>
+      <label class="toggle-row fg" style="flex:1"><input type="checkbox" id="ad-inked"><span style="font-size:0.84rem">🖊️ Inked</span></label>
     </div>
-    <div class="fg" id="tradeDescWrap" style="display:none"><label class="fl">Ð©Ð¾ Ñ…Ð¾Ñ‡Ñƒ Ð¾Ñ‚Ñ€Ð¸Ð¼Ð°Ñ‚Ð¸</label><textarea id="ad-trade-desc" placeholder="ÐžÐ¿Ð¸ÑˆÐ¸ Ñ‰Ð¾ ÑˆÑƒÐºÐ°Ñ”Ñˆ..."></textarea></div>
-    <div class="fg"><label class="fl">ÐÐ¾Ñ‚Ð°Ñ‚ÐºÐ¸</label><textarea id="ad-notes" placeholder="Ð”Ð¾Ð´Ð°Ñ‚ÐºÐ¾Ð²Ð° Ñ–Ð½Ñ„Ð¾Ñ€Ð¼Ð°Ñ†Ñ–Ñ..."></textarea></div>
-    <button class="btn btn-lime btn-full" id="addDiscBtn" onclick="submitDisc()">Ð”Ð¾Ð´Ð°Ñ‚Ð¸ Ð´Ð¾ ÐºÐ°Ñ‚Ð°Ð»Ð¾Ð³Ñƒ</button>
+    <div class="fg" id="tradeDescWrap" style="display:none"><label class="fl">Що хочу отримати</label><textarea id="ad-trade-desc" placeholder="Опиши що шукаєш..."></textarea></div>
+    <div class="fg"><label class="fl">Нотатки</label><textarea id="ad-notes" placeholder="Додаткова інформація..."></textarea></div>
+    <button class="btn btn-lime btn-full" id="addDiscBtn" onclick="submitDisc()">Додати до каталогу</button>
   </div>
 </div>
 
 <div class="overlay" id="ov-editDisc">
   <div class="modal">
-    <button class="mc" onclick="closeModal('editDisc')">âŒ</button>
-    <div class="mt">Ð Ð•Ð”ÐÐ“Ð£Ð’ÐÐ¢Ð˜ <span>Ð”Ð˜Ð¡Ðš</span></div>
+    <button class="mc" onclick="closeModal('editDisc')">❌</button>
+    <div class="mt">РЕДАГУВАТИ <span>ДИСК</span></div>
     <input type="hidden" id="edit-id">
     <div class="fg">
-      <label class="fl">Ð¤Ð¾Ñ‚Ð¾</label>
+      <label class="fl">Фото</label>
       <div id="edit-photo-current" style="margin-bottom:0.4rem"></div>
       <div class="photo-upload-grid">
-        <div class="photo-slot" id="ep-slot0" onclick="document.getElementById('epFile0').click()"><span class="slot-icon">ðŸ“¸</span></div>
-        <div class="photo-slot" id="ep-slot1" onclick="document.getElementById('epFile1').click()"><span class="slot-icon">ðŸ“¸</span></div>
-        <div class="photo-slot" id="ep-slot2" onclick="document.getElementById('epFile2').click()"><span class="slot-icon">ðŸ“¸</span></div>
+        <div class="photo-slot" id="ep-slot0" onclick="document.getElementById('epFile0').click()"><span class="slot-icon">📸</span></div>
+        <div class="photo-slot" id="ep-slot1" onclick="document.getElementById('epFile1').click()"><span class="slot-icon">📸</span></div>
+        <div class="photo-slot" id="ep-slot2" onclick="document.getElementById('epFile2').click()"><span class="slot-icon">📸</span></div>
       </div>
       <input type="file" id="epFile0" accept="image/*" style="display:none" onchange="handleEditPhoto(0,this)">
       <input type="file" id="epFile1" accept="image/*" style="display:none" onchange="handleEditPhoto(1,this)">
       <input type="file" id="epFile2" accept="image/*" style="display:none" onchange="handleEditPhoto(2,this)">
     </div>
-    <div class="fr"><div class="fg"><label class="fl">Buyout (UAH)</label><input id="edit-buyout" type="number"></div><div class="fg"><label class="fl">Ð¡Ñ‚Ð°Ð½: <span id="editCondLabel">7</span>/10</label><div style="display:flex;align-items:center"><input type="range" id="edit-cond" min="1" max="10" value="7" step="1" style="flex:1" oninput="document.getElementById('editCondLabel').textContent=this.value"></div></div></div>
+    <div class="fr"><div class="fg"><label class="fl">Buyout (UAH)</label><input id="edit-buyout" type="number"></div><div class="fg"><label class="fl">Стан: <span id="editCondLabel">7</span>/10</label><div style="display:flex;align-items:center"><input type="range" id="edit-cond" min="1" max="10" value="7" step="1" style="flex:1" oninput="document.getElementById('editCondLabel').textContent=this.value"></div></div></div>
     <div class="fg"><label class="fl">Speed / Glide / Turn / Fade</label>
       <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:0.4rem">
         <input id="edit-speed" type="number" placeholder="Speed" step="0.5">
@@ -712,82 +712,82 @@ input[type=range]::-moz-range-track{height:6px;background:rgba(255,255,255,0.06)
         <input id="edit-fade" type="number" placeholder="Fade" step="0.5">
       </div>
     </div>
-    <label class="toggle-row fg"><input type="checkbox" id="edit-trade"><span style="font-size:0.84rem">ðŸ”„ Ð“Ð¾Ñ‚Ð¾Ð²Ð¸Ð¹ Ð´Ð¾ Ð¾Ð±Ð¼Ñ–Ð½Ñƒ</span></label>
-    <div class="fg" id="editTradeWrap" style="display:none"><label class="fl">Ð©Ð¾ Ñ…Ð¾Ñ‡Ñƒ Ð¾Ñ‚Ñ€Ð¸Ð¼Ð°Ñ‚Ð¸</label><textarea id="edit-trade-desc"></textarea></div>
-    <div class="fg"><label class="fl">ÐÐ¾Ñ‚Ð°Ñ‚ÐºÐ¸</label><textarea id="edit-notes"></textarea></div>
-    <div class="fg"><label class="fl">ÐœÑ–ÑÑ‚Ð¾</label><input id="edit-city" placeholder="ÐšÐ¸Ñ—Ð², Ð›ÑƒÑ†ÑŒÐº, ÐšÑ€ÐµÐ¼ÐµÐ½Ñ‡ÑƒÐº, ÐžÐ´ÐµÑÐ°, Ð›ÑŒÐ²Ñ–Ð²..."></div>
+    <label class="toggle-row fg"><input type="checkbox" id="edit-trade"><span style="font-size:0.84rem">🔄 Готовий до обміну</span></label>
+    <div class="fg" id="editTradeWrap" style="display:none"><label class="fl">Що хочу отримати</label><textarea id="edit-trade-desc"></textarea></div>
+    <div class="fg"><label class="fl">Нотатки</label><textarea id="edit-notes"></textarea></div>
+    <div class="fg"><label class="fl">Місто</label><input id="edit-city" placeholder="Київ, Луцьк, Кременчук, Одеса, Львів..."></div>
     
-    <div class="fg"><label class="fl">Ð¡Ñ‚Ð°Ñ‚ÑƒÑ</label><select id="edit-status"><option value="available">Ð”Ð¾ÑÑ‚ÑƒÐ¿Ð½Ð¸Ð¹</option><option value="reserved">Ð—Ð°Ñ€ÐµÐ·ÐµÑ€Ð²Ð¾Ð²Ð°Ð½Ð¸Ð¹</option><option value="testing">ÐÐ° Ñ‚ÐµÑÑ‚ÑƒÐ²Ð°Ð½Ð½Ñ–</option><option value="sold">ÐŸÑ€Ð¾Ð´Ð°Ð½Ð¾</option><option value="unlisted">Ð—Ð½ÑÑ‚Ð¾ Ð· Ð¿Ñ€Ð¾Ð´Ð°Ð¶Ñƒ</option></select></div>
-    <div style="display:flex;gap:0.5rem"><button class="btn btn-lime btn-full" onclick="submitEditDisc()">Ð—Ð±ÐµÑ€ÐµÐ³Ñ‚Ð¸</button></div>
+    <div class="fg"><label class="fl">Статус</label><select id="edit-status"><option value="available">Доступний</option><option value="reserved">Зарезервований</option><option value="testing">На тестуванні</option><option value="sold">Продано</option><option value="unlisted">Знято з продажу</option></select></div>
+    <div style="display:flex;gap:0.5rem"><button class="btn btn-lime btn-full" onclick="submitEditDisc()">Зберегти</button></div>
   </div>
 </div>
 
 <div class="overlay" id="ov-reqTest">
   <div class="modal" style="max-width:400px">
-    <button class="mc" onclick="closeModal('reqTest')">âŒ</button>
-    <div class="mt">Ð—ÐÐŸÐ˜Ð¢ ÐÐ <span>Ð¢Ð•Ð¡Ð¢</span></div>
+    <button class="mc" onclick="closeModal('reqTest')">❌</button>
+    <div class="mt">ЗАПИТ НА <span>ТЕСТ</span></div>
     <div id="reqDiscInfo" class="info-box cy" style="margin-bottom:0.875rem"></div>
-    <div class="fg"><label class="fl">ÐšÐ¾Ð¼ÐµÐ½Ñ‚Ð°Ñ€ (Ð¾Ð¿Ñ†Ñ–Ð¹Ð½Ð¾)</label><textarea id="rt-note" placeholder="Ð—Ð°Ð»Ð¸ÑˆÐ¸Ñ‚Ð¸ ÐºÐ¾Ð¼ÐµÐ½Ñ‚Ð°Ñ€"></textarea></div>
-    <button class="btn btn-lime btn-full" id="reqTestBtn" onclick="submitTestReq()">ÐÐ°Ð´Ñ–ÑÐ»Ð°Ñ‚Ð¸ Ð·Ð°Ð¿Ð¸Ñ‚</button>
+    <div class="fg"><label class="fl">Коментар (опційно)</label><textarea id="rt-note" placeholder="Залишити коментар"></textarea></div>
+    <button class="btn btn-lime btn-full" id="reqTestBtn" onclick="submitTestReq()">Надіслати запит</button>
   </div>
 </div>
 
 <div class="overlay" id="ov-buy">
   <div class="modal" style="max-width:380px">
-    <button class="mc" onclick="closeModal('buy')">âŒ</button>
-    <div class="mt">ÐšÐ£ÐŸÐ˜Ð¢Ð˜ <span>Ð”Ð˜Ð¡Ðš</span></div>
+    <button class="mc" onclick="closeModal('buy')">❌</button>
+    <div class="mt">КУПИТИ <span>ДИСК</span></div>
     <div id="buyInfo" class="info-box"></div>
     <div id="buySellerLink" style="display:none;margin-bottom:0.875rem"></div>
-    <div class="fg"><label class="fl">ÐšÐ¾Ð¼ÐµÐ½Ñ‚Ð°Ñ€</label><textarea id="buy-note" placeholder="ÐŸÐ¾Ð±Ð°Ð¶Ð°Ð½Ð½Ñ..."></textarea></div>
-    <button class="btn btn-lime btn-full" id="buyBtn" onclick="submitBuy()">ÐŸÑ–Ð´Ñ‚Ð²ÐµÑ€Ð´Ð¸Ñ‚Ð¸</button>
+    <div class="fg"><label class="fl">Коментар</label><textarea id="buy-note" placeholder="Побажання..."></textarea></div>
+    <button class="btn btn-lime btn-full" id="buyBtn" onclick="submitBuy()">Підтвердити</button>
   </div>
 </div>
 
 <div class="overlay" id="ov-return">
   <div class="modal" style="max-width:380px">
-    <button class="mc" onclick="closeModal('return')">âŒ</button>
-    <div class="mt">ÐŸÐžÐ’Ð•Ð ÐÐ•ÐÐÐ¯ <span>Ð”Ð˜Ð¡ÐšÐ</span></div>
+    <button class="mc" onclick="closeModal('return')">❌</button>
+    <div class="mt">ПОВЕРНЕННЯ <span>ДИСКА</span></div>
     <div id="retInfo" class="info-box"></div>
-    <div class="fg"><label class="fl">ÐšÐ¾Ð¼ÐµÐ½Ñ‚Ð°Ñ€</label><textarea id="ret-note" placeholder="Ð’Ñ€Ð°Ð¶ÐµÐ½Ð½Ñ..."></textarea></div>
-    <button class="btn btn-orange btn-full" id="retBtn" onclick="submitReturn()">ÐŸÑ–Ð´Ñ‚Ð²ÐµÑ€Ð´Ð¸Ñ‚Ð¸</button>
+    <div class="fg"><label class="fl">Коментар</label><textarea id="ret-note" placeholder="Враження..."></textarea></div>
+    <button class="btn btn-orange btn-full" id="retBtn" onclick="submitReturn()">Підтвердити</button>
   </div>
 </div>
 
 <div class="overlay" id="ov-detail">
-  <div class="modal modal-wide"><button class="mc" onclick="closeModal('detail')">âŒ</button><button class="mc-edit" id="detailEditBtn" style="display:none" onclick="detailEdit()">âœï¸</button><div id="detailContent"></div></div>
+  <div class="modal modal-wide"><button class="mc" onclick="closeModal('detail')">❌</button><button class="mc-edit" id="detailEditBtn" style="display:none" onclick="detailEdit()">✏️</button><div id="detailContent"></div></div>
 </div>
 
 <div class="overlay" id="ov-adminPhoto">
   <div class="modal" style="max-width:440px">
-    <button class="mc" onclick="closeModal('adminPhoto')">âŒ</button>
-    <div class="mt">Ð¤ÐžÐ¢Ðž <span>Ð”Ð˜Ð¡ÐšÐ</span></div>
+    <button class="mc" onclick="closeModal('adminPhoto')">❌</button>
+    <div class="mt">ФОТО <span>ДИСКА</span></div>
     <input type="hidden" id="ap-disc-id">
     <div id="ap-current" style="margin-bottom:1rem"></div>
     <div class="fg">
-      <label class="fl">Ð—Ð°Ð²Ð°Ð½Ñ‚Ð°Ð¶Ð¸Ñ‚Ð¸ / Ð·Ð°Ð¼Ñ–Ð½Ð¸Ñ‚Ð¸ Ñ„Ð¾Ñ‚Ð¾</label>
+      <label class="fl">Завантажити / замінити фото</label>
       <div class="photo-upload-grid">
-        <div class="photo-slot" id="ap-slot0" onclick="document.getElementById('apFile0').click()"><span class="slot-icon">ðŸ“¸</span></div>
-        <div class="photo-slot" id="ap-slot1" onclick="document.getElementById('apFile1').click()"><span class="slot-icon">ðŸ“¸</span></div>
-        <div class="photo-slot" id="ap-slot2" onclick="document.getElementById('apFile2').click()"><span class="slot-icon">ðŸ“¸</span></div>
+        <div class="photo-slot" id="ap-slot0" onclick="document.getElementById('apFile0').click()"><span class="slot-icon">📸</span></div>
+        <div class="photo-slot" id="ap-slot1" onclick="document.getElementById('apFile1').click()"><span class="slot-icon">📸</span></div>
+        <div class="photo-slot" id="ap-slot2" onclick="document.getElementById('apFile2').click()"><span class="slot-icon">📸</span></div>
       </div>
       <input type="file" id="apFile0" accept="image/*" style="display:none" onchange="handleAdminPhoto(0,this)">
       <input type="file" id="apFile1" accept="image/*" style="display:none" onchange="handleAdminPhoto(1,this)">
       <input type="file" id="apFile2" accept="image/*" style="display:none" onchange="handleAdminPhoto(2,this)">
-      <div style="font-size:0.65rem;color:var(--m1);margin-top:0.3rem">ÐÐ°Ñ‚Ð¸ÑÐ½Ñ–Ñ‚ÑŒ ÑÐ»Ð¾Ñ‚ Ñ‰Ð¾Ð± Ð·Ð°Ð²Ð°Ð½Ñ‚Ð°Ð¶Ð¸Ñ‚Ð¸ Ð°Ð±Ð¾ Ð·Ð°Ð¼Ñ–Ð½Ð¸Ñ‚Ð¸ Ñ„Ð¾Ñ‚Ð¾</div>
+      <div style="font-size:0.65rem;color:var(--m1);margin-top:0.3rem">Натисніть слот щоб завантажити або замінити фото</div>
     </div>
-    <button class="btn btn-lime btn-full" onclick="saveAdminPhotos()">Ð—Ð±ÐµÑ€ÐµÐ³Ñ‚Ð¸ Ñ„Ð¾Ñ‚Ð¾</button>
+    <button class="btn btn-lime btn-full" onclick="saveAdminPhotos()">Зберегти фото</button>
   </div>
 </div>
 
 <div class="toasts" id="toasts"></div>
 
 <script>
-// â”€â”€ SUPABASE â”€â”€
+// ── SUPABASE ──
 const SUPABASE_URL = 'https://bxbpyletoouksllnifej.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_990YeXA-COsdfAJn6p-1Rw_jkgm0CQJ';
 const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-// â”€â”€ APPS SCRIPT (for Telegram notifications only) â”€â”€
+// ── APPS SCRIPT (for Telegram notifications only) ──
 const APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbwybos79QSCBbtzu_XVFtp5fZRoz70xL4vAWu0H1TCrxw0rMsnzhZVZuRCcwWlYo4oAjw/exec';
 const CLOUDINARY_CLOUD = 'dde1lbwld';
 const CLOUDINARY_PRESET = 'disc_central';
@@ -805,7 +805,7 @@ try{favorites=JSON.parse(localStorage.getItem('dc_fav')||'[]');}catch(e){favorit
 function isFav(id){return favorites.includes(String(id));}
 async function toggleFav(id){
   id=String(id);
-  if(!CU||!CU.tgId){toast('âš ï¸ Ð¡Ð¿Ð¾Ñ‡Ð°Ñ‚ÐºÑƒ ÑƒÐ²Ñ–Ð¹Ð´Ñ–Ñ‚ÑŒ',true);return;}
+  if(!CU||!CU.tgId){toast('⚠️ Спочатку увійдіть',true);return;}
   if(favorites.includes(id)){
     favorites=favorites.filter(x=>x!==id);
     sb.from('favorites').delete().eq('disc_id',id).eq('user_tg_id',CU.tgId).then(()=>{});
@@ -827,7 +827,7 @@ async function loadFavorites(){
   }catch(e){}
 }
 
-// â”€â”€ LIKES â”€â”€
+// ── LIKES ──
 let likesCache={};// {disc_id: {count, liked}}
 async function loadLikes(){
   try{
@@ -849,16 +849,16 @@ async function loadLikes(){
 function getLikes(id){return likesCache[String(id)]||{count:0,liked:false};}
 async function toggleLike(id,e){
   if(e)e.stopPropagation();
-  if(!CU||!CU.tgId){toast('âš ï¸ Ð¡Ð¿Ð¾Ñ‡Ð°Ñ‚ÐºÑƒ ÑƒÐ²Ñ–Ð¹Ð´Ñ–Ñ‚ÑŒ',true);return;}
+  if(!CU||!CU.tgId){toast('⚠️ Спочатку увійдіть',true);return;}
   id=String(id);
   const cur=getLikes(id);
   if(cur.liked){
     const {error}=await sb.from('likes').delete().eq('disc_id',id).eq('user_tg_id',CU.tgId);
-    if(error){toast('âš ï¸ '+error.message,true);return;}
+    if(error){toast('⚠️ '+error.message,true);return;}
     likesCache[id]={count:Math.max(0,cur.count-1),liked:false};
   }else{
     const {error}=await sb.from('likes').insert({disc_id:id,user_tg_id:CU.tgId});
-    if(error){toast('âš ï¸ '+error.message,true);return;}
+    if(error){toast('⚠️ '+error.message,true);return;}
     likesCache[id]={count:cur.count+1,liked:true};
   }
   applyFilters();
@@ -867,18 +867,18 @@ async function toggleLike(id,e){
 }
 
 const ST = {
-  available:{l:'Ð”Ð¾ÑÑ‚ÑƒÐ¿Ð½Ð¸Ð¹',c:'av',sc:'s-av'},
-  reserved:{l:'Ð—Ð°Ñ€ÐµÐ·ÐµÑ€Ð²Ð¾Ð²Ð°Ð½Ð¸Ð¹',c:'re',sc:'s-re'},
-  testing:{l:'ÐÐ° Ñ‚ÐµÑÑ‚ÑƒÐ²Ð°Ð½Ð½Ñ–',c:'te',sc:'s-te'},
-  pending:{l:'ÐžÑ‡Ñ–ÐºÑƒÑ” Ð¿Ð¾Ð²ÐµÑ€Ð½ÐµÐ½Ð½Ñ',c:'pe',sc:'s-pe'},
-  sold:{l:'ÐŸÑ€Ð¾Ð´Ð°Ð½Ð¾',c:'so',sc:'s-so'},
-  deleted:{l:'Ð’Ð¸Ð´Ð°Ð»ÐµÐ½Ð¾',c:'so',sc:'s-so'},
-  unlisted:{l:'Ð—Ð½ÑÑ‚Ð¾ Ð· Ð¿Ñ€Ð¾Ð´Ð°Ð¶Ñƒ',c:'so',sc:'s-so'},
-  trade:{l:'Ð”Ð¾ÑÑ‚ÑƒÐ¿Ð½Ð¸Ð¹',c:'av',sc:'s-av'},
+  available:{l:'Доступний',c:'av',sc:'s-av'},
+  reserved:{l:'Зарезервований',c:'re',sc:'s-re'},
+  testing:{l:'На тестуванні',c:'te',sc:'s-te'},
+  pending:{l:'Очікує повернення',c:'pe',sc:'s-pe'},
+  sold:{l:'Продано',c:'so',sc:'s-so'},
+  deleted:{l:'Видалено',c:'so',sc:'s-so'},
+  unlisted:{l:'Знято з продажу',c:'so',sc:'s-so'},
+  trade:{l:'Доступний',c:'av',sc:'s-av'},
 };
 function st(s){return ST[s]||ST.available;}
-function fmtDate(iso){if(!iso)return'â€”';try{return new Date(iso).toLocaleDateString('uk-UA',{day:'2-digit',month:'2-digit',year:'numeric'});}catch(e){return iso;}}
-function fmtDateTime(iso){if(!iso)return'â€”';try{const d=new Date(iso);return d.toLocaleDateString('uk-UA',{day:'2-digit',month:'2-digit',year:'numeric'})+' '+d.toLocaleTimeString('uk-UA',{hour:'2-digit',minute:'2-digit'});}catch(e){return iso;}}
+function fmtDate(iso){if(!iso)return'—';try{return new Date(iso).toLocaleDateString('uk-UA',{day:'2-digit',month:'2-digit',year:'numeric'});}catch(e){return iso;}}
+function fmtDateTime(iso){if(!iso)return'—';try{const d=new Date(iso);return d.toLocaleDateString('uk-UA',{day:'2-digit',month:'2-digit',year:'numeric'})+' '+d.toLocaleTimeString('uk-UA',{hour:'2-digit',minute:'2-digit'});}catch(e){return iso;}}
 function genId(){return Date.now().toString(36)+Math.random().toString(36).slice(2,5);}
 function hasTgUsername(tg){return tg&&!/^\d+$/.test(String(tg).replace('@','').trim());}
 function tgLinkFull(tg){
@@ -886,13 +886,13 @@ function tgLinkFull(tg){
   if(!clean)return'';
   if(/^\d+$/.test(clean)){
     const tgApp=window.Telegram?.WebApp;
-    if(tgApp)return` Â· <a href="#" onclick="event.preventDefault();window.Telegram.WebApp.openTelegramLink('https://t.me/@id${clean}')" style="color:var(--cyan)">Ð½Ð°Ð¿Ð¸ÑÐ°Ñ‚Ð¸ â†—</a>`;
-    return` Â· <a href="tg://user?id=${clean}" target="_blank" style="color:var(--cyan)">Ð½Ð°Ð¿Ð¸ÑÐ°Ñ‚Ð¸ â†—</a>`;
+    if(tgApp)return` · <a href="#" onclick="event.preventDefault();window.Telegram.WebApp.openTelegramLink('https://t.me/@id${clean}')" style="color:var(--cyan)">написати ↗</a>`;
+    return` · <a href="tg://user?id=${clean}" target="_blank" style="color:var(--cyan)">написати ↗</a>`;
   }
-  return` Â· <a href="https://t.me/${clean}" target="_blank" style="color:var(--cyan)">@${clean}</a>`;
+  return` · <a href="https://t.me/${clean}" target="_blank" style="color:var(--cyan)">@${clean}</a>`;
 }
 
-// â”€â”€ LOAD DISCS â”€â”€
+// ── LOAD DISCS ──
 const HIDDEN=['sold','deleted','unlisted'];
 async function loadDiscs(){
   // Show cache instantly
@@ -908,7 +908,7 @@ async function loadDiscs(){
   }catch(e){console.error(e);}
 }
 
-// â”€â”€ REALTIME â”€â”€
+// ── REALTIME ──
 function subscribeRealtime(){
   sb.channel('discs-changes')
     .on('postgres_changes',{event:'INSERT',schema:'public',table:'discs'},payload=>{
@@ -998,10 +998,10 @@ function updateStats(){
   document.getElementById('hs-tr').textContent=tr;
 }
 
-// â”€â”€ PHOTO CAROUSEL â”€â”€
+// ── PHOTO CAROUSEL ──
 function photoCarousel(urls, prefix, photoPos){
   const imgs=urls.filter(Boolean);
-  if(!imgs.length)return`<div class="disc-photo-placeholder">ðŸ¥</div>`;
+  if(!imgs.length)return`<div class="disc-photo-placeholder">🥏</div>`;
   const pos=photoPos||'50% 50%';
   return`<div class="disc-photo-wrap" id="pw-${prefix}">
     <img src="${imgs[0]}" class="active" alt="" loading="lazy" style="object-position:${pos}">
@@ -1010,10 +1010,10 @@ function photoCarousel(urls, prefix, photoPos){
 function photoNav(p,dir){const w=document.getElementById('pw-'+p);if(!w)return;const imgs=w.querySelectorAll('img'),dots=w.querySelectorAll('.photo-dot');let c=Array.from(imgs).findIndex(i=>i.classList.contains('active'));imgs[c].classList.remove('active');if(dots[c])dots[c].classList.remove('active');c=(c+dir+imgs.length)%imgs.length;imgs[c].classList.add('active');if(dots[c])dots[c].classList.add('active');}
 function photoGo(p,idx){const w=document.getElementById('pw-'+p);if(!w)return;const imgs=w.querySelectorAll('img'),dots=w.querySelectorAll('.photo-dot');imgs.forEach((img,i)=>{img.classList.toggle('active',i===idx);if(dots[i])dots[i].classList.toggle('active',i===idx);});}
 
-// â”€â”€ CONDITION BAR â”€â”€
+// ── CONDITION BAR ──
 function condBar(val){const v=parseInt(val)||0;return`<div class="cond-bar">${Array(10).fill(0).map((_,i)=>`<div class="cond-seg${i<v?' filled':''}"></div>`).join('')}</div>`;}
 
-// â”€â”€ CARD HTML â”€â”€
+// ── CARD HTML ──
 function cardHTML(d){
   const s=st(d.status);
   const urls=[d.photoUrl,d.photoUrl2,d.photoUrl3].filter(Boolean);
@@ -1025,11 +1025,11 @@ function cardHTML(d){
     <div style="position:relative">
       ${photoCarousel(urls,'c'+d.id,d.photoPos)}
       <span class="${s.sc} status-overlay">${s.l}</span>
-      <span onclick="event.stopPropagation();toggleLike('${d.id}',event)" style="position:absolute;bottom:5px;right:6px;cursor:pointer;font-size:0.8rem;z-index:2;background:rgba(0,0,0,0.6);padding:2px 5px;border-radius:10px;display:flex;align-items:center;gap:2px;color:#fff;backdrop-filter:blur(4px)"><span style="font-size:0.75rem">${getLikes(d.id).liked?'â¤ï¸':'ðŸ¤'}</span><span style="font-size:0.65rem;font-weight:600">${getLikes(d.id).count||''}</span></span>
+      <span onclick="event.stopPropagation();toggleLike('${d.id}',event)" style="position:absolute;bottom:5px;right:6px;cursor:pointer;font-size:0.8rem;z-index:2;background:rgba(0,0,0,0.6);padding:2px 5px;border-radius:10px;display:flex;align-items:center;gap:2px;color:#fff;backdrop-filter:blur(4px)"><span style="font-size:0.75rem">${getLikes(d.id).liked?'❤️':'🤍'}</span><span style="font-size:0.65rem;font-weight:600">${getLikes(d.id).count||''}</span></span>
     </div>
     <div class="disc-body">
       <div class="disc-title">${d.brand} ${d.model}</div>
-      <div class="disc-sub">${[d.plastic,d.weight?d.weight+'Ð³':'',d.city].filter(Boolean).join(' Â· ')}</div>
+      <div class="disc-sub">${[d.plastic,d.weight?d.weight+'г':'',d.city].filter(Boolean).join(' · ')}</div>
       ${condBar(d.condition)}
       <div class="flight-row">
         <div class="fc"><div class="fv">${d.speed||0}</div><div class="fk">Spd</div></div>
@@ -1039,23 +1039,23 @@ function cardHTML(d){
       </div>
       <div class="disc-footer">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.35rem">
-          <div class="disc-price">${d.buyout?d.buyout+' â‚´':'â€”'}</div>
+          <div class="disc-price">${d.buyout?d.buyout+' ₴':'—'}</div>
           <div style="display:flex;align-items:center;gap:0.4rem">
-            <span onclick="event.stopPropagation();toggleFav('${d.id}')" style="cursor:pointer;font-size:0.85rem">${isFav(d.id)?'â­':'â˜†'}</span>
-            <div class="disc-own" onclick="event.stopPropagation();filterByOwner('${d.owner}')">ðŸ‘¤ ${(d.owner||'').split(' ')[0]}</div>
+            <span onclick="event.stopPropagation();toggleFav('${d.id}')" style="cursor:pointer;font-size:0.85rem">${isFav(d.id)?'⭐':'☆'}</span>
+            <div class="disc-own" onclick="event.stopPropagation();filterByOwner('${d.owner}')">👤 ${(d.owner||'').split(' ')[0]}</div>
           </div>
         </div>
         <div onclick="event.stopPropagation()" style="display:flex;gap:3px;width:100%">
-          ${hasTrade?`<button class="btn btn-purple btn-xs" onclick="event.stopPropagation();openTradeOffer('${d.id}')" style="flex:1">ÐžÐ±Ð¼Ñ–Ð½</button>`:''}
-          ${canT?`<button class="btn btn-cyan btn-xs" onclick="openReqTest('${d.id}')" style="flex:1">Ð¢ÐµÑÑ‚</button>`:''}
-          ${canB?`<button class="btn btn-lime btn-xs" onclick="oBuy('${d.id}')" style="flex:1">ÐšÑƒÐ¿Ð¸Ñ‚Ð¸</button>`:''}
+          ${hasTrade?`<button class="btn btn-purple btn-xs" onclick="event.stopPropagation();openTradeOffer('${d.id}')" style="flex:1">Обмін</button>`:''}
+          ${canT?`<button class="btn btn-cyan btn-xs" onclick="openReqTest('${d.id}')" style="flex:1">Тест</button>`:''}
+          ${canB?`<button class="btn btn-lime btn-xs" onclick="oBuy('${d.id}')" style="flex:1">Купити</button>`:''}
         </div>
       </div>
     </div>
   </div>`;
 }
 
-// â”€â”€ FILTERS â”€â”€
+// ── FILTERS ──
 function toggleAdvFilters(){const el=document.getElementById('advFilters'),btn=document.getElementById('advBtn'),open=!el.classList.contains('open');el.classList.toggle('open',open);btn.style.borderColor=open?'var(--lime)':'var(--b1)';btn.style.color=open?'var(--lime)':'';}
 function resetFilters(){['f-speed','f-glide','f-turn','f-fade','f-price','f-city'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});document.getElementById('f-sort').value='new';document.getElementById('mainSearch').value='';CF='all';const tabs=document.getElementById('ftabs-catalog');if(tabs){tabs.querySelectorAll('.ft').forEach((b,i)=>b.classList.toggle('active',i===0));const first=tabs.querySelector('.ft.active');if(first)moveFtabsPill(first);}applyFilters();}
 function applyFilters(){
@@ -1085,12 +1085,12 @@ function applyFilters(){
   else if(sort==='cond-desc')list.sort((a,b)=>(parseFloat(b.condition)||0)-(parseFloat(a.condition)||0));
   else if(sort==='old')list.reverse();
   const g=document.getElementById('discGrid');
-  g.innerHTML=list.length?list.map(cardHTML).join(''):`<div class="empty" style="grid-column:1/-1"><div class="empty-icon">ðŸ¥</div>${allDiscs.length?'ÐÑ–Ñ‡Ð¾Ð³Ð¾ Ð½Ðµ Ð·Ð½Ð°Ð¹Ð´ÐµÐ½Ð¾':'ÐšÐ°Ñ‚Ð°Ð»Ð¾Ð³ Ð¿Ð¾Ñ€Ð¾Ð¶Ð½Ñ–Ð¹!'}</div>`;
+  g.innerHTML=list.length?list.map(cardHTML).join(''):`<div class="empty" style="grid-column:1/-1"><div class="empty-icon">🥏</div>${allDiscs.length?'Нічого не знайдено':'Каталог порожній!'}</div>`;
 }
 function setFt(btn,val){CF=val;btn.closest('.ftabs,.cab-tabs').querySelectorAll('.ft').forEach(b=>b.classList.remove('active'));btn.classList.add('active');moveFtabsPill(btn);applyFilters();}
 function filterByOwner(owner){const tabs=document.getElementById('ftabs-catalog');if(tabs){tabs.querySelectorAll('.ft').forEach((b,i)=>b.classList.toggle('active',i===0));const first=tabs.querySelector('.ft.active');if(first)moveFtabsPill(first);}CF='all';const s=document.getElementById('mainSearch');s.value=owner;document.getElementById('advFilters').classList.add('open');applyFilters();goPage('catalog');}
 
-// â”€â”€ DETAIL â”€â”€
+// ── DETAIL ──
 function showDetail(id){
   const d=allDiscs.find(x=>x.id===id||String(x.id)===String(id));if(!d)return;
   const s=st(d.status);
@@ -1098,19 +1098,19 @@ function showDetail(id){
   const canT=(d.status==='available'||d.status==='trade')&&parseInt(d.condition)<10;
   const canB=d.status!=='sold';
   const hasTrade=String(d.tradeWant||'').trim()&&String(d.tradeWant)!=='false';
-  const photos=urls.length?`<div class="detail-photos" id="pw-d${d.id}" style="position:relative">${urls.map((u,i)=>`<img src="${u}" class="${i===0?'active':''}" alt="">`).join('')}${urls.length>1?`<button class="photo-nav prev" onclick="photoNav('d${d.id}',-1)">â€¹</button><button class="photo-nav next" onclick="photoNav('d${d.id}',1)">â€º</button>`:''}
-    <span onclick="toggleLike('${d.id}',event)" style="position:absolute;bottom:10px;right:10px;cursor:pointer;font-size:0.95rem;z-index:2;background:rgba(0,0,0,0.6);padding:4px 8px;border-radius:12px;display:flex;align-items:center;gap:4px;color:#fff;backdrop-filter:blur(4px)"><span>${getLikes(d.id).liked?'â¤ï¸':'ðŸ¤'}</span><span style="font-size:0.8rem;font-weight:600">${getLikes(d.id).count||''}</span></span>
-  </div>`:`<div style="height:120px;background:var(--s2);border-radius:var(--r2);display:flex;align-items:center;justify-content:center;font-size:3rem;margin-bottom:1rem">ðŸ¥</div>`;
+  const photos=urls.length?`<div class="detail-photos" id="pw-d${d.id}" style="position:relative">${urls.map((u,i)=>`<img src="${u}" class="${i===0?'active':''}" alt="">`).join('')}${urls.length>1?`<button class="photo-nav prev" onclick="photoNav('d${d.id}',-1)">‹</button><button class="photo-nav next" onclick="photoNav('d${d.id}',1)">›</button>`:''}
+    <span onclick="toggleLike('${d.id}',event)" style="position:absolute;bottom:10px;right:10px;cursor:pointer;font-size:0.95rem;z-index:2;background:rgba(0,0,0,0.6);padding:4px 8px;border-radius:12px;display:flex;align-items:center;gap:4px;color:#fff;backdrop-filter:blur(4px)"><span>${getLikes(d.id).liked?'❤️':'🤍'}</span><span style="font-size:0.8rem;font-weight:600">${getLikes(d.id).count||''}</span></span>
+  </div>`:`<div style="height:120px;background:var(--s2);border-radius:var(--r2);display:flex;align-items:center;justify-content:center;font-size:3rem;margin-bottom:1rem">🥏</div>`;
   document.getElementById('detailContent').innerHTML=`
     ${photos}
     <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:0.875rem">
       <div><div style="font-size:0.65rem;color:var(--m1);text-transform:uppercase;letter-spacing:1px">${d.brand}</div><div style="font-family:'Bebas Neue';font-size:1.8rem;letter-spacing:1px;line-height:1">${d.model}</div></div>
       <div style="display:flex;align-items:center;gap:0.4rem">
-        <span onclick="toggleFav('${d.id}')" style="cursor:pointer;font-size:1.1rem">${isFav(d.id)?'â­':'â˜†'}</span>
+        <span onclick="toggleFav('${d.id}')" style="cursor:pointer;font-size:1.1rem">${isFav(d.id)?'⭐':'☆'}</span>
         <span class="badge b-${s.c}">${s.l}</span>
       </div>
     </div>
-    ${condBar(d.condition)}<div style="font-size:0.72rem;color:var(--m1);margin-bottom:0.875rem">Ð¡Ñ‚Ð°Ð½: ${d.condition||0}/10</div>
+    ${condBar(d.condition)}<div style="font-size:0.72rem;color:var(--m1);margin-bottom:0.875rem">Стан: ${d.condition||0}/10</div>
     <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:4px;margin-bottom:0.875rem">
       <div class="fc"><div class="fv" style="font-size:1.1rem">${d.speed||0}</div><div class="fk">Speed</div></div>
       <div class="fc"><div class="fv" style="font-size:1.1rem">${d.glide||0}</div><div class="fk">Glide</div></div>
@@ -1118,27 +1118,27 @@ function showDetail(id){
       <div class="fc"><div class="fv" style="font-size:1.1rem">${d.fade||0}</div><div class="fk">Fade</div></div>
     </div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.35rem 1.25rem;font-size:0.82rem;margin-bottom:0.875rem">
-      <div class="detail-info-item"><span class="di-label">ÐŸÐ»Ð°ÑÑ‚Ð¸Ðº:</span> ${d.plastic||'â€”'}</div>
-      <div class="detail-info-item"><span class="di-label">Ð’Ð°Ð³Ð°:</span> ${d.weight||'â€”'}Ð³</div>
-      <div class="detail-info-item"><span class="di-label">ÐšÐ¾Ð»Ñ–Ñ€:</span> ${d.color||'â€”'}</div>
-      ${d.inked?'<div class="detail-info-item"><span style="color:var(--purple)">ðŸ–Šï¸ Inked</span></div>':'<div></div>'}
-      ${d.city?`<div class="detail-info-item full"><span class="di-label">ÐœÑ–ÑÑ‚Ð¾:</span> ${d.city}</div>`:''}
-      <div class="detail-info-item full"><span class="di-label">Ð’Ð»Ð°ÑÐ½Ð¸Ðº:</span> ${d.owner||'â€”'}${tgLinkFull(d.ownerTg)}</div>
-      ${d.tester&&d.status==='testing'?`<div class="detail-info-item full"><span class="di-label">Ð¢ÐµÑÑ‚ÐµÑ€:</span> ${d.tester}</div>`:''}
+      <div class="detail-info-item"><span class="di-label">Пластик:</span> ${d.plastic||'—'}</div>
+      <div class="detail-info-item"><span class="di-label">Вага:</span> ${d.weight||'—'}г</div>
+      <div class="detail-info-item"><span class="di-label">Колір:</span> ${d.color||'—'}</div>
+      ${d.inked?'<div class="detail-info-item"><span style="color:var(--purple)">🖊️ Inked</span></div>':'<div></div>'}
+      ${d.city?`<div class="detail-info-item full"><span class="di-label">Місто:</span> ${d.city}</div>`:''}
+      <div class="detail-info-item full"><span class="di-label">Власник:</span> ${d.owner||'—'}${tgLinkFull(d.ownerTg)}</div>
+      ${d.tester&&d.status==='testing'?`<div class="detail-info-item full"><span class="di-label">Тестер:</span> ${d.tester}</div>`:''}
     </div>
-    ${hasTrade?`<div class="info-box" style="border-color:rgba(167,139,250,0.25);background:rgba(167,139,250,0.05);margin-bottom:0.875rem"><strong style="color:var(--purple)">ðŸ”„ ÐžÐ±Ð¼Ñ–Ð½:</strong> ${d.tradeWant}</div>`:''}
+    ${hasTrade?`<div class="info-box" style="border-color:rgba(167,139,250,0.25);background:rgba(167,139,250,0.05);margin-bottom:0.875rem"><strong style="color:var(--purple)">🔄 Обмін:</strong> ${d.tradeWant}</div>`:''}
     ${d.notes?`<div style="font-size:0.8rem;color:var(--m2);padding:0.65rem;background:var(--s2);border-radius:var(--r);margin-bottom:0.875rem">${d.notes}</div>`:''}
     <div style="display:flex;gap:0.4rem;padding-top:0.875rem;border-top:1px solid var(--b1)">
-      ${canT?`<button class="btn btn-cyan btn-sm" onclick="openReqTest('${d.id}');closeModal('detail')" style="flex:1">Ð¢ÐµÑÑ‚</button>`:''}
-      ${hasTrade?`<button class="btn btn-purple btn-sm" onclick="openTradeOffer('${d.id}');closeModal('detail')" style="flex:1">ÐžÐ±Ð¼Ñ–Ð½</button>`:''}
-      ${canB?`<button class="btn btn-lime btn-sm" onclick="oBuy('${d.id}');closeModal('detail')" style="flex:1">ÐšÑƒÐ¿Ð¸Ñ‚Ð¸ ${d.buyout||0}â‚´</button>`:''}
-      ${d.status==='testing'&&CU?.name===d.tester?`<button class="btn btn-ghost btn-sm" onclick="oRet('${d.id}');closeModal('detail')" style="flex:1">â†© ÐŸÐ¾Ð²ÐµÑ€Ð½ÑƒÑ‚Ð¸</button>`:''}
+      ${canT?`<button class="btn btn-cyan btn-sm" onclick="openReqTest('${d.id}');closeModal('detail')" style="flex:1">Тест</button>`:''}
+      ${hasTrade?`<button class="btn btn-purple btn-sm" onclick="openTradeOffer('${d.id}');closeModal('detail')" style="flex:1">Обмін</button>`:''}
+      ${canB?`<button class="btn btn-lime btn-sm" onclick="oBuy('${d.id}');closeModal('detail')" style="flex:1">Купити ${d.buyout||0}₴</button>`:''}
+      ${d.status==='testing'&&CU?.name===d.tester?`<button class="btn btn-ghost btn-sm" onclick="oRet('${d.id}');closeModal('detail')" style="flex:1">↩ Повернути</button>`:''}
     </div>
-    <div style="margin-top:0.5rem"><button class="btn btn-ghost btn-xs" onclick="shareDisc('${d.id}')" style="color:var(--m1);width:100%">ðŸ”— ÐŸÐ¾Ð´Ñ–Ð»Ð¸Ñ‚Ð¸ÑÑŒ Ð¿Ð¾ÑÐ¸Ð»Ð°Ð½Ð½ÑÐ¼</button></div>
+    <div style="margin-top:0.5rem"><button class="btn btn-ghost btn-xs" onclick="shareDisc('${d.id}')" style="color:var(--m1);width:100%">🔗 Поділитись посиланням</button></div>
     <div style="margin-top:1rem;border-top:1px solid var(--b1);padding-top:0.75rem">
-      <div style="font-size:0.72rem;font-weight:700;color:var(--m1);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:0.5rem">ÐšÐ¾Ð¼ÐµÐ½Ñ‚Ð°Ñ€Ñ–</div>
+      <div style="font-size:0.72rem;font-weight:700;color:var(--m1);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:0.5rem">Коментарі</div>
       <div id="disc-comments-${d.id}" style="margin-bottom:0.5rem"></div>
-      ${CU?`<div style="display:flex;gap:0.4rem"><textarea id="comment-input-${d.id}" placeholder="ÐÐ°Ð¿Ð¸ÑÐ°Ñ‚Ð¸ ÐºÐ¾Ð¼ÐµÐ½Ñ‚Ð°Ñ€..." style="min-height:36px;font-size:0.78rem;flex:1"></textarea><button class="btn btn-ghost btn-xs" onclick="postComment('${d.id}')" style="flex-shrink:0;align-self:flex-end">â†—</button></div>`:'<div style="font-size:0.75rem;color:var(--m1)">Ð£Ð²Ñ–Ð¹Ð´Ñ–Ñ‚ÑŒ Ñ‰Ð¾Ð± ÐºÐ¾Ð¼ÐµÐ½Ñ‚ÑƒÐ²Ð°Ñ‚Ð¸</div>'}
+      ${CU?`<div style="display:flex;gap:0.4rem"><textarea id="comment-input-${d.id}" placeholder="Написати коментар..." style="min-height:36px;font-size:0.78rem;flex:1"></textarea><button class="btn btn-ghost btn-xs" onclick="postComment('${d.id}')" style="flex-shrink:0;align-self:flex-end">↗</button></div>`:'<div style="font-size:0.75rem;color:var(--m1)">Увійдіть щоб коментувати</div>'}
     </div>`;
   // Show edit button if owner
   const editBtn=document.getElementById('detailEditBtn');
@@ -1151,12 +1151,12 @@ function showDetail(id){
   loadComments(d.id);
 }
 
-// â”€â”€ COMMENTS â”€â”€
+// ── COMMENTS ──
 async function loadComments(discId){
   const el=document.getElementById('disc-comments-'+discId);if(!el)return;
   try{
     const {data}=await sb.from('comments').select('*').eq('disc_id',discId).order('created_at',{ascending:true});
-    if(!data||!data.length){el.innerHTML='<div style="font-size:0.75rem;color:var(--m1)">ÐŸÐ¾ÐºÐ¸ Ð½ÐµÐ¼Ð°Ñ” ÐºÐ¾Ð¼ÐµÐ½Ñ‚Ð°Ñ€Ñ–Ð²</div>';return;}
+    if(!data||!data.length){el.innerHTML='<div style="font-size:0.75rem;color:var(--m1)">Поки немає коментарів</div>';return;}
     el.innerHTML=data.map(c=>`<div style="padding:0.4rem 0;border-bottom:1px solid var(--b1);font-size:0.78rem">
       <div style="display:flex;justify-content:space-between;margin-bottom:2px"><span style="font-weight:600;color:var(--text)">${c.author||'?'}</span><span style="font-size:0.65rem;color:var(--m1)">${fmtDateTime(c.created_at)}</span></div>
       <div style="color:var(--m2)">${c.text}</div>
@@ -1169,18 +1169,18 @@ async function postComment(discId){
   try{
     const {error}=await sb.from('comments').insert({disc_id:discId,author:CU.name,author_tg:CU.tg||'',text:text});
     if(!error){input.value='';loadComments(discId);}
-    else toast('âš ï¸ ÐŸÐ¾Ð¼Ð¸Ð»ÐºÐ°',true);
-  }catch(e){toast('âš ï¸ ÐŸÐ¾Ð¼Ð¸Ð»ÐºÐ°',true);}
+    else toast('⚠️ Помилка',true);
+  }catch(e){toast('⚠️ Помилка',true);}
 }
 
-// â”€â”€ ADD DISC â”€â”€
+// ── ADD DISC ──
 async function submitDisc(){
   const brand=document.getElementById('ad-brand').value.trim();
   const model=document.getElementById('ad-model').value.trim();
   const owner=CU?.name||document.getElementById('ad-owner')?.value?.trim();
-  if(!brand||!model||!owner){toast('âš ï¸ Ð‘Ñ€ÐµÐ½Ð´ Ñ– Ð¼Ð¾Ð´ÐµÐ»ÑŒ Ð¾Ð±Ð¾Ð²\'ÑÐ·ÐºÐ¾Ð²Ñ–',true);return;}
+  if(!brand||!model||!owner){toast('⚠️ Бренд і модель обов\'язкові',true);return;}
   const btn=document.getElementById('addDiscBtn');
-  btn.disabled=true;btn.textContent='Ð—Ð°Ð²Ð°Ð½Ñ‚Ð°Ð¶ÐµÐ½Ð½Ñ...';
+  btn.disabled=true;btn.textContent='Завантаження...';
   const photos=await uploadAllPhotos();
   const isTrade=document.getElementById('ad-trade').checked;
   const disc={
@@ -1197,17 +1197,17 @@ async function submitDisc(){
     buyout:parseInt(document.getElementById('ad-buyout').value)||0,
     notes:document.getElementById('ad-notes').value,
     inked:document.getElementById('ad-inked').checked,
-    trade_want:isTrade?(document.getElementById('ad-trade-desc').value.trim()||'ÐŸÑ€Ð¾Ð¿Ð¾Ð½ÑƒÐ¹Ñ‚Ðµ'):'',
+    trade_want:isTrade?(document.getElementById('ad-trade-desc').value.trim()||'Пропонуйте'):'',
     status:'available',
     photo_url:photos[0],photo_url2:photos[1],photo_url3:photos[2],
     photo_pos:'50% '+cropPosY+'%',
   };
   try{
     const {error}=await sb.from('discs').insert(disc);
-    if(!error){closeModal('addDisc');await loadDiscs();if(CU)renderCabinet();toast(`âœ… ${brand} ${model} Ð´Ð¾Ð´Ð°Ð½Ð¾!`);resetAddForm();}
-    else toast('âš ï¸ '+error.message,true);
-  }catch(e){toast('âš ï¸ ÐŸÐ¾Ð¼Ð¸Ð»ÐºÐ°',true);}
-  btn.disabled=false;btn.textContent='Ð”Ð¾Ð´Ð°Ñ‚Ð¸ Ð´Ð¾ ÐºÐ°Ñ‚Ð°Ð»Ð¾Ð³Ñƒ';
+    if(!error){closeModal('addDisc');await loadDiscs();if(CU)renderCabinet();toast(`✅ ${brand} ${model} додано!`);resetAddForm();}
+    else toast('⚠️ '+error.message,true);
+  }catch(e){toast('⚠️ Помилка',true);}
+  btn.disabled=false;btn.textContent='Додати до каталогу';
 }
 
 function resetAddForm(){
@@ -1242,7 +1242,7 @@ function updateCondBar(){
 document.getElementById('edit-cond').addEventListener('input',function(){document.getElementById('editCondLabel').textContent=this.value;});
 document.getElementById('edit-trade').addEventListener('change',function(){document.getElementById('editTradeWrap').style.display=this.checked?'block':'none';});
 
-// â”€â”€ PHOTO UPLOAD â”€â”€
+// ── PHOTO UPLOAD ──
 function triggerUpload(i){document.getElementById('photoFile'+i).click();}
 function handlePhoto(i,input){
   const file=input.files[0];if(!file)return;
@@ -1311,15 +1311,15 @@ async function uploadAllPhotos(){
   prog.style.display='block';
   for(let i=0;i<3;i++){
     if(!photoFiles[i]){results.push('');continue;}
-    status.textContent=`Ð¤Ð¾Ñ‚Ð¾ ${i+1}/3...`;fill.style.width=((i/3)*100)+'%';
+    status.textContent=`Фото ${i+1}/3...`;fill.style.width=((i/3)*100)+'%';
     try{const fd=new FormData();fd.append('file',photoFiles[i]);fd.append('upload_preset',CLOUDINARY_PRESET);const r=await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD}/image/upload`,{method:'POST',body:fd});const data=await r.json();results.push(data.secure_url||'');}
     catch(e){results.push('');}
   }
-  fill.style.width='100%';status.textContent='âœ…';
+  fill.style.width='100%';status.textContent='✅';
   return results;
 }
 
-// â”€â”€ EDIT DISC â”€â”€
+// ── EDIT DISC ──
 let editPhotoFiles=[null,null,null];
 let editPhotoExisting=['','',''];
 
@@ -1330,7 +1330,7 @@ function openEditDisc(id){
     // For sold/unlisted discs loaded in cabinet
     sb.from('discs').select('*').eq('id',id).single().then(({data})=>{
       if(data)openEditDiscWithData(dbToDisc(data));
-      else toast('âš ï¸ Ð”Ð¸ÑÐº Ð½Ðµ Ð·Ð½Ð°Ð¹Ð´ÐµÐ½Ð¾',true);
+      else toast('⚠️ Диск не знайдено',true);
     });
     return;
   }
@@ -1373,7 +1373,7 @@ function renderEditPhotoCurrent(){
   const el=document.getElementById('edit-photo-current');
   const has=editPhotoExisting.filter(Boolean);
   el.innerHTML=has.length
-    ?`<div style="display:flex;gap:0.4rem">${editPhotoExisting.map((u,i)=>u?`<div style="position:relative"><img src="${u}" style="width:70px;height:50px;object-fit:cover;border-radius:var(--r);border:1px solid var(--b1)"><button class="btn btn-danger btn-xs" style="position:absolute;top:1px;right:1px;padding:0 3px;font-size:0.55rem" onclick="editRemovePhoto(${i})">âŒ</button></div>`:''
+    ?`<div style="display:flex;gap:0.4rem">${editPhotoExisting.map((u,i)=>u?`<div style="position:relative"><img src="${u}" style="width:70px;height:50px;object-fit:cover;border-radius:var(--r);border:1px solid var(--b1)"><button class="btn btn-danger btn-xs" style="position:absolute;top:1px;right:1px;padding:0 3px;font-size:0.55rem" onclick="editRemovePhoto(${i})">❌</button></div>`:''
     ).join('')}</div>`:'';
 }
 function editRemovePhoto(idx){
@@ -1401,7 +1401,7 @@ async function submitEditDisc(){
   const id=document.getElementById('edit-id').value;
   const isTrade=document.getElementById('edit-trade').checked;
   const btn=document.querySelector('#ov-editDisc .btn-lime');
-  btn.disabled=true;btn.textContent='Ð—Ð±ÐµÑ€ÐµÐ¶ÐµÐ½Ð½Ñ...';
+  btn.disabled=true;btn.textContent='Збереження...';
   // Upload new photos if any
   const urls=[...editPhotoExisting];
   for(let i=0;i<3;i++){
@@ -1417,7 +1417,7 @@ async function submitEditDisc(){
     buyout:parseInt(document.getElementById('edit-buyout').value)||0,
     condition:parseInt(document.getElementById('edit-cond').value)||7,
     status:document.getElementById('edit-status').value,
-    trade_want:isTrade?(document.getElementById('edit-trade-desc').value.trim()||'ÐŸÑ€Ð¾Ð¿Ð¾Ð½ÑƒÐ¹Ñ‚Ðµ'):'',
+    trade_want:isTrade?(document.getElementById('edit-trade-desc').value.trim()||'Пропонуйте'):'',
     notes:document.getElementById('edit-notes').value,
     city:document.getElementById('edit-city').value.trim(),
     speed:parseFloat(document.getElementById('edit-speed').value)||0,
@@ -1428,42 +1428,42 @@ async function submitEditDisc(){
   };
   try{
     const {error}=await sb.from('discs').update(updates).eq('id',id);
-    if(!error){closeModal('editDisc');await loadDiscs();renderCabinet();toast('âœ… Ð”Ð¸ÑÐº Ð¾Ð½Ð¾Ð²Ð»ÐµÐ½Ð¾!');}
-    else toast('âš ï¸ '+error.message,true);
-  }catch(e){toast('âš ï¸ ÐŸÐ¾Ð¼Ð¸Ð»ÐºÐ°',true);}
-  btn.disabled=false;btn.textContent='Ð—Ð±ÐµÑ€ÐµÐ³Ñ‚Ð¸';
+    if(!error){closeModal('editDisc');await loadDiscs();renderCabinet();toast('✅ Диск оновлено!');}
+    else toast('⚠️ '+error.message,true);
+  }catch(e){toast('⚠️ Помилка',true);}
+  btn.disabled=false;btn.textContent='Зберегти';
 }
 async function confirmDeleteDisc(){
   const id=document.getElementById('edit-id').value;
   const d=allDiscs.find(x=>String(x.id)===String(id));
-  if(!confirm(`Ð’Ð¸Ð´Ð°Ð»Ð¸Ñ‚Ð¸ "${d?.brand} ${d?.model}"?`))return;
+  if(!confirm(`Видалити "${d?.brand} ${d?.model}"?`))return;
   try{
     await sb.from('requests').delete().eq('disc_id',id);
     const {error}=await sb.from('discs').delete().eq('id',id);
-    if(!error){closeModal('editDisc');await loadDiscs();renderCabinet();toast('ðŸ—‘ Ð’Ð¸Ð´Ð°Ð»ÐµÐ½Ð¾');}
-    else toast('âš ï¸ '+error.message,true);
-  }catch(e){toast('âš ï¸ ÐŸÐ¾Ð¼Ð¸Ð»ÐºÐ°',true);}
+    if(!error){closeModal('editDisc');await loadDiscs();renderCabinet();toast('🗑 Видалено');}
+    else toast('⚠️ '+error.message,true);
+  }catch(e){toast('⚠️ Помилка',true);}
 }
 
-// â”€â”€ REQ TEST â”€â”€
+// ── REQ TEST ──
 function openReqTest(id){
   reqTestId=id;
   isTradeReq=false;
   const d=allDiscs.find(x=>x.id===id||String(x.id)===String(id));if(!d)return;
-  if(!CU){toast('âš ï¸ Ð¡Ð¿Ð¾Ñ‡Ð°Ñ‚ÐºÑƒ ÑƒÐ²Ñ–Ð¹Ð´Ñ–Ñ‚ÑŒ',true);openModal('login');return;}
+  if(!CU){toast('⚠️ Спочатку увійдіть',true);openModal('login');return;}
   const owTg=(d.ownerTg||'').replace('@','');
   document.getElementById('reqDiscInfo').innerHTML=
-    `<strong>${d.brand} ${d.model}</strong> Â· ${d.plastic||''} Â· ${d.weight||''}Ð³ Â· <strong style="color:var(--lime)">${d.buyout||0}â‚´</strong><br>`+
-    `Ð’Ð»Ð°ÑÐ½Ð¸Ðº: <strong>${d.owner}</strong>${tgLinkFull(owTg)}<br>`+
-    `<span style="color:var(--m1);font-size:0.75rem">Ð’Ñ–Ð´: <strong style="color:var(--text)">${CU.name}</strong>${tgLinkFull(CU.tg)}</span>`;
+    `<strong>${d.brand} ${d.model}</strong> · ${d.plastic||''} · ${d.weight||''}г · <strong style="color:var(--lime)">${d.buyout||0}₴</strong><br>`+
+    `Власник: <strong>${d.owner}</strong>${tgLinkFull(owTg)}<br>`+
+    `<span style="color:var(--m1);font-size:0.75rem">Від: <strong style="color:var(--text)">${CU.name}</strong>${tgLinkFull(CU.tg)}</span>`;
   document.getElementById('rt-note').value='';
-  document.getElementById('rt-note').placeholder='Ð—Ð°Ð»Ð¸ÑˆÐ¸Ñ‚Ð¸ ÐºÐ¾Ð¼ÐµÐ½Ñ‚Ð°Ñ€';
-  document.querySelector('#ov-reqTest .mt').innerHTML='Ð—ÐÐŸÐ˜Ð¢ ÐÐ <span>Ð¢Ð•Ð¡Ð¢</span>';
-  document.getElementById('reqTestBtn').textContent='ÐÐ°Ð´Ñ–ÑÐ»Ð°Ñ‚Ð¸ Ð·Ð°Ð¿Ð¸Ñ‚';
+  document.getElementById('rt-note').placeholder='Залишити коментар';
+  document.querySelector('#ov-reqTest .mt').innerHTML='ЗАПИТ НА <span>ТЕСТ</span>';
+  document.getElementById('reqTestBtn').textContent='Надіслати запит';
   openModal('reqTest');
 }
 async function submitTestReq(){
-  if(!CU){toast('âš ï¸ Ð£Ð²Ñ–Ð¹Ð´Ñ–Ñ‚ÑŒ',true);return;}
+  if(!CU){toast('⚠️ Увійдіть',true);return;}
   const d=allDiscs.find(x=>x.id===reqTestId||String(x.id)===String(reqTestId));if(!d)return;
   const btn=document.getElementById('reqTestBtn');btn.disabled=true;btn.textContent='...';
   const reqType=isTradeReq?'exchange':'test';
@@ -1474,46 +1474,46 @@ async function submitTestReq(){
     const {error}=await sb.from('requests').insert(req);
     if(!error){
       closeModal('reqTest');await loadDiscs();if(CU)renderCabinet();
-      toast(isTradeReq?'ðŸ”„ ÐŸÑ€Ð¾Ð¿Ð¾Ð·Ð¸Ñ†Ñ–ÑŽ Ð¾Ð±Ð¼Ñ–Ð½Ñƒ Ð²Ñ–Ð´Ð¿Ñ€Ð°Ð²Ð»ÐµÐ½Ð¾!':'ðŸ“ Ð—Ð°Ð¿Ð¸Ñ‚ Ð²Ñ–Ð´Ð¿Ñ€Ð°Ð²Ð»ÐµÐ½Ð¾!');
+      toast(isTradeReq?'🔄 Пропозицію обміну відправлено!':'📝 Запит відправлено!');
       notifyAppsScript(notifyType,d,CU,noteVal);
-    }else toast('âš ï¸ ÐŸÐ¾Ð¼Ð¸Ð»ÐºÐ°',true);
-  }catch(e){toast('âš ï¸ ÐŸÐ¾Ð¼Ð¸Ð»ÐºÐ°',true);}
-  btn.disabled=false;btn.textContent=isTradeReq?'ÐÐ°Ð´Ñ–ÑÐ»Ð°Ñ‚Ð¸ Ð¿Ñ€Ð¾Ð¿Ð¾Ð·Ð¸Ñ†Ñ–ÑŽ':'ÐÐ°Ð´Ñ–ÑÐ»Ð°Ñ‚Ð¸ Ð·Ð°Ð¿Ð¸Ñ‚';
+    }else toast('⚠️ Помилка',true);
+  }catch(e){toast('⚠️ Помилка',true);}
+  btn.disabled=false;btn.textContent=isTradeReq?'Надіслати пропозицію':'Надіслати запит';
   isTradeReq=false;
 }
 
-// â”€â”€ BUY â”€â”€
+// ── BUY ──
 function oBuy(id){
-  if(!CU){toast('âš ï¸ Ð¡Ð¿Ð¾Ñ‡Ð°Ñ‚ÐºÑƒ ÑƒÐ²Ñ–Ð¹Ð´Ñ–Ñ‚ÑŒ',true);openModal('login');return;}
+  if(!CU){toast('⚠️ Спочатку увійдіть',true);openModal('login');return;}
   buyId=id;const d=allDiscs.find(x=>x.id===id||String(x.id)===String(id));
-  document.getElementById('buyInfo').innerHTML=`<strong>${d.brand} ${d.model}</strong> Â· ${d.plastic||''}<br>Ð¦Ñ–Ð½Ð°: <strong>${d.buyout||0} â‚´</strong><br>Ð’Ð»Ð°ÑÐ½Ð¸Ðº: <strong>${d.owner}</strong>`;
+  document.getElementById('buyInfo').innerHTML=`<strong>${d.brand} ${d.model}</strong> · ${d.plastic||''}<br>Ціна: <strong>${d.buyout||0} ₴</strong><br>Власник: <strong>${d.owner}</strong>`;
   document.getElementById('buy-note').value='';
   const lEl=document.getElementById('buySellerLink');
   const owClean=String(d.ownerTg||'').replace('@','').trim();
   if(owClean){
     const isNum=/^\d+$/.test(owClean);
     const href=isNum?'tg://user?id='+owClean:'https://t.me/'+owClean;
-    const label=isNum?'ðŸ’¬ ÐÐ°Ð¿Ð¸ÑÐ°Ñ‚Ð¸ Ð¿Ñ€Ð¾Ð´Ð°Ð²Ñ†ÑŽ':'ðŸ’¬ ÐÐ°Ð¿Ð¸ÑÐ°Ñ‚Ð¸ @'+owClean;
+    const label=isNum?'💬 Написати продавцю':'💬 Написати @'+owClean;
     lEl.style.display='block';lEl.innerHTML=`<a href="${href}" target="_blank" class="btn btn-cyan btn-full">${label}</a>`;
   }else lEl.style.display='none';
   openModal('buy');
 }
 async function submitBuy(){
-  if(!CU){toast('âš ï¸ Ð£Ð²Ñ–Ð¹Ð´Ñ–Ñ‚ÑŒ',true);return;}
+  if(!CU){toast('⚠️ Увійдіть',true);return;}
   const btn=document.getElementById('buyBtn');btn.disabled=true;btn.textContent='...';
   const d=allDiscs.find(x=>x.id===buyId||String(x.id)===String(buyId));
   const buyNote=document.getElementById('buy-note').value;
   try{
-    const req={id:genId(),disc_id:buyId,tester:CU.name,tester_tg:CU.tg||'',note:'Ð—Ð°Ð¿Ð¸Ñ‚ Ð½Ð° ÐºÑƒÐ¿Ñ–Ð²Ð»ÑŽ'+(buyNote?' Â· '+buyNote:''),request_type:'buy',status:'pending'};
+    const req={id:genId(),disc_id:buyId,tester:CU.name,tester_tg:CU.tg||'',note:'Запит на купівлю'+(buyNote?' · '+buyNote:''),request_type:'buy',status:'pending'};
     const {error}=await sb.from('requests').insert(req);
     const {error:e2}=await sb.from('discs').update({status:'reserved',tester:CU.name,tester_tg:CU.tg||''}).eq('id',buyId);
-    if(!error&&!e2){closeModal('buy');await loadDiscs();if(CU)renderCabinet();toast('ðŸ›’ Ð—Ð°Ð¿Ð¸Ñ‚ Ð²Ñ–Ð´Ð¿Ñ€Ð°Ð²Ð»ÐµÐ½Ð¾!');notifyAppsScript('buy',d,CU,buyNote);}
-    else toast('âš ï¸ ÐŸÐ¾Ð¼Ð¸Ð»ÐºÐ°',true);
-  }catch(e){toast('âš ï¸ ÐŸÐ¾Ð¼Ð¸Ð»ÐºÐ°',true);}
-  btn.disabled=false;btn.textContent='ÐŸÑ–Ð´Ñ‚Ð²ÐµÑ€Ð´Ð¸Ñ‚Ð¸';
+    if(!error&&!e2){closeModal('buy');await loadDiscs();if(CU)renderCabinet();toast('🛒 Запит відправлено!');notifyAppsScript('buy',d,CU,buyNote);}
+    else toast('⚠️ Помилка',true);
+  }catch(e){toast('⚠️ Помилка',true);}
+  btn.disabled=false;btn.textContent='Підтвердити';
 }
 
-// â”€â”€ RETURN â”€â”€
+// ── RETURN ──
 function oRet(id){retId=id;const d=allDiscs.find(x=>x.id===id||String(x.id)===String(id));document.getElementById('retInfo').innerHTML=`<strong>${d.brand} ${d.model}</strong>`;openModal('return');}
 async function submitReturn(){
   const btn=document.getElementById('retBtn');btn.disabled=true;btn.textContent='...';
@@ -1524,15 +1524,15 @@ async function submitReturn(){
       closeModal('return');
       await loadDiscs();
       if(CU)renderCabinet();
-      toast('â†©ï¸ Ð—Ð°Ð¿Ð¸Ñ‚ Ð½Ð° Ð¿Ð¾Ð²ÐµÑ€Ð½ÐµÐ½Ð½Ñ Ð²Ñ–Ð´Ð¿Ñ€Ð°Ð²Ð»ÐµÐ½Ð¾');
+      toast('↩️ Запит на повернення відправлено');
       if(d)notifyAppsScript('return',d,CU);
     }
-    else toast('âš ï¸ ÐŸÐ¾Ð¼Ð¸Ð»ÐºÐ°',true);
-  }catch(e){toast('âš ï¸ ÐŸÐ¾Ð¼Ð¸Ð»ÐºÐ°',true);}
-  btn.disabled=false;btn.textContent='ÐŸÑ–Ð´Ñ‚Ð²ÐµÑ€Ð´Ð¸Ñ‚Ð¸';
+    else toast('⚠️ Помилка',true);
+  }catch(e){toast('⚠️ Помилка',true);}
+  btn.disabled=false;btn.textContent='Підтвердити';
 }
 
-// â”€â”€ NOTIFY via Apps Script â”€â”€
+// ── NOTIFY via Apps Script ──
 async function notifyAppsScript(type,disc,buyer,note){
   try{
     const ownerTg=disc.ownerTgId||disc.ownerTg||'';
@@ -1546,61 +1546,61 @@ async function notifyAppsScript(type,disc,buyer,note){
   }catch(e){console.error('notifyAppsScript err:',e);}
 }
 
-// â”€â”€ ACCEPT REQUEST (test/exchange) â”€â”€
+// ── ACCEPT REQUEST (test/exchange) ──
 async function acceptRequest(reqId, discId, testerName, testerTg, reqType){
   const d=allDiscs.find(x=>String(x.id)===String(discId));if(!d)return;
-  const label=reqType==='exchange'?'Ð¾Ð±Ð¼Ñ–Ð½':'Ñ‚ÐµÑÑ‚';
-  if(!confirm(`ÐŸÑ€Ð¸Ð¹Ð½ÑÑ‚Ð¸ ${label} Ð²Ñ–Ð´ ${testerName}?`))return;
+  const label=reqType==='exchange'?'обмін':'тест';
+  if(!confirm(`Прийняти ${label} від ${testerName}?`))return;
   try{
     const newStatus=reqType==='exchange'?'reserved':'testing';
     const {error}=await sb.from('discs').update({status:newStatus,tester:testerName,tester_tg:testerTg||''}).eq('id',discId);
     const {error:e2}=await sb.from('requests').update({status:'accepted'}).eq('id',reqId);
     if(!error&&!e2){
       await loadDiscs();renderCabinet();
-      toast(`âœ… ${label.charAt(0).toUpperCase()+label.slice(1)} Ð¿Ñ€Ð¸Ð¹Ð½ÑÑ‚Ð¾!`);
+      toast(`✅ ${label.charAt(0).toUpperCase()+label.slice(1)} прийнято!`);
       // Notify tester that request was accepted
       notifyAppsScript('accepted',d,{name:testerName,tg:testerTg||''});
-    }else toast('âš ï¸ ÐŸÐ¾Ð¼Ð¸Ð»ÐºÐ°',true);
-  }catch(e){toast('âš ï¸ ÐŸÐ¾Ð¼Ð¸Ð»ÐºÐ°',true);}
+    }else toast('⚠️ Помилка',true);
+  }catch(e){toast('⚠️ Помилка',true);}
 }
 
-// â”€â”€ CONFIRM SALE â”€â”€
+// ── CONFIRM SALE ──
 async function confirmSale(discId){
   const d=allDiscs.find(x=>String(x.id)===String(discId));if(!d)return;
-  if(!confirm(`ÐŸÑ–Ð´Ñ‚Ð²ÐµÑ€Ð´Ð¸Ñ‚Ð¸ Ð¿Ñ€Ð¾Ð´Ð°Ð¶ "${d.brand} ${d.model}" â†’ ${d.tester}?`))return;
+  if(!confirm(`Підтвердити продаж "${d.brand} ${d.model}" → ${d.tester}?`))return;
   try{
     const {error}=await sb.from('discs').update({status:'sold'}).eq('id',discId);
     await sb.from('requests').update({status:'sold'}).eq('disc_id',discId).eq('status','pending');
-    if(!error){await loadDiscs();renderCabinet();toast('ðŸŽ‰ ÐŸÑ€Ð¾Ð´Ð°Ð¶ Ð¿Ñ–Ð´Ñ‚Ð²ÐµÑ€Ð´Ð¶ÐµÐ½Ð¾!');notifyAppsScript('sold',d,{name:d.tester,tg:d.testerTg});}
-    else toast('âš ï¸ '+error.message,true);
-  }catch(e){toast('âš ï¸ ÐŸÐ¾Ð¼Ð¸Ð»ÐºÐ°',true);}
+    if(!error){await loadDiscs();renderCabinet();toast('🎉 Продаж підтверджено!');notifyAppsScript('sold',d,{name:d.tester,tg:d.testerTg});}
+    else toast('⚠️ '+error.message,true);
+  }catch(e){toast('⚠️ Помилка',true);}
 }
 
-// â”€â”€ TRADE OFFER â”€â”€
+// ── TRADE OFFER ──
 function openTradeOffer(id){
-  if(!CU){toast('âš ï¸ Ð¡Ð¿Ð¾Ñ‡Ð°Ñ‚ÐºÑƒ ÑƒÐ²Ñ–Ð¹Ð´Ñ–Ñ‚ÑŒ',true);openModal('login');return;}
+  if(!CU){toast('⚠️ Спочатку увійдіть',true);openModal('login');return;}
   reqTestId=id;isTradeReq=true;
   const d=allDiscs.find(x=>x.id===id||String(x.id)===String(id));if(!d)return;
   const owTg=(d.ownerTg||'').replace('@','');
   document.getElementById('reqDiscInfo').innerHTML=
     `<strong>${d.brand} ${d.model}</strong><br>`+
-    `Ð’Ð»Ð°ÑÐ½Ð¸Ðº ÑˆÑƒÐºÐ°Ñ”: <strong style="color:var(--purple)">${d.tradeWant}</strong><br>`+
-    `Ð’Ð»Ð°ÑÐ½Ð¸Ðº: ${d.owner}${tgLinkFull(owTg)}<br>`+
-    `<span style="color:var(--m1);font-size:0.75rem">Ð’Ñ–Ð´: ${CU.name}</span>`;
-  document.getElementById('rt-note').placeholder='ÐžÐ¿Ð¸ÑˆÐ¸ ÑÐ²Ñ–Ð¹ Ð´Ð¸ÑÐº Ð´Ð»Ñ Ð¾Ð±Ð¼Ñ–Ð½Ñƒ...';
+    `Власник шукає: <strong style="color:var(--purple)">${d.tradeWant}</strong><br>`+
+    `Власник: ${d.owner}${tgLinkFull(owTg)}<br>`+
+    `<span style="color:var(--m1);font-size:0.75rem">Від: ${CU.name}</span>`;
+  document.getElementById('rt-note').placeholder='Опиши свій диск для обміну...';
   document.getElementById('rt-note').value='';
-  document.querySelector('#ov-reqTest .mt').innerHTML='ÐŸÐ ÐžÐŸÐžÐ—Ð˜Ð¦Ð†Ð¯ <span>ÐžÐ‘ÐœÐ†ÐÐ£</span>';
-  document.getElementById('reqTestBtn').textContent='ÐÐ°Ð´Ñ–ÑÐ»Ð°Ñ‚Ð¸ Ð¿Ñ€Ð¾Ð¿Ð¾Ð·Ð¸Ñ†Ñ–ÑŽ';
+  document.querySelector('#ov-reqTest .mt').innerHTML='ПРОПОЗИЦІЯ <span>ОБМІНУ</span>';
+  document.getElementById('reqTestBtn').textContent='Надіслати пропозицію';
   openModal('reqTest');
 }
 
-// â”€â”€ SHARE â”€â”€
+// ── SHARE ──
 function shareDisc(id){
   const link=`https://t.me/disc_central_bot/app?startapp=${id}`;
-  navigator.clipboard.writeText(link).then(()=>toast('ðŸ”— ÐŸÐ¾ÑÐ¸Ð»Ð°Ð½Ð½Ñ ÑÐºÐ¾Ð¿Ñ–Ð¹Ð¾Ð²Ð°Ð½Ð¾!')).catch(()=>{const el=document.createElement('textarea');el.value=link;document.body.appendChild(el);el.select();document.execCommand('copy');document.body.removeChild(el);toast('ðŸ”— ÐŸÐ¾ÑÐ¸Ð»Ð°Ð½Ð½Ñ ÑÐºÐ¾Ð¿Ñ–Ð¹Ð¾Ð²Ð°Ð½Ð¾!');});
+  navigator.clipboard.writeText(link).then(()=>toast('🔗 Посилання скопійовано!')).catch(()=>{const el=document.createElement('textarea');el.value=link;document.body.appendChild(el);el.select();document.execCommand('copy');document.body.removeChild(el);toast('🔗 Посилання скопійовано!');});
 }
 
-// â”€â”€ CABINET â”€â”€
+// ── CABINET ──
 function setCabTab(tab){
   document.querySelectorAll('.cab-tab-content').forEach(el=>el.classList.remove('active'));
   document.querySelectorAll('[id^="cab-tab-"]').forEach(b=>b.classList.remove('active'));
@@ -1639,7 +1639,7 @@ function renderSeller(){
   if(document.getElementById('sel-total'))document.getElementById('sel-total').textContent=my.filter(d=>d.status!=='sold').length;
   if(document.getElementById('te-active'))document.getElementById('te-active').textContent=myTesting;
   if(document.getElementById('sel-sold'))document.getElementById('sel-sold').textContent=soldCount;
-  if(document.getElementById('sel-revenue'))document.getElementById('sel-revenue').textContent=rev+'â‚´';
+  if(document.getElementById('sel-revenue'))document.getElementById('sel-revenue').textContent=rev+'₴';
 
   document.getElementById('sellerDiscList').innerHTML=my.length
     ?my.map(d=>{
@@ -1647,63 +1647,63 @@ function renderSeller(){
       const historyId='hist-'+d.id;
       return`<div style="border:1px solid var(--b1);border-radius:var(--r);overflow:hidden;background:var(--s2);margin-bottom:0.3rem">
         <div class="dash-item" style="border:none;margin:0">
-          ${d.photoUrl?`<img src="${d.photoUrl}" style="width:34px;height:34px;object-fit:cover;border-radius:6px;flex-shrink:0">`:'<div style="width:34px;height:34px;background:var(--s3);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0">ðŸ¥</div>'}
-          <div style="flex:1;min-width:0"><div class="di-title">${d.brand} ${d.model}</div><div class="di-sub"><span class="badge b-${st(d.status).c}">${st(d.status).l}</span>${d.tester?' Â· '+d.tester:''}</div></div>
+          ${d.photoUrl?`<img src="${d.photoUrl}" style="width:34px;height:34px;object-fit:cover;border-radius:6px;flex-shrink:0">`:'<div style="width:34px;height:34px;background:var(--s3);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0">🥏</div>'}
+          <div style="flex:1;min-width:0"><div class="di-title">${d.brand} ${d.model}</div><div class="di-sub"><span class="badge b-${st(d.status).c}">${st(d.status).l}</span>${d.tester?' · '+d.tester:''}</div></div>
           <div style="text-align:right;display:flex;flex-direction:column;align-items:flex-end;gap:3px">
-            <div class="di-price">${d.buyout||0}â‚´</div>
+            <div class="di-price">${d.buyout||0}₴</div>
             <div style="display:flex;gap:3px">
-              ${d.status==='reserved'&&d.tester?`<button class="btn btn-lime btn-xs" onclick="event.stopPropagation();confirmSale('${d.id}')">âœ“ ÐŸÑ€Ð¾Ð´Ð°Ð½Ð¾</button>`:''}
-              <button class="btn btn-ghost btn-xs" onclick="event.stopPropagation();openEditDisc('${d.id}')">âœï¸</button>
+              ${d.status==='reserved'&&d.tester?`<button class="btn btn-lime btn-xs" onclick="event.stopPropagation();confirmSale('${d.id}')">✓ Продано</button>`:''}
+              <button class="btn btn-ghost btn-xs" onclick="event.stopPropagation();openEditDisc('${d.id}')">✏️</button>
             </div>
           </div>
         </div>
         <div style="padding:0 0.65rem 0.5rem">
-          <button class="btn btn-ghost btn-xs" style="width:100%;font-size:0.7rem;color:var(--m1)" onclick="const el=document.getElementById('${historyId}');el.style.display=el.style.display==='none'?'block':'none';this.querySelector('.hist-arrow').textContent=el.style.display==='none'?'â–¸':'â–¾'">
-            <span class="hist-arrow">â–¸</span> Ð†ÑÑ‚Ð¾Ñ€Ñ–Ñ Ð·Ð°Ð¿Ð¸Ñ‚Ñ–Ð²${discReqs.length?' ('+discReqs.length+')':''}
+          <button class="btn btn-ghost btn-xs" style="width:100%;font-size:0.7rem;color:var(--m1)" onclick="const el=document.getElementById('${historyId}');el.style.display=el.style.display==='none'?'block':'none';this.querySelector('.hist-arrow').textContent=el.style.display==='none'?'▸':'▾'">
+            <span class="hist-arrow">▸</span> Історія запитів${discReqs.length?' ('+discReqs.length+')':''}
           </button>
           <div id="${historyId}" style="display:none;margin-top:0.4rem">
             ${discReqs.length?discReqs.map(r=>{
-              const isBuy=r.request_type==='buy'||(r.note&&r.note.toLowerCase().includes('ÐºÑƒÐ¿Ñ–Ð²'));
+              const isBuy=r.request_type==='buy'||(r.note&&r.note.toLowerCase().includes('купів'));
               const isExch=r.request_type==='exchange';
-              const typeLabel=isBuy?'ÐšÑƒÐ¿Ñ–Ð²Ð»Ñ':isExch?'ÐžÐ±Ð¼Ñ–Ð½':'Ð¢ÐµÑÑ‚';
+              const typeLabel=isBuy?'Купівля':isExch?'Обмін':'Тест';
               const typeBadge=isBuy?'b-av':isExch?'b-tr':'b-te';
               return`<div style="padding:0.4rem 0.5rem;border-top:1px solid var(--b1);font-size:0.78rem;display:flex;align-items:center;gap:0.4rem">
                 <div style="flex:1;min-width:0">
                   <div>${r.tester} <span class="badge ${typeBadge}" style="font-size:0.58rem">${typeLabel}</span> <span class="badge b-te" style="font-size:0.58rem">${r.status||'pending'}</span></div>
-                  <div style="font-size:0.68rem;color:var(--m1)">${fmtDate(r.created_at)}${r.tester_tg?' Â· @'+r.tester_tg.replace('@',''):''}${r.note?' Â· '+r.note.substring(0,40)+(r.note.length>40?'â€¦':''):''}</div>
+                  <div style="font-size:0.68rem;color:var(--m1)">${fmtDate(r.created_at)}${r.tester_tg?' · @'+r.tester_tg.replace('@',''):''}${r.note?' · '+r.note.substring(0,40)+(r.note.length>40?'…':''):''}</div>
                 </div>
-                ${isBuy&&r.status==='pending'?`<button class="btn btn-lime btn-xs" onclick="event.stopPropagation();confirmSale('${d.id}')" style="flex-shrink:0">âœ“</button>`:''}
-                ${!isBuy&&r.status==='pending'?`<button class="btn btn-cyan btn-xs" onclick="event.stopPropagation();acceptRequest('${r.id}','${d.id}','${(r.tester||'').replace(/'/g,"\\'")}','${(r.tester_tg||'').replace(/'/g,"\\'")}','${r.request_type}')" style="flex-shrink:0">ÐŸÑ€Ð¸Ð¹Ð½ÑÑ‚Ð¸</button>`:''}
+                ${isBuy&&r.status==='pending'?`<button class="btn btn-lime btn-xs" onclick="event.stopPropagation();confirmSale('${d.id}')" style="flex-shrink:0">✓</button>`:''}
+                ${!isBuy&&r.status==='pending'?`<button class="btn btn-cyan btn-xs" onclick="event.stopPropagation();acceptRequest('${r.id}','${d.id}','${(r.tester||'').replace(/'/g,"\\'")}','${(r.tester_tg||'').replace(/'/g,"\\'")}','${r.request_type}')" style="flex-shrink:0">Прийняти</button>`:''}
               </div>`;
-            }).join(''):'<div style="padding:0.4rem 0.5rem;font-size:0.75rem;color:var(--m1)">ÐÐµÐ¼Ð°Ñ” Ð·Ð°Ð¿Ð¸Ñ‚Ñ–Ð²</div>'}
+            }).join(''):'<div style="padding:0.4rem 0.5rem;font-size:0.75rem;color:var(--m1)">Немає запитів</div>'}
           </div>
         </div>
       </div>`;
     }).join('')
-    :`<div class="empty" style="padding:1.25rem"><div class="empty-icon" style="font-size:1.25rem">ðŸ“¦</div>ÐÐµÐ¼Ð°Ñ” Ð´Ð¸ÑÐºÑ–Ð²</div>`;
+    :`<div class="empty" style="padding:1.25rem"><div class="empty-icon" style="font-size:1.25rem">📦</div>Немає дисків</div>`;
 
   // Render requests tab (unchanged logic)
   const reqTab=document.getElementById('cab-tab-requests');
-  if(reqTab)reqTab.textContent='Ð—Ð°Ð¿Ð¸Ñ‚Ð¸'+(allReqs.length?' ('+allReqs.length+')':'');
+  if(reqTab)reqTab.textContent='Запити'+(allReqs.length?' ('+allReqs.length+')':'');
   document.getElementById('sellerRequests').innerHTML=allReqs.length
     ?allReqs.map(r=>{
-        const isBuy=r.request_type==='buy'||(r.note&&r.note.toLowerCase().includes('ÐºÑƒÐ¿Ñ–Ð²'));
+        const isBuy=r.request_type==='buy'||(r.note&&r.note.toLowerCase().includes('купів'));
         const isExch=r.request_type==='exchange';
-        const typeLabel=isBuy?'ÐšÑƒÐ¿Ñ–Ð²Ð»Ñ':isExch?'ÐžÐ±Ð¼Ñ–Ð½':'Ð¢ÐµÑÑ‚';
+        const typeLabel=isBuy?'Купівля':isExch?'Обмін':'Тест';
         const typeBadge=isBuy?'b-av':isExch?'b-tr':'b-te';
         const disc=my.find(d=>String(d.id)===String(r.disc_id));
         return`<div class="dash-item" style="flex-direction:column;align-items:stretch;gap:0.35rem">
           <div style="display:flex;align-items:center;gap:0.5rem">
             <div style="flex:1;min-width:0">
-              <div class="di-title">${r.tester} â†’ ${disc?disc.brand+' '+disc.model:'?'} <span class="badge ${typeBadge}">${typeLabel}</span></div>
+              <div class="di-title">${r.tester} → ${disc?disc.brand+' '+disc.model:'?'} <span class="badge ${typeBadge}">${typeLabel}</span></div>
               <div class="di-sub">${fmtDate(r.created_at)}${tgLinkFull(r.tester_tg)}</div>
             </div>
-            ${disc&&isBuy&&r.status==='pending'?`<button class="btn btn-lime btn-xs" onclick="confirmSale('${disc.id}')">âœ“ ÐŸÑ€Ð¾Ð´Ð°Ð½Ð¾</button>`:''}
-            ${disc&&!isBuy&&r.status==='pending'?`<button class="btn btn-cyan btn-xs" onclick="acceptRequest('${r.id}','${disc.id}','${(r.tester||'').replace(/'/g,"\\'")}','${(r.tester_tg||'').replace(/'/g,"\\'")}','${r.request_type}')">ÐŸÑ€Ð¸Ð¹Ð½ÑÑ‚Ð¸</button>`:''}
+            ${disc&&isBuy&&r.status==='pending'?`<button class="btn btn-lime btn-xs" onclick="confirmSale('${disc.id}')">✓ Продано</button>`:''}
+            ${disc&&!isBuy&&r.status==='pending'?`<button class="btn btn-cyan btn-xs" onclick="acceptRequest('${r.id}','${disc.id}','${(r.tester||'').replace(/'/g,"\\'")}','${(r.tester_tg||'').replace(/'/g,"\\'")}','${r.request_type}')">Прийняти</button>`:''}
           </div>
         </div>`;
       }).join('')
-    :`<div style="color:var(--m1);font-size:0.84rem;padding:0.5rem 0">ÐÐµÐ¼Ð°Ñ” Ð·Ð°Ð¿Ð¸Ñ‚Ñ–Ð²</div>`;
+    :`<div style="color:var(--m1);font-size:0.84rem;padding:0.5rem 0">Немає запитів</div>`;
 }
 
 async function renderTester(){
@@ -1713,24 +1713,24 @@ async function renderTester(){
   if(al){
     al.innerHTML=active.length
       ?active.map(d=>`<div class="dash-item">
-          ${d.photoUrl?`<img src="${d.photoUrl}" style="width:38px;height:38px;object-fit:cover;border-radius:7px;flex-shrink:0">`:'<div style="width:38px;height:38px;background:var(--s3);border-radius:7px;display:flex;align-items:center;justify-content:center">ðŸ¥</div>'}
-          <div style="flex:1;min-width:0"><div class="di-title">${d.brand} ${d.model}</div><div class="di-sub">ðŸ‘¤ ${d.owner} Â· ${d.buyout||0}â‚´</div></div>
+          ${d.photoUrl?`<img src="${d.photoUrl}" style="width:38px;height:38px;object-fit:cover;border-radius:7px;flex-shrink:0">`:'<div style="width:38px;height:38px;background:var(--s3);border-radius:7px;display:flex;align-items:center;justify-content:center">🥏</div>'}
+          <div style="flex:1;min-width:0"><div class="di-title">${d.brand} ${d.model}</div><div class="di-sub">👤 ${d.owner} · ${d.buyout||0}₴</div></div>
           <div style="display:flex;gap:0.3rem">
-            <button class="btn btn-lime btn-xs" onclick="oBuy('${d.id}')">ÐšÑƒÐ¿Ð¸Ñ‚Ð¸</button>
-            <button class="btn btn-ghost btn-xs" onclick="oRet('${d.id}')">â†©</button>
+            <button class="btn btn-lime btn-xs" onclick="oBuy('${d.id}')">Купити</button>
+            <button class="btn btn-ghost btn-xs" onclick="oRet('${d.id}')">↩</button>
           </div>
         </div>`).join('')
-      :`<div class="empty" style="padding:1.5rem"><div class="empty-icon" style="font-size:1.25rem">ðŸŽ¯</div>ÐÐµÐ¼Ð°Ñ” Ð°ÐºÑ‚Ð¸Ð²Ð½Ð¸Ñ… Ñ‚ÐµÑÑ‚Ñ–Ð²</div>`;
+      :`<div class="empty" style="padding:1.5rem"><div class="empty-icon" style="font-size:1.25rem">🎯</div>Немає активних тестів</div>`;
   }
 }
 
-// â”€â”€ ADMIN â”€â”€
+// ── ADMIN ──
 function isAdminUser(){if(ADMIN_TOKEN)return true;if(!CU)return false;return ADMINS.includes(String(CU.tgId||''));}
 let ADMIN_TOKEN=null;
 
 async function adminLoginPass(){
   const pass=document.getElementById('adminPassInput')?.value;
-  if(!pass){toast('âš ï¸ Ð’Ð²ÐµÐ´Ñ–Ñ‚ÑŒ Ð¿Ð°Ñ€Ð¾Ð»ÑŒ',true);return;}
+  if(!pass){toast('⚠️ Введіть пароль',true);return;}
   const btn=document.querySelector('#adminNoAuth .btn-lime');
   if(btn){btn.disabled=true;btn.textContent='...';}
   try{
@@ -1751,17 +1751,17 @@ async function adminLoginPass(){
       document.getElementById('adminNoAuth').style.display='none';
       document.getElementById('adminContent').style.display='block';
       loadAdminData();
-      toast('âœ… Ð›Ð°ÑÐºÐ°Ð²Ð¾ Ð¿Ñ€Ð¾ÑÐ¸Ð¼Ð¾!');
-    }else toast('âš ï¸ ÐÐµÐ²Ñ–Ñ€Ð½Ð¸Ð¹ Ð¿Ð°Ñ€Ð¾Ð»ÑŒ',true);
-  }catch(e){toast('âš ï¸ ÐŸÐ¾Ð¼Ð¸Ð»ÐºÐ° Ð·Ñ”Ð´Ð½Ð°Ð½Ð½Ñ',true);}
-  if(btn){btn.disabled=false;btn.textContent='Ð£Ð²Ñ–Ð¹Ñ‚Ð¸';}
+      toast('✅ Ласкаво просимо!');
+    }else toast('⚠️ Невірний пароль',true);
+  }catch(e){toast('⚠️ Помилка зєднання',true);}
+  if(btn){btn.disabled=false;btn.textContent='Увійти';}
 }
 
 function checkAdminAccess(){
   if(isAdminUser()){document.getElementById('adminNoAuth').style.display='none';document.getElementById('adminContent').style.display='block';setTimeout(loadAdminData,100);return true;}
   document.getElementById('adminNoAuth').style.display='block';document.getElementById('adminContent').style.display='none';
   const m=document.getElementById('adminNoAuthMsg');
-  if(m&&CU)m.innerHTML=`ID: ${CU.tgId||'?'} Â· @${CU.tg||'?'}`;
+  if(m&&CU)m.innerHTML=`ID: ${CU.tgId||'?'} · @${CU.tg||'?'}`;
   return false;
 }
 
@@ -1775,49 +1775,49 @@ async function loadAdminData(){
     document.getElementById('adm-total').textContent=all.length;
     document.getElementById('adm-av').textContent=all.filter(d=>d.status==='available').length;
     document.getElementById('adm-te').textContent=all.filter(d=>['testing','reserved'].includes(d.status)).length;
-    document.getElementById('adm-rev').textContent=all.filter(d=>d.status==='sold').reduce((a,d)=>a+(Number(d.buyout)||0),0)+'â‚´';
+    document.getElementById('adm-rev').textContent=all.filter(d=>d.status==='sold').reduce((a,d)=>a+(Number(d.buyout)||0),0)+'₴';
     document.getElementById('adminDiscTable').innerHTML=all.map(d=>`<tr>
       <td><strong>${d.brand} ${d.model}</strong><br><span style="color:var(--m1);font-size:0.7rem">${d.plastic||''}</span></td>
       <td>${d.owner||'-'}</td>
       <td><span style="font-family:'Space Mono';font-size:0.78rem;color:var(--lime)">${d.condition||0}/10</span></td>
       <td><span class="badge b-${(ST[d.status]||ST.available).c}">${(ST[d.status]||ST.available).l}</span></td>
-      <td style="font-family:'Space Mono';font-size:0.75rem">${d.buyout||0}â‚´</td>
+      <td style="font-family:'Space Mono';font-size:0.75rem">${d.buyout||0}₴</td>
       <td style="white-space:nowrap">
         <select onchange="adminSetStatus('${d.id}',this.value)" style="padding:2px 5px;font-size:0.72rem;width:auto;background:var(--s2);color:var(--text);border:1px solid var(--b1);border-radius:5px">
-          <option value="">â€” ÑÑ‚Ð°Ñ‚ÑƒÑ â€”</option>
-          <option value="available">Ð”Ð¾ÑÑ‚ÑƒÐ¿Ð½Ð¸Ð¹</option>
-          <option value="testing">ÐÐ° Ñ‚ÐµÑÑ‚Ñ–</option>
-          <option value="reserved">Ð ÐµÐ·ÐµÑ€Ð²</option>
-          <option value="pending">ÐŸÐ¾Ð²ÐµÑ€Ð½ÐµÐ½Ð½Ñ</option>
-          <option value="sold">ÐŸÑ€Ð¾Ð´Ð°Ð½Ð¾</option>
-          <option value="unlisted">Ð—Ð½ÑÑ‚Ð¾ Ð· Ð¿Ñ€Ð¾Ð´Ð°Ð¶Ñƒ</option>
+          <option value="">— статус —</option>
+          <option value="available">Доступний</option>
+          <option value="testing">На тесті</option>
+          <option value="reserved">Резерв</option>
+          <option value="pending">Повернення</option>
+          <option value="sold">Продано</option>
+          <option value="unlisted">Знято з продажу</option>
         </select>
-        <button class="btn btn-ghost btn-xs" style="margin-top:3px" onclick="adminEditPhotos('${d.id}')">ðŸ“·</button>
-        <button class="btn btn-danger btn-xs" style="margin-top:3px" onclick="adminDelete('${d.id}')">ðŸ—‘</button>
+        <button class="btn btn-ghost btn-xs" style="margin-top:3px" onclick="adminEditPhotos('${d.id}')">📷</button>
+        <button class="btn btn-danger btn-xs" style="margin-top:3px" onclick="adminDelete('${d.id}')">🗑</button>
       </td></tr>`).join('');
     document.getElementById('adminReqTable').innerHTML=(reqs||[]).map(r=>{
       const d=all.find(x=>x.id===r.disc_id);
-      const isBuy=r.request_type==='buy'||(r.note&&r.note.includes('ÐºÑƒÐ¿Ñ–Ð²'));
-      return`<tr><td>${r.tester||'-'}${r.tester_tg?' Â· @'+r.tester_tg:''}</td><td>${d?d.brand+' '+d.model:'?'}</td><td>${isBuy?'ÐšÑƒÐ¿Ñ–Ð²Ð»Ñ':'Ð¢ÐµÑÑ‚'}</td><td>${fmtDate(r.created_at)}</td><td><span class="badge b-te">${r.status||'-'}</span></td></tr>`;
+      const isBuy=r.request_type==='buy'||(r.note&&r.note.includes('купів'));
+      return`<tr><td>${r.tester||'-'}${r.tester_tg?' · @'+r.tester_tg:''}</td><td>${d?d.brand+' '+d.model:'?'}</td><td>${isBuy?'Купівля':'Тест'}</td><td>${fmtDate(r.created_at)}</td><td><span class="badge b-te">${r.status||'-'}</span></td></tr>`;
     }).join('');
     await loadBanned();
-  }catch(e){toast('âš ï¸ ÐŸÐ¾Ð¼Ð¸Ð»ÐºÐ° Ð·Ð°Ð²Ð°Ð½Ñ‚Ð°Ð¶ÐµÐ½Ð½Ñ',true);}
+  }catch(e){toast('⚠️ Помилка завантаження',true);}
 }
 
 async function adminSetStatus(discId,status){
   if(!status)return;
   const {error}=await sb.from('discs').update({status}).eq('id',discId);
-  if(!error){await loadDiscs();loadAdminData();toast('âœ… Ð¡Ñ‚Ð°Ñ‚ÑƒÑ Ð·Ð¼Ñ–Ð½ÐµÐ½Ð¾');}
-  else toast('âš ï¸ '+error.message,true);
+  if(!error){await loadDiscs();loadAdminData();toast('✅ Статус змінено');}
+  else toast('⚠️ '+error.message,true);
 }
 async function adminDelete(discId){
-  if(!confirm('ÐŸÑ€Ð¸Ñ…Ð¾Ð²Ð°Ñ‚Ð¸ Ð´Ð¸ÑÐº?'))return;
+  if(!confirm('Приховати диск?'))return;
   const {error}=await sb.from('discs').update({status:'deleted'}).eq('id',discId);
-  if(!error){await loadDiscs();loadAdminData();toast('ðŸ—‘ Ð”Ð¸ÑÐº Ð¿Ñ€Ð¸Ñ…Ð¾Ð²Ð°Ð½Ð¾');}
-  else toast('âš ï¸ '+error.message,true);
+  if(!error){await loadDiscs();loadAdminData();toast('🗑 Диск приховано');}
+  else toast('⚠️ '+error.message,true);
 }
 
-// â”€â”€ ADMIN PHOTOS â”€â”€
+// ── ADMIN PHOTOS ──
 let adminPhotoFiles=[null,null,null];
 let adminPhotoExisting=['','',''];
 
@@ -1829,13 +1829,13 @@ async function adminEditPhotos(discId){
   if(!d){
     try{const {data}=await sb.from('discs').select('*').eq('id',discId).single();if(data)d=dbToDisc(data);}catch(e){}
   }
-  if(!d){toast('âš ï¸ Ð”Ð¸ÑÐº Ð½Ðµ Ð·Ð½Ð°Ð¹Ð´ÐµÐ½Ð¾',true);return;}
+  if(!d){toast('⚠️ Диск не знайдено',true);return;}
   adminPhotoExisting=[d.photoUrl||'',d.photoUrl2||'',d.photoUrl3||''];
   // Show current photos
   document.getElementById('ap-current').innerHTML=adminPhotoExisting.filter(Boolean).length
-    ?`<div style="display:flex;gap:0.4rem;flex-wrap:wrap">${adminPhotoExisting.map((u,i)=>u?`<div style="position:relative"><img src="${u}" style="width:100px;height:70px;object-fit:cover;border-radius:var(--r);border:1px solid var(--b1)"><button class="btn btn-danger btn-xs" style="position:absolute;top:2px;right:2px;padding:1px 4px;font-size:0.6rem" onclick="adminRemovePhoto(${i})">âŒ</button></div>`:''
+    ?`<div style="display:flex;gap:0.4rem;flex-wrap:wrap">${adminPhotoExisting.map((u,i)=>u?`<div style="position:relative"><img src="${u}" style="width:100px;height:70px;object-fit:cover;border-radius:var(--r);border:1px solid var(--b1)"><button class="btn btn-danger btn-xs" style="position:absolute;top:2px;right:2px;padding:1px 4px;font-size:0.6rem" onclick="adminRemovePhoto(${i})">❌</button></div>`:''
     ).join('')}</div>`
-    :'<div style="color:var(--m1);font-size:0.8rem">ÐÐµÐ¼Ð°Ñ” Ñ„Ð¾Ñ‚Ð¾</div>';
+    :'<div style="color:var(--m1);font-size:0.8rem">Немає фото</div>';
   // Reset slots
   [0,1,2].forEach(i=>{
     const slot=document.getElementById('ap-slot'+i);
@@ -1858,9 +1858,9 @@ function adminRemovePhoto(idx){
   document.getElementById('apFile'+idx).value='';
   // Refresh current display
   document.getElementById('ap-current').innerHTML=adminPhotoExisting.filter(Boolean).length
-    ?`<div style="display:flex;gap:0.4rem;flex-wrap:wrap">${adminPhotoExisting.map((u,i)=>u?`<div style="position:relative"><img src="${u}" style="width:100px;height:70px;object-fit:cover;border-radius:var(--r);border:1px solid var(--b1)"><button class="btn btn-danger btn-xs" style="position:absolute;top:2px;right:2px;padding:1px 4px;font-size:0.6rem" onclick="adminRemovePhoto(${i})">âŒ</button></div>`:''
+    ?`<div style="display:flex;gap:0.4rem;flex-wrap:wrap">${adminPhotoExisting.map((u,i)=>u?`<div style="position:relative"><img src="${u}" style="width:100px;height:70px;object-fit:cover;border-radius:var(--r);border:1px solid var(--b1)"><button class="btn btn-danger btn-xs" style="position:absolute;top:2px;right:2px;padding:1px 4px;font-size:0.6rem" onclick="adminRemovePhoto(${i})">❌</button></div>`:''
     ).join('')}</div>`
-    :'<div style="color:var(--m1);font-size:0.8rem">ÐÐµÐ¼Ð°Ñ” Ñ„Ð¾Ñ‚Ð¾</div>';
+    :'<div style="color:var(--m1);font-size:0.8rem">Немає фото</div>';
 }
 
 function handleAdminPhoto(i,input){
@@ -1880,7 +1880,7 @@ function handleAdminPhoto(i,input){
 async function saveAdminPhotos(){
   const discId=document.getElementById('ap-disc-id').value;
   const btn=document.querySelector('#ov-adminPhoto .btn-lime');
-  btn.disabled=true;btn.textContent='Ð—Ð°Ð²Ð°Ð½Ñ‚Ð°Ð¶ÐµÐ½Ð½Ñ...';
+  btn.disabled=true;btn.textContent='Завантаження...';
   const urls=[...adminPhotoExisting];
   for(let i=0;i<3;i++){
     if(!adminPhotoFiles[i])continue;
@@ -1892,12 +1892,12 @@ async function saveAdminPhotos(){
     }catch(e){}
   }
   const {error}=await sb.from('discs').update({photo_url:urls[0]||'',photo_url2:urls[1]||'',photo_url3:urls[2]||''}).eq('id',discId);
-  if(!error){closeModal('adminPhoto');await loadDiscs();loadAdminData();toast('âœ… Ð¤Ð¾Ñ‚Ð¾ Ð¾Ð½Ð¾Ð²Ð»ÐµÐ½Ð¾');}
-  else toast('âš ï¸ '+error.message,true);
-  btn.disabled=false;btn.textContent='Ð—Ð±ÐµÑ€ÐµÐ³Ñ‚Ð¸ Ñ„Ð¾Ñ‚Ð¾';
+  if(!error){closeModal('adminPhoto');await loadDiscs();loadAdminData();toast('✅ Фото оновлено');}
+  else toast('⚠️ '+error.message,true);
+  btn.disabled=false;btn.textContent='Зберегти фото';
 }
 
-// â”€â”€ BAN â”€â”€
+// ── BAN ──
 async function loadBanned(){
   try{
     const {data}=await sb.from('users').select('telegram_id,tg_username,name').eq('banned',true);
@@ -1909,10 +1909,10 @@ function renderBanned(){
   const el=document.getElementById('bannedList');if(!el)return;
   el.innerHTML=bannedUsers.length
     ?bannedUsers.map(u=>{
-      const label=(u.name||'')+(u.tg?' Â· @'+u.tg:'')+(u.id?' Â· '+u.id:'');
-      return`<div class="dash-item">${label}<button class="btn btn-ghost btn-xs" style="margin-left:auto" onclick="unbanUser('${u.id}')">Ð Ð¾Ð·Ð±Ð»Ð¾Ðº</button></div>`;
+      const label=(u.name||'')+(u.tg?' · @'+u.tg:'')+(u.id?' · '+u.id:'');
+      return`<div class="dash-item">${label}<button class="btn btn-ghost btn-xs" style="margin-left:auto" onclick="unbanUser('${u.id}')">Розблок</button></div>`;
     }).join('')
-    :'<div style="color:var(--m1);font-size:0.8rem">ÐÐµÐ¼Ð°Ñ”</div>';
+    :'<div style="color:var(--m1);font-size:0.8rem">Немає</div>';
 }
 async function banUser(){
   const v=document.getElementById('banInput').value.trim();if(!v)return;
@@ -1922,16 +1922,16 @@ async function banUser(){
       await sb.from('users').update({banned:true}).eq('telegram_id',data[0].telegram_id);
       document.getElementById('banInput').value='';
       await loadBanned();
-      toast('ðŸš« '+v+' Ð·Ð°Ð±Ð»Ð¾ÐºÐ¾Ð²Ð°Ð½Ð¾');
-    }else{toast('âš ï¸ ÐšÐ¾Ñ€Ð¸ÑÑ‚ÑƒÐ²Ð°Ñ‡Ð° Ð½Ðµ Ð·Ð½Ð°Ð¹Ð´ÐµÐ½Ð¾',true);}
-  }catch(e){toast('âš ï¸ ÐŸÐ¾Ð¼Ð¸Ð»ÐºÐ°',true);}
+      toast('🚫 '+v+' заблоковано');
+    }else{toast('⚠️ Користувача не знайдено',true);}
+  }catch(e){toast('⚠️ Помилка',true);}
 }
 async function unbanUser(tgId){
   try{
     await sb.from('users').update({banned:false}).eq('telegram_id',tgId);
     await loadBanned();
-    toast('âœ… Ð Ð¾Ð·Ð±Ð»Ð¾ÐºÐ¾Ð²Ð°Ð½Ð¾');
-  }catch(e){toast('âš ï¸ ÐŸÐ¾Ð¼Ð¸Ð»ÐºÐ°',true);}
+    toast('✅ Розблоковано');
+  }catch(e){toast('⚠️ Помилка',true);}
 }
 async function checkBanned(){
   if(!CU||!CU.tgId)return false;
@@ -1939,14 +1939,14 @@ async function checkBanned(){
     const {data}=await sb.from('users').select('banned').eq('telegram_id',CU.tgId).single();
     if(data&&data.banned){
       CU=null;localStorage.removeItem('dcUser');
-      document.body.innerHTML='<div style="display:flex;align-items:center;justify-content:center;min-height:100vh;color:#f87171;font-size:1.1rem;text-align:center;padding:2rem">ðŸš« Ð’Ð°Ñˆ Ð°ÐºÐ°ÑƒÐ½Ñ‚ Ð·Ð°Ð±Ð»Ð¾ÐºÐ¾Ð²Ð°Ð½Ð¾.<br>Ð—Ð²ÐµÑ€Ð½Ñ–Ñ‚ÑŒÑÑ Ð´Ð¾ Ð°Ð´Ð¼Ñ–Ð½Ñ–ÑÑ‚Ñ€Ð°Ñ‚Ð¾Ñ€Ð°.</div>';
+      document.body.innerHTML='<div style="display:flex;align-items:center;justify-content:center;min-height:100vh;color:#f87171;font-size:1.1rem;text-align:center;padding:2rem">🚫 Ваш акаунт заблоковано.<br>Зверніться до адміністратора.</div>';
       return true;
     }
   }catch(e){}
   return false;
 }
 
-// â”€â”€ NAV â”€â”€
+// ── NAV ──
 function goPage(page,btn){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.getElementById('page-'+page)?.classList.add('active');
@@ -1998,7 +1998,7 @@ function initBnavPill(){
 window.addEventListener('resize',()=>{const a=document.querySelector('.bnav-item.active:not(.bnav-item-add)');const p=document.getElementById('bnavPill');if(p){p.style.transition='none';moveBnavPill(a);requestAnimationFrame(()=>{p.style.transition='';});}});
 setTimeout(initBnavPill,300);
 
-// â”€â”€ FTABS SLIDING PILL â”€â”€
+// ── FTABS SLIDING PILL ──
 function moveFtabsPill(btn){
   if(!btn)return;
   const container=btn.closest('.ftabs,.cab-tabs');
@@ -2037,7 +2037,7 @@ function goPageM(page){goPage(page);}
 
 let _scrollY=0;
 function openModal(n){
-  if(['reqTest','buy','return','addDisc','addAuction'].includes(n)&&!CU){toast('âš ï¸ Ð¡Ð¿Ð¾Ñ‡Ð°Ñ‚ÐºÑƒ ÑƒÐ²Ñ–Ð¹Ð´Ñ–Ñ‚ÑŒ',true);document.getElementById('ov-login').classList.add('open');_scrollY=window.scrollY;document.body.style.top=-_scrollY+'px';document.body.classList.add('modal-open');return;}
+  if(['reqTest','buy','return','addDisc','addAuction'].includes(n)&&!CU){toast('⚠️ Спочатку увійдіть',true);document.getElementById('ov-login').classList.add('open');_scrollY=window.scrollY;document.body.style.top=-_scrollY+'px';document.body.classList.add('modal-open');return;}
   const ov=document.getElementById('ov-'+n);
   if(ov){ov.classList.add('open');ov.scrollTop=0;}
   if(!document.body.classList.contains('modal-open')){_scrollY=window.scrollY;document.body.style.top=-_scrollY+'px';document.body.classList.add('modal-open');}
@@ -2083,7 +2083,7 @@ document.querySelectorAll('.overlay').forEach(o=>o.addEventListener('click',e=>{
 
 function toast(msg,err=false){const c=document.getElementById('toasts'),t=document.createElement('div');t.className='toast'+(err?' err':'');t.textContent=msg;c.appendChild(t);setTimeout(()=>t.remove(),3500);}
 
-// â”€â”€ AUTH â”€â”€
+// ── AUTH ──
 function restoreUser(){
   try{
     const tg=window.Telegram?.WebApp;
@@ -2110,25 +2110,25 @@ function updateUserBtn(){
   const hb=document.getElementById('hamburger');
   if(hb)hb.style.borderColor='var(--lime)';
   const el=document.getElementById('mobileUserInfo');
-  if(el){el.textContent='ðŸ‘¤ '+CU.name+(CU.tg?' Â· @'+CU.tg:'');el.style.display='block';}
+  if(el){el.textContent='👤 '+CU.name+(CU.tg?' · @'+CU.tg:'');el.style.display='block';}
 }
 function doLogin(){
   const name=document.getElementById('li-name').value.trim();
-  if(!name){toast('âš ï¸ Ð’Ð²ÐµÐ´Ñ–Ñ‚ÑŒ Ñ–Ð¼\'Ñ',true);return;}
+  if(!name){toast('⚠️ Введіть ім\'я',true);return;}
   CU={name,tg:document.getElementById('li-tg').value.trim(),tgId:'',role:'both'};
   localStorage.setItem('dcUser',JSON.stringify(CU));
   updateUserBtn();closeModal('login');renderCabinet();
-  toast(`ðŸ‘‹ ÐŸÑ€Ð¸Ð²Ñ–Ñ‚, ${name}!`);
+  toast(`👋 Привіт, ${name}!`);
 }
 
-// â”€â”€ AUCTIONS â”€â”€
+// ── AUCTIONS ──
 let allAuctions=[], aucFilter='active', aucPhotoFiles=[null,null,null], aucTimerInterval=null;
 function bidWord(n){
   n=Math.abs(n)%100;const n1=n%10;
-  if(n>10&&n<20)return n+' ÑÑ‚Ð°Ð²Ð¾Ðº';
-  if(n1>1&&n1<5)return n+' ÑÑ‚Ð°Ð²ÐºÐ¸';
-  if(n1===1)return n+' ÑÑ‚Ð°Ð²ÐºÐ°';
-  return n+' ÑÑ‚Ð°Ð²Ð¾Ðº';
+  if(n>10&&n<20)return n+' ставок';
+  if(n1>1&&n1<5)return n+' ставки';
+  if(n1===1)return n+' ставка';
+  return n+' ставок';
 }
 
 function toggleAucTypeFields(){
@@ -2185,7 +2185,7 @@ function getReverseCurPrice(a){
   return price;
 }
 function aucTypeBadge(t){
-  if(t==='reverse')return'<span style="font-size:0.55rem;background:var(--purple);color:#fff;padding:1px 4px;border-radius:3px;font-weight:700">ðŸ“‰ REVERSE</span>';
+  if(t==='reverse')return'<span style="font-size:0.55rem;background:var(--purple);color:#fff;padding:1px 4px;border-radius:3px;font-weight:700">📉 REVERSE</span>';
   return'';
 }
 function renderAuctions(){
@@ -2196,28 +2196,28 @@ function renderAuctions(){
   else if(aucFilter==='mybids')list=list.filter(a=>CU&&a._myBid);
   else if(aucFilter==='ended')list=list.filter(a=>a.status!=='active'||new Date(a.ends_at)<=now);
   const grid=document.getElementById('auctionGrid');
-  if(!list.length){grid.innerHTML='<div style="text-align:center;color:var(--m1);padding:2rem;font-size:0.85rem;grid-column:1/-1">ÐÐµÐ¼Ð°Ñ” Ð°ÑƒÐºÑ†Ñ–Ð¾Ð½Ñ–Ð²</div>';return;}
+  if(!list.length){grid.innerHTML='<div style="text-align:center;color:var(--m1);padding:2rem;font-size:0.85rem;grid-column:1/-1">Немає аукціонів</div>';return;}
   grid.innerHTML=list.map(a=>{
     const end=new Date(a.ends_at);
     const isActive=a.status==='active'&&end>now;
     const timeLeft=isActive?fmtTimeLeft(end-now):'';
     const statusClass=isActive?'av':a.status==='sold'?'so':'so';
-    const statusLabel=isActive?'ÐÐºÑ‚Ð¸Ð²Ð½Ð¸Ð¹':a.status==='sold'?'ÐŸÑ€Ð¾Ð´Ð°Ð½Ð¾':'Ð—Ð°Ð²ÐµÑ€ÑˆÐµÐ½Ð¾';
+    const statusLabel=isActive?'Активний':a.status==='sold'?'Продано':'Завершено';
     const curPrice=a.auction_type==='reverse'&&isActive?getReverseCurPrice(a):(a.current_price||a.start_price);
     const desc=a.description||'';
     // Parse description for disc info
-    const plastic=(desc.match(/ÐŸÐ»Ð°ÑÑ‚Ð¸Ðº:\s*(.+)/)||[])[1]||'';
-    const weight=(desc.match(/Ð’Ð°Ð³Ð°:\s*(\d+)/)||[])[1]||'';
-    const city=(desc.match(/ÐœÑ–ÑÑ‚Ð¾:\s*(.+)/)||[])[1]||'';
-    const cond=(desc.match(/Ð¡Ñ‚Ð°Ð½:\s*(\d+)/)||[])[1]||'';
-    const color=(desc.match(/ÐšÐ¾Ð»Ñ–Ñ€:\s*(.+)/)||[])[1]||'';
-    const sub=[plastic,weight?weight+'Ð³':'',color,city].filter(Boolean).join(' Â· ');
+    const plastic=(desc.match(/Пластик:\s*(.+)/)||[])[1]||'';
+    const weight=(desc.match(/Вага:\s*(\d+)/)||[])[1]||'';
+    const city=(desc.match(/Місто:\s*(.+)/)||[])[1]||'';
+    const cond=(desc.match(/Стан:\s*(\d+)/)||[])[1]||'';
+    const color=(desc.match(/Колір:\s*(.+)/)||[])[1]||'';
+    const sub=[plastic,weight?weight+'г':'',color,city].filter(Boolean).join(' · ');
     const flight=(desc.match(/Flight:\s*(.+)/)||[])[1]||'';
     const flightParts=flight?flight.split('/').map(v=>v.trim()):[];
     return`<div class="disc-card" onclick="showAucDetail('${a.id}')">
       <div class="disc-strip ${statusClass}"></div>
       <div style="position:relative">
-        ${a.photo_url?`<div class="disc-photo-wrap"><img src="${a.photo_url}" class="active" alt="" loading="lazy"></div>`:`<div class="disc-photo-placeholder">ðŸ†</div>`}
+        ${a.photo_url?`<div class="disc-photo-wrap"><img src="${a.photo_url}" class="active" alt="" loading="lazy"></div>`:`<div class="disc-photo-placeholder">🏆</div>`}
         <span class="s-${statusClass} status-overlay">${statusLabel}</span>
         ${aucTypeBadge(a.auction_type)?`<span style="position:absolute;top:5px;right:6px;z-index:2">${aucTypeBadge(a.auction_type)}</span>`:''}
       </div>
@@ -2233,18 +2233,18 @@ function renderAuctions(){
         </div>`:''}
         <div class="disc-footer" style="margin-top:auto">
           <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.3rem">
-            <div class="disc-price ${a.auction_type==='reverse'&&isActive?'auc-rev-price':''}" ${a.auction_type==='reverse'&&isActive?`data-created="${a.created_at}" data-rstart="${a.reverse_start}" data-rend="${a.reverse_end}" data-rdrop="${a.reverse_drop}" data-rint="${a.reverse_interval||60}"`:``}>${curPrice} â‚´</div>
-            ${a.winner?`<div style="font-size:0.65rem;color:var(--cyan)">ðŸ† ${(a.winner||'').split(' ')[0]}</div>`:`<div class="disc-own">ðŸ‘¤ ${(a.owner||'').split(' ')[0]}</div>`}
+            <div class="disc-price ${a.auction_type==='reverse'&&isActive?'auc-rev-price':''}" ${a.auction_type==='reverse'&&isActive?`data-created="${a.created_at}" data-rstart="${a.reverse_start}" data-rend="${a.reverse_end}" data-rdrop="${a.reverse_drop}" data-rint="${a.reverse_interval||60}"`:``}>${curPrice} ₴</div>
+            ${a.winner?`<div style="font-size:0.65rem;color:var(--cyan)">🏆 ${(a.winner||'').split(' ')[0]}</div>`:`<div class="disc-own">👤 ${(a.owner||'').split(' ')[0]}</div>`}
           </div>
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.4rem">
             <span style="font-size:0.65rem;color:var(--m1)">${bidWord(a.bid_count||0)}</span>
-            ${isActive?`<span class="auc-card-timer" data-ends="${a.ends_at}" style="font-size:0.65rem;color:var(--cyan);font-weight:600">â± ${timeLeft}</span>`:''}
+            ${isActive?`<span class="auc-card-timer" data-ends="${a.ends_at}" style="font-size:0.65rem;color:var(--cyan);font-weight:600">⏱ ${timeLeft}</span>`:''}
           </div>
-          ${a.auction_type==='reverse'&&isActive?`<div style="font-size:0.65rem;color:var(--purple);margin-bottom:0.3rem">ðŸ“‰ -${a.reverse_drop}â‚´ / ${a.reverse_interval||60}Ñ…Ð²</div>`:''}
-          ${isActive&&CU&&a.owner_tg_id===CU.tgId?`<div style="font-size:0.7rem;color:var(--m1);text-align:center">Ð’Ð°Ñˆ Ð°ÑƒÐºÑ†Ñ–Ð¾Ð½</div>`
-            :isActive?`<div style="display:flex;gap:3px">${a.auction_type==='reverse'?`<button class="btn btn-lime btn-xs auc-rev-btn" data-auc="${a.id}" data-created="${a.created_at}" data-rstart="${a.reverse_start}" data-rend="${a.reverse_end}" data-rdrop="${a.reverse_drop}" data-rint="${a.reverse_interval||60}" onclick="event.stopPropagation();buyoutAuction('${a.id}')" style="flex:1">ÐšÑƒÐ¿Ð¸Ñ‚Ð¸ ${curPrice}â‚´</button><button class="btn btn-cyan btn-xs" onclick="event.stopPropagation();showAucDetail('${a.id}')" style="flex:1">Ð¡Ñ‚Ð°Ð²ÐºÐ°</button>`:a.buyout_price>0?`<button class="btn btn-lime btn-xs" onclick="event.stopPropagation();buyoutAuction('${a.id}')" style="flex:1">ÐšÑƒÐ¿Ð¸Ñ‚Ð¸ ${a.buyout_price}â‚´</button><button class="btn btn-cyan btn-xs" onclick="event.stopPropagation();showAucDetail('${a.id}')" style="flex:1">Ð¡Ñ‚Ð°Ð²ÐºÐ°</button>`:`<button class="btn btn-cyan btn-xs btn-full" onclick="event.stopPropagation();showAucDetail('${a.id}')">Ð¡Ñ‚Ð°Ð²ÐºÐ°</button>`}</div>`
-            :a.status==='sold'?`<div style="font-size:0.7rem;color:var(--av);text-align:center">ðŸ† ${a.winner||''}</div>`
-            :`<div style="font-size:0.7rem;color:var(--m1);text-align:center">ÐÐµ Ð¿Ñ€Ð¾Ð´Ð°Ð½Ð¾</div>`}
+          ${a.auction_type==='reverse'&&isActive?`<div style="font-size:0.65rem;color:var(--purple);margin-bottom:0.3rem">📉 -${a.reverse_drop}₴ / ${a.reverse_interval||60}хв</div>`:''}
+          ${isActive&&CU&&a.owner_tg_id===CU.tgId?`<div style="font-size:0.7rem;color:var(--m1);text-align:center">Ваш аукціон</div>`
+            :isActive?`<div style="display:flex;gap:3px">${a.auction_type==='reverse'?`<button class="btn btn-lime btn-xs auc-rev-btn" data-auc="${a.id}" data-created="${a.created_at}" data-rstart="${a.reverse_start}" data-rend="${a.reverse_end}" data-rdrop="${a.reverse_drop}" data-rint="${a.reverse_interval||60}" onclick="event.stopPropagation();buyoutAuction('${a.id}')" style="flex:1">Купити ${curPrice}₴</button><button class="btn btn-cyan btn-xs" onclick="event.stopPropagation();showAucDetail('${a.id}')" style="flex:1">Ставка</button>`:a.buyout_price>0?`<button class="btn btn-lime btn-xs" onclick="event.stopPropagation();buyoutAuction('${a.id}')" style="flex:1">Купити ${a.buyout_price}₴</button><button class="btn btn-cyan btn-xs" onclick="event.stopPropagation();showAucDetail('${a.id}')" style="flex:1">Ставка</button>`:`<button class="btn btn-cyan btn-xs btn-full" onclick="event.stopPropagation();showAucDetail('${a.id}')">Ставка</button>`}</div>`
+            :a.status==='sold'?`<div style="font-size:0.7rem;color:var(--av);text-align:center">🏆 ${a.winner||''}</div>`
+            :`<div style="font-size:0.7rem;color:var(--m1);text-align:center">Не продано</div>`}
         </div>
       </div>
     </div>`;
@@ -2264,26 +2264,26 @@ function startAucGridTimer(){
       const ends=el.dataset.ends;
       if(!ends)return;
       const left=new Date(ends)-new Date();
-      if(left<=0){el.textContent='Ð—Ð°Ð²ÐµÑ€ÑˆÐµÐ½Ð¾';el.style.color='var(--m1)';}
-      else el.textContent='â± '+fmtTimeLeft(left);
+      if(left<=0){el.textContent='Завершено';el.style.color='var(--m1)';}
+      else el.textContent='⏱ '+fmtTimeLeft(left);
     });
     // Update reverse prices on cards
     document.querySelectorAll('.auc-rev-price').forEach(el=>{
-      el.textContent=calcRevPrice(el)+' â‚´';
+      el.textContent=calcRevPrice(el)+' ₴';
     });
     document.querySelectorAll('.auc-rev-btn').forEach(el=>{
-      el.textContent='ÐšÑƒÐ¿Ð¸Ñ‚Ð¸ '+calcRevPrice(el)+'â‚´';
+      el.textContent='Купити '+calcRevPrice(el)+'₴';
     });
   },1000);
 }
 
 function fmtTimeLeft(ms){
-  if(ms<=0)return'Ð—Ð°Ð²ÐµÑ€ÑˆÐµÐ½Ð¾';
+  if(ms<=0)return'Завершено';
   const s=Math.floor(ms/1000),m=Math.floor(s/60),h=Math.floor(m/60),d=Math.floor(h/24);
-  if(d>0)return d+'Ð´ '+h%24+'Ð³';
-  if(h>0)return h+'Ð³ '+m%60+'Ñ…Ð²';
-  if(m>0)return m+'Ñ…Ð² '+s%60+'Ñ';
-  return s+'Ñ';
+  if(d>0)return d+'д '+h%24+'г';
+  if(h>0)return h+'г '+m%60+'хв';
+  if(m>0)return m+'хв '+s%60+'с';
+  return s+'с';
 }
 
 function setAucFilter(btn,val){
@@ -2311,35 +2311,35 @@ function handleAucPhoto(i,input){
 }
 
 async function submitAuction(){
-  if(!CU||!CU.tgId){toast('âš ï¸ Ð¡Ð¿Ð¾Ñ‡Ð°Ñ‚ÐºÑƒ ÑƒÐ²Ñ–Ð¹Ð´Ñ–Ñ‚ÑŒ',true);return;}
+  if(!CU||!CU.tgId){toast('⚠️ Спочатку увійдіть',true);return;}
   const brand=document.getElementById('auc-brand').value.trim();
   const model=document.getElementById('auc-model').value.trim();
-  if(!brand||!model){toast('âš ï¸ Ð’Ð²ÐµÐ´Ñ–Ñ‚ÑŒ Ð±Ñ€ÐµÐ½Ð´ Ñ– Ð¼Ð¾Ð´ÐµÐ»ÑŒ',true);return;}
+  if(!brand||!model){toast('⚠️ Введіть бренд і модель',true);return;}
   const aucType=document.getElementById('auc-type').value;
   // Validate type-specific fields
   let startPrice=0,minStep=10,buyoutPrice=0,reverseStart=0,reverseEnd=0,reverseDrop=0,reverseInterval=60;
   if(aucType==='classic'){
     startPrice=parseInt(document.getElementById('auc-start').value);
-    if(!startPrice||startPrice<=0){toast('âš ï¸ Ð’Ð²ÐµÐ´Ñ–Ñ‚ÑŒ ÑÑ‚Ð°Ñ€Ñ‚Ð¾Ð²Ñƒ Ñ†Ñ–Ð½Ñƒ',true);return;}
+    if(!startPrice||startPrice<=0){toast('⚠️ Введіть стартову ціну',true);return;}
     minStep=parseInt(document.getElementById('auc-step').value)||10;
   }else if(aucType==='buyout'){
     startPrice=parseInt(document.getElementById('auc-start-b').value);
-    if(!startPrice||startPrice<=0){toast('âš ï¸ Ð’Ð²ÐµÐ´Ñ–Ñ‚ÑŒ ÑÑ‚Ð°Ñ€Ñ‚Ð¾Ð²Ñƒ Ñ†Ñ–Ð½Ñƒ',true);return;}
+    if(!startPrice||startPrice<=0){toast('⚠️ Введіть стартову ціну',true);return;}
     minStep=parseInt(document.getElementById('auc-step-b').value)||10;
     buyoutPrice=parseInt(document.getElementById('auc-buyout-b').value);
-    if(!buyoutPrice||buyoutPrice<=startPrice){toast('âš ï¸ Ð¦Ñ–Ð½Ð° "ÐšÑƒÐ¿Ð¸Ñ‚Ð¸ Ð·Ð°Ñ€Ð°Ð·" Ð¼Ð°Ñ” Ð±ÑƒÑ‚Ð¸ Ð±Ñ–Ð»ÑŒÑˆÐµ ÑÑ‚Ð°Ñ€Ñ‚Ð¾Ð²Ð¾Ñ—',true);return;}
+    if(!buyoutPrice||buyoutPrice<=startPrice){toast('⚠️ Ціна "Купити зараз" має бути більше стартової',true);return;}
   }else if(aucType==='reverse'){
     reverseStart=parseInt(document.getElementById('auc-reverse-start').value);
     reverseEnd=parseInt(document.getElementById('auc-reverse-end').value);
     reverseDrop=parseInt(document.getElementById('auc-reverse-drop').value);
     reverseInterval=parseInt(document.getElementById('auc-reverse-interval').value)||60;
-    if(!reverseStart||!reverseEnd||!reverseDrop){toast('âš ï¸ Ð—Ð°Ð¿Ð¾Ð²Ð½Ñ–Ñ‚ÑŒ Ð²ÑÑ– Ð¿Ð¾Ð»Ñ Ð·Ð²Ð¾Ñ€Ð¾Ñ‚Ð½ÑŒÐ¾Ð³Ð¾ Ð°ÑƒÐºÑ†Ñ–Ð¾Ð½Ñƒ',true);return;}
-    if(reverseEnd>=reverseStart){toast('âš ï¸ ÐœÑ–Ð½Ñ–Ð¼Ð°Ð»ÑŒÐ½Ð° Ñ†Ñ–Ð½Ð° Ð¼Ð°Ñ” Ð±ÑƒÑ‚Ð¸ Ð¼ÐµÐ½ÑˆÐµ Ð¿Ð¾Ñ‡Ð°Ñ‚ÐºÐ¾Ð²Ð¾Ñ—',true);return;}
+    if(!reverseStart||!reverseEnd||!reverseDrop){toast('⚠️ Заповніть всі поля зворотнього аукціону',true);return;}
+    if(reverseEnd>=reverseStart){toast('⚠️ Мінімальна ціна має бути менше початкової',true);return;}
     startPrice=reverseStart;
   }
   const btn=document.getElementById('aucSubmitBtn');
-  if(!aucPhotoFiles[0]){toast('âš ï¸ Ð”Ð¾Ð´Ð°Ð¹Ñ‚Ðµ Ñ…Ð¾Ñ‡Ð° Ð± Ð¾Ð´Ð½Ðµ Ñ„Ð¾Ñ‚Ð¾',true);return;}
-  btn.disabled=true;btn.textContent='Ð¡Ñ‚Ð²Ð¾Ñ€ÐµÐ½Ð½Ñ...';
+  if(!aucPhotoFiles[0]){toast('⚠️ Додайте хоча б одне фото',true);return;}
+  btn.disabled=true;btn.textContent='Створення...';
   const photos=['','',''];
   for(let i=0;i<3;i++){
     if(aucPhotoFiles[i]){
@@ -2351,20 +2351,20 @@ async function submitAuction(){
     }
   }
   const totalMs=getAucDurationMs();
-  if(totalMs<60000){toast('âš ï¸ ÐœÑ–Ð½Ñ–Ð¼Ð°Ð»ÑŒÐ½Ð° Ñ‚Ñ€Ð¸Ð²Ð°Ð»Ñ–ÑÑ‚ÑŒ: 1 Ñ…Ð²Ð¸Ð»Ð¸Ð½Ð°',true);btn.disabled=false;btn.textContent='Ð¡Ñ‚Ð²Ð¾Ñ€Ð¸Ñ‚Ð¸ Ð°ÑƒÐºÑ†Ñ–Ð¾Ð½';return;}
+  if(totalMs<60000){toast('⚠️ Мінімальна тривалість: 1 хвилина',true);btn.disabled=false;btn.textContent='Створити аукціон';return;}
   const endsAt=new Date(Date.now()+totalMs).toISOString();
   const title=brand+' '+model;
   const auction={
     owner:CU.name,owner_tg:CU.tg||'',owner_tg_id:CU.tgId,
     title,
     description:[
-      document.getElementById('auc-plastic').value.trim()?'ÐŸÐ»Ð°ÑÑ‚Ð¸Ðº: '+document.getElementById('auc-plastic').value.trim():'',
-      document.getElementById('auc-weight').value?'Ð’Ð°Ð³Ð°: '+document.getElementById('auc-weight').value+'Ð³':'',
-      document.getElementById('auc-color').value.trim()?'ÐšÐ¾Ð»Ñ–Ñ€: '+document.getElementById('auc-color').value.trim():'',
-      document.getElementById('auc-cond')?'Ð¡Ñ‚Ð°Ð½: '+document.getElementById('auc-cond').value+'/10':'',
+      document.getElementById('auc-plastic').value.trim()?'Пластик: '+document.getElementById('auc-plastic').value.trim():'',
+      document.getElementById('auc-weight').value?'Вага: '+document.getElementById('auc-weight').value+'г':'',
+      document.getElementById('auc-color').value.trim()?'Колір: '+document.getElementById('auc-color').value.trim():'',
+      document.getElementById('auc-cond')?'Стан: '+document.getElementById('auc-cond').value+'/10':'',
       (()=>{const s=document.getElementById('auc-speed').value,g=document.getElementById('auc-glide').value,t=document.getElementById('auc-turn').value,f=document.getElementById('auc-fade').value;return(s||g||t||f)?'Flight: '+[s||'-',g||'-',t||'-',f||'-'].join(' / '):'';})(),
-      document.getElementById('auc-inked')?.checked?'Inked: Ð¢Ð°Ðº':'',
-      document.getElementById('auc-city').value.trim()?'ÐœÑ–ÑÑ‚Ð¾: '+document.getElementById('auc-city').value.trim():'',
+      document.getElementById('auc-inked')?.checked?'Inked: Так':'',
+      document.getElementById('auc-city').value.trim()?'Місто: '+document.getElementById('auc-city').value.trim():'',
       document.getElementById('auc-desc').value.trim()
     ].filter(Boolean).join('\n'),
     photo_url:photos[0],photo_url2:photos[1],photo_url3:photos[2],
@@ -2377,15 +2377,15 @@ async function submitAuction(){
   };
   const {error}=await sb.from('auctions').insert(auction);
   if(!error){
-    closeModal('addAuction');toast('âœ… ÐÑƒÐºÑ†Ñ–Ð¾Ð½ ÑÑ‚Ð²Ð¾Ñ€ÐµÐ½Ð¾!');
+    closeModal('addAuction');toast('✅ Аукціон створено!');
     resetAucForm();
     aucFilter='active';
     document.querySelectorAll('#page-auctions .ft').forEach(b=>b.classList.remove('active'));
     document.querySelector('#page-auctions .ft')?.classList.add('active');
     await loadAuctions();
     goPage('auctions');
-  }else toast('âš ï¸ '+error.message,true);
-  btn.disabled=false;btn.textContent='Ð¡Ñ‚Ð²Ð¾Ñ€Ð¸Ñ‚Ð¸ Ð°ÑƒÐºÑ†Ñ–Ð¾Ð½';
+  }else toast('⚠️ '+error.message,true);
+  btn.disabled=false;btn.textContent='Створити аукціон';
 }
 
 function resetAucForm(){
@@ -2410,75 +2410,75 @@ async function showAucDetail(id){
   const curPrice=isReverse&&isActive?getReverseCurPrice(a):(a.current_price||a.start_price);
   const {data:bids}=await sb.from('bids').select('*').eq('auction_id',id).order('amount',{ascending:false});
   const minBid=isReverse?curPrice:(curPrice+(a.min_step||10));
-  const typeLabel=a.auction_type==='buyout'?'ðŸ’° ÐšÑƒÐ¿Ð¸Ñ‚Ð¸ Ð·Ð°Ñ€Ð°Ð· + ÐÑƒÐºÑ†Ñ–Ð¾Ð½':isReverse?'ðŸ“‰ Ð—Ð²Ð¾Ñ€Ð¾Ñ‚Ð½Ñ–Ð¹ Ð°ÑƒÐºÑ†Ñ–Ð¾Ð½':'ðŸ“ˆ ÐšÐ»Ð°ÑÐ¸Ñ‡Ð½Ð¸Ð¹ Ð°ÑƒÐºÑ†Ñ–Ð¾Ð½';
-  const statusLabel=isActive?'ÐÐºÑ‚Ð¸Ð²Ð½Ð¸Ð¹':a.status==='sold'?'ÐŸÑ€Ð¾Ð´Ð°Ð½Ð¾':'Ð—Ð°Ð²ÐµÑ€ÑˆÐµÐ½Ð¾';
+  const typeLabel=a.auction_type==='buyout'?'💰 Купити зараз + Аукціон':isReverse?'📉 Зворотній аукціон':'📈 Класичний аукціон';
+  const statusLabel=isActive?'Активний':a.status==='sold'?'Продано':'Завершено';
   const statusClass=isActive?'b-av':a.status==='sold'?'b-so':'b-so';
   // Parse description fields
   const desc=a.description||'';
-  const plastic=(desc.match(/ÐŸÐ»Ð°ÑÑ‚Ð¸Ðº:\s*(.+)/)||[])[1]||'';
-  const weight=(desc.match(/Ð’Ð°Ð³Ð°:\s*(\d+)/)||[])[1]||'';
-  const color=(desc.match(/ÐšÐ¾Ð»Ñ–Ñ€:\s*(.+)/)||[])[1]||'';
-  const cond=(desc.match(/Ð¡Ñ‚Ð°Ð½:\s*(\d+)/)||[])[1]||'';
+  const plastic=(desc.match(/Пластик:\s*(.+)/)||[])[1]||'';
+  const weight=(desc.match(/Вага:\s*(\d+)/)||[])[1]||'';
+  const color=(desc.match(/Колір:\s*(.+)/)||[])[1]||'';
+  const cond=(desc.match(/Стан:\s*(\d+)/)||[])[1]||'';
   const flight=(desc.match(/Flight:\s*(.+)/)||[])[1]||'';
   const flightParts=flight?flight.split('/').map(v=>v.trim()):[];
-  const inked=/Inked:\s*Ð¢Ð°Ðº/.test(desc);
-  const city=(desc.match(/ÐœÑ–ÑÑ‚Ð¾:\s*(.+)/)||[])[1]||'';
+  const inked=/Inked:\s*Так/.test(desc);
+  const city=(desc.match(/Місто:\s*(.+)/)||[])[1]||'';
   // Remove parsed lines from description to get notes
-  const notes=desc.replace(/ÐŸÐ»Ð°ÑÑ‚Ð¸Ðº:.*|Ð’Ð°Ð³Ð°:.*|ÐšÐ¾Ð»Ñ–Ñ€:.*|Ð¡Ñ‚Ð°Ð½:.*|Flight:.*|Inked:.*|ÐœÑ–ÑÑ‚Ð¾:.*/g,'').trim();
+  const notes=desc.replace(/Пластик:.*|Вага:.*|Колір:.*|Стан:.*|Flight:.*|Inked:.*|Місто:.*/g,'').trim();
   const photos=[a.photo_url,a.photo_url2,a.photo_url3].filter(Boolean);
-  const sub=[plastic,weight?weight+'Ð³':'',color,city].filter(Boolean).join(' Â· ');
+  const sub=[plastic,weight?weight+'г':'',color,city].filter(Boolean).join(' · ');
 
   document.getElementById('aucDetailContent').innerHTML=`
-    ${photos.length?`<div id="pw-aucD" style="margin:-1.5rem -1.5rem 1rem;border-radius:14px 14px 0 0;overflow:hidden;background:#0a0e14;position:relative">${photos.map((u,i)=>`<img src="${u}" style="width:100%;max-height:300px;object-fit:contain" class="${i===0?'active':''}" alt="">`).join('')}${photos.length>1?`<button class="photo-nav prev" onclick="photoNav('aucD',-1)">â€¹</button><button class="photo-nav next" onclick="photoNav('aucD',1)">â€º</button>`:''}</div>`:''}
+    ${photos.length?`<div id="pw-aucD" style="margin:-1.5rem -1.5rem 1rem;border-radius:14px 14px 0 0;overflow:hidden;background:#0a0e14;position:relative">${photos.map((u,i)=>`<img src="${u}" style="width:100%;max-height:300px;object-fit:contain" class="${i===0?'active':''}" alt="">`).join('')}${photos.length>1?`<button class="photo-nav prev" onclick="photoNav('aucD',-1)">‹</button><button class="photo-nav next" onclick="photoNav('aucD',1)">›</button>`:''}</div>`:''}
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.2rem">
       <div style="font-family:'Bebas Neue';font-size:1.6rem;letter-spacing:1px;line-height:1">${a.title}</div>
       <span class="badge ${statusClass}">${statusLabel}</span>
     </div>
     <div style="font-size:0.7rem;color:var(--m1);margin-bottom:0.5rem">${typeLabel}</div>
     ${sub?`<div style="font-size:0.82rem;color:var(--m2);margin-bottom:0.4rem">${sub}</div>`:''}
-    ${cond?`<div style="margin-bottom:0.4rem"><span style="font-size:0.72rem;color:var(--m1)">Ð¡Ñ‚Ð°Ð½: ${cond}/10</span>${condBar(cond)}</div>`:''}
+    ${cond?`<div style="margin-bottom:0.4rem"><span style="font-size:0.72rem;color:var(--m1)">Стан: ${cond}/10</span>${condBar(cond)}</div>`:''}
     ${flightParts.length===4?`<div class="flight-row" style="margin-bottom:0.5rem">
       <div class="fc"><div class="fv">${flightParts[0]}</div><div class="fk">Spd</div></div>
       <div class="fc"><div class="fv">${flightParts[1]}</div><div class="fk">Gli</div></div>
       <div class="fc"><div class="fv">${flightParts[2]}</div><div class="fk">Trn</div></div>
       <div class="fc"><div class="fv">${flightParts[3]}</div><div class="fk">Fde</div></div>
     </div>`:''}
-    ${inked?`<div style="font-size:0.78rem;color:var(--m2);margin-bottom:0.4rem">ðŸ–Šï¸ Inked</div>`:''}
+    ${inked?`<div style="font-size:0.78rem;color:var(--m2);margin-bottom:0.4rem">🖊️ Inked</div>`:''}
     ${notes?`<div style="font-size:0.82rem;color:var(--m2);margin-bottom:0.5rem">${notes}</div>`:''}
     <div style="border-top:1px solid var(--b1);padding-top:0.75rem;margin-top:0.5rem">
       <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:0.5rem;margin-bottom:0.75rem">
-        <div class="stat-m"><div class="stat-mn" id="aucPrice">${curPrice} â‚´</div><div class="stat-ml">ÐŸÐ¾Ñ‚Ð¾Ñ‡Ð½Ð° Ñ†Ñ–Ð½Ð°</div></div>
-        <div class="stat-m"><div class="stat-mn ${isActive?'cy':'so'}" id="aucTimer">${isActive?fmtTimeLeft(end-now):'Ð—Ð°Ð²ÐµÑ€ÑˆÐµÐ½Ð¾'}</div><div class="stat-ml">${isActive?'Ð—Ð°Ð»Ð¸ÑˆÐ¸Ð»Ð¾ÑÑŒ':'Ð¡Ñ‚Ð°Ñ‚ÑƒÑ'}</div></div>
-        <div class="stat-m"><div class="stat-mn">${a.start_price} â‚´</div><div class="stat-ml">Ð¡Ñ‚Ð°Ñ€Ñ‚Ð¾Ð²Ð°</div></div>
+        <div class="stat-m"><div class="stat-mn" id="aucPrice">${curPrice} ₴</div><div class="stat-ml">Поточна ціна</div></div>
+        <div class="stat-m"><div class="stat-mn ${isActive?'cy':'so'}" id="aucTimer">${isActive?fmtTimeLeft(end-now):'Завершено'}</div><div class="stat-ml">${isActive?'Залишилось':'Статус'}</div></div>
+        <div class="stat-m"><div class="stat-mn">${a.start_price} ₴</div><div class="stat-ml">Стартова</div></div>
         <div class="stat-m"><div class="stat-mn">${a.bid_count||0}</div><div class="stat-ml">${bidWord(a.bid_count||0).replace(/^\d+\s/,'')}</div></div>
       </div>
     </div>
-    ${isReverse?`<div style="font-size:0.78rem;color:var(--purple);margin-bottom:0.5rem;padding:0.4rem;background:rgba(168,85,247,0.1);border-radius:var(--r)">ðŸ“‰ ${a.reverse_start} â‚´ â†’ ${a.reverse_end} â‚´ Â· -${a.reverse_drop} â‚´ ÐºÐ¾Ð¶Ð½Ñ– ${a.reverse_interval||60} Ñ…Ð²</div>`:''}
-    ${!isReverse?`<div style="font-size:0.78rem;color:var(--m2);margin-bottom:0.5rem">ÐšÑ€Ð¾Ðº: ${a.min_step||10} â‚´</div>`:''}
-    <div style="font-size:0.78rem;color:var(--m1);margin-bottom:0.75rem">ÐŸÑ€Ð¾Ð´Ð°Ð²ÐµÑ†ÑŒ: <strong style="color:var(--text)">${a.owner}</strong>${tgLinkFull(a.owner_tg||a.owner_tg_id)}</div>
+    ${isReverse?`<div style="font-size:0.78rem;color:var(--purple);margin-bottom:0.5rem;padding:0.4rem;background:rgba(168,85,247,0.1);border-radius:var(--r)">📉 ${a.reverse_start} ₴ → ${a.reverse_end} ₴ · -${a.reverse_drop} ₴ кожні ${a.reverse_interval||60} хв</div>`:''}
+    ${!isReverse?`<div style="font-size:0.78rem;color:var(--m2);margin-bottom:0.5rem">Крок: ${a.min_step||10} ₴</div>`:''}
+    <div style="font-size:0.78rem;color:var(--m1);margin-bottom:0.75rem">Продавець: <strong style="color:var(--text)">${a.owner}</strong>${tgLinkFull(a.owner_tg||a.owner_tg_id)}</div>
     ${isActive&&CU&&a.owner_tg_id!==CU.tgId?`
       ${isReverse?`
-        <div style="font-size:0.72rem;color:var(--m1);margin-bottom:0.3rem">Ð’Ð°ÑˆÐ° Ñ†Ñ–Ð½Ð° â€” ÐºÐ¾Ð»Ð¸ Ð¿Ð°Ð´Ð°ÑŽÑ‡Ð° Ñ†Ñ–Ð½Ð° Ð´Ñ–Ð¹Ð´Ðµ Ð´Ð¾ Ð²Ð°ÑˆÐ¾Ñ— ÑÑ‚Ð°Ð²ÐºÐ¸, Ð²Ð¸ Ð°Ð²Ñ‚Ð¾Ð¼Ð°Ñ‚Ð¸Ñ‡Ð½Ð¾ Ð²Ð¸Ð³Ñ€Ð°Ñ”Ñ‚Ðµ</div>
+        <div style="font-size:0.72rem;color:var(--m1);margin-bottom:0.3rem">Ваша ціна — коли падаюча ціна дійде до вашої ставки, ви автоматично виграєте</div>
         <div style="display:flex;gap:0.4rem;margin-bottom:0.5rem">
-          <input type="number" id="bidAmount" placeholder="Ð’Ð°ÑˆÐ° Ñ†Ñ–Ð½Ð° â‚´" style="flex:1;font-size:14px">
-          <button class="btn btn-cyan btn-sm" onclick="placeReverseBid('${a.id}')" style="flex-shrink:0">Ð¡Ñ‚Ð°Ð²ÐºÐ°</button>
+          <input type="number" id="bidAmount" placeholder="Ваша ціна ₴" style="flex:1;font-size:14px">
+          <button class="btn btn-cyan btn-sm" onclick="placeReverseBid('${a.id}')" style="flex-shrink:0">Ставка</button>
         </div>
-        <button class="btn btn-lime btn-full" onclick="buyoutAuction('${a.id}')" style="margin-bottom:0.75rem" id="reverseBuyBtn">ÐšÑƒÐ¿Ð¸Ñ‚Ð¸ Ð·Ð°Ñ€Ð°Ð· Ð·Ð° <span id="reverseBuyPrice">${curPrice}</span> â‚´</button>
+        <button class="btn btn-lime btn-full" onclick="buyoutAuction('${a.id}')" style="margin-bottom:0.75rem" id="reverseBuyBtn">Купити зараз за <span id="reverseBuyPrice">${curPrice}</span> ₴</button>
       `:`
         <div style="display:flex;gap:0.4rem;margin-bottom:0.5rem">
-          <input type="number" id="bidAmount" placeholder="ÐœÑ–Ð½: ${minBid} â‚´" value="${minBid}" style="flex:1;font-size:14px">
-          <button class="btn btn-cyan btn-sm" onclick="placeBid('${a.id}',${minBid})" style="flex-shrink:0">Ð¡Ñ‚Ð°Ð²ÐºÐ°</button>
+          <input type="number" id="bidAmount" placeholder="Мін: ${minBid} ₴" value="${minBid}" style="flex:1;font-size:14px">
+          <button class="btn btn-cyan btn-sm" onclick="placeBid('${a.id}',${minBid})" style="flex-shrink:0">Ставка</button>
         </div>
-        ${a.buyout_price>0?`<button class="btn btn-lime btn-full" onclick="buyoutAuction('${a.id}')" style="margin-bottom:0.75rem">ÐšÑƒÐ¿Ð¸Ñ‚Ð¸ Ð·Ð°Ñ€Ð°Ð· Ð·Ð° ${a.buyout_price} â‚´</button>`:''}
+        ${a.buyout_price>0?`<button class="btn btn-lime btn-full" onclick="buyoutAuction('${a.id}')" style="margin-bottom:0.75rem">Купити зараз за ${a.buyout_price} ₴</button>`:''}
       `}
-    `:isActive&&CU&&a.owner_tg_id===CU.tgId?`<div style="font-size:0.78rem;color:var(--m1);margin-bottom:0.75rem;text-align:center">Ð¦Ðµ Ð²Ð°Ñˆ Ð°ÑƒÐºÑ†Ñ–Ð¾Ð½</div>`:``}
+    `:isActive&&CU&&a.owner_tg_id===CU.tgId?`<div style="font-size:0.78rem;color:var(--m1);margin-bottom:0.75rem;text-align:center">Це ваш аукціон</div>`:``}
     ${!isActive?`
-      ${a.winner?`<div style="padding:0.5rem;background:rgba(74,222,128,0.1);border:1px solid var(--av);border-radius:var(--r);font-size:0.82rem;margin-bottom:0.75rem">ðŸ† ÐŸÐµÑ€ÐµÐ¼Ð¾Ð¶ÐµÑ†ÑŒ: <strong>${a.winner}</strong>${tgLinkFull(a.winner_tg||a.winner_tg_id)}</div>`:'<div style="color:var(--m1);margin-bottom:0.75rem">ÐÑ–Ñ…Ñ‚Ð¾ Ð½Ðµ Ð·Ñ€Ð¾Ð±Ð¸Ð² ÑÑ‚Ð°Ð²ÐºÑƒ</div>'}
+      ${a.winner?`<div style="padding:0.5rem;background:rgba(74,222,128,0.1);border:1px solid var(--av);border-radius:var(--r);font-size:0.82rem;margin-bottom:0.75rem">🏆 Переможець: <strong>${a.winner}</strong>${tgLinkFull(a.winner_tg||a.winner_tg_id)}</div>`:'<div style="color:var(--m1);margin-bottom:0.75rem">Ніхто не зробив ставку</div>'}
     `:''}
-    <div style="font-size:0.72rem;font-weight:700;color:var(--m1);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:0.4rem">Ð†ÑÑ‚Ð¾Ñ€Ñ–Ñ ÑÑ‚Ð°Ð²Ð¾Ðº</div>
+    <div style="font-size:0.72rem;font-weight:700;color:var(--m1);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:0.4rem">Історія ставок</div>
     ${bids&&bids.length?bids.map((b,i)=>`<div style="display:flex;justify-content:space-between;padding:0.35rem 0;border-bottom:1px solid var(--b1);font-size:0.78rem">
-      <span>${i===0?'ðŸ† ':''}${b.bidder}${tgLinkFull(b.bidder_tg||b.bidder_tg_id)}</span><span style="font-weight:700;color:var(--lime)">${b.amount} â‚´</span>
-    </div>`).join(''):'<div style="font-size:0.78rem;color:var(--m1)">Ð©Ðµ Ð½ÐµÐ¼Ð°Ñ” ÑÑ‚Ð°Ð²Ð¾Ðº</div>'}
+      <span>${i===0?'🏆 ':''}${b.bidder}${tgLinkFull(b.bidder_tg||b.bidder_tg_id)}</span><span style="font-weight:700;color:var(--lime)">${b.amount} ₴</span>
+    </div>`).join(''):'<div style="font-size:0.78rem;color:var(--m1)">Ще немає ставок</div>'}
   `;
   openModal('aucDetail');
   if(aucTimerInterval)clearInterval(aucTimerInterval);
@@ -2487,11 +2487,11 @@ async function showAucDetail(id){
       const left=new Date(a.ends_at)-new Date();
       const el=document.getElementById('aucTimer');
       if(el){
-        if(left<=0){el.textContent='Ð—Ð°Ð²ÐµÑ€ÑˆÐµÐ½Ð¾';clearInterval(aucTimerInterval);loadAuctions();}
+        if(left<=0){el.textContent='Завершено';clearInterval(aucTimerInterval);loadAuctions();}
         else el.textContent=fmtTimeLeft(left);
       }
       if(isReverse){
-        const pe=document.getElementById('aucPrice');if(pe)pe.textContent=getReverseCurPrice(a)+' â‚´';
+        const pe=document.getElementById('aucPrice');if(pe)pe.textContent=getReverseCurPrice(a)+' ₴';
         const rb=document.getElementById('reverseBuyPrice');if(rb)rb.textContent=getReverseCurPrice(a);
       }
     },1000);
@@ -2499,19 +2499,19 @@ async function showAucDetail(id){
 }
 
 async function placeBid(aucId,minBid){
-  if(!CU||!CU.tgId){toast('âš ï¸ Ð¡Ð¿Ð¾Ñ‡Ð°Ñ‚ÐºÑƒ ÑƒÐ²Ñ–Ð¹Ð´Ñ–Ñ‚ÑŒ',true);return;}
+  if(!CU||!CU.tgId){toast('⚠️ Спочатку увійдіть',true);return;}
   const bidEl=document.getElementById('bidAmount');
   const amount=bidEl?parseInt(bidEl.value):minBid;
-  if(!amount||amount<minBid){toast(`âš ï¸ ÐœÑ–Ð½Ñ–Ð¼Ð°Ð»ÑŒÐ½Ð° ÑÑ‚Ð°Ð²ÐºÐ°: ${minBid} â‚´`,true);return;}
+  if(!amount||amount<minBid){toast(`⚠️ Мінімальна ставка: ${minBid} ₴`,true);return;}
   const a=allAuctions.find(x=>x.id===aucId);
-  if(!a||a.status!=='active'){toast('âš ï¸ ÐÑƒÐºÑ†Ñ–Ð¾Ð½ Ð·Ð°Ð²ÐµÑ€ÑˆÐµÐ½Ð¾',true);return;}
-  if(a.owner_tg_id===CU.tgId){toast('âš ï¸ ÐÐµ Ð¼Ð¾Ð¶Ð½Ð° ÑÑ‚Ð°Ð²Ð¸Ñ‚Ð¸ Ð½Ð° ÑÐ²Ñ–Ð¹ Ð°ÑƒÐºÑ†Ñ–Ð¾Ð½',true);return;}
+  if(!a||a.status!=='active'){toast('⚠️ Аукціон завершено',true);return;}
+  if(a.owner_tg_id===CU.tgId){toast('⚠️ Не можна ставити на свій аукціон',true);return;}
   // Get previous top bidder for notification
   const {data:prevBids}=await sb.from('bids').select('bidder_tg_id,bidder').eq('auction_id',aucId).order('amount',{ascending:false}).limit(1);
   const prevTop=prevBids&&prevBids.length?prevBids[0]:null;
   // Insert bid
   const {error}=await sb.from('bids').insert({auction_id:aucId,bidder:CU.name,bidder_tg:CU.tg||'',bidder_tg_id:CU.tgId,amount});
-  if(error){toast('âš ï¸ '+error.message,true);return;}
+  if(error){toast('⚠️ '+error.message,true);return;}
   // Anti-snipe: extend by 5 min if less than 5 min left
   const ANTI_SNIPE_MS=5*60*1000;
   const timeLeft=new Date(a.ends_at)-new Date();
@@ -2520,9 +2520,9 @@ async function placeBid(aucId,minBid){
     const newEnds=new Date(Date.now()+ANTI_SNIPE_MS).toISOString();
     updateFields.ends_at=newEnds;
     a.ends_at=newEnds;
-    toast('âœ… Ð¡Ñ‚Ð°Ð²ÐºÐ° '+amount+' â‚´! â± +5 Ñ…Ð²Ð¸Ð»Ð¸Ð½');
+    toast('✅ Ставка '+amount+' ₴! ⏱ +5 хвилин');
   }else{
-    toast('âœ… Ð¡Ñ‚Ð°Ð²ÐºÐ° '+amount+' â‚´!');
+    toast('✅ Ставка '+amount+' ₴!');
   }
   await sb.from('auctions').update(updateFields).eq('id',aucId);
   // Notifications
@@ -2535,55 +2535,55 @@ async function placeBid(aucId,minBid){
 }
 
 async function placeReverseBid(aucId){
-  if(!CU||!CU.tgId){toast('âš ï¸ Ð¡Ð¿Ð¾Ñ‡Ð°Ñ‚ÐºÑƒ ÑƒÐ²Ñ–Ð¹Ð´Ñ–Ñ‚ÑŒ',true);return;}
+  if(!CU||!CU.tgId){toast('⚠️ Спочатку увійдіть',true);return;}
   const a=allAuctions.find(x=>x.id===aucId);
-  if(!a||a.status!=='active'){toast('âš ï¸ ÐÑƒÐºÑ†Ñ–Ð¾Ð½ Ð·Ð°Ð²ÐµÑ€ÑˆÐµÐ½Ð¾',true);return;}
-  if(a.owner_tg_id===CU.tgId){toast('âš ï¸ ÐÐµ Ð¼Ð¾Ð¶Ð½Ð° ÑÑ‚Ð°Ð²Ð¸Ñ‚Ð¸ Ð½Ð° ÑÐ²Ñ–Ð¹ Ð°ÑƒÐºÑ†Ñ–Ð¾Ð½',true);return;}
+  if(!a||a.status!=='active'){toast('⚠️ Аукціон завершено',true);return;}
+  if(a.owner_tg_id===CU.tgId){toast('⚠️ Не можна ставити на свій аукціон',true);return;}
   const amount=parseInt(document.getElementById('bidAmount').value);
-  if(!amount||amount<=0){toast('âš ï¸ Ð’Ð²ÐµÐ´Ñ–Ñ‚ÑŒ Ð²Ð°ÑˆÑƒ Ñ†Ñ–Ð½Ñƒ',true);return;}
-  if(amount>(a.reverse_end||0)&&amount>=(a.reverse_start||0)){toast('âš ï¸ Ð¦Ñ–Ð½Ð° Ð¼Ð°Ñ” Ð±ÑƒÑ‚Ð¸ Ð¼ÐµÐ½ÑˆÐµ Ð¿Ð¾Ñ‡Ð°Ñ‚ÐºÐ¾Ð²Ð¾Ñ—',true);return;}
+  if(!amount||amount<=0){toast('⚠️ Введіть вашу ціну',true);return;}
+  if(amount>(a.reverse_end||0)&&amount>=(a.reverse_start||0)){toast('⚠️ Ціна має бути менше початкової',true);return;}
   const curPrice=getReverseCurPrice(a);
   // If bid >= current price, instant buy
   if(amount>=curPrice){
-    if(!confirm('ÐŸÐ¾Ñ‚Ð¾Ñ‡Ð½Ð° Ñ†Ñ–Ð½Ð° '+curPrice+' â‚´. ÐšÑƒÐ¿Ð¸Ñ‚Ð¸ Ð·Ð°Ñ€Ð°Ð·?'))return;
+    if(!confirm('Поточна ціна '+curPrice+' ₴. Купити зараз?'))return;
     await sb.from('bids').insert({auction_id:aucId,bidder:CU.name,bidder_tg:CU.tg||'',bidder_tg_id:CU.tgId,amount:curPrice});
     await sb.from('auctions').update({current_price:curPrice,status:'sold',winner:CU.name,winner_tg:CU.tg||'',winner_tg_id:CU.tgId,bid_count:(a.bid_count||0)+1}).eq('id',aucId);
-    toast('ðŸŽ‰ ÐšÑƒÐ¿Ð»ÐµÐ½Ð¾ Ð·Ð° '+curPrice+' â‚´!');
+    toast('🎉 Куплено за '+curPrice+' ₴!');
     notifyAuction('sold',a,CU,curPrice);
     closeModal('aucDetail');await loadAuctions();startAucGridTimer();
     return;
   }
   // Otherwise place a waiting bid
   const {error}=await sb.from('bids').insert({auction_id:aucId,bidder:CU.name,bidder_tg:CU.tg||'',bidder_tg_id:CU.tgId,amount});
-  if(error){toast('âš ï¸ '+error.message,true);return;}
+  if(error){toast('⚠️ '+error.message,true);return;}
   await sb.from('auctions').update({bid_count:(a.bid_count||0)+1,winner:CU.name,winner_tg:CU.tg||'',winner_tg_id:CU.tgId}).eq('id',aucId);
-  toast('âœ… Ð¡Ñ‚Ð°Ð²ÐºÐ° '+amount+' â‚´! Ð’Ð¸ Ð²Ð¸Ð³Ñ€Ð°Ñ”Ñ‚Ðµ ÐºÐ¾Ð»Ð¸ Ñ†Ñ–Ð½Ð° Ð²Ð¿Ð°Ð´Ðµ Ð´Ð¾ '+amount+' â‚´');
+  toast('✅ Ставка '+amount+' ₴! Ви виграєте коли ціна впаде до '+amount+' ₴');
   notifyAuction('new_bid',a,CU,amount);
   await loadAuctions();
   showAucDetail(aucId);
 }
 
 async function buyoutAuction(aucId){
-  if(!CU||!CU.tgId){toast('âš ï¸ Ð¡Ð¿Ð¾Ñ‡Ð°Ñ‚ÐºÑƒ ÑƒÐ²Ñ–Ð¹Ð´Ñ–Ñ‚ÑŒ',true);return;}
+  if(!CU||!CU.tgId){toast('⚠️ Спочатку увійдіть',true);return;}
   const a=allAuctions.find(x=>x.id===aucId);
-  if(a.owner_tg_id===CU.tgId){toast('âš ï¸ ÐÐµ Ð¼Ð¾Ð¶Ð½Ð° ÐºÑƒÐ¿Ð¸Ñ‚Ð¸ ÑÐ²Ñ–Ð¹ Ð°ÑƒÐºÑ†Ñ–Ð¾Ð½',true);return;}
+  if(a.owner_tg_id===CU.tgId){toast('⚠️ Не можна купити свій аукціон',true);return;}
   // For reverse auction - buy at current dropping price
   if(a.auction_type==='reverse'){
     const curPrice=getReverseCurPrice(a);
-    if(!confirm('ÐšÑƒÐ¿Ð¸Ñ‚Ð¸ Ð·Ð°Ñ€Ð°Ð· Ð·Ð° '+curPrice+' â‚´?'))return;
+    if(!confirm('Купити зараз за '+curPrice+' ₴?'))return;
     await sb.from('bids').insert({auction_id:aucId,bidder:CU.name,bidder_tg:CU.tg||'',bidder_tg_id:CU.tgId,amount:curPrice});
     await sb.from('auctions').update({current_price:curPrice,status:'sold',winner:CU.name,winner_tg:CU.tg||'',winner_tg_id:CU.tgId,bid_count:(a.bid_count||0)+1}).eq('id',aucId);
-    toast('ðŸŽ‰ ÐšÑƒÐ¿Ð»ÐµÐ½Ð¾ Ð·Ð° '+curPrice+' â‚´!');
+    toast('🎉 Куплено за '+curPrice+' ₴!');
     notifyAuction('sold',a,CU,curPrice);
     closeModal('aucDetail');await loadAuctions();startAucGridTimer();
     return;
   }
   // For buyout auction
   if(!a.buyout_price){return;}
-  if(!confirm('ÐšÑƒÐ¿Ð¸Ñ‚Ð¸ Ð·Ð°Ñ€Ð°Ð· Ð·Ð° '+a.buyout_price+' â‚´?'))return;
+  if(!confirm('Купити зараз за '+a.buyout_price+' ₴?'))return;
   await sb.from('bids').insert({auction_id:aucId,bidder:CU.name,bidder_tg:CU.tg||'',bidder_tg_id:CU.tgId,amount:a.buyout_price});
   await sb.from('auctions').update({current_price:a.buyout_price,status:'sold',winner:CU.name,winner_tg:CU.tg||'',winner_tg_id:CU.tgId,bid_count:(a.bid_count||0)+1}).eq('id',aucId);
-  toast('ðŸŽ‰ ÐšÑƒÐ¿Ð»ÐµÐ½Ð¾ Ð·Ð° '+a.buyout_price+' â‚´!');
+  toast('🎉 Куплено за '+a.buyout_price+' ₴!');
   notifyAuction('sold',a,CU,a.buyout_price);
   closeModal('aucDetail');await loadAuctions();startAucGridTimer();
 }
@@ -2600,7 +2600,7 @@ function notifyAuction(type,auction,user,amount){
   }catch(e){}
 }
 
-// â”€â”€ UNSEEN BADGES â”€â”€
+// ── UNSEEN BADGES ──
 let unseenCounts={catalog:0,auctions:0,settings:0};
 let lastSeen={catalog:null,auctions:null,settings:null};
 async function loadLastSeen(){
@@ -2650,7 +2650,7 @@ function updateBadges(){
   });
 }
 
-// â”€â”€ COMMUNITY FEED â”€â”€
+// ── COMMUNITY FEED ──
 let feedPosts=[], feedLikes={};
 function togglePostForm(){
   const f=document.getElementById('postFormWrap');
@@ -2713,8 +2713,8 @@ function getEmbed(url,platform){
       <div style="width:48px;height:48px;background:#010101;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0">
         <svg width="24" height="24" viewBox="0 0 24 24"><path d="M16.6 5.82A4.27 4.27 0 0115.54 3h-2.68l-.01 13.27a2.56 2.56 0 01-2.54 2.42 2.56 2.56 0 01-2.56-2.57 2.56 2.56 0 012.56-2.57c.26 0 .5.04.74.1v-2.72a5.26 5.26 0 00-.74-.05A5.28 5.28 0 005 16.12a5.28 5.28 0 005.31 5.25 5.28 5.28 0 005.31-5.25V10.2a6.9 6.9 0 004.03 1.29V8.77a4.28 4.28 0 01-3.05-2.95z" fill="#25F4EE"/></svg>
       </div>
-      <div style="flex:1;min-width:0"><div style="font-weight:700;font-size:0.85rem;color:var(--text)">Ð”Ð¸Ð²Ð¸Ñ‚Ð¸ÑÑŒ Ð² TikTok</div><div style="font-size:0.7rem;color:var(--m1);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${url}</div></div>
-      <div style="width:32px;height:32px;background:var(--s3);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0"><span style="font-size:0.9rem">â–¶</span></div>
+      <div style="flex:1;min-width:0"><div style="font-weight:700;font-size:0.85rem;color:var(--text)">Дивитись в TikTok</div><div style="font-size:0.7rem;color:var(--m1);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${url}</div></div>
+      <div style="width:32px;height:32px;background:var(--s3);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0"><span style="font-size:0.9rem">▶</span></div>
     </div>`;
   }
   if(platform==='instagram'){
@@ -2728,8 +2728,8 @@ function getEmbed(url,platform){
       <div style="width:40px;height:40px;background:linear-gradient(45deg,#f09433,#e6683c,#dc2743,#cc2366,#bc1888);border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><rect x="2" y="2" width="20" height="20" rx="5" stroke="#fff" stroke-width="1.8"/><circle cx="12" cy="12" r="4.5" stroke="#fff" stroke-width="1.8"/><circle cx="18" cy="6" r="1.2" fill="#fff"/></svg>
       </div>
-      <div style="flex:1"><div style="font-weight:700;font-size:0.82rem;color:var(--text)">Instagram</div><div style="font-size:0.72rem;color:var(--m1)">Ð’Ñ–Ð´ÐºÑ€Ð¸Ñ‚Ð¸ Ð¿ÑƒÐ±Ð»Ñ–ÐºÐ°Ñ†Ñ–ÑŽ</div></div>
-      <div style="color:var(--cyan);font-size:0.82rem;flex-shrink:0">â†—</div>
+      <div style="flex:1"><div style="font-weight:700;font-size:0.82rem;color:var(--text)">Instagram</div><div style="font-size:0.72rem;color:var(--m1)">Відкрити публікацію</div></div>
+      <div style="color:var(--cyan);font-size:0.82rem;flex-shrink:0">↗</div>
     </div>`;
   }
   if(platform==='facebook'){
@@ -2737,16 +2737,16 @@ function getEmbed(url,platform){
       <div style="width:48px;height:48px;background:#1877f2;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0">
         <svg width="24" height="24" viewBox="0 0 24 24"><path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z" fill="#fff"/></svg>
       </div>
-      <div style="flex:1;min-width:0"><div style="font-weight:700;font-size:0.85rem;color:var(--text)">Ð”Ð¸Ð²Ð¸Ñ‚Ð¸ÑÑŒ Ð² Facebook</div><div style="font-size:0.7rem;color:var(--m1);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${url}</div></div>
-      <div style="width:32px;height:32px;background:var(--s3);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0"><span style="font-size:0.9rem">â–¶</span></div>
+      <div style="flex:1;min-width:0"><div style="font-weight:700;font-size:0.85rem;color:var(--text)">Дивитись в Facebook</div><div style="font-size:0.7rem;color:var(--m1);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${url}</div></div>
+      <div style="width:32px;height:32px;background:var(--s3);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0"><span style="font-size:0.9rem">▶</span></div>
     </div>`;
   }
   return`<div onclick="openExtLink('${url}')" style="cursor:pointer;padding:1rem;background:var(--s2);border:1px solid var(--b1);border-radius:var(--r);display:flex;align-items:center;gap:0.75rem">
     <div style="width:44px;height:44px;background:var(--s3);border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--m1)" stroke-width="2" stroke-linecap="round"><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/></svg>
     </div>
-    <div style="flex:1;min-width:0"><div style="font-weight:700;font-size:0.82rem;color:var(--text)">ÐŸÐ¾ÑÐ¸Ð»Ð°Ð½Ð½Ñ</div><div style="font-size:0.72rem;color:var(--m1);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${url}</div></div>
-    <div style="color:var(--cyan);font-size:0.82rem;flex-shrink:0">â†—</div>
+    <div style="flex:1;min-width:0"><div style="font-weight:700;font-size:0.82rem;color:var(--text)">Посилання</div><div style="font-size:0.72rem;color:var(--m1);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${url}</div></div>
+    <div style="color:var(--cyan);font-size:0.82rem;flex-shrink:0">↗</div>
   </div>`;
 }
 async function resolveTikTokUrl(url){
@@ -2761,19 +2761,19 @@ async function resolveTikTokUrl(url){
   return url;
 }
 async function submitPost(){
-  if(!CU||!CU.tgId){toast('âš ï¸ Ð¡Ð¿Ð¾Ñ‡Ð°Ñ‚ÐºÑƒ ÑƒÐ²Ñ–Ð¹Ð´Ñ–Ñ‚ÑŒ',true);return;}
+  if(!CU||!CU.tgId){toast('⚠️ Спочатку увійдіть',true);return;}
   let url=document.getElementById('post-url').value.trim();
-  if(!url){toast('âš ï¸ Ð’ÑÑ‚Ð°Ð²Ñ‚Ðµ Ð¿Ð¾ÑÐ¸Ð»Ð°Ð½Ð½Ñ',true);return;}
+  if(!url){toast('⚠️ Вставте посилання',true);return;}
   const desc=document.getElementById('post-desc').value.trim();
   const platform=detectPlatform(url);
   // Resolve short TikTok URLs to get video ID
   if(platform==='tiktok'&&!url.match(/\/video\/(\d+)/)){
-    toast('â³ ÐžÐ±Ñ€Ð¾Ð±ÐºÐ° TikTok...');
+    toast('⏳ Обробка TikTok...');
     url=await resolveTikTokUrl(url);
   }
   const {error}=await sb.from('posts').insert({author:CU.name,author_tg:CU.tg||'',author_tg_id:CU.tgId,url,platform,description:desc});
-  if(!error){document.getElementById('post-url').value='';document.getElementById('post-desc').value='';toast('âœ… ÐžÐ¿ÑƒÐ±Ð»Ñ–ÐºÐ¾Ð²Ð°Ð½Ð¾!');loadFeed();}
-  else toast('âš ï¸ '+error.message,true);
+  if(!error){document.getElementById('post-url').value='';document.getElementById('post-desc').value='';toast('✅ Опубліковано!');loadFeed();}
+  else toast('⚠️ '+error.message,true);
 }
 async function loadFeed(){
   try{
@@ -2800,7 +2800,7 @@ async function loadFeed(){
 }
 function getFeedLike(id){return feedLikes[id]||{count:0,liked:false};}
 async function togglePostLike(postId){
-  if(!CU||!CU.tgId){toast('âš ï¸ Ð¡Ð¿Ð¾Ñ‡Ð°Ñ‚ÐºÑƒ ÑƒÐ²Ñ–Ð¹Ð´Ñ–Ñ‚ÑŒ',true);return;}
+  if(!CU||!CU.tgId){toast('⚠️ Спочатку увійдіть',true);return;}
   const cur=getFeedLike(postId);
   if(cur.liked){
     await sb.from('post_likes').delete().eq('post_id',postId).eq('user_tg_id',CU.tgId);
@@ -2811,11 +2811,11 @@ async function togglePostLike(postId){
   }
   // Update like button in place without re-rendering
   const likeEl=document.getElementById('post-like-'+postId);
-  if(likeEl){const lk=getFeedLike(postId);likeEl.innerHTML=`${lk.liked?'â¤ï¸':'ðŸ¤'} ${lk.count||''}`;}
+  if(likeEl){const lk=getFeedLike(postId);likeEl.innerHTML=`${lk.liked?'❤️':'🤍'} ${lk.count||''}`;}
 }
 function renderFeed(){
   const el=document.getElementById('feedList');
-  if(!feedPosts.length){el.innerHTML='<div style="text-align:center;color:var(--m1);padding:2rem;font-size:0.85rem">ÐŸÐ¾ÐºÐ¸ Ð½ÐµÐ¼Ð°Ñ” Ð¿ÑƒÐ±Ð»Ñ–ÐºÐ°Ñ†Ñ–Ð¹</div>';return;}
+  if(!feedPosts.length){el.innerHTML='<div style="text-align:center;color:var(--m1);padding:2rem;font-size:0.85rem">Поки немає публікацій</div>';return;}
   el.innerHTML=feedPosts.map(p=>{
     const lk=getFeedLike(p.id);
     const pIcon=p.platform==='youtube'?'<svg width="18" height="18" viewBox="0 0 24 24" style="vertical-align:middle"><rect width="24" height="24" rx="4" fill="#FF0000"/><polygon points="10,7 17,12 10,17" fill="#fff"/></svg>'
@@ -2831,8 +2831,8 @@ function renderFeed(){
       ${p.description?`<div style="font-size:0.82rem;margin-bottom:0.5rem;color:var(--m2)">${p.description}</div>`:''}
       <div style="margin-bottom:0.5rem">${getEmbed(p.url,p.platform)}</div>
       <div style="display:flex;align-items:center;gap:0.75rem;font-size:0.78rem">
-        <span id="post-like-${p.id}" onclick="togglePostLike('${p.id}')" style="cursor:pointer">${lk.liked?'â¤ï¸':'ðŸ¤'} ${lk.count||''}</span>
-        <span onclick="togglePostComments('${p.id}')" style="cursor:pointer;color:var(--m1)">ðŸ’¬ ÐšÐ¾Ð¼ÐµÐ½Ñ‚Ð°Ñ€Ñ–</span>
+        <span id="post-like-${p.id}" onclick="togglePostLike('${p.id}')" style="cursor:pointer">${lk.liked?'❤️':'🤍'} ${lk.count||''}</span>
+        <span onclick="togglePostComments('${p.id}')" style="cursor:pointer;color:var(--m1)">💬 Коментарі</span>
       </div>
       <div id="post-comments-${p.id}" style="display:none;margin-top:0.5rem;border-top:1px solid var(--b1);padding-top:0.5rem"></div>
     </div>`;
@@ -2845,8 +2845,8 @@ async function togglePostComments(postId){
     el.style.display='block';
     const {data}=await sb.from('post_comments').select('*').eq('post_id',postId).order('created_at',{ascending:true});
     let html=(data||[]).map(c=>`<div style="padding:0.3rem 0;font-size:0.75rem"><span style="font-weight:600">${c.author}</span> <span style="color:var(--m1)">${fmtDateTime(c.created_at)}</span><div style="color:var(--m2)">${c.text}</div></div>`).join('');
-    if(!data||!data.length)html='<div style="font-size:0.75rem;color:var(--m1)">ÐŸÐ¾ÐºÐ¸ Ð½ÐµÐ¼Ð°Ñ” ÐºÐ¾Ð¼ÐµÐ½Ñ‚Ð°Ñ€Ñ–Ð²</div>';
-    if(CU)html+=`<div style="display:flex;gap:0.3rem;margin-top:0.4rem"><input id="pc-${postId}" placeholder="ÐšÐ¾Ð¼ÐµÐ½Ñ‚Ð°Ñ€..." style="flex:1;font-size:14px"><button class="btn btn-ghost btn-xs" onclick="submitPostComment('${postId}')">â†—</button></div>`;
+    if(!data||!data.length)html='<div style="font-size:0.75rem;color:var(--m1)">Поки немає коментарів</div>';
+    if(CU)html+=`<div style="display:flex;gap:0.3rem;margin-top:0.4rem"><input id="pc-${postId}" placeholder="Коментар..." style="flex:1;font-size:14px"><button class="btn btn-ghost btn-xs" onclick="submitPostComment('${postId}')">↗</button></div>`;
     el.innerHTML=html;
   }else{el.style.display='none';}
 }
@@ -2855,25 +2855,25 @@ async function submitPostComment(postId){
   const text=input?.value?.trim();if(!text||!CU)return;
   const {error}=await sb.from('post_comments').insert({post_id:postId,author:CU.name,author_tg:CU.tg||'',text});
   if(!error){input.value='';togglePostComments(postId);togglePostComments(postId);}
-  else toast('âš ï¸ '+error.message,true);
+  else toast('⚠️ '+error.message,true);
 }
 
-// â”€â”€ THEME â”€â”€
+// ── THEME ──
 function toggleTheme(){
   const isLight=document.documentElement.classList.toggle('light');
   localStorage.setItem('dc_theme',isLight?'light':'dark');
-  document.getElementById('themeBtn').textContent=isLight?'â˜€ï¸':'ðŸŒ™';
+  document.getElementById('themeBtn').textContent=isLight?'☀️':'🌙';
 }
 function restoreTheme(){
   const t=localStorage.getItem('dc_theme');
   if(t==='light'){
     document.documentElement.classList.add('light');
-    document.getElementById('themeBtn').textContent='â˜€ï¸';
+    document.getElementById('themeBtn').textContent='☀️';
   }
 }
 restoreTheme();
 
-// â”€â”€ INIT â”€â”€
+// ── INIT ──
 async function init(){
   window._loadStart=Date.now();
   setTimeout(()=>{document.getElementById('loadingOverlay').classList.add('fade-out');setTimeout(()=>{document.getElementById('loadingOverlay').style.display='none'},500);},15000);
