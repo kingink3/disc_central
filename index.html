@@ -14,7 +14,7 @@
   --tg-safe-top:0px;
   --glass:rgba(255,255,255,0.07);--glass-hi:rgba(255,255,255,0.12);--glass-border:rgba(255,255,255,0.18);
   --glass-shadow:0 8px 32px rgba(0,0,0,0.3),inset 0 1px 0 rgba(255,255,255,0.15),inset 0 -1px 0 rgba(255,255,255,0.05),inset 1px 0 0 rgba(255,255,255,0.08),inset -1px 0 0 rgba(255,255,255,0.08);
-  --glass-glow:0 0 0 0.5px rgba(255,255,255,0.12),0 0 15px rgba(255,255,255,0.05),inset 0 2px 0 rgba(255,255,255,0.25),inset 0 -2px 0 rgba(255,255,255,0.12),inset 1px 0 0 rgba(255,255,255,0.06),inset -1px 0 0 rgba(255,255,255,0.06);
+  --glass-glow:0 0 0 0.5px rgba(255,255,255,0.12),0 0 15px rgba(255,255,255,0.05),inset 2px 2px 0 rgba(255,255,255,0.22),inset -1px -1px 0 rgba(255,255,255,0.1),inset -2px -2px 4px rgba(0,0,0,0.1);
   --glass-blur:blur(30px) saturate(1.6);
   --lime:#d4f040;--cyan:#40d4f0;--orange:#f06040;--purple:#a78bfa;
   --text:#edf0f8;--m1:rgba(255,255,255,0.35);--m2:rgba(255,255,255,0.55);
@@ -26,7 +26,7 @@
   --b1:rgba(255,255,255,0.5);--b2:rgba(255,255,255,0.7);
   --glass:rgba(255,255,255,0.45);--glass-hi:rgba(255,255,255,0.6);--glass-border:rgba(255,255,255,0.65);
   --glass-shadow:0 8px 32px rgba(0,0,0,0.06),inset 0 1px 0 rgba(255,255,255,0.8);
-  --glass-glow:0 0 0 0.5px rgba(255,255,255,0.5),0 0 16px rgba(255,255,255,0.12),inset 0 2px 0 rgba(255,255,255,0.95),inset 0 -2px 0 rgba(255,255,255,0.5),inset 1px 0 0 rgba(255,255,255,0.3),inset -1px 0 0 rgba(255,255,255,0.3);
+  --glass-glow:0 0 0 0.5px rgba(255,255,255,0.5),0 0 16px rgba(255,255,255,0.12),inset 2px 2px 0 rgba(255,255,255,0.9),inset -1px -1px 0 rgba(255,255,255,0.4),inset -2px -2px 4px rgba(0,0,0,0.04);
   --glass-blur:blur(30px) saturate(1.4);
   --lime:#4d8200;--cyan:#0e7490;--orange:#c93d10;--purple:#6d28d9;
   --text:#111318;--m1:rgba(0,0,0,0.35);--m2:rgba(0,0,0,0.55);
@@ -205,7 +205,7 @@ input,textarea,select{-webkit-user-select:text;user-select:text}
 .overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.4);backdrop-filter:blur(20px) saturate(1.5);-webkit-backdrop-filter:blur(20px) saturate(1.5);z-index:200;align-items:flex-start;justify-content:center;padding:calc(0.75rem + var(--tg-safe-top)) 0.75rem 0.75rem;overflow-y:scroll;-webkit-overflow-scrolling:touch}
 .overlay.open{display:flex}
 body.modal-open{overflow:hidden;position:fixed;width:100%;left:0}
-.modal{background:linear-gradient(160deg,var(--glass-hi) 0%,var(--glass) 100%);backdrop-filter:var(--glass-blur);-webkit-backdrop-filter:var(--glass-blur);border:0.5px solid var(--glass-border);border-radius:20px;padding:1.5rem 1.5rem 2rem;width:100%;max-width:480px;max-height:none;overflow-y:visible;position:relative;animation:mIn 0.3s cubic-bezier(0.4,0,0.1,1);margin:1rem auto 1rem;box-shadow:0 16px 64px rgba(0,0,0,0.35),0 0 0 0.5px rgba(255,255,255,0.1),inset 0 2px 0 rgba(255,255,255,0.25),inset 0 -2px 0 rgba(255,255,255,0.1),inset 1px 0 0 rgba(255,255,255,0.06),inset -1px 0 0 rgba(255,255,255,0.06)}
+.modal{background:linear-gradient(160deg,var(--glass-hi) 0%,var(--glass) 100%);backdrop-filter:var(--glass-blur);-webkit-backdrop-filter:var(--glass-blur);border:0.5px solid var(--glass-border);border-radius:20px;padding:1.5rem 1.5rem 2rem;width:100%;max-width:480px;max-height:none;overflow-y:visible;position:relative;animation:mIn 0.3s cubic-bezier(0.4,0,0.1,1);margin:1rem auto 1rem;box-shadow:0 16px 64px rgba(0,0,0,0.35),0 0 0 0.5px rgba(255,255,255,0.1),inset 2px 2px 0 rgba(255,255,255,0.22),inset -1px -1px 0 rgba(255,255,255,0.08),inset -2px -2px 4px rgba(0,0,0,0.1)}
 .modal-wide{max-width:640px}
 @keyframes mIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
 .mc{position:absolute;top:0.6rem;right:0.6rem;background:rgba(255,255,255,0.08);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:0.5px solid rgba(255,255,255,0.15);color:#fff;width:32px;height:32px;border-radius:12px;cursor:pointer;font-size:1.1rem;display:flex;align-items:center;justify-content:center;z-index:10;transition:all 0.2s}
@@ -214,7 +214,7 @@ body.modal-open{overflow:hidden;position:fixed;width:100%;left:0}
 .mc-edit:hover{background:rgba(255,255,255,0.15)}
 .mt{font-family:'Bebas Neue',sans-serif;font-size:1.5rem;letter-spacing:1.5px;margin-bottom:1.1rem}
 .mt span{color:var(--lime)}
-.detail-photos{position:relative;overflow:hidden;margin:-1.5rem -1.5rem 1.1rem -1.5rem;border-radius:20px 20px 0 0;background:transparent;height:360px;display:flex;align-items:center;justify-content:center}
+.detail-photos{position:relative;overflow:hidden;margin:0 -1.5rem 1.1rem -1.5rem;border-radius:0;background:transparent;height:360px;display:flex;align-items:center;justify-content:center}
 .detail-photos img{max-width:100%;max-height:360px;object-fit:contain;display:none}
 .detail-photos img.active{display:block}
 .detail-photos .photo-nav{opacity:1;width:28px;height:28px;font-size:0.8rem}
@@ -261,8 +261,8 @@ input[type=range]::-moz-range-track{height:6px;background:rgba(255,255,255,0.06)
 
 .bottom-nav{display:none;position:fixed;bottom:0;left:0;right:0;z-index:100;padding:0 8px calc(6px + env(safe-area-inset-bottom, 38px)) 8px;justify-content:center;align-items:flex-end}
 @media(max-width:600px){.bottom-nav{display:flex}}
-.bottom-nav-glass{position:relative;display:flex;align-items:center;width:100%;max-width:500px;margin:0 auto;padding:8px 10px;border-radius:34px;background:linear-gradient(135deg,rgba(255,255,255,0.09) 0%,rgba(255,255,255,0.03) 40%,rgba(255,255,255,0.07) 100%);backdrop-filter:blur(40px) saturate(1.8) brightness(1.1);-webkit-backdrop-filter:blur(40px) saturate(1.8) brightness(1.1);border:0.5px solid rgba(255,255,255,0.16);box-shadow:0 0 0 0.5px rgba(255,255,255,0.1),0 0 15px rgba(255,255,255,0.04),0 8px 32px rgba(0,0,0,0.4),inset 0 2px 0 rgba(255,255,255,0.22),inset 0 -2px 0 rgba(255,255,255,0.1),inset 1px 0 0 rgba(255,255,255,0.05),inset -1px 0 0 rgba(255,255,255,0.05)}
-.light .bottom-nav-glass{background:linear-gradient(135deg,rgba(255,255,255,0.62) 0%,rgba(255,255,255,0.4) 40%,rgba(255,255,255,0.55) 100%);border:0.5px solid rgba(255,255,255,0.7);box-shadow:0 0 0 0.5px rgba(255,255,255,0.5),0 0 16px rgba(255,255,255,0.1),0 8px 32px rgba(0,0,0,0.07),inset 0 2px 0 rgba(255,255,255,0.95),inset 0 -2px 0 rgba(255,255,255,0.5),inset 1px 0 0 rgba(255,255,255,0.3),inset -1px 0 0 rgba(255,255,255,0.3)}
+.bottom-nav-glass{position:relative;display:flex;align-items:center;width:100%;max-width:500px;margin:0 auto;padding:8px 10px;border-radius:34px;background:linear-gradient(135deg,rgba(255,255,255,0.09) 0%,rgba(255,255,255,0.03) 40%,rgba(255,255,255,0.07) 100%);backdrop-filter:blur(40px) saturate(1.8) brightness(1.1);-webkit-backdrop-filter:blur(40px) saturate(1.8) brightness(1.1);border:0.5px solid rgba(255,255,255,0.16);box-shadow:0 0 0 0.5px rgba(255,255,255,0.1),0 0 15px rgba(255,255,255,0.04),0 8px 32px rgba(0,0,0,0.4),inset 2px 2px 0 rgba(255,255,255,0.2),inset -1px -1px 0 rgba(255,255,255,0.08),inset -2px -2px 4px rgba(0,0,0,0.15)}
+.light .bottom-nav-glass{background:linear-gradient(135deg,rgba(255,255,255,0.62) 0%,rgba(255,255,255,0.4) 40%,rgba(255,255,255,0.55) 100%);border:0.5px solid rgba(255,255,255,0.7);box-shadow:0 0 0 0.5px rgba(255,255,255,0.5),0 0 16px rgba(255,255,255,0.1),0 8px 32px rgba(0,0,0,0.07),inset 2px 2px 0 rgba(255,255,255,0.9),inset -1px -1px 0 rgba(255,255,255,0.4),inset -2px -2px 4px rgba(0,0,0,0.04)}
 .bnav-pill{position:absolute;border-radius:26px;background:linear-gradient(160deg,rgba(255,255,255,0.16) 0%,rgba(255,255,255,0.05) 100%);border:0.5px solid rgba(255,255,255,0.2);box-shadow:0 4px 16px rgba(0,0,0,0.25),inset 0 1px 0 rgba(255,255,255,0.18),inset 0 -0.5px 0 rgba(255,255,255,0.05);transition:left 0.45s cubic-bezier(0.4,0,0.1,1),width 0.45s cubic-bezier(0.4,0,0.1,1),top 0.45s cubic-bezier(0.4,0,0.1,1),height 0.45s cubic-bezier(0.4,0,0.1,1);pointer-events:none;z-index:0;will-change:left,width}
 .light .bnav-pill{background:linear-gradient(160deg,rgba(255,255,255,0.75) 0%,rgba(255,255,255,0.4) 100%);border:0.5px solid rgba(255,255,255,0.85);box-shadow:0 4px 16px rgba(0,0,0,0.06),inset 0 1px 0 rgba(255,255,255,0.95),inset 0 -0.5px 0 rgba(255,255,255,0.3)}
 .bnav-items{display:flex;justify-content:space-around;align-items:center;width:100%;position:relative;z-index:1}
@@ -277,6 +277,14 @@ input[type=range]::-moz-range-track{height:6px;background:rgba(255,255,255,0.06)
 .bnav-add:active{transform:scale(0.9)}
 .bnav-add svg{width:22px;height:22px}
 .bnav-badge{position:absolute;top:2px;right:4px;background:#f44;color:#fff;font-size:0.5rem;font-weight:700;min-width:14px;height:14px;border-radius:7px;display:flex;align-items:center;justify-content:center;padding:0 3px;line-height:1;z-index:2}
+/* Auction waiting animation */
+.auc-waiting{padding:3rem 1rem;text-align:center;grid-column:1/-1;position:relative;overflow:hidden;border-radius:var(--r2);min-height:280px;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:1.5rem}
+.auc-waiting-bg{position:absolute;inset:0;opacity:0.06;font-size:2.5rem;line-height:2.8rem;letter-spacing:0.8rem;overflow:hidden;pointer-events:none;animation:aucBgScroll 20s linear infinite;white-space:nowrap}
+@keyframes aucBgScroll{0%{transform:translate(0,0)}100%{transform:translate(-50%,-50%)}}
+.auc-waiting-text{position:relative;z-index:1;font-family:'Bebas Neue',sans-serif;font-size:1.8rem;letter-spacing:3px;display:flex;gap:1px}
+.auc-waiting-text span{color:var(--m1);animation:aucGlow 2.5s ease-in-out infinite;animation-delay:var(--d)}
+@keyframes aucGlow{0%,100%{color:rgba(255,255,255,0.2);text-shadow:none}40%,60%{color:var(--lime);text-shadow:0 0 12px rgba(212,240,64,0.5)}}
+.auc-waiting-sub{position:relative;z-index:1;font-size:0.78rem;color:var(--m1)}
 </style>
 </head>
 <body>
@@ -1697,7 +1705,7 @@ function renderSeller(){
       return`<div style="border:1px solid var(--b1);border-radius:var(--r);overflow:hidden;background:var(--s2);margin-bottom:0.3rem">
         <div class="dash-item" style="border:none;margin:0">
           ${d.photoUrl?`<img src="${d.photoUrl}" style="width:34px;height:34px;object-fit:cover;border-radius:6px;flex-shrink:0">`:'<div style="width:34px;height:34px;background:var(--s3);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0">🥏</div>'}
-          <div style="flex:1;min-width:0"><div class="di-title">${d.brand} ${d.model}</div><div class="di-sub"><span class="badge b-${st(d.status).c}">${st(d.status).l}</span>${d.tester?' · '+d.tester:''}</div></div>
+          <div style="flex:1;min-width:0"><div class="di-title">${d.brand} ${d.model}</div><div class="di-sub"><span class="badge b-${st(d.status).c}">${st(d.status).l}</span>${d.tester&&['testing','reserved'].includes(d.status)?' · '+d.tester:''}</div></div>
           <div style="text-align:right;display:flex;flex-direction:column;align-items:flex-end;gap:3px">
             <div class="di-price">${d.buyout||0}₴</div>
             <div style="display:flex;gap:3px">
@@ -2245,7 +2253,12 @@ function renderAuctions(){
   else if(aucFilter==='mybids')list=list.filter(a=>CU&&a._myBid);
   else if(aucFilter==='ended')list=list.filter(a=>a.status!=='active'||new Date(a.ends_at)<=now);
   const grid=document.getElementById('auctionGrid');
-  if(!list.length){grid.innerHTML='<div style="text-align:center;color:var(--m1);padding:2rem;font-size:0.85rem;grid-column:1/-1">Немає аукціонів</div>';return;}
+  if(!list.length){
+    const msg='ОЧІКУЄМО АУКЦІОНИ';
+    const chars=msg.split('').map((c,i)=>c===' '?'&nbsp;':`<span style="--d:${i*0.08}s">${c}</span>`).join('');
+    grid.innerHTML=`<div class="auc-waiting"><div class="auc-waiting-text">${chars}</div><div class="auc-waiting-sub">Створіть свій аукціон</div></div>`;
+    return;
+  }
   grid.innerHTML=list.map(a=>{
     const end=new Date(a.ends_at);
     const isActive=a.status==='active'&&end>now;
