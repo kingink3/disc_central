@@ -906,12 +906,12 @@ function tgLinkFull(tg){
 }
 
 // ── LOAD DISCS ──
-const HIDDEN=['sold','deleted','unlisted','auction'];
+const HIDDEN=['sold','deleted','unlisted'];
 async function loadDiscs(){
   // Show cache instantly
   try{const c=localStorage.getItem('dc_discs');if(c){allDiscs=JSON.parse(c);applyFilters();updateStats();}}catch(e){}
   try{
-    const {data,error}=await sb.from('discs').select('*').not('status','in','("sold","deleted","unlisted","auction")').order('created_at',{ascending:false});
+    const {data,error}=await sb.from('discs').select('*').not('status','in','("sold","deleted","unlisted")').order('created_at',{ascending:false});
     if(!error&&data){
       allDiscs=data.map(dbToDisc);
       localStorage.setItem('dc_discs',JSON.stringify(allDiscs));
@@ -1079,7 +1079,7 @@ function applyFilters(){
   const fPrice=parseFloat(document.getElementById('f-price')?.value)||0;
   const fCity=(document.getElementById('f-city')?.value||'').toLowerCase().trim();
   const sort=document.getElementById('f-sort')?.value||'new';
-  let list=allDiscs.filter(d=>d.status!=='sold'&&d.status!=='auction');
+  let list=allDiscs.filter(d=>d.status!=='sold');
   if(CF==='fav')list=list.filter(d=>isFav(d.id));
   else if(CF==='trade')list=list.filter(d=>{const tw=String(d.tradeWant||'').trim();return tw&&tw!=='false';});
   else if(CF!=='all')list=list.filter(d=>d.status===CF||d.status==='trade'&&CF==='available');
@@ -2501,7 +2501,7 @@ async function submitAuction(){
   if(!error){
     // If from catalog disc, set it to 'auction' status
     if(window._aucSourceDiscId){
-      await sb.from('discs').update({status:'auction'}).eq('id',window._aucSourceDiscId);
+      await sb.from('discs').update({status:'unlisted'}).eq('id',window._aucSourceDiscId);
       window._aucSourceDiscId=null;
       await loadDiscs();
     }
@@ -2545,15 +2545,76 @@ function discToAuction(discId){
   openModal('addAuction');
 }
 
-function auctionToCatalog(aucId){
+function restartAuction(aucId){
   const a=allAuctions.find(x=>x.id===aucId);if(!a)return;
   closeModal('aucDetail');
+  resetAucForm();
+  // Pre-fill from old auction
+  const titleParts=a.title.split(' ');
+  document.getElementById('auc-brand').value=titleParts[0]||'';
+  document.getElementById('auc-model').value=titleParts.slice(1).join(' ')||'';
+  document.getElementById('auc-plastic').value=a.plastic||'';
+  document.getElementById('auc-weight').value=a.weight||'';
+  document.getElementById('auc-color').value=a.color||'';
+  document.getElementById('auc-city').value=a.city||'';
+  document.getElementById('auc-cond').value=a.condition||7;
+  document.getElementById('aucCondLabel').textContent=a.condition||7;
+  document.getElementById('auc-speed').value=a.speed||'';
+  document.getElementById('auc-glide').value=a.glide||'';
+  document.getElementById('auc-turn').value=a.turn||'';
+  document.getElementById('auc-fade').value=a.fade||'';
+  const ink=document.getElementById('auc-inked');if(ink)ink.checked=!!a.inked;
+  document.getElementById('auc-desc').value=a.description||'';
+  // Pre-fill photos
+  const urls=[a.photo_url,a.photo_url2,a.photo_url3].filter(Boolean);
+  urls.forEach((u,i)=>{
+    const slot=document.getElementById('auc-slot'+i);
+    if(slot){slot.style.backgroundImage='url('+u+')';slot.style.backgroundSize='cover';slot.style.backgroundPosition='center';const ic=slot.querySelector('.slot-icon');if(ic)ic.style.display='none';}
+  });
+  window._aucPrefilledPhotos=urls;
+  // Keep source disc link
+  window._aucSourceDiscId=a.source_disc_id||null;
+  // Pre-fill auction type settings
+  document.getElementById('auc-type').value=a.auction_type||'classic';
+  toggleAucTypeFields();
+  if(a.auction_type==='classic'){
+    document.getElementById('auc-start').value=a.start_price||'';
+    document.getElementById('auc-step').value=a.min_step||10;
+  }else if(a.auction_type==='buyout'){
+    document.getElementById('auc-start-b').value=a.start_price||'';
+    document.getElementById('auc-step-b').value=a.min_step||10;
+    document.getElementById('auc-buyout-b').value=a.buyout_price||'';
+  }else if(a.auction_type==='reverse'){
+    document.getElementById('auc-reverse-start').value=a.reverse_start||'';
+    document.getElementById('auc-reverse-end').value=a.reverse_end||'';
+    document.getElementById('auc-reverse-drop').value=a.reverse_drop||'';
+    document.getElementById('auc-reverse-interval').value=a.reverse_interval||60;
+  }
+  // Archive old auction
+  sb.from('auctions').update({status:'archived'}).eq('id',aucId).then(()=>{loadAuctions();});
+  openModal('addAuction');
+}
+
+async function auctionToCatalog(aucId){
+  const a=allAuctions.find(x=>x.id===aucId);if(!a)return;
+  // If disc was from catalog - just restore it
+  if(a.source_disc_id){
+    try{
+      await sb.from('discs').update({status:'available'}).eq('id',a.source_disc_id);
+      closeModal('aucDetail');
+      toast('✅ Диск повернуто в каталог!');
+      await loadDiscs();
+      await loadAuctions();
+      if(CU)renderCabinet();
+    }catch(e){toast('⚠️ Помилка',true);}
+    return;
+  }
+  // No source disc - open pre-filled add form
+  closeModal('aucDetail');
   resetAddForm();
-  // Pre-fill add-disc form with auction data
   const titleParts=a.title.split(' ');
   document.getElementById('ad-brand').value=titleParts[0]||'';
   document.getElementById('ad-model').value=titleParts.slice(1).join(' ')||'';
-  // Use new fields with fallback to description parsing
   const desc=a.description||'';
   document.getElementById('ad-plastic').value=a.plastic||(desc.match(/Пластик:\s*(.+)/)||[])[1]||'';
   document.getElementById('ad-weight').value=a.weight||(desc.match(/Вага:\s*(\d+)/)||[])[1]||'';
@@ -2574,7 +2635,6 @@ function auctionToCatalog(aucId){
   document.getElementById('ad-inked').checked=ink;
   const notes=desc.replace(/Пластик:.*|Вага:.*|Колір:.*|Стан:.*|Flight:.*|Inked:.*|Місто:.*/g,'').trim();
   document.getElementById('ad-notes').value=notes;
-  // Pre-fill photos
   const urls=[a.photo_url,a.photo_url2,a.photo_url3].filter(Boolean);
   urls.forEach((u,i)=>{
     const slot=document.getElementById('slot'+i);
@@ -2675,7 +2735,10 @@ async function showAucDetail(id){
     `:isActive&&CU&&a.owner_tg_id===CU.tgId?`<div style="font-size:0.78rem;color:var(--m1);margin-bottom:0.75rem;text-align:center">Це ваш аукціон</div>`:``}
     ${!isActive?`
       ${a.winner?`<div style="padding:0.5rem;background:rgba(74,222,128,0.1);border:1px solid var(--av);border-radius:var(--r);font-size:0.82rem;margin-bottom:0.75rem">🏆 Переможець: <strong>${a.winner}</strong>${tgLinkFull(a.winner_tg||a.winner_tg_id)}</div>`:'<div style="color:var(--m1);margin-bottom:0.75rem">Ніхто не зробив ставку</div>'}
-      ${!a.winner&&CU&&a.owner_tg_id===CU.tgId?`<button class="btn btn-lime btn-full" onclick="auctionToCatalog('${a.id}')" style="margin-bottom:0.75rem">📦 Додати в каталог</button>`:''}
+      ${!a.winner&&CU&&a.owner_tg_id===CU.tgId?`<div style="display:flex;gap:0.4rem;margin-bottom:0.75rem">
+        <button class="btn btn-lime btn-sm" onclick="auctionToCatalog('${a.id}')" style="flex:1">${a.source_disc_id?'📦 Повернути':'📦 Додати'}</button>
+        <button class="btn btn-cyan btn-sm" onclick="restartAuction('${a.id}')" style="flex:1">🔄 Перезапустити</button>
+      </div>`:''}
     `:''}
     <div style="font-size:0.72rem;font-weight:700;color:var(--m1);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:0.4rem">Історія ставок</div>
     ${bids&&bids.length?bids.map((b,i)=>`<div style="display:flex;justify-content:space-between;padding:0.35rem 0;border-bottom:1px solid var(--b1);font-size:0.78rem">
