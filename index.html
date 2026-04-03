@@ -566,7 +566,7 @@ input[type=range]::-moz-range-track{height:6px;background:rgba(255,255,255,0.06)
     </div>
     <div class="fg"><label class="fl">Speed / Glide / Turn / Fade</label>
       <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:0.4rem">
-        <input id="auc-speed" type="number" placeholder="S" style="font-size:14px"><input id="auc-glide" type="number" placeholder="G" style="font-size:14px"><input id="auc-turn" type="number" placeholder="T" step="0.5" style="font-size:14px"><input id="auc-fade" type="number" placeholder="F" style="font-size:14px">
+        <input id="auc-speed" type="number" inputmode="decimal" pattern="[0-9.,\-]*" placeholder="S" style="font-size:14px"><input id="auc-glide" type="number" inputmode="decimal" pattern="[0-9.,\-]*" placeholder="G" style="font-size:14px"><input id="auc-turn" type="number" inputmode="decimal" pattern="[0-9.,\-]*" placeholder="T" step="0.5" style="font-size:14px"><input id="auc-fade" type="number" inputmode="decimal" pattern="[0-9.,\-]*" placeholder="F" style="font-size:14px">
       </div>
     </div>
     <label class="toggle-row fg"><input type="checkbox" id="auc-inked"><span style="font-size:0.84rem">🖊️ Inked</span></label>
@@ -583,25 +583,25 @@ input[type=range]::-moz-range-track{height:6px;background:rgba(255,255,255,0.06)
       </div>
       <div id="auc-fields-classic">
         <div class="fr">
-          <div class="fg"><label class="fl">Стартова ціна ₴ *</label><input id="auc-start" type="number" placeholder="100" style="font-size:14px"></div>
-          <div class="fg"><label class="fl">Мін. крок ₴</label><input id="auc-step" type="number" placeholder="10" value="10" style="font-size:14px"></div>
+          <div class="fg"><label class="fl">Стартова ціна ₴ *</label><input id="auc-start" type="number" inputmode="numeric" pattern="[0-9]*" placeholder="100" style="font-size:14px"></div>
+          <div class="fg"><label class="fl">Мін. крок ₴</label><input id="auc-step" type="number" inputmode="numeric" pattern="[0-9]*" placeholder="10" value="10" style="font-size:14px"></div>
         </div>
       </div>
       <div id="auc-fields-buyout" style="display:none">
         <div class="fr">
-          <div class="fg"><label class="fl">Стартова ціна ₴ *</label><input id="auc-start-b" type="number" placeholder="100" style="font-size:14px"></div>
-          <div class="fg"><label class="fl">Мін. крок ₴</label><input id="auc-step-b" type="number" placeholder="10" value="10" style="font-size:14px"></div>
+          <div class="fg"><label class="fl">Стартова ціна ₴ *</label><input id="auc-start-b" type="number" inputmode="numeric" pattern="[0-9]*" placeholder="100" style="font-size:14px"></div>
+          <div class="fg"><label class="fl">Мін. крок ₴</label><input id="auc-step-b" type="number" inputmode="numeric" pattern="[0-9]*" placeholder="10" value="10" style="font-size:14px"></div>
         </div>
-        <div class="fg"><label class="fl">Купити зараз ₴ *</label><input id="auc-buyout-b" type="number" placeholder="500" style="font-size:14px"></div>
+        <div class="fg"><label class="fl">Купити зараз ₴ *</label><input id="auc-buyout-b" type="number" inputmode="numeric" pattern="[0-9]*" placeholder="500" style="font-size:14px"></div>
       </div>
       <div id="auc-fields-reverse" style="display:none">
         <div class="fr">
-          <div class="fg"><label class="fl">Початкова ціна ₴ *</label><input id="auc-reverse-start" type="number" placeholder="1000" style="font-size:14px"></div>
-          <div class="fg"><label class="fl">Мінімальна ціна ₴ *</label><input id="auc-reverse-end" type="number" placeholder="100" style="font-size:14px"></div>
+          <div class="fg"><label class="fl">Початкова ціна ₴ *</label><input id="auc-reverse-start" type="number" inputmode="numeric" pattern="[0-9]*" placeholder="1000" style="font-size:14px"></div>
+          <div class="fg"><label class="fl">Мінімальна ціна ₴ *</label><input id="auc-reverse-end" type="number" inputmode="numeric" pattern="[0-9]*" placeholder="100" style="font-size:14px"></div>
         </div>
         <div class="fr">
-          <div class="fg"><label class="fl">Зниження ₴</label><input id="auc-reverse-drop" type="number" placeholder="50" style="font-size:14px"></div>
-          <div class="fg"><label class="fl">Кожні (хвилин)</label><input id="auc-reverse-interval" type="number" placeholder="60" value="60" style="font-size:14px"></div>
+          <div class="fg"><label class="fl">Зниження ₴</label><input id="auc-reverse-drop" type="number" inputmode="numeric" pattern="[0-9]*" placeholder="50" style="font-size:14px"></div>
+          <div class="fg"><label class="fl">Кожні (хвилин)</label><input id="auc-reverse-interval" type="number" inputmode="numeric" pattern="[0-9]*" placeholder="60" value="60" style="font-size:14px"></div>
         </div>
       </div>
       <div class="fg"><label class="fl">Тривалість</label>
@@ -669,8 +669,8 @@ input[type=range]::-moz-range-track{height:6px;background:rgba(255,255,255,0.06)
       <div style="font-size:0.68rem;color:var(--m1);margin-top:0.25rem" id="uploadStatus"></div>
     </div>
     <div class="fr"><div class="fg"><label class="fl">Бренд *</label><input id="ad-brand" placeholder="Innova, Discraft..."></div><div class="fg"><label class="fl">Модель *</label><input id="ad-model" placeholder="Boss, Buzzz..."></div></div>
-    <div class="fr"><div class="fg"><label class="fl">Пластик</label><input id="ad-plastic" placeholder="Star, ESP..."></div><div class="fg"><label class="fl">Вага (г)</label><input id="ad-weight" type="number" placeholder="175"></div></div>
-    <div class="fr"><div class="fg"><label class="fl">Колір</label><input id="ad-color" placeholder="Жовтий..."></div><div class="fg"><label class="fl">Buyout (UAH)</label><input id="ad-buyout" type="number" placeholder="850"></div></div>
+    <div class="fr"><div class="fg"><label class="fl">Пластик</label><input id="ad-plastic" placeholder="Star, ESP..."></div><div class="fg"><label class="fl">Вага (г)</label><input id="ad-weight" type="number" inputmode="numeric" pattern="[0-9]*" placeholder="175"></div></div>
+    <div class="fr"><div class="fg"><label class="fl">Колір</label><input id="ad-color" placeholder="Жовтий..."></div><div class="fg"><label class="fl">Buyout (UAH)</label><input id="ad-buyout" type="number" inputmode="numeric" pattern="[0-9]*" placeholder="850"></div></div>
     <div class="fg"><label class="fl">Місто</label><input id="ad-city" placeholder="Київ, Луцьк, Кременчук, Одеса, Львів..."></div>
     <div class="fg"><label class="fl">Стан: <span id="condValLabel">7</span>/10</label>
       <div style="display:flex;align-items:center">
@@ -681,12 +681,16 @@ input[type=range]::-moz-range-track{height:6px;background:rgba(255,255,255,0.06)
     </div>
     <div class="fg"><label class="fl">Speed / Glide / Turn / Fade</label>
       <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:0.4rem">
-        <input id="ad-speed" type="number" placeholder="Speed"><input id="ad-glide" type="number" placeholder="Glide"><input id="ad-turn" type="number" placeholder="Turn" step="0.5"><input id="ad-fade" type="number" placeholder="Fade">
+        <input id="ad-speed" type="number" placeholder="Speed" inputmode="decimal" pattern="[0-9.,\-]*"><input id="ad-glide" type="number" placeholder="Glide" inputmode="decimal" pattern="[0-9.,\-]*"><input id="ad-turn" type="number" placeholder="Turn" inputmode="decimal" pattern="[0-9.,\-]*" step="0.5"><input id="ad-fade" type="number" placeholder="Fade" inputmode="decimal" pattern="[0-9.,\-]*">
       </div>
     </div>
     <div style="display:flex;gap:0.5rem">
       <label class="toggle-row fg" style="flex:1"><input type="checkbox" id="ad-trade"><span style="font-size:0.84rem">🔄 Обмін</span></label>
       <label class="toggle-row fg" style="flex:1"><input type="checkbox" id="ad-inked"><span style="font-size:0.84rem">🖊️ Inked</span></label>
+    </div>
+    <div style="display:flex;gap:0.5rem">
+      <label class="toggle-row fg" style="flex:1"><input type="checkbox" id="ad-bargain"><span style="font-size:0.84rem">⚖️ Торг</span></label>
+      <div style="flex:1"></div>
     </div>
     <div class="fg" id="tradeDescWrap" style="display:none"><label class="fl">Що хочу отримати</label><textarea id="ad-trade-desc" placeholder="Опиши що шукаєш..."></textarea></div>
     <div class="fg"><label class="fl">Нотатки</label><textarea id="ad-notes" placeholder="Додаткова інформація..."></textarea></div>
@@ -711,17 +715,18 @@ input[type=range]::-moz-range-track{height:6px;background:rgba(255,255,255,0.06)
       <input type="file" id="epFile1" accept="image/*" style="display:none" onchange="handleEditPhoto(1,this)">
       <input type="file" id="epFile2" accept="image/*" style="display:none" onchange="handleEditPhoto(2,this)">
     </div>
-    <div class="fr"><div class="fg"><label class="fl">Buyout (UAH)</label><input id="edit-buyout" type="number"></div><div class="fg"><label class="fl">Стан: <span id="editCondLabel">7</span>/10</label><div style="display:flex;align-items:center"><input type="range" id="edit-cond" min="1" max="10" value="7" step="1" style="flex:1" oninput="document.getElementById('editCondLabel').textContent=this.value"></div></div></div>
+    <div class="fr"><div class="fg"><label class="fl">Buyout (UAH)</label><input id="edit-buyout" type="number" inputmode="numeric" pattern="[0-9]*"></div><div class="fg"><label class="fl">Стан: <span id="editCondLabel">7</span>/10</label><div style="display:flex;align-items:center"><input type="range" id="edit-cond" min="1" max="10" value="7" step="1" style="flex:1" oninput="document.getElementById('editCondLabel').textContent=this.value"></div></div></div>
     <div class="fg"><label class="fl">Speed / Glide / Turn / Fade</label>
       <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:0.4rem">
-        <input id="edit-speed" type="number" placeholder="Speed" step="0.5">
-        <input id="edit-glide" type="number" placeholder="Glide" step="0.5">
-        <input id="edit-turn" type="number" placeholder="Turn" step="0.5">
-        <input id="edit-fade" type="number" placeholder="Fade" step="0.5">
+        <input id="edit-speed" type="number" inputmode="decimal" pattern="[0-9.,\-]*" placeholder="Speed" step="0.5">
+        <input id="edit-glide" type="number" inputmode="decimal" pattern="[0-9.,\-]*" placeholder="Glide" step="0.5">
+        <input id="edit-turn" type="number" inputmode="decimal" pattern="[0-9.,\-]*" placeholder="Turn" step="0.5">
+        <input id="edit-fade" type="number" inputmode="decimal" pattern="[0-9.,\-]*" placeholder="Fade" step="0.5">
       </div>
     </div>
     <label class="toggle-row fg"><input type="checkbox" id="edit-trade"><span style="font-size:0.84rem">🔄 Готовий до обміну</span></label>
     <div class="fg" id="editTradeWrap" style="display:none"><label class="fl">Що хочу отримати</label><textarea id="edit-trade-desc"></textarea></div>
+    <label class="toggle-row fg"><input type="checkbox" id="edit-bargain"><span style="font-size:0.84rem">⚖️ Торг</span></label>
     <div class="fg"><label class="fl">Нотатки</label><textarea id="edit-notes"></textarea></div>
     <div class="fg"><label class="fl">Місто</label><input id="edit-city" placeholder="Київ, Луцьк, Кременчук, Одеса, Львів..."></div>
     
@@ -980,7 +985,7 @@ function dbToDisc(r){
     tester:r.tester||'', testerTg:r.tester_tg||'',
     photoUrl:r.photo_url||'', photoUrl2:r.photo_url2||'', photoUrl3:r.photo_url3||'',
     photoPos:r.photo_pos||'50% 50%',
-    notes:r.notes||'', tradeWant:r.trade_want||'', inked:r.inked||false, createdAt:r.created_at,
+    notes:r.notes||'', tradeWant:r.trade_want||'', inked:r.inked||false, bargain:r.bargain||false, createdAt:r.created_at,
   };
 }
 function discToDb(d){
@@ -1048,7 +1053,7 @@ function cardHTML(d){
       </div>
       <div class="disc-footer">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.35rem">
-          <div class="disc-price">${d.buyout?d.buyout+' ₴':'—'}</div>
+          <div class="disc-price">${d.buyout?d.buyout+' ₴':'—'}${d.bargain?' <span style="font-size:0.7rem" title="Торг">⚖️</span>':''}</div>
           <div style="display:flex;align-items:center;gap:0.4rem">
             <span onclick="event.stopPropagation();toggleFav('${d.id}')" style="cursor:pointer;font-size:0.85rem">${isFav(d.id)?'⭐':'☆'}</span>
             <div class="disc-own" onclick="event.stopPropagation();filterByOwner('${d.owner}')">👤 ${(d.owner||'').split(' ')[0]}</div>
@@ -1136,6 +1141,7 @@ function showDetail(id){
       <div class="detail-info-item full"><span class="di-label">Власник:</span> ${d.owner||'—'}${tgLinkFull(d.ownerTg)}</div>
       ${d.tester&&d.status==='testing'?`<div class="detail-info-item full"><span class="di-label">Тестер:</span> ${d.tester}</div>`:''}
     </div>
+    ${d.bargain?`<div class="info-box" style="border-color:rgba(212,240,64,0.2);background:rgba(212,240,64,0.04);margin-bottom:0.875rem"><strong style="color:var(--lime)">⚖️ Торг:</strong> Власник відкритий до торгу по ціні</div>`:''}
     ${hasTrade?`<div class="info-box" style="border-color:rgba(167,139,250,0.25);background:rgba(167,139,250,0.05);margin-bottom:0.875rem"><strong style="color:var(--purple)">🔄 Обмін:</strong> ${d.tradeWant}</div>`:''}
     ${d.notes?`<div style="font-size:0.8rem;color:var(--m2);padding:0.65rem;background:var(--s2);border-radius:var(--r);margin-bottom:0.875rem">${d.notes}</div>`:''}
     <div style="display:flex;gap:0.4rem;padding-top:0.875rem;border-top:1px solid var(--b1)">
@@ -1146,9 +1152,9 @@ function showDetail(id){
     </div>
     <div style="margin-top:0.5rem"><button class="btn btn-ghost btn-xs" onclick="shareDisc('${d.id}')" style="color:var(--m1);width:100%">🔗 Поділитись посиланням</button></div>
     <div style="margin-top:1rem;border-top:1px solid var(--b1);padding-top:0.75rem">
-      <div style="font-size:0.72rem;font-weight:700;color:var(--m1);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:0.5rem">Коментарі</div>
+      <div style="font-size:0.72rem;font-weight:700;color:var(--m1);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:0.5rem">Пропозиції</div>
       <div id="disc-comments-${d.id}" style="margin-bottom:0.5rem"></div>
-      ${CU?`<div style="display:flex;gap:0.4rem"><textarea id="comment-input-${d.id}" placeholder="Написати коментар..." style="min-height:36px;font-size:0.78rem;flex:1"></textarea><button class="btn btn-ghost btn-xs" onclick="postComment('${d.id}')" style="flex-shrink:0;align-self:flex-end">↗</button></div>`:'<div style="font-size:0.75rem;color:var(--m1)">Увійдіть щоб коментувати</div>'}
+      ${CU?`<div style="display:flex;gap:0.4rem"><textarea id="comment-input-${d.id}" placeholder="${d.bargain?'Запропонуйте свою ціну...':'Написати пропозицію...'}" style="min-height:36px;font-size:0.78rem;flex:1"></textarea><button class="btn btn-ghost btn-xs" onclick="postComment('${d.id}')" style="flex-shrink:0;align-self:flex-end">↗</button></div>`:'<div style="font-size:0.75rem;color:var(--m1)">Увійдіть щоб написати</div>'}
     </div>`;
   // Show edit button if owner
   const editBtn=document.getElementById('detailEditBtn');
@@ -1226,7 +1232,14 @@ async function postComment(discId){
   const text=input?.value?.trim();if(!text||!CU)return;
   try{
     const {error}=await sb.from('comments').insert({disc_id:discId,author:CU.name,author_tg:CU.tg||'',text:text});
-    if(!error){input.value='';loadComments(discId);}
+    if(!error){
+      input.value='';loadComments(discId);
+      // Notify owner about new offer
+      const d=allDiscs.find(x=>x.id===discId);
+      if(d&&d.ownerTg&&String(CU.name).trim()!==String(d.owner).trim()){
+        notifyAppsScript('offer',d,CU,text);
+      }
+    }
     else toast('⚠️ Помилка',true);
   }catch(e){toast('⚠️ Помилка',true);}
 }
@@ -1255,6 +1268,7 @@ async function submitDisc(){
     buyout:parseInt(document.getElementById('ad-buyout').value)||0,
     notes:document.getElementById('ad-notes').value,
     inked:document.getElementById('ad-inked').checked,
+    bargain:document.getElementById('ad-bargain').checked,
     trade_want:isTrade?(document.getElementById('ad-trade-desc').value.trim()||'Пропонуйте'):'',
     status:'available',
     photo_url:photos[0],photo_url2:photos[1],photo_url3:photos[2],
@@ -1276,6 +1290,7 @@ function resetAddForm(){
   document.getElementById('uploadStatus').textContent='';
   document.getElementById('ad-trade').checked=false;
   document.getElementById('ad-inked').checked=false;
+  document.getElementById('ad-bargain').checked=false;
   document.getElementById('tradeDescWrap').style.display='none';
   document.getElementById('condValLabel').textContent='7';
   document.getElementById('ad-cond').value='7';
@@ -1299,6 +1314,13 @@ function updateCondBar(){
 }
 document.getElementById('edit-cond').addEventListener('input',function(){document.getElementById('editCondLabel').textContent=this.value;});
 document.getElementById('edit-trade').addEventListener('change',function(){document.getElementById('editTradeWrap').style.display=this.checked?'block':'none';});
+
+// Force numeric-only input on number fields (iOS Telegram WebApp fix)
+document.querySelectorAll('input[type="number"]').forEach(inp=>{
+  inp.addEventListener('input',function(){
+    this.value=this.value.replace(/[^0-9.\-]/g,'');
+  });
+});
 
 // ── PHOTO UPLOAD ──
 function triggerUpload(i){document.getElementById('photoFile'+i).click();}
@@ -1405,6 +1427,7 @@ function openEditDiscWithData(d){
   document.getElementById('edit-trade').checked=!!d.tradeWant&&String(d.tradeWant)!=='false';
   document.getElementById('edit-trade-desc').value=d.tradeWant||'';
   document.getElementById('editTradeWrap').style.display=d.tradeWant?'block':'none';
+  document.getElementById('edit-bargain').checked=!!d.bargain;
   document.getElementById('edit-notes').value=d.notes||'';
   document.getElementById('edit-city').value=d.city||'';
   document.getElementById('edit-status').value=d.status||'available';
@@ -1483,6 +1506,7 @@ async function submitEditDisc(){
     turn:parseFloat(document.getElementById('edit-turn').value)||0,
     fade:parseFloat(document.getElementById('edit-fade').value)||0,
     photo_url:urls[0]||'',photo_url2:urls[1]||'',photo_url3:urls[2]||'',
+    bargain:document.getElementById('edit-bargain').checked,
   };
   try{
     const {error}=await sb.from('discs').update(updates).eq('id',id);
