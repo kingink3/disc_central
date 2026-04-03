@@ -2697,7 +2697,7 @@ async function showAucDetail(id){
   const sub=[plastic,weight?weight+'г':'',color,city].filter(Boolean).join(' · ');
 
   document.getElementById('aucDetailContent').innerHTML=`
-    ${photos.length?`<div class="detail-photos" id="pw-aucD" style="margin:-1.2rem -1.5rem 1rem -1.5rem;height:300px">${photos.map((u,i)=>`<img src="${u}" class="${i===0?'active':''}" alt="">`).join('')}${photos.length>1?`<button class="photo-nav prev" onclick="photoNav('aucD',-1)">‹</button><button class="photo-nav next" onclick="photoNav('aucD',1)">›</button>`:''}</div>`:''}
+    ${photos.length?`<div class="detail-photos" id="pw-aucD">${photos.map((u,i)=>`<img src="${u}" class="${i===0?'active':''}" alt="">`).join('')}${photos.length>1?`<button class="photo-nav prev" onclick="photoNav('aucD',-1)">‹</button><button class="photo-nav next" onclick="photoNav('aucD',1)">›</button>`:''}</div>`:''}
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.2rem">
       <div style="font-family:'Bebas Neue';font-size:1.6rem;letter-spacing:1px;line-height:1">${a.title}</div>
       <span class="badge ${statusClass}">${statusLabel}</span>
