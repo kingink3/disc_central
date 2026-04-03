@@ -767,7 +767,7 @@ input[type=range]::-moz-range-track{height:6px;background:rgba(255,255,255,0.06)
 </div>
 
 <div class="overlay" id="ov-detail">
-  <div class="modal modal-wide"><button class="mc" onclick="closeModal('detail')">❌</button><button class="mc-edit" id="detailEditBtn" style="display:none" onclick="detailEdit()">✏️</button><div id="detailContent"></div></div>
+  <div class="modal modal-wide"><button class="mc" onclick="closeModal('detail')">❌</button><button class="mc-edit" id="detailEditBtn" style="display:none" onclick="detailEdit()">✏️</button><button class="mc-edit" id="detailAucBtn" style="display:none;top:5.8rem" onclick="detailToAuction()">🏆</button><div id="detailContent"></div></div>
 </div>
 
 <div class="overlay" id="ov-adminPhoto">
@@ -1162,10 +1162,13 @@ function showDetail(id){
     </div>`;
   // Show edit button if owner
   const editBtn=document.getElementById('detailEditBtn');
+  const aucBtn=document.getElementById('detailAucBtn');
   if(editBtn){
     const isOwner=CU&&String(CU.name).trim()===String(d.owner).trim();
+    const canAuc=isOwner&&['available','trade'].includes(d.status);
     editBtn.style.display=isOwner?'flex':'none';
     editBtn.onclick=()=>{closeModal('detail');openEditDisc(d.id);};
+    if(aucBtn){aucBtn.style.display=canAuc?'flex':'none';aucBtn.onclick=()=>{closeModal('detail');discToAuction(d.id);};}
   }
   openModal('detail');
   loadComments(d.id);
@@ -1262,7 +1265,12 @@ async function submitDisc(){
   if(!brand||!model||!owner){toast('⚠️ Бренд і модель обов\'язкові',true);return;}
   const btn=document.getElementById('addDiscBtn');
   btn.disabled=true;btn.textContent='Завантаження...';
-  const photos=await uploadAllPhotos();
+  let photos=await uploadAllPhotos();
+  // Use pre-filled photos from auction if no new ones uploaded
+  if(!photos[0]&&window._catalogPrefilledPhotos&&window._catalogPrefilledPhotos.length){
+    photos=window._catalogPrefilledPhotos;while(photos.length<3)photos.push('');
+    window._catalogPrefilledPhotos=null;
+  }
   const isTrade=document.getElementById('ad-trade').checked;
   const disc={
     id:genId(),owner,owner_tg:CU?.tg||'',owner_tg_id:CU?.tgId||'',brand,model,
@@ -1294,6 +1302,7 @@ async function submitDisc(){
 
 function resetAddForm(){
   photoFiles=[null,null,null];cropPosY=50;
+  window._catalogPrefilledPhotos=null;
   [0,1,2].forEach(i=>{const s=document.getElementById('slot'+i);s.style.backgroundImage='';s.querySelector('.slot-icon').style.display='';document.getElementById('photoFile'+i).value='';});
   document.getElementById('cropWrap').style.display='none';
   document.getElementById('uploadProg').style.display='none';
@@ -2262,6 +2271,7 @@ async function loadAuctions(){
           const winner=topBids[0];
           a.status='sold';a.winner=winner.bidder;a.winner_tg=winner.bidder_tg;a.winner_tg_id=winner.bidder_tg_id;a.current_price=winner.amount;
           await sb.from('auctions').update({status:'sold',current_price:winner.amount,winner:winner.bidder,winner_tg:winner.bidder_tg,winner_tg_id:winner.bidder_tg_id}).eq('id',a.id);
+          updateSourceDisc(a,'sold');
           notifyAuction('sold',a,{name:winner.bidder,tg:winner.bidder_tg_id||winner.bidder_tg},winner.amount);
         }
       }
@@ -2282,6 +2292,11 @@ function aucTypeBadge(t){
   if(t==='reverse')return'<span style="font-size:0.55rem;background:var(--purple);color:#fff;padding:1px 4px;border-radius:3px;font-weight:700">📉 Голландський</span>';
   if(t==='buyout')return'<span style="font-size:0.55rem;background:var(--cyan);color:#fff;padding:1px 4px;border-radius:3px;font-weight:700">💰 + Купити</span>';
   return'';
+}
+async function updateSourceDisc(auction,newStatus){
+  if(auction.source_disc_id){
+    try{await sb.from('discs').update({status:newStatus}).eq('id',auction.source_disc_id);}catch(e){}
+  }
 }
 function renderAuctions(){
   const now=new Date();
@@ -2305,15 +2320,15 @@ function renderAuctions(){
     const statusLabel=isActive?'Активний':a.status==='sold'?'Продано':'Завершено';
     const curPrice=a.auction_type==='reverse'&&isActive?getReverseCurPrice(a):(a.current_price||a.start_price);
     const desc=a.description||'';
-    // Parse description for disc info
-    const plastic=(desc.match(/Пластик:\s*(.+)/)||[])[1]||'';
-    const weight=(desc.match(/Вага:\s*(\d+)/)||[])[1]||'';
-    const city=(desc.match(/Місто:\s*(.+)/)||[])[1]||'';
-    const cond=(desc.match(/Стан:\s*(\d+)/)||[])[1]||'';
-    const color=(desc.match(/Колір:\s*(.+)/)||[])[1]||'';
+    // Use new fields with fallback to description parsing
+    const plastic=a.plastic||(desc.match(/Пластик:\s*(.+)/)||[])[1]||'';
+    const weight=a.weight||(desc.match(/Вага:\s*(\d+)/)||[])[1]||'';
+    const city=a.city||(desc.match(/Місто:\s*(.+)/)||[])[1]||'';
+    const cond=a.condition||(desc.match(/Стан:\s*(\d+)/)||[])[1]||'';
+    const color=a.color||(desc.match(/Колір:\s*(.+)/)||[])[1]||'';
     const sub=[plastic,weight?weight+'г':'',color,city].filter(Boolean).join(' · ');
-    const flight=(desc.match(/Flight:\s*(.+)/)||[])[1]||'';
-    const flightParts=flight?flight.split('/').map(v=>v.trim()):[];
+    const sp=a.speed||0,gl=a.glide||0,tn=a.turn||0,fd2=a.fade||0;
+    const hasFlights=sp||gl||tn||fd2;
     return`<div class="disc-card" onclick="showAucDetail('${a.id}')">
       <div class="disc-strip ${statusClass}"></div>
       <div style="position:relative">
@@ -2325,11 +2340,11 @@ function renderAuctions(){
         <div class="disc-title">${a.title}</div>
         ${sub?`<div class="disc-sub">${sub}</div>`:''}
         ${cond?condBar(cond):''}
-        ${flightParts.length===4?`<div class="flight-row">
-          <div class="fc"><div class="fv">${flightParts[0]}</div><div class="fk">Spd</div></div>
-          <div class="fc"><div class="fv">${flightParts[1]}</div><div class="fk">Gli</div></div>
-          <div class="fc"><div class="fv">${flightParts[2]}</div><div class="fk">Trn</div></div>
-          <div class="fc"><div class="fv">${flightParts[3]}</div><div class="fk">Fde</div></div>
+        ${hasFlights?`<div class="flight-row">
+          <div class="fc"><div class="fv">${sp}</div><div class="fk">Spd</div></div>
+          <div class="fc"><div class="fv">${gl}</div><div class="fk">Gli</div></div>
+          <div class="fc"><div class="fv">${tn}</div><div class="fk">Trn</div></div>
+          <div class="fc"><div class="fv">${fd2}</div><div class="fk">Fde</div></div>
         </div>`:''}
         <div class="disc-footer" style="margin-top:auto">
           <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.3rem">
@@ -2438,9 +2453,10 @@ async function submitAuction(){
     startPrice=reverseStart;
   }
   const btn=document.getElementById('aucSubmitBtn');
-  if(!aucPhotoFiles[0]){toast('⚠️ Додайте хоча б одне фото',true);return;}
+  if(!aucPhotoFiles[0]&&!(window._aucPrefilledPhotos&&window._aucPrefilledPhotos.length)){toast('⚠️ Додайте хоча б одне фото',true);return;}
   btn.disabled=true;btn.textContent='Створення...';
-  const photos=['','',''];
+  const photos=[...(window._aucPrefilledPhotos||['','',''])];
+  while(photos.length<3)photos.push('');
   for(let i=0;i<3;i++){
     if(aucPhotoFiles[i]){
       try{
@@ -2458,16 +2474,20 @@ async function submitAuction(){
     owner:CU.name,owner_tg:CU.tg||'',owner_tg_id:CU.tgId,
     title,
     description:[
-      document.getElementById('auc-plastic').value.trim()?'Пластик: '+document.getElementById('auc-plastic').value.trim():'',
-      document.getElementById('auc-weight').value?'Вага: '+document.getElementById('auc-weight').value+'г':'',
-      document.getElementById('auc-color').value.trim()?'Колір: '+document.getElementById('auc-color').value.trim():'',
-      document.getElementById('auc-cond')?'Стан: '+document.getElementById('auc-cond').value+'/10':'',
-      (()=>{const s=document.getElementById('auc-speed').value,g=document.getElementById('auc-glide').value,t=document.getElementById('auc-turn').value,f=document.getElementById('auc-fade').value;return(s||g||t||f)?'Flight: '+[s||'-',g||'-',t||'-',f||'-'].join(' / '):'';})(),
-      document.getElementById('auc-inked')?.checked?'Inked: Так':'',
-      document.getElementById('auc-city').value.trim()?'Місто: '+document.getElementById('auc-city').value.trim():'',
       document.getElementById('auc-desc').value.trim()
     ].filter(Boolean).join('\n'),
     photo_url:photos[0],photo_url2:photos[1],photo_url3:photos[2],
+    plastic:document.getElementById('auc-plastic').value.trim(),
+    weight:parseInt(document.getElementById('auc-weight').value)||0,
+    color:document.getElementById('auc-color').value.trim(),
+    city:document.getElementById('auc-city').value.trim(),
+    condition:parseInt(document.getElementById('auc-cond').value)||7,
+    speed:parseFloat(document.getElementById('auc-speed').value)||0,
+    glide:parseFloat(document.getElementById('auc-glide').value)||0,
+    turn:parseFloat(document.getElementById('auc-turn').value)||0,
+    fade:parseFloat(document.getElementById('auc-fade').value)||0,
+    inked:document.getElementById('auc-inked')?.checked||false,
+    source_disc_id:window._aucSourceDiscId||null,
     auction_type:aucType,
     start_price:startPrice,current_price:startPrice,
     min_step:minStep,buyout_price:buyoutPrice,
@@ -2477,6 +2497,12 @@ async function submitAuction(){
   };
   const {error}=await sb.from('auctions').insert(auction);
   if(!error){
+    // If from catalog disc, set it to 'auction' status
+    if(window._aucSourceDiscId){
+      await sb.from('discs').update({status:'auction'}).eq('id',window._aucSourceDiscId);
+      window._aucSourceDiscId=null;
+      await loadDiscs();
+    }
     closeModal('addAuction');toast('✅ Аукціон створено!');
     resetAucForm();
     aucFilter='active';
@@ -2488,7 +2514,76 @@ async function submitAuction(){
   btn.disabled=false;btn.textContent='Створити аукціон';
 }
 
+function discToAuction(discId){
+  const d=allDiscs.find(x=>x.id===discId);if(!d)return;
+  resetAucForm();
+  window._aucSourceDiscId=d.id;
+  document.getElementById('auc-brand').value=d.brand||'';
+  document.getElementById('auc-model').value=d.model||'';
+  document.getElementById('auc-plastic').value=d.plastic||'';
+  document.getElementById('auc-weight').value=d.weight||'';
+  document.getElementById('auc-color').value=d.color||'';
+  document.getElementById('auc-city').value=d.city||'';
+  document.getElementById('auc-cond').value=d.condition||7;
+  document.getElementById('aucCondLabel').textContent=d.condition||7;
+  document.getElementById('auc-speed').value=d.speed||'';
+  document.getElementById('auc-glide').value=d.glide||'';
+  document.getElementById('auc-turn').value=d.turn||'';
+  document.getElementById('auc-fade').value=d.fade||'';
+  const ink=document.getElementById('auc-inked');if(ink)ink.checked=!!d.inked;
+  // Pre-fill photos from disc
+  const urls=[d.photoUrl,d.photoUrl2,d.photoUrl3].filter(Boolean);
+  urls.forEach((u,i)=>{
+    const slot=document.getElementById('auc-slot'+i);
+    if(slot){slot.style.backgroundImage='url('+u+')';slot.style.backgroundSize='cover';slot.style.backgroundPosition='center';const ic=slot.querySelector('.slot-icon');if(ic)ic.style.display='none';}
+  });
+  // Store photo URLs to use directly (skip upload)
+  window._aucPrefilledPhotos=urls;
+  if(d.buyout)document.getElementById('auc-start').value=d.buyout;
+  openModal('addAuction');
+}
+
+function auctionToCatalog(aucId){
+  const a=allAuctions.find(x=>x.id===aucId);if(!a)return;
+  closeModal('aucDetail');
+  resetAddForm();
+  // Pre-fill add-disc form with auction data
+  const titleParts=a.title.split(' ');
+  document.getElementById('ad-brand').value=titleParts[0]||'';
+  document.getElementById('ad-model').value=titleParts.slice(1).join(' ')||'';
+  // Use new fields with fallback to description parsing
+  const desc=a.description||'';
+  document.getElementById('ad-plastic').value=a.plastic||(desc.match(/Пластик:\s*(.+)/)||[])[1]||'';
+  document.getElementById('ad-weight').value=a.weight||(desc.match(/Вага:\s*(\d+)/)||[])[1]||'';
+  document.getElementById('ad-color').value=a.color||(desc.match(/Колір:\s*(.+)/)||[])[1]||'';
+  document.getElementById('ad-city').value=a.city||(desc.match(/Місто:\s*(.+)/)||[])[1]||'';
+  const cond=a.condition||(desc.match(/Стан:\s*(\d+)/)||[])[1]||7;
+  document.getElementById('ad-cond').value=cond;
+  document.getElementById('condValLabel').textContent=cond;
+  updateCondBar();
+  const flight=(desc.match(/Flight:\s*(.+)/)||[])[1]||'';
+  const fp=flight?flight.split('/').map(v=>v.trim()):[];
+  document.getElementById('ad-speed').value=a.speed||fp[0]||'';
+  document.getElementById('ad-glide').value=a.glide||fp[1]||'';
+  document.getElementById('ad-turn').value=a.turn||fp[2]||'';
+  document.getElementById('ad-fade').value=a.fade||fp[3]||'';
+  document.getElementById('ad-buyout').value=a.current_price||a.start_price||'';
+  const ink=a.inked||/Inked:\s*Так/.test(desc);
+  document.getElementById('ad-inked').checked=ink;
+  const notes=desc.replace(/Пластик:.*|Вага:.*|Колір:.*|Стан:.*|Flight:.*|Inked:.*|Місто:.*/g,'').trim();
+  document.getElementById('ad-notes').value=notes;
+  // Pre-fill photos
+  const urls=[a.photo_url,a.photo_url2,a.photo_url3].filter(Boolean);
+  urls.forEach((u,i)=>{
+    const slot=document.getElementById('slot'+i);
+    if(slot){slot.style.backgroundImage='url('+u+')';slot.style.backgroundSize='cover';slot.style.backgroundPosition='center';slot.querySelector('.slot-icon').style.display='none';}
+  });
+  window._catalogPrefilledPhotos=urls;
+  openModal('addDisc');
+}
+
 function resetAucForm(){
+  window._aucSourceDiscId=null;
   aucPhotoFiles=[null,null,null];
   ['auc-brand','auc-model','auc-plastic','auc-weight','auc-color','auc-city','auc-desc','auc-start','auc-buyout','auc-speed','auc-glide','auc-turn','auc-fade','auc-start-b','auc-step-b','auc-buyout-b','auc-reverse-start','auc-reverse-end','auc-reverse-drop','auc-reverse-interval'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
   document.getElementById('auc-step').value='10';
@@ -2513,17 +2608,21 @@ async function showAucDetail(id){
   const typeLabel=a.auction_type==='buyout'?'💰 Купити зараз + Аукціон':isReverse?'📉 Зворотній аукціон':'📈 Класичний аукціон';
   const statusLabel=isActive?'Активний':a.status==='sold'?'Продано':'Завершено';
   const statusClass=isActive?'b-av':a.status==='sold'?'b-so':'b-so';
-  // Parse description fields
+  // Use new fields with fallback to description parsing
   const desc=a.description||'';
-  const plastic=(desc.match(/Пластик:\s*(.+)/)||[])[1]||'';
-  const weight=(desc.match(/Вага:\s*(\d+)/)||[])[1]||'';
-  const color=(desc.match(/Колір:\s*(.+)/)||[])[1]||'';
-  const cond=(desc.match(/Стан:\s*(\d+)/)||[])[1]||'';
+  const plastic=a.plastic||(desc.match(/Пластик:\s*(.+)/)||[])[1]||'';
+  const weight=a.weight||(desc.match(/Вага:\s*(\d+)/)||[])[1]||'';
+  const color=a.color||(desc.match(/Колір:\s*(.+)/)||[])[1]||'';
+  const cond=a.condition||(desc.match(/Стан:\s*(\d+)/)||[])[1]||'';
   const flight=(desc.match(/Flight:\s*(.+)/)||[])[1]||'';
   const flightParts=flight?flight.split('/').map(v=>v.trim()):[];
-  const inked=/Inked:\s*Так/.test(desc);
-  const city=(desc.match(/Місто:\s*(.+)/)||[])[1]||'';
-  // Remove parsed lines from description to get notes
+  const sp=a.speed||parseFloat(flightParts[0])||0;
+  const gl=a.glide||parseFloat(flightParts[1])||0;
+  const tn=a.turn||parseFloat(flightParts[2])||0;
+  const fd=a.fade||parseFloat(flightParts[3])||0;
+  const hasFlights=sp||gl||tn||fd;
+  const inked=a.inked||/Inked:\s*Так/.test(desc);
+  const city=a.city||(desc.match(/Місто:\s*(.+)/)||[])[1]||'';
   const notes=desc.replace(/Пластик:.*|Вага:.*|Колір:.*|Стан:.*|Flight:.*|Inked:.*|Місто:.*/g,'').trim();
   const photos=[a.photo_url,a.photo_url2,a.photo_url3].filter(Boolean);
   const sub=[plastic,weight?weight+'г':'',color,city].filter(Boolean).join(' · ');
@@ -2537,11 +2636,11 @@ async function showAucDetail(id){
     <div style="font-size:0.7rem;color:var(--m1);margin-bottom:0.5rem">${typeLabel}</div>
     ${sub?`<div style="font-size:0.82rem;color:var(--m2);margin-bottom:0.4rem">${sub}</div>`:''}
     ${cond?`<div style="margin-bottom:0.4rem"><span style="font-size:0.72rem;color:var(--m1)">Стан: ${cond}/10</span>${condBar(cond)}</div>`:''}
-    ${flightParts.length===4?`<div class="flight-row" style="margin-bottom:0.5rem">
-      <div class="fc"><div class="fv">${flightParts[0]}</div><div class="fk">Spd</div></div>
-      <div class="fc"><div class="fv">${flightParts[1]}</div><div class="fk">Gli</div></div>
-      <div class="fc"><div class="fv">${flightParts[2]}</div><div class="fk">Trn</div></div>
-      <div class="fc"><div class="fv">${flightParts[3]}</div><div class="fk">Fde</div></div>
+    ${hasFlights?`<div class="flight-row" style="margin-bottom:0.5rem">
+      <div class="fc"><div class="fv">${sp}</div><div class="fk">Spd</div></div>
+      <div class="fc"><div class="fv">${gl}</div><div class="fk">Gli</div></div>
+      <div class="fc"><div class="fv">${tn}</div><div class="fk">Trn</div></div>
+      <div class="fc"><div class="fv">${fd}</div><div class="fk">Fde</div></div>
     </div>`:''}
     ${inked?`<div style="font-size:0.78rem;color:var(--m2);margin-bottom:0.4rem">🖊️ Inked</div>`:''}
     ${notes?`<div style="font-size:0.82rem;color:var(--m2);margin-bottom:0.5rem">${notes}</div>`:''}
@@ -2574,6 +2673,7 @@ async function showAucDetail(id){
     `:isActive&&CU&&a.owner_tg_id===CU.tgId?`<div style="font-size:0.78rem;color:var(--m1);margin-bottom:0.75rem;text-align:center">Це ваш аукціон</div>`:``}
     ${!isActive?`
       ${a.winner?`<div style="padding:0.5rem;background:rgba(74,222,128,0.1);border:1px solid var(--av);border-radius:var(--r);font-size:0.82rem;margin-bottom:0.75rem">🏆 Переможець: <strong>${a.winner}</strong>${tgLinkFull(a.winner_tg||a.winner_tg_id)}</div>`:'<div style="color:var(--m1);margin-bottom:0.75rem">Ніхто не зробив ставку</div>'}
+      ${!a.winner&&CU&&a.owner_tg_id===CU.tgId?`<button class="btn btn-lime btn-full" onclick="auctionToCatalog('${a.id}')" style="margin-bottom:0.75rem">📦 Додати в каталог</button>`:''}
     `:''}
     <div style="font-size:0.72rem;font-weight:700;color:var(--m1);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:0.4rem">Історія ставок</div>
     ${bids&&bids.length?bids.map((b,i)=>`<div style="display:flex;justify-content:space-between;padding:0.35rem 0;border-bottom:1px solid var(--b1);font-size:0.78rem">
