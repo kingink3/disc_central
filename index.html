@@ -2059,7 +2059,7 @@ function goPage(page,btn){
   if(page==='admin')setTimeout(checkAdminAccess,200);
   if(page==='catalog')applyFilters();
   if(page==='catalog'||page==='settings'||page==='auctions')markSeen(page);
-  if(page==='auctions'){renderAuctions();startAucGridTimer();}
+  if(page==='auctions'){loadAuctions();}
   if(page==='settings'){
     renderFeed();
     const pf=document.getElementById('postFormWrap');
@@ -2250,7 +2250,7 @@ function getAucDurationMs(){
 
 async function loadAuctions(){
   try{
-    const {data}=await sb.from('auctions').select('*').order('created_at',{ascending:false});
+    const {data}=await sb.from('auctions').select('*').neq('status','archived').order('created_at',{ascending:false});
     allAuctions=data||[];
     const now=new Date();
     for(const a of allAuctions){
@@ -2690,7 +2690,7 @@ async function showAucDetail(id){
   const sub=[plastic,weight?weight+'г':'',color,city].filter(Boolean).join(' · ');
 
   document.getElementById('aucDetailContent').innerHTML=`
-    ${photos.length?`<div id="pw-aucD" style="margin:-1.5rem -1.5rem 1rem;border-radius:14px 14px 0 0;overflow:hidden;background:#0a0e14;position:relative">${photos.map((u,i)=>`<img src="${u}" style="width:100%;max-height:300px;object-fit:contain" class="${i===0?'active':''}" alt="">`).join('')}${photos.length>1?`<button class="photo-nav prev" onclick="photoNav('aucD',-1)">‹</button><button class="photo-nav next" onclick="photoNav('aucD',1)">›</button>`:''}</div>`:''}
+    ${photos.length?`<div id="pw-aucD" style="margin:-1.5rem -1.5rem 1rem;border-radius:14px 14px 0 0;overflow:hidden;background:#0a0e14;position:relative">${photos.map((u,i)=>`<img src="${u}" style="width:100%;max-height:300px;object-fit:contain;display:${i===0?'block':'none'}" class="${i===0?'active':''}" alt="">`).join('')}${photos.length>1?`<button class="photo-nav prev" onclick="photoNav('aucD',-1)">‹</button><button class="photo-nav next" onclick="photoNav('aucD',1)">›</button>`:''}</div>`:''}
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.2rem">
       <div style="font-family:'Bebas Neue';font-size:1.6rem;letter-spacing:1px;line-height:1">${a.title}</div>
       <span class="badge ${statusClass}">${statusLabel}</span>
