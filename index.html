@@ -906,12 +906,12 @@ function tgLinkFull(tg){
 }
 
 // ── LOAD DISCS ──
-const HIDDEN=['sold','deleted','unlisted'];
+const HIDDEN=['sold','deleted','unlisted','auction'];
 async function loadDiscs(){
   // Show cache instantly
   try{const c=localStorage.getItem('dc_discs');if(c){allDiscs=JSON.parse(c);applyFilters();updateStats();}}catch(e){}
   try{
-    const {data,error}=await sb.from('discs').select('*').not('status','in','("sold","deleted","unlisted")').order('created_at',{ascending:false});
+    const {data,error}=await sb.from('discs').select('*').not('status','in','("sold","deleted","unlisted","auction")').order('created_at',{ascending:false});
     if(!error&&data){
       allDiscs=data.map(dbToDisc);
       localStorage.setItem('dc_discs',JSON.stringify(allDiscs));
@@ -1079,7 +1079,7 @@ function applyFilters(){
   const fPrice=parseFloat(document.getElementById('f-price')?.value)||0;
   const fCity=(document.getElementById('f-city')?.value||'').toLowerCase().trim();
   const sort=document.getElementById('f-sort')?.value||'new';
-  let list=allDiscs.filter(d=>d.status!=='sold');
+  let list=allDiscs.filter(d=>d.status!=='sold'&&d.status!=='auction');
   if(CF==='fav')list=list.filter(d=>isFav(d.id));
   else if(CF==='trade')list=list.filter(d=>{const tw=String(d.tradeWant||'').trim();return tw&&tw!=='false';});
   else if(CF!=='all')list=list.filter(d=>d.status===CF||d.status==='trade'&&CF==='available');
@@ -1113,6 +1113,7 @@ function showDetail(id){
   const canT=(d.status==='available'||d.status==='trade')&&parseInt(d.condition)<10;
   const canB=d.status!=='sold';
   const hasTrade=String(d.tradeWant||'').trim()&&String(d.tradeWant)!=='false';
+  const isDetailOwner=CU&&String(CU.name).trim()===String(d.owner).trim();
   const photos=urls.length?`<div class="detail-photos" id="pw-d${d.id}" style="position:relative">${urls.map((u,i)=>`<img src="${u}" class="${i===0?'active':''}" alt="">`).join('')}${urls.length>1?`<button class="photo-nav prev" onclick="photoNav('d${d.id}',-1)">‹</button><button class="photo-nav next" onclick="photoNav('d${d.id}',1)">›</button>`:''}
     <span onclick="toggleLike('${d.id}',event)" style="position:absolute;bottom:10px;right:10px;cursor:pointer;font-size:0.95rem;z-index:2;background:rgba(0,0,0,0.6);padding:4px 8px;border-radius:12px;display:flex;align-items:center;gap:4px;color:#fff;backdrop-filter:blur(4px)"><span>${getLikes(d.id).liked?'❤️':'🤍'}</span><span style="font-size:0.8rem;font-weight:600">${getLikes(d.id).count||''}</span></span>
   </div>`:`<div style="height:120px;background:var(--s2);border-radius:var(--r2);display:flex;align-items:center;justify-content:center;font-size:3rem;margin-bottom:1rem">🥏</div>`;
@@ -1149,10 +1150,11 @@ function showDetail(id){
     ${hasTrade?`<div class="info-box" style="border-color:rgba(167,139,250,0.25);background:rgba(167,139,250,0.05);margin-bottom:0.875rem"><strong style="color:var(--purple)">🔄 Обмін:</strong> ${d.tradeWant}</div>`:''}
     ${d.notes?`<div style="font-size:0.8rem;color:var(--m2);padding:0.65rem;background:var(--s2);border-radius:var(--r);margin-bottom:0.875rem">${d.notes}</div>`:''}
     <div style="display:flex;gap:0.4rem;padding-top:0.875rem;border-top:1px solid var(--b1)">
+      ${isDetailOwner?`<div style="font-size:0.78rem;color:var(--m1);text-align:center;width:100%;padding:0.3rem 0">Це ваш диск</div>`:`
       ${canT?`<button class="btn btn-cyan btn-sm" onclick="openReqTest('${d.id}');closeModal('detail')" style="flex:1">Тест</button>`:''}
       ${hasTrade?`<button class="btn btn-purple btn-sm" onclick="openTradeOffer('${d.id}');closeModal('detail')" style="flex:1">Обмін</button>`:''}
       ${canB?`<button class="btn btn-lime btn-sm" onclick="oBuy('${d.id}');closeModal('detail')" style="flex:1">Купити ${d.buyout||0}₴</button>`:''}
-      ${d.status==='testing'&&CU?.name===d.tester?`<button class="btn btn-ghost btn-sm" onclick="oRet('${d.id}');closeModal('detail')" style="flex:1">↩ Повернути</button>`:''}
+      ${d.status==='testing'&&CU?.name===d.tester?`<button class="btn btn-ghost btn-sm" onclick="oRet('${d.id}');closeModal('detail')" style="flex:1">↩ Повернути</button>`:''}`}
     </div>
     <div style="margin-top:0.5rem"><button class="btn btn-ghost btn-xs" onclick="shareDisc('${d.id}')" style="color:var(--m1);width:100%">🔗 Поділитись посиланням</button></div>
     <div style="margin-top:1rem;border-top:1px solid var(--b1);padding-top:0.75rem">
