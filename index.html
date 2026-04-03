@@ -1141,7 +1141,11 @@ function showDetail(id){
       <div class="detail-info-item full"><span class="di-label">Власник:</span> ${d.owner||'—'}${tgLinkFull(d.ownerTg)}</div>
       ${d.tester&&d.status==='testing'?`<div class="detail-info-item full"><span class="di-label">Тестер:</span> ${d.tester}</div>`:''}
     </div>
-    ${d.bargain?`<div class="info-box" style="border-color:rgba(212,240,64,0.2);background:rgba(212,240,64,0.04);margin-bottom:0.875rem"><strong style="color:var(--lime)">⚖️ Торг:</strong> Власник відкритий до торгу по ціні</div>`:''}
+    ${d.bargain&&CU&&String(CU.name).trim()!==String(d.owner).trim()?`<div class="info-box" style="border-color:rgba(212,240,64,0.2);background:rgba(212,240,64,0.04);margin-bottom:0.875rem;display:flex;align-items:center;gap:0.5rem;padding:0.5rem 0.75rem">
+      <strong style="color:var(--lime);white-space:nowrap">⚖️ Торг</strong>
+      <input id="bargain-input-${d.id}" type="number" inputmode="numeric" pattern="[0-9]*" placeholder="Ваша ціна ₴" style="flex:1;font-size:0.82rem;padding:5px 8px;min-width:0">
+      <button class="btn btn-lime btn-xs" onclick="submitBargain('${d.id}')" style="flex-shrink:0">Надіслати</button>
+    </div>`:d.bargain?`<div class="info-box" style="border-color:rgba(212,240,64,0.2);background:rgba(212,240,64,0.04);margin-bottom:0.875rem"><strong style="color:var(--lime)">⚖️ Торг</strong></div>`:''}
     ${hasTrade?`<div class="info-box" style="border-color:rgba(167,139,250,0.25);background:rgba(167,139,250,0.05);margin-bottom:0.875rem"><strong style="color:var(--purple)">🔄 Обмін:</strong> ${d.tradeWant}</div>`:''}
     ${d.notes?`<div style="font-size:0.8rem;color:var(--m2);padding:0.65rem;background:var(--s2);border-radius:var(--r);margin-bottom:0.875rem">${d.notes}</div>`:''}
     <div style="display:flex;gap:0.4rem;padding-top:0.875rem;border-top:1px solid var(--b1)">
@@ -1152,9 +1156,9 @@ function showDetail(id){
     </div>
     <div style="margin-top:0.5rem"><button class="btn btn-ghost btn-xs" onclick="shareDisc('${d.id}')" style="color:var(--m1);width:100%">🔗 Поділитись посиланням</button></div>
     <div style="margin-top:1rem;border-top:1px solid var(--b1);padding-top:0.75rem">
-      <div style="font-size:0.72rem;font-weight:700;color:var(--m1);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:0.5rem">Пропозиції</div>
+      <div style="font-size:0.72rem;font-weight:700;color:var(--m1);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:0.5rem">Коментарі</div>
       <div id="disc-comments-${d.id}" style="margin-bottom:0.5rem"></div>
-      ${CU?`<div style="display:flex;gap:0.4rem"><textarea id="comment-input-${d.id}" placeholder="${d.bargain?'Запропонуйте свою ціну...':'Написати пропозицію...'}" style="min-height:36px;font-size:0.78rem;flex:1"></textarea><button class="btn btn-ghost btn-xs" onclick="postComment('${d.id}')" style="flex-shrink:0;align-self:flex-end">↗</button></div>`:'<div style="font-size:0.75rem;color:var(--m1)">Увійдіть щоб написати</div>'}
+      ${CU?`<div style="display:flex;gap:0.4rem"><textarea id="comment-input-${d.id}" placeholder="Написати коментар..." style="min-height:36px;font-size:0.78rem;flex:1"></textarea><button class="btn btn-ghost btn-xs" onclick="postComment('${d.id}')" style="flex-shrink:0;align-self:flex-end">↗</button></div>`:'<div style="font-size:0.75rem;color:var(--m1)">Увійдіть щоб коментувати</div>'}
     </div>`;
   // Show edit button if owner
   const editBtn=document.getElementById('detailEditBtn');
@@ -1220,7 +1224,7 @@ async function loadComments(discId){
   const el=document.getElementById('disc-comments-'+discId);if(!el)return;
   try{
     const {data}=await sb.from('comments').select('*').eq('disc_id',discId).order('created_at',{ascending:true});
-    if(!data||!data.length){el.innerHTML='<div style="font-size:0.75rem;color:var(--m1)">Поки немає коментарів</div>';return;}
+    if(!data||!data.length){el.innerHTML='';return;}
     el.innerHTML=data.map(c=>`<div style="padding:0.4rem 0;border-bottom:1px solid var(--b1);font-size:0.78rem">
       <div style="display:flex;justify-content:space-between;margin-bottom:2px"><span style="font-weight:600;color:var(--text)">${c.author||'?'}</span><span style="font-size:0.65rem;color:var(--m1)">${fmtDateTime(c.created_at)}</span></div>
       <div style="color:var(--m2)">${c.text}</div>
@@ -1234,7 +1238,6 @@ async function postComment(discId){
     const {error}=await sb.from('comments').insert({disc_id:discId,author:CU.name,author_tg:CU.tg||'',text:text});
     if(!error){
       input.value='';loadComments(discId);
-      // Notify owner about new offer
       const d=allDiscs.find(x=>x.id===discId);
       if(d&&d.ownerTg&&String(CU.name).trim()!==String(d.owner).trim()){
         notifyAppsScript('offer',d,CU,text);
@@ -1243,8 +1246,21 @@ async function postComment(discId){
     else toast('⚠️ Помилка',true);
   }catch(e){toast('⚠️ Помилка',true);}
 }
-
-// ── ADD DISC ──
+async function submitBargain(discId){
+  const input=document.getElementById('bargain-input-'+discId);
+  const price=parseInt(input?.value);if(!price||!CU){toast('⚠️ Вкажіть ціну',true);return;}
+  const d=allDiscs.find(x=>x.id===discId);if(!d)return;
+  const text='⚖️ Пропоную '+price+' ₴';
+  try{
+    const {error}=await sb.from('comments').insert({disc_id:discId,author:CU.name,author_tg:CU.tg||'',text:text});
+    if(!error){
+      input.value='';toast('✅ Пропозицію надіслано!');loadComments(discId);
+      if(d.ownerTg&&String(CU.name).trim()!==String(d.owner).trim()){
+        notifyAppsScript('offer',d,CU,'Пропоную '+price+' ₴ за '+d.brand+' '+d.model);
+      }
+    }else toast('⚠️ Помилка',true);
+  }catch(e){toast('⚠️ Помилка',true);}
+}
 async function submitDisc(){
   const brand=document.getElementById('ad-brand').value.trim();
   const model=document.getElementById('ad-model').value.trim();
