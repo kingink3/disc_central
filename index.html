@@ -1250,16 +1250,10 @@ async function submitBargain(discId){
   const input=document.getElementById('bargain-input-'+discId);
   const price=parseInt(input?.value);if(!price||!CU){toast('⚠️ Вкажіть ціну',true);return;}
   const d=allDiscs.find(x=>x.id===discId);if(!d)return;
-  const text='⚖️ Пропоную '+price+' ₴';
-  try{
-    const {error}=await sb.from('comments').insert({disc_id:discId,author:CU.name,author_tg:CU.tg||'',text:text});
-    if(!error){
-      input.value='';toast('✅ Пропозицію надіслано!');loadComments(discId);
-      if(d.ownerTg&&String(CU.name).trim()!==String(d.owner).trim()){
-        notifyAppsScript('offer',d,CU,'Пропоную '+price+' ₴ за '+d.brand+' '+d.model);
-      }
-    }else toast('⚠️ Помилка',true);
-  }catch(e){toast('⚠️ Помилка',true);}
+  if(d.ownerTg&&String(CU.name).trim()!==String(d.owner).trim()){
+    notifyAppsScript('offer',d,CU,'Пропоную '+price+' ₴ за '+d.brand+' '+d.model);
+  }
+  input.value='';toast('✅ Пропозицію надіслано!');
 }
 async function submitDisc(){
   const brand=document.getElementById('ad-brand').value.trim();
