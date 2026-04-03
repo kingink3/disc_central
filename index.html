@@ -2534,8 +2534,9 @@ function discToAuction(discId){
   document.getElementById('auc-fade').value=d.fade||'';
   const ink=document.getElementById('auc-inked');if(ink)ink.checked=!!d.inked;
   // Pre-fill photos from disc
-  const urls=[d.photoUrl,d.photoUrl2,d.photoUrl3].filter(Boolean);
+  const urls=[d.photoUrl||'',d.photoUrl2||'',d.photoUrl3||''];
   urls.forEach((u,i)=>{
+    if(!u)return;
     const slot=document.getElementById('auc-slot'+i);
     if(slot){slot.style.backgroundImage='url('+u+')';slot.style.backgroundSize='cover';slot.style.backgroundPosition='center';const ic=slot.querySelector('.slot-icon');if(ic)ic.style.display='none';}
   });
@@ -2566,8 +2567,9 @@ function restartAuction(aucId){
   const ink=document.getElementById('auc-inked');if(ink)ink.checked=!!a.inked;
   document.getElementById('auc-desc').value=a.description||'';
   // Pre-fill photos
-  const urls=[a.photo_url,a.photo_url2,a.photo_url3].filter(Boolean);
+  const urls=[a.photo_url||'',a.photo_url2||'',a.photo_url3||''];
   urls.forEach((u,i)=>{
+    if(!u)return;
     const slot=document.getElementById('auc-slot'+i);
     if(slot){slot.style.backgroundImage='url('+u+')';slot.style.backgroundSize='cover';slot.style.backgroundPosition='center';const ic=slot.querySelector('.slot-icon');if(ic)ic.style.display='none';}
   });
@@ -2646,6 +2648,7 @@ async function auctionToCatalog(aucId){
 
 function resetAucForm(){
   window._aucSourceDiscId=null;
+  window._aucPrefilledPhotos=null;
   aucPhotoFiles=[null,null,null];
   ['auc-brand','auc-model','auc-plastic','auc-weight','auc-color','auc-city','auc-desc','auc-start','auc-buyout','auc-speed','auc-glide','auc-turn','auc-fade','auc-start-b','auc-step-b','auc-buyout-b','auc-reverse-start','auc-reverse-end','auc-reverse-drop','auc-reverse-interval'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
   document.getElementById('auc-step').value='10';
