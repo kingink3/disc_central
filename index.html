@@ -2566,8 +2566,12 @@ function restartAuction(aucId){
   document.getElementById('auc-fade').value=a.fade||'';
   const ink=document.getElementById('auc-inked');if(ink)ink.checked=!!a.inked;
   document.getElementById('auc-desc').value=a.description||'';
-  // Pre-fill photos
-  const urls=[a.photo_url||'',a.photo_url2||'',a.photo_url3||''];
+  // Pre-fill photos - prefer source disc photos if available
+  let urls=[a.photo_url||'',a.photo_url2||'',a.photo_url3||''];
+  if(a.source_disc_id){
+    const srcDisc=allDiscs.find(x=>x.id===a.source_disc_id);
+    if(srcDisc){urls=[srcDisc.photoUrl||'',srcDisc.photoUrl2||'',srcDisc.photoUrl3||''];}
+  }
   urls.forEach((u,i)=>{
     if(!u)return;
     const slot=document.getElementById('auc-slot'+i);
@@ -2693,7 +2697,7 @@ async function showAucDetail(id){
   const sub=[plastic,weight?weight+'г':'',color,city].filter(Boolean).join(' · ');
 
   document.getElementById('aucDetailContent').innerHTML=`
-    ${photos.length?`<div id="pw-aucD" style="margin:-1.5rem -1.5rem 1rem;border-radius:14px 14px 0 0;overflow:hidden;background:#0a0e14;position:relative">${photos.map((u,i)=>`<img src="${u}" style="width:100%;max-height:300px;object-fit:contain;display:${i===0?'block':'none'}" class="${i===0?'active':''}" alt="">`).join('')}${photos.length>1?`<button class="photo-nav prev" onclick="photoNav('aucD',-1)">‹</button><button class="photo-nav next" onclick="photoNav('aucD',1)">›</button>`:''}</div>`:''}
+    ${photos.length?`<div class="detail-photos" id="pw-aucD" style="margin:-1.2rem -1.5rem 1rem -1.5rem;height:300px">${photos.map((u,i)=>`<img src="${u}" class="${i===0?'active':''}" alt="">`).join('')}${photos.length>1?`<button class="photo-nav prev" onclick="photoNav('aucD',-1)">‹</button><button class="photo-nav next" onclick="photoNav('aucD',1)">›</button>`:''}</div>`:''}
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.2rem">
       <div style="font-family:'Bebas Neue';font-size:1.6rem;letter-spacing:1px;line-height:1">${a.title}</div>
       <span class="badge ${statusClass}">${statusLabel}</span>
