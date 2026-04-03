@@ -1059,11 +1059,11 @@ function cardHTML(d){
             <div class="disc-own" onclick="event.stopPropagation();filterByOwner('${d.owner}')">👤 ${(d.owner||'').split(' ')[0]}</div>
           </div>
         </div>
-        <div onclick="event.stopPropagation()" style="display:flex;gap:3px;width:100%;${isOwn?'visibility:hidden':''}">
+        ${isOwn?`<div style="display:flex;align-items:center;justify-content:center;width:100%;font-size:0.7rem;color:var(--m1);padding:0.25rem 0">Ваш диск</div>`:`<div onclick="event.stopPropagation()" style="display:flex;gap:3px;width:100%">
           ${hasTrade?`<button class="btn btn-purple btn-xs" onclick="event.stopPropagation();openTradeOffer('${d.id}')" style="flex:1">Обмін</button>`:''}
           ${canT?`<button class="btn btn-cyan btn-xs" onclick="openReqTest('${d.id}')" style="flex:1">Тест</button>`:''}
           ${canB?`<button class="btn btn-lime btn-xs" onclick="oBuy('${d.id}')" style="flex:1">Купити</button>`:''}
-        </div>
+        </div>`}
       </div>
     </div>
   </div>`;
