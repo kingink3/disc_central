@@ -1054,11 +1054,11 @@ function cardHTML(d){
             <div class="disc-own" onclick="event.stopPropagation();filterByOwner('${d.owner}')">👤 ${(d.owner||'').split(' ')[0]}</div>
           </div>
         </div>
-        ${isOwn?'':`<div onclick="event.stopPropagation()" style="display:flex;gap:3px;width:100%">
+        <div onclick="event.stopPropagation()" style="display:flex;gap:3px;width:100%;${isOwn?'visibility:hidden':''}">
           ${hasTrade?`<button class="btn btn-purple btn-xs" onclick="event.stopPropagation();openTradeOffer('${d.id}')" style="flex:1">Обмін</button>`:''}
           ${canT?`<button class="btn btn-cyan btn-xs" onclick="openReqTest('${d.id}')" style="flex:1">Тест</button>`:''}
           ${canB?`<button class="btn btn-lime btn-xs" onclick="oBuy('${d.id}')" style="flex:1">Купити</button>`:''}
-        </div>`}
+        </div>
       </div>
     </div>
   </div>`;
@@ -2194,7 +2194,7 @@ function toggleAucTypeFields(){
   document.getElementById('auc-fields-classic').style.display=t==='classic'?'block':'none';
   document.getElementById('auc-fields-buyout').style.display=t==='buyout'?'block':'none';
   document.getElementById('auc-fields-reverse').style.display=t==='reverse'?'block':'none';
-  const descs={classic:'Ціна росте зі ставками. Перемагає найвища ставка.',buyout:'Ціна росте зі ставками або можна купити одразу за фіксовану ціну.',reverse:'Ціна знижується автоматично. Перший хто купить - забирає.'};
+  const descs={classic:'Ціна росте зі ставками. Перемагає найвища ставка.',buyout:'Ціна росте зі ставками або можна купити одразу за фіксовану ціну.',reverse:'Ціна знижується автоматично. Перший хто купить — забирає.'};
   const d=document.getElementById('auc-type-desc');if(d)d.textContent=descs[t]||'';
 }
 function getAucDurationMs(){
