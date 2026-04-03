@@ -767,7 +767,7 @@ input[type=range]::-moz-range-track{height:6px;background:rgba(255,255,255,0.06)
 </div>
 
 <div class="overlay" id="ov-detail">
-  <div class="modal modal-wide"><button class="mc" onclick="closeModal('detail')">❌</button><button class="mc-edit" id="detailEditBtn" style="display:none" onclick="detailEdit()">✏️</button><button class="mc-edit" id="detailAucBtn" style="display:none;top:5.8rem" onclick="detailToAuction()">🏆</button><div id="detailContent"></div></div>
+  <div class="modal modal-wide"><button class="mc" onclick="closeModal('detail')">❌</button><button class="mc-edit" id="detailEditBtn" style="display:none" onclick="detailEdit()">✏️</button><button class="mc-edit" id="detailAucBtn" style="display:none;top:5.8rem" onclick="detailToAuction()">🔨</button><div id="detailContent"></div></div>
 </div>
 
 <div class="overlay" id="ov-adminPhoto">
@@ -2743,8 +2743,8 @@ async function showAucDetail(id){
     ${!isActive?`
       ${a.winner?`<div style="padding:0.5rem;background:rgba(74,222,128,0.1);border:1px solid var(--av);border-radius:var(--r);font-size:0.82rem;margin-bottom:0.75rem">🏆 Переможець: <strong>${a.winner}</strong>${tgLinkFull(a.winner_tg||a.winner_tg_id)}</div>`:'<div style="color:var(--m1);margin-bottom:0.75rem">Ніхто не зробив ставку</div>'}
       ${!a.winner&&CU&&a.owner_tg_id===CU.tgId?`<div style="display:flex;gap:0.4rem;margin-bottom:0.75rem">
-        <button class="btn btn-lime btn-sm" onclick="auctionToCatalog('${a.id}')" style="flex:1">${a.source_disc_id?'📦 Повернути':'📦 Додати'}</button>
-        <button class="btn btn-cyan btn-sm" onclick="restartAuction('${a.id}')" style="flex:1">🔄 Перезапустити</button>
+        <button class="btn btn-lime btn-sm" onclick="auctionToCatalog('${a.id}')" style="flex:1">${a.source_disc_id?'📦 В каталог':'📦 В каталог'}</button>
+        <button class="btn btn-cyan btn-sm" onclick="restartAuction('${a.id}')" style="flex:1">🔄 Перезапустити аукціон</button>
       </div>`:''}
     `:''}
     <div style="font-size:0.72rem;font-weight:700;color:var(--m1);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:0.4rem">Історія ставок</div>
