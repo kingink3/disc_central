@@ -2224,7 +2224,7 @@ function toggleAucTypeFields(){
   document.getElementById('auc-fields-classic').style.display=t==='classic'?'block':'none';
   document.getElementById('auc-fields-buyout').style.display=t==='buyout'?'block':'none';
   document.getElementById('auc-fields-reverse').style.display=t==='reverse'?'block':'none';
-  const descs={classic:'Ціна росте зі ставками. Перемагає найвища ставка.',buyout:'Ціна росте зі ставками або можна купити одразу за фіксовану ціну.',reverse:'Ціна знижується автоматично. Перший хто купить — забирає.'};
+  const descs={classic:'Ціна росте зі ставками. Перемагає найвища ставка.',buyout:'Ціна росте зі ставками або купити за фіксовану ціну.',reverse:'Ціна знижується автоматично.'};
   const d=document.getElementById('auc-type-desc');if(d)d.textContent=descs[t]||'';
 }
 function getAucDurationMs(){
