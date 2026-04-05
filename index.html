@@ -1823,17 +1823,9 @@ async function adminLoginPass(){
   const btn=document.querySelector('#adminNoAuth .btn-lime');
   if(btn){btn.disabled=true;btn.textContent='...';}
   try{
-    // Verify password server-side via Apps Script
-    const url=APPS_SCRIPT+'?action=adminAuth&password='+encodeURIComponent(pass)+'&callback=cb_auth_'+Date.now();
-    const token=await new Promise((resolve,reject)=>{
-      const cb='cb_auth_'+Date.now();
-      const s=document.createElement('script');
-      const t=setTimeout(()=>{delete window[cb];s.remove();reject('timeout');},10000);
-      window[cb]=(d)=>{clearTimeout(t);delete window[cb];s.remove();resolve(d);};
-      s.onerror=()=>{clearTimeout(t);reject('error');};
-      s.src=APPS_SCRIPT+'?action=adminAuth&password='+encodeURIComponent(pass)+'&callback='+cb;
-      document.head.appendChild(s);
-    });
+    const initData=window.Telegram?.WebApp?.initData||'';
+    const r=await fetch(APPS_SCRIPT,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({action:'adminAuth',password:pass,initData:initData})});
+    const token=await r.json();
     if(token&&token.ok&&token.token){
       ADMIN_TOKEN=token.token;
       sessionStorage.setItem('adminToken',token.token);
@@ -1841,8 +1833,8 @@ async function adminLoginPass(){
       document.getElementById('adminContent').style.display='block';
       loadAdminData();
       toast('✅ Ласкаво просимо!');
-    }else toast('⚠️ Невірний пароль',true);
-  }catch(e){toast('⚠️ Помилка зєднання',true);}
+    }else toast('⚠️ '+(token.error||'Невірний пароль'),true);
+  }catch(e){toast('⚠️ Помилка з\'єднання',true);}
   if(btn){btn.disabled=false;btn.textContent='Увійти';}
 }
 
