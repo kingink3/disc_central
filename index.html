@@ -890,6 +890,7 @@ function st(s){return ST[s]||ST.available;}
 function fmtDate(iso){if(!iso)return'—';try{return new Date(iso).toLocaleDateString('uk-UA',{day:'2-digit',month:'2-digit',year:'numeric'});}catch(e){return iso;}}
 function fmtDateTime(iso){if(!iso)return'—';try{const d=new Date(iso);return d.toLocaleDateString('uk-UA',{day:'2-digit',month:'2-digit',year:'numeric'})+' '+d.toLocaleTimeString('uk-UA',{hour:'2-digit',minute:'2-digit'});}catch(e){return iso;}}
 function genId(){return Date.now().toString(36)+Math.random().toString(36).slice(2,5);}
+function escHtml(s){if(!s)return'';return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 function hasTgUsername(tg){return tg&&!/^\d+$/.test(String(tg).replace('@','').trim());}
 function tgLinkFull(tg){
   const clean=String(tg).replace('@','').trim();
@@ -1028,7 +1029,7 @@ function cardHTML(d){
       <span onclick="event.stopPropagation();toggleLike('${d.id}',event)" style="position:absolute;bottom:5px;right:6px;cursor:pointer;font-size:0.8rem;z-index:2;background:rgba(0,0,0,0.6);padding:2px 5px;border-radius:10px;display:flex;align-items:center;gap:2px;color:#fff;backdrop-filter:blur(4px)"><span style="font-size:0.75rem">${getLikes(d.id).liked?'❤️':'🤍'}</span><span style="font-size:0.65rem;font-weight:600">${getLikes(d.id).count||''}</span></span>
     </div>
     <div class="disc-body">
-      <div class="disc-title">${d.brand} ${d.model}</div>
+      <div class="disc-title">${escHtml(d.brand)} ${escHtml(d.model)}</div>
       <div class="disc-sub">${[d.plastic,d.weight?d.weight+'г':'',d.city].filter(Boolean).join(' · ')}</div>
       ${condBar(d.condition)}
       <div class="flight-row">
@@ -1042,7 +1043,7 @@ function cardHTML(d){
           <div class="disc-price">${d.buyout?d.buyout+' ₴':'—'}${d.bargain?' <span style="font-size:0.7rem" title="Торг">⚖️</span>':''}</div>
           <div style="display:flex;align-items:center;gap:0.4rem">
             <span onclick="event.stopPropagation();toggleFav('${d.id}')" style="cursor:pointer;font-size:0.85rem">${isFav(d.id)?'⭐':'☆'}</span>
-            <div class="disc-own" onclick="event.stopPropagation();filterByOwner('${d.owner}')">👤 ${(d.owner||'').split(' ')[0]}</div>
+            <div class="disc-own" onclick="event.stopPropagation();filterByOwner('${escHtml(d.owner)}')">👤 ${escHtml((d.owner||'').split(' ')[0])}</div>
           </div>
         </div>
         ${isOwn?`<div style="display:flex;align-items:center;justify-content:center;width:100%;font-size:0.7rem;color:var(--m1);padding:0.25rem 0">Ваш диск</div>`:`<div onclick="event.stopPropagation()" style="display:flex;gap:3px;width:100%">
@@ -1106,7 +1107,7 @@ function showDetail(id){
   document.getElementById('detailContent').innerHTML=`
     ${photos}
     <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:0.875rem">
-      <div><div style="font-size:0.65rem;color:var(--m1);text-transform:uppercase;letter-spacing:1px">${d.brand}</div><div style="font-family:'Bebas Neue';font-size:1.8rem;letter-spacing:1px;line-height:1">${d.model}</div></div>
+      <div><div style="font-size:0.65rem;color:var(--m1);text-transform:uppercase;letter-spacing:1px">${escHtml(d.brand)}</div><div style="font-family:'Bebas Neue';font-size:1.8rem;letter-spacing:1px;line-height:1">${escHtml(d.model)}</div></div>
       <div style="display:flex;align-items:center;gap:0.4rem">
         <span onclick="toggleFav('${d.id}')" style="cursor:pointer;font-size:1.1rem">${isFav(d.id)?'⭐':'☆'}</span>
         <span class="badge b-${s.c}">${s.l}</span>
@@ -1120,21 +1121,21 @@ function showDetail(id){
       <div class="fc"><div class="fv" style="font-size:1.1rem">${d.fade||0}</div><div class="fk">Fade</div></div>
     </div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.35rem 1.25rem;font-size:0.82rem;margin-bottom:0.875rem">
-      <div class="detail-info-item"><span class="di-label">Пластик:</span> ${d.plastic||'—'}</div>
+      <div class="detail-info-item"><span class="di-label">Пластик:</span> ${escHtml(d.plastic||'—')}</div>
       <div class="detail-info-item"><span class="di-label">Вага:</span> ${d.weight||'—'}г</div>
-      <div class="detail-info-item"><span class="di-label">Колір:</span> ${d.color||'—'}</div>
+      <div class="detail-info-item"><span class="di-label">Колір:</span> ${escHtml(d.color||'—')}</div>
       ${d.inked?'<div class="detail-info-item"><span style="color:var(--purple)">🖊️ Inked</span></div>':'<div></div>'}
-      ${d.city?`<div class="detail-info-item full"><span class="di-label">Місто:</span> ${d.city}</div>`:''}
-      <div class="detail-info-item full"><span class="di-label">Власник:</span> ${d.owner||'—'}${tgLinkFull(d.ownerTg)}</div>
-      ${d.tester&&d.status==='testing'?`<div class="detail-info-item full"><span class="di-label">Тестер:</span> ${d.tester}</div>`:''}
+      ${d.city?`<div class="detail-info-item full"><span class="di-label">Місто:</span> ${escHtml(d.city)}</div>`:''}
+      <div class="detail-info-item full"><span class="di-label">Власник:</span> ${escHtml(d.owner||'—')}${tgLinkFull(d.ownerTg)}</div>
+      ${d.tester&&d.status==='testing'?`<div class="detail-info-item full"><span class="di-label">Тестер:</span> ${escHtml(d.tester)}</div>`:''}
     </div>
     ${d.bargain&&CU&&String(CU.name).trim()!==String(d.owner).trim()?`<div class="info-box" style="border-color:rgba(212,240,64,0.2);background:rgba(212,240,64,0.04);margin-bottom:0.875rem;display:flex;align-items:center;gap:0.5rem;padding:0.5rem 0.75rem">
       <strong style="color:var(--lime);white-space:nowrap">⚖️ Торг</strong>
       <input id="bargain-input-${d.id}" type="number" inputmode="numeric" pattern="[0-9]*" placeholder="Ваша ціна ₴" style="flex:1;font-size:0.82rem;padding:5px 8px;min-width:0">
       <button class="btn btn-lime btn-xs" onclick="submitBargain('${d.id}')" style="flex-shrink:0">Надіслати</button>
     </div>`:d.bargain?`<div class="info-box" style="border-color:rgba(212,240,64,0.2);background:rgba(212,240,64,0.04);margin-bottom:0.875rem"><strong style="color:var(--lime)">⚖️ Торг</strong></div>`:''}
-    ${hasTrade?`<div class="info-box" style="border-color:rgba(167,139,250,0.25);background:rgba(167,139,250,0.05);margin-bottom:0.875rem"><strong style="color:var(--purple)">🔄 Обмін:</strong> ${d.tradeWant}</div>`:''}
-    ${d.notes?`<div style="font-size:0.8rem;color:var(--m2);padding:0.65rem;background:var(--s2);border-radius:var(--r);margin-bottom:0.875rem">${d.notes}</div>`:''}
+    ${hasTrade?`<div class="info-box" style="border-color:rgba(167,139,250,0.25);background:rgba(167,139,250,0.05);margin-bottom:0.875rem"><strong style="color:var(--purple)">🔄 Обмін:</strong> ${escHtml(d.tradeWant)}</div>`:''}
+    ${d.notes?`<div style="font-size:0.8rem;color:var(--m2);padding:0.65rem;background:var(--s2);border-radius:var(--r);margin-bottom:0.875rem">${escHtml(d.notes)}</div>`:''}
     <div style="display:flex;gap:0.4rem;padding-top:0.875rem;border-top:1px solid var(--b1)">
       ${isDetailOwner?`<div style="font-size:0.78rem;color:var(--m1);text-align:center;width:100%;padding:0.3rem 0">Це ваш диск</div>`:`
       ${canT?`<button class="btn btn-cyan btn-sm" onclick="openReqTest('${d.id}');closeModal('detail')" style="flex:1">Тест</button>`:''}
@@ -1217,8 +1218,8 @@ async function loadComments(discId){
     const {data}=await sb.from('comments').select('*').eq('disc_id',discId).order('created_at',{ascending:true});
     if(!data||!data.length){el.innerHTML='';return;}
     el.innerHTML=data.map(c=>`<div style="padding:0.4rem 0;border-bottom:1px solid var(--b1);font-size:0.78rem">
-      <div style="display:flex;justify-content:space-between;margin-bottom:2px"><span style="font-weight:600;color:var(--text)">${c.author||'?'}</span><span style="font-size:0.65rem;color:var(--m1)">${fmtDateTime(c.created_at)}</span></div>
-      <div style="color:var(--m2)">${c.text}</div>
+      <div style="display:flex;justify-content:space-between;margin-bottom:2px"><span style="font-weight:600;color:var(--text)">${escHtml(c.author||'?')}</span><span style="font-size:0.65rem;color:var(--m1)">${fmtDateTime(c.created_at)}</span></div>
+      <div style="color:var(--m2)">${escHtml(c.text)}</div>
     </div>`).join('');
   }catch(e){el.innerHTML='';}
 }
@@ -1542,8 +1543,8 @@ function openReqTest(id){
   if(!CU){toast('⚠️ Спочатку увійдіть',true);openModal('login');return;}
   const owTg=(d.ownerTg||'').replace('@','');
   document.getElementById('reqDiscInfo').innerHTML=
-    `<strong>${d.brand} ${d.model}</strong> · ${d.plastic||''} · ${d.weight||''}г · <strong style="color:var(--lime)">${d.buyout||0}₴</strong><br>`+
-    `Власник: <strong>${d.owner}</strong>${tgLinkFull(owTg)}<br>`+
+    `<strong>${escHtml(d.brand)} ${escHtml(d.model)}</strong> · ${escHtml(d.plastic)} · ${d.weight||''}г · <strong style="color:var(--lime)">${d.buyout||0}₴</strong><br>`+
+    `Власник: <strong>${escHtml(d.owner)}</strong>${tgLinkFull(owTg)}<br>`+
     `<span style="color:var(--m1);font-size:0.75rem">Від: <strong style="color:var(--text)">${CU.name}</strong>${tgLinkFull(CU.tg)}</span>`;
   document.getElementById('rt-note').value='';
   document.getElementById('rt-note').placeholder='Залишити коментар';
@@ -1575,7 +1576,7 @@ async function submitTestReq(){
 function oBuy(id){
   if(!CU){toast('⚠️ Спочатку увійдіть',true);openModal('login');return;}
   buyId=id;const d=allDiscs.find(x=>x.id===id||String(x.id)===String(id));
-  document.getElementById('buyInfo').innerHTML=`<strong>${d.brand} ${d.model}</strong> · ${d.plastic||''}<br>Ціна: <strong>${d.buyout||0} ₴</strong><br>Власник: <strong>${d.owner}</strong>`;
+  document.getElementById('buyInfo').innerHTML=`<strong>${escHtml(d.brand)} ${escHtml(d.model)}</strong> · ${escHtml(d.plastic)}<br>Ціна: <strong>${d.buyout||0} ₴</strong><br>Власник: <strong>${escHtml(d.owner)}</strong>`;
   document.getElementById('buy-note').value='';
   const lEl=document.getElementById('buySellerLink');
   const owClean=String(d.ownerTg||'').replace('@','').trim();
@@ -1603,7 +1604,7 @@ async function submitBuy(){
 }
 
 // ── RETURN ──
-function oRet(id){retId=id;const d=allDiscs.find(x=>x.id===id||String(x.id)===String(id));document.getElementById('retInfo').innerHTML=`<strong>${d.brand} ${d.model}</strong>`;openModal('return');}
+function oRet(id){retId=id;const d=allDiscs.find(x=>x.id===id||String(x.id)===String(id));document.getElementById('retInfo').innerHTML=`<strong>${escHtml(d.brand)} ${escHtml(d.model)}</strong>`;openModal('return');}
 async function submitReturn(){
   const btn=document.getElementById('retBtn');btn.disabled=true;btn.textContent='...';
   try{
@@ -1655,7 +1656,7 @@ async function acceptRequest(reqId, discId, testerName, testerTg, reqType){
 // ── CONFIRM SALE ──
 async function confirmSale(discId){
   const d=allDiscs.find(x=>String(x.id)===String(discId));if(!d)return;
-  if(!confirm(`Підтвердити продаж "${d.brand} ${d.model}" → ${d.tester}?`))return;
+  if(!confirm(`Підтвердити продаж "${escHtml(d.brand)} ${escHtml(d.model)}" → ${escHtml(d.tester)}?`))return;
   try{
     const {error}=await sb.from('discs').update({status:'sold'}).eq('id',discId);
     await sb.from('requests').update({status:'sold'}).eq('disc_id',discId).eq('status','pending');
@@ -1671,9 +1672,9 @@ function openTradeOffer(id){
   const d=allDiscs.find(x=>x.id===id||String(x.id)===String(id));if(!d)return;
   const owTg=(d.ownerTg||'').replace('@','');
   document.getElementById('reqDiscInfo').innerHTML=
-    `<strong>${d.brand} ${d.model}</strong><br>`+
-    `Власник шукає: <strong style="color:var(--purple)">${d.tradeWant}</strong><br>`+
-    `Власник: ${d.owner}${tgLinkFull(owTg)}<br>`+
+    `<strong>${escHtml(d.brand)} ${escHtml(d.model)}</strong><br>`+
+    `Власник шукає: <strong style="color:var(--purple)">${escHtml(d.tradeWant)}</strong><br>`+
+    `Власник: ${escHtml(d.owner)}${tgLinkFull(owTg)}<br>`+
     `<span style="color:var(--m1);font-size:0.75rem">Від: ${CU.name}</span>`;
   document.getElementById('rt-note').placeholder='Опиши свій диск для обміну...';
   document.getElementById('rt-note').value='';
@@ -1736,7 +1737,7 @@ function renderSeller(){
       return`<div style="border:1px solid var(--b1);border-radius:var(--r);overflow:hidden;background:var(--s2);margin-bottom:0.3rem">
         <div class="dash-item" style="border:none;margin:0">
           ${d.photoUrl?`<img src="${d.photoUrl}" style="width:34px;height:34px;object-fit:cover;border-radius:6px;flex-shrink:0">`:'<div style="width:34px;height:34px;background:var(--s3);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0">🥏</div>'}
-          <div style="flex:1;min-width:0"><div class="di-title">${d.brand} ${d.model}</div><div class="di-sub"><span class="badge b-${st(d.status).c}">${st(d.status).l}</span>${d.tester&&['testing','reserved'].includes(d.status)?' · '+d.tester:''}</div></div>
+          <div style="flex:1;min-width:0"><div class="di-title">${escHtml(d.brand)} ${escHtml(d.model)}</div><div class="di-sub"><span class="badge b-${st(d.status).c}">${st(d.status).l}</span>${d.tester&&['testing','reserved'].includes(d.status)?' · '+d.tester:''}</div></div>
           <div style="text-align:right;display:flex;flex-direction:column;align-items:flex-end;gap:3px">
             <div class="di-price">${d.buyout||0}₴</div>
             <div style="display:flex;gap:3px">
@@ -1802,7 +1803,7 @@ async function renderTester(){
     al.innerHTML=active.length
       ?active.map(d=>`<div class="dash-item">
           ${d.photoUrl?`<img src="${d.photoUrl}" style="width:38px;height:38px;object-fit:cover;border-radius:7px;flex-shrink:0">`:'<div style="width:38px;height:38px;background:var(--s3);border-radius:7px;display:flex;align-items:center;justify-content:center">🥏</div>'}
-          <div style="flex:1;min-width:0"><div class="di-title">${d.brand} ${d.model}</div><div class="di-sub">👤 ${d.owner} · ${d.buyout||0}₴</div></div>
+          <div style="flex:1;min-width:0"><div class="di-title">${escHtml(d.brand)} ${escHtml(d.model)}</div><div class="di-sub">👤 ${escHtml(d.owner)} · ${d.buyout||0}₴</div></div>
           <div style="display:flex;gap:0.3rem">
             <button class="btn btn-lime btn-xs" onclick="oBuy('${d.id}')">Купити</button>
             <button class="btn btn-ghost btn-xs" onclick="oRet('${d.id}')">↩</button>
@@ -1865,7 +1866,7 @@ async function loadAdminData(){
     document.getElementById('adm-te').textContent=all.filter(d=>['testing','reserved'].includes(d.status)).length;
     document.getElementById('adm-rev').textContent=all.filter(d=>d.status==='sold').reduce((a,d)=>a+(Number(d.buyout)||0),0)+'₴';
     document.getElementById('adminDiscTable').innerHTML=all.map(d=>`<tr>
-      <td><strong>${d.brand} ${d.model}</strong><br><span style="color:var(--m1);font-size:0.7rem">${d.plastic||''}</span></td>
+      <td><strong>${escHtml(d.brand)} ${escHtml(d.model)}</strong><br><span style="color:var(--m1);font-size:0.7rem">${escHtml(d.plastic)}</span></td>
       <td>${d.owner||'-'}</td>
       <td><span style="font-family:'Space Mono';font-size:0.78rem;color:var(--lime)">${d.condition||0}/10</span></td>
       <td><span class="badge b-${(ST[d.status]||ST.available).c}">${(ST[d.status]||ST.available).l}</span></td>
@@ -2324,7 +2325,7 @@ function renderAuctions(){
         ${aucTypeBadge(a.auction_type)?`<span style="position:absolute;top:5px;right:6px;z-index:2">${aucTypeBadge(a.auction_type)}</span>`:''}
       </div>
       <div class="disc-body">
-        <div class="disc-title">${a.title}</div>
+        <div class="disc-title">${escHtml(a.title)}</div>
         ${sub?`<div class="disc-sub">${sub}</div>`:''}
         ${cond?condBar(cond):''}
         ${hasFlights?`<div class="flight-row">
@@ -2336,7 +2337,7 @@ function renderAuctions(){
         <div class="disc-footer" style="margin-top:auto">
           <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.3rem">
             <div class="disc-price ${a.auction_type==='reverse'&&isActive?'auc-rev-price':''}" ${a.auction_type==='reverse'&&isActive?`data-created="${a.created_at}" data-rstart="${a.reverse_start}" data-rend="${a.reverse_end}" data-rdrop="${a.reverse_drop}" data-rint="${a.reverse_interval||60}"`:``}>${curPrice} ₴</div>
-            ${a.winner?`<div style="font-size:0.65rem;color:var(--cyan)">🏆 ${(a.winner||'').split(' ')[0]}</div>`:`<div class="disc-own">👤 ${(a.owner||'').split(' ')[0]}</div>`}
+            ${a.winner?`<div style="font-size:0.65rem;color:var(--cyan)">🏆 ${escHtml((a.winner||'').split(' ')[0])}</div>`:`<div class="disc-own">👤 ${escHtml((a.owner||'').split(' ')[0])}</div>`}
           </div>
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.4rem">
             <span style="font-size:0.65rem;color:var(--m1)">${bidWord(a.bid_count||0)}</span>
@@ -2684,7 +2685,7 @@ async function showAucDetail(id){
   document.getElementById('aucDetailContent').innerHTML=`
     ${photos.length?`<div class="detail-photos" id="pw-aucD">${photos.map((u,i)=>`<img src="${u}" class="${i===0?'active':''}" alt="">`).join('')}${photos.length>1?`<button class="photo-nav prev" onclick="photoNav('aucD',-1)">‹</button><button class="photo-nav next" onclick="photoNav('aucD',1)">›</button>`:''}</div>`:''}
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.2rem">
-      <div style="font-family:'Bebas Neue';font-size:1.6rem;letter-spacing:1px;line-height:1">${a.title}</div>
+      <div style="font-family:'Bebas Neue';font-size:1.6rem;letter-spacing:1px;line-height:1">${escHtml(a.title)}</div>
       <span class="badge ${statusClass}">${statusLabel}</span>
     </div>
     <div style="font-size:0.7rem;color:var(--m1);margin-bottom:0.5rem">${typeLabel}</div>
@@ -2708,7 +2709,7 @@ async function showAucDetail(id){
     </div>
     ${isReverse?`<div style="font-size:0.78rem;color:var(--purple);margin-bottom:0.5rem;padding:0.4rem;background:rgba(168,85,247,0.1);border-radius:var(--r)">📉 ${a.reverse_start} ₴ → ${a.reverse_end} ₴ · -${a.reverse_drop} ₴ кожні ${a.reverse_interval||60} хв</div>`:''}
     ${!isReverse?`<div style="font-size:0.78rem;color:var(--m2);margin-bottom:0.5rem">Крок: ${a.min_step||10} ₴</div>`:''}
-    <div style="font-size:0.78rem;color:var(--m1);margin-bottom:0.75rem">Продавець: <strong style="color:var(--text)">${a.owner}</strong>${tgLinkFull(a.owner_tg||a.owner_tg_id)}</div>
+    <div style="font-size:0.78rem;color:var(--m1);margin-bottom:0.75rem">Продавець: <strong style="color:var(--text)">${escHtml(a.owner)}</strong>${tgLinkFull(a.owner_tg||a.owner_tg_id)}</div>
     ${isActive&&CU&&a.owner_tg_id!==CU.tgId?`
       ${isReverse?`
         <div style="font-size:0.72rem;color:var(--m1);margin-bottom:0.3rem">Ваша ціна — коли падаюча ціна дійде до вашої ставки, ви автоматично виграєте</div>
@@ -2726,7 +2727,7 @@ async function showAucDetail(id){
       `}
     `:isActive&&CU&&a.owner_tg_id===CU.tgId?`<div style="font-size:0.78rem;color:var(--m1);margin-bottom:0.75rem;text-align:center">Це ваш аукціон</div>`:``}
     ${!isActive?`
-      ${a.winner?`<div style="padding:0.5rem;background:rgba(74,222,128,0.1);border:1px solid var(--av);border-radius:var(--r);font-size:0.82rem;margin-bottom:0.75rem">🏆 Переможець: <strong>${a.winner}</strong>${tgLinkFull(a.winner_tg||a.winner_tg_id)}</div>`:'<div style="color:var(--m1);margin-bottom:0.75rem">Ніхто не зробив ставку</div>'}
+      ${a.winner?`<div style="padding:0.5rem;background:rgba(74,222,128,0.1);border:1px solid var(--av);border-radius:var(--r);font-size:0.82rem;margin-bottom:0.75rem">🏆 Переможець: <strong>${escHtml(a.winner)}</strong>${tgLinkFull(a.winner_tg||a.winner_tg_id)}</div>`:'<div style="color:var(--m1);margin-bottom:0.75rem">Ніхто не зробив ставку</div>'}
       ${!a.winner&&CU&&a.owner_tg_id===CU.tgId?`<div style="display:flex;gap:0.4rem;margin-bottom:0.75rem">
         <button class="btn btn-lime btn-sm" onclick="auctionToCatalog('${a.id}')" style="flex:1">${a.source_disc_id?'📦 В каталог':'📦 В каталог'}</button>
         <button class="btn btn-cyan btn-sm" onclick="restartAuction('${a.id}')" style="flex:1">🔄 Перезапустити аукціон</button>
@@ -2734,7 +2735,7 @@ async function showAucDetail(id){
     `:''}
     <div style="font-size:0.72rem;font-weight:700;color:var(--m1);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:0.4rem">Історія ставок</div>
     ${bids&&bids.length?bids.map((b,i)=>`<div style="display:flex;justify-content:space-between;padding:0.35rem 0;border-bottom:1px solid var(--b1);font-size:0.78rem">
-      <span>${i===0?'🏆 ':''}${b.bidder}${tgLinkFull(b.bidder_tg||b.bidder_tg_id)}</span><span style="font-weight:700;color:var(--lime)">${b.amount} ₴</span>
+      <span>${i===0?'🏆 ':''}${escHtml(b.bidder)}${tgLinkFull(b.bidder_tg||b.bidder_tg_id)}</span><span style="font-weight:700;color:var(--lime)">${b.amount} ₴</span>
     </div>`).join(''):'<div style="font-size:0.78rem;color:var(--m1)">Ще немає ставок</div>'}
   `;
   openModal('aucDetail');
@@ -3090,7 +3091,7 @@ function renderFeed(){
         <div style="font-size:0.78rem"><span style="font-weight:700">${p.author}</span> <span style="color:var(--m1)">${fmtDateTime(p.created_at)}</span></div>
         <span onclick="openExtLink('${p.url}')" style="cursor:pointer">${pIcon}</span>
       </div>
-      ${p.description?`<div style="font-size:0.82rem;margin-bottom:0.5rem;color:var(--m2)">${p.description}</div>`:''}
+      ${p.description?`<div style="font-size:0.82rem;margin-bottom:0.5rem;color:var(--m2)">${escHtml(p.description)}</div>`:''}
       <div style="margin-bottom:0.5rem">${getEmbed(p.url,p.platform)}</div>
       <div style="display:flex;align-items:center;gap:0.75rem;font-size:0.78rem">
         <span id="post-like-${p.id}" onclick="togglePostLike('${p.id}')" style="cursor:pointer">${lk.liked?'❤️':'🤍'} ${lk.count||''}</span>
@@ -3106,7 +3107,7 @@ async function togglePostComments(postId){
   if(el.style.display==='none'){
     el.style.display='block';
     const {data}=await sb.from('post_comments').select('*').eq('post_id',postId).order('created_at',{ascending:true});
-    let html=(data||[]).map(c=>`<div style="padding:0.3rem 0;font-size:0.75rem"><span style="font-weight:600">${c.author}</span> <span style="color:var(--m1)">${fmtDateTime(c.created_at)}</span><div style="color:var(--m2)">${c.text}</div></div>`).join('');
+    let html=(data||[]).map(c=>`<div style="padding:0.3rem 0;font-size:0.75rem"><span style="font-weight:600">${escHtml(c.author)}</span> <span style="color:var(--m1)">${fmtDateTime(c.created_at)}</span><div style="color:var(--m2)">${escHtml(c.text)}</div></div>`).join('');
     if(!data||!data.length)html='<div style="font-size:0.75rem;color:var(--m1)">Поки немає коментарів</div>';
     if(CU)html+=`<div style="display:flex;gap:0.3rem;margin-top:0.4rem"><input id="pc-${postId}" placeholder="Коментар..." style="flex:1;font-size:14px"><button class="btn btn-ghost btn-xs" onclick="submitPostComment('${postId}')">↗</button></div>`;
     el.innerHTML=html;
