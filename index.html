@@ -31,7 +31,8 @@
   --av:#15803d;--re:#a16207;--te:#1d4ed8;--pe:#c2410c;--so:rgba(0,0,0,0.2);
   --r:12px;--r2:16px
 }
-.light header{box-shadow:none;background:linear-gradient(to bottom,rgba(232,234,239,0.9) 0%,rgba(232,234,239,0.5) 60%,rgba(232,234,239,0) 100%)}
+.light header{box-shadow:none}
+.light header::before{background:linear-gradient(to bottom,rgba(232,234,239,0.75) 0%,rgba(232,234,239,0.4) 50%,rgba(232,234,239,0) 100%)}
 .light .disc-card{box-shadow:0 2px 12px rgba(0,0,0,0.04)}
 .light .disc-card:hover{box-shadow:0 8px 28px rgba(0,0,0,0.08);border-color:rgba(255,255,255,0.8)}
 .light .stat-m,.light .stat-card,.light .card{box-shadow:0 2px 12px rgba(0,0,0,0.04)}
@@ -80,7 +81,8 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
 ::-webkit-scrollbar{width:0;height:0}
 @media(min-width:601px){::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.1);border-radius:2px}}
 
-header{position:sticky;top:0;z-index:100;background:linear-gradient(to bottom,rgba(6,8,16,0.85) 0%,rgba(6,8,16,0.5) 60%,rgba(6,8,16,0) 100%);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:none;min-height:54px;display:flex;align-items:center;padding:var(--tg-safe-top) 1rem 7px 1rem;gap:0.75rem;transform:translateZ(0);will-change:transform}
+header{position:sticky;top:0;z-index:100;background:transparent;border-bottom:none;min-height:54px;display:flex;align-items:center;padding:var(--tg-safe-top) 1rem 7px 1rem;gap:0.75rem;transform:translateZ(0);will-change:transform}
+header::before{content:'';position:absolute;inset:0;z-index:-1;-webkit-mask-image:linear-gradient(to bottom,#000 0%,#000 30%,rgba(0,0,0,0.85) 45%,rgba(0,0,0,0.6) 60%,rgba(0,0,0,0.35) 75%,rgba(0,0,0,0.15) 88%,transparent 100%);mask-image:linear-gradient(to bottom,#000 0%,#000 30%,rgba(0,0,0,0.85) 45%,rgba(0,0,0,0.6) 60%,rgba(0,0,0,0.35) 75%,rgba(0,0,0,0.15) 88%,transparent 100%);backdrop-filter:blur(20px) saturate(1.4);-webkit-backdrop-filter:blur(20px) saturate(1.4);background:linear-gradient(to bottom,rgba(6,8,16,0.7) 0%,rgba(6,8,16,0.4) 50%,rgba(6,8,16,0) 100%)}
 .logo{display:flex;align-items:center;gap:8px;cursor:pointer;flex-shrink:0}
 .logo-basket{width:32px;height:34px;flex-shrink:0}
 .logo-text{font-family:'Bebas Neue',sans-serif;font-size:1.3rem;letter-spacing:2px}
