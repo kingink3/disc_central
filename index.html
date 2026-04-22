@@ -282,6 +282,16 @@ input[type=range]::-moz-range-track{height:6px;background:rgba(255,255,255,0.06)
 .auc-waiting-text span{color:var(--m1);animation:aucGlow 2.5s ease-in-out infinite;animation-delay:var(--d)}
 @keyframes aucGlow{0%,100%{color:rgba(255,255,255,0.2);text-shadow:none}40%,60%{color:var(--lime);text-shadow:0 0 12px rgba(212,240,64,0.5)}}
 .auc-waiting-sub{position:relative;z-index:1;font-size:0.78rem;color:var(--m1)}
+/* Onboarding guide */
+.onb-overlay{position:fixed;inset:0;z-index:600;pointer-events:all;transition:opacity 0.3s}
+.onb-overlay.fade-out{opacity:0;pointer-events:none}
+.onb-highlight{position:absolute;z-index:601;border-radius:14px;box-shadow:0 0 0 4000px rgba(0,0,0,0.75),0 0 0 3px var(--lime),0 0 20px rgba(212,240,64,0.3);transition:all 0.4s ease;pointer-events:none}
+.onb-tooltip{position:absolute;z-index:602;background:linear-gradient(160deg,rgba(30,34,48,0.97),rgba(20,23,34,0.97));border:1px solid rgba(212,240,64,0.25);border-radius:16px;padding:1rem 1.1rem;max-width:280px;transition:all 0.35s ease;box-shadow:0 12px 40px rgba(0,0,0,0.5)}
+.onb-text{font-size:0.85rem;color:var(--text);line-height:1.5;margin-bottom:0.75rem}
+.onb-step{font-size:0.6rem;color:var(--m1);text-transform:uppercase;letter-spacing:1px;margin-bottom:0.4rem}
+.onb-btns{display:flex;gap:0.5rem;justify-content:flex-end}
+.onb-skip{background:none;border:none;color:var(--m1);font-size:0.75rem;cursor:pointer;padding:6px 10px;font-family:'DM Sans',sans-serif}
+.onb-next{background:var(--lime);color:#1a1d24;border:none;border-radius:10px;padding:6px 16px;font-size:0.78rem;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif}
 </style>
 </head>
 <body>
@@ -3128,6 +3138,67 @@ function restoreTheme(){
 }
 restoreTheme();
 
+// ── ONBOARDING GUIDE ──
+function startOnboarding(){
+  if(localStorage.getItem('dc_onboarded'))return;
+  const steps=[
+    {el:'#bn-catalog',text:'Каталог - всi диски спiльноти. Переглядай, фiльтруй, купуй, пропонуй обмiн або тест.',pos:'top'},
+    {el:'#ftabs-catalog',text:'Фiльтри - сортуй по статусу, бренду, цiнi та flight numbers. Зiрка - улюбленi.',pos:'bottom'},
+    {el:'.disc-card',text:'Натисни на диск щоб побачити деталi, фото, та зробити дiю - купити, обмiняти або взяти на тест.',pos:'bottom'},
+    {el:'.bnav-item-add',text:'Додай свiй диск на продаж, обмiн або тест. Завантаж фото, вкажи стан i цiну.',pos:'top'},
+    {el:'#bn-cabinet',text:'Твiй кабiнет - твої диски, запити на тест та обмiн, статистика.',pos:'top'},
+    {el:'#bn-auctions',text:'Аукцiони - створюй i бери участь. Три типи: англiйський, з купiвлею зараз i голландський.',pos:'top'},
+    {el:'#bn-settings',text:'Спiльнота - вiдео та пости з YouTube, TikTok, Instagram i Facebook.',pos:'top'}
+  ];
+  let cur=0;
+  const ov=document.createElement('div');
+  ov.className='onb-overlay';
+  ov.innerHTML='<div class="onb-highlight"></div><div class="onb-tooltip"><div class="onb-step"></div><div class="onb-text"></div><div class="onb-btns"><button class="onb-skip">Пропустити</button><button class="onb-next">Далi</button></div></div>';
+  document.body.appendChild(ov);
+  const hl=ov.querySelector('.onb-highlight');
+  const tt=ov.querySelector('.onb-tooltip');
+  const tx=ov.querySelector('.onb-text');
+  const st=ov.querySelector('.onb-step');
+  const nb=ov.querySelector('.onb-next');
+  const sb=ov.querySelector('.onb-skip');
+  function show(i){
+    const s=steps[i];
+    const el=document.querySelector(s.el);
+    if(!el){cur++;if(cur<steps.length)show(cur);else finish();return;}
+    const r=el.getBoundingClientRect();
+    const pad=6;
+    hl.style.left=(r.left-pad)+'px';
+    hl.style.top=(r.top-pad)+'px';
+    hl.style.width=(r.width+pad*2)+'px';
+    hl.style.height=(r.height+pad*2)+'px';
+    st.textContent=(i+1)+' / '+steps.length;
+    tx.textContent=s.text;
+    nb.textContent=i===steps.length-1?'Готово':'Далi';
+    const mw=280;
+    let tl=r.left+r.width/2-mw/2;
+    if(tl<10)tl=10;
+    if(tl+mw>window.innerWidth-10)tl=window.innerWidth-mw-10;
+    tt.style.left=tl+'px';
+    tt.style.maxWidth=mw+'px';
+    if(s.pos==='bottom'){
+      tt.style.top=(r.bottom+14)+'px';
+      tt.style.bottom='auto';
+    }else{
+      tt.style.bottom=(window.innerHeight-r.top+14)+'px';
+      tt.style.top='auto';
+    }
+  }
+  function next(){cur++;if(cur>=steps.length){finish();return;}show(cur);}
+  function finish(){
+    localStorage.setItem('dc_onboarded','1');
+    ov.classList.add('fade-out');
+    setTimeout(()=>ov.remove(),300);
+  }
+  nb.onclick=next;
+  sb.onclick=finish;
+  setTimeout(()=>show(0),600);
+}
+
 // ── INIT ──
 async function init(){
   window._loadStart=Date.now();
@@ -3190,7 +3261,7 @@ async function init(){
   const _loadStart=window._loadStart||Date.now();
   const _elapsed=Date.now()-_loadStart;
   const _delay=Math.max(0,2000-_elapsed);
-  setTimeout(()=>{document.getElementById('loadingOverlay').classList.add('fade-out');setTimeout(()=>{document.getElementById('loadingOverlay').style.display='none'},500);},_delay);
+  setTimeout(()=>{document.getElementById('loadingOverlay').classList.add('fade-out');setTimeout(()=>{document.getElementById('loadingOverlay').style.display='none';startOnboarding();},500);},_delay);
   if(discId)setTimeout(()=>{showDetail(discId);},300);
   else if(aucDeepId)setTimeout(()=>{goPage('auctions');showAucDetail(aucDeepId);},300);
   else{
