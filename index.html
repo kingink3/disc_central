@@ -282,10 +282,6 @@ input[type=range]::-moz-range-track{height:6px;background:rgba(255,255,255,0.06)
 .auc-waiting-text span{color:var(--m1);animation:aucGlow 2.5s ease-in-out infinite;animation-delay:var(--d)}
 @keyframes aucGlow{0%,100%{color:rgba(255,255,255,0.2);text-shadow:none}40%,60%{color:var(--lime);text-shadow:0 0 12px rgba(212,240,64,0.5)}}
 .auc-waiting-sub{position:relative;z-index:1;font-size:0.78rem;color:var(--m1)}
-/* Low-end device: disable all backdrop-filter for performance */
-.low-perf *{backdrop-filter:none!important;-webkit-backdrop-filter:none!important}
-.low-perf .disc-card,.low-perf .stat-m,.low-perf .card,.low-perf .stat-card,.low-perf .modal,.low-perf .overlay,.low-perf .toast,.low-perf .ftabs,.low-perf .dash-item,.low-perf .btn,.low-perf header,.low-perf .adv-filters,.low-perf .cab-tabs,.low-perf .mobile-nav{background-color:var(--s3)}
-.low-perf .overlay{background:rgba(0,0,0,0.6)}
 </style>
 </head>
 <body>
@@ -3134,16 +3130,6 @@ restoreTheme();
 
 // ── INIT ──
 async function init(){
-  // Detect low-end devices: low RAM, old Android, or slow CPU
-  (function(){
-    const nav=navigator;
-    const lowRAM=nav.deviceMemory&&nav.deviceMemory<=3;
-    const lowCores=nav.hardwareConcurrency&&nav.hardwareConcurrency<=4;
-    const oldAndroid=(function(){const m=navigator.userAgent.match(/Android (\d+)/);return m&&parseInt(m[1])<=10;})();
-    if(lowRAM||oldAndroid||(lowRAM===undefined&&lowCores)){
-      document.body.classList.add('low-perf');
-    }
-  })();
   window._loadStart=Date.now();
   setTimeout(()=>{document.getElementById('loadingOverlay').classList.add('fade-out');setTimeout(()=>{document.getElementById('loadingOverlay').style.display='none'},500);},15000);
   // Telegram setup - fullscreen only on mobile
