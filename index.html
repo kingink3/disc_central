@@ -353,6 +353,7 @@ input[type=range]::-moz-range-track{height:6px;background:rgba(255,255,255,0.06)
   </nav>
   <div class="header-right">
     <button class="btn btn-lime btn-sm" onclick="openModal('addDisc')" id="addDiscBtn2">+ Диск</button>
+    <button class="btn btn-ghost btn-sm" onclick="localStorage.removeItem('dc_onboarded');startOnboarding()" style="padding:5px 8px"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></button>
     <button class="btn btn-ghost btn-sm" onclick="toggleTheme()" id="themeBtn" style="padding:5px 8px;font-size:0.9rem">🌙</button>
   </div>
 </header>
@@ -3184,12 +3185,22 @@ function startOnboarding(){
     if(tl+mw>window.innerWidth-10)tl=window.innerWidth-mw-10;
     tt.style.left=tl+'px';
     tt.style.maxWidth=mw+'px';
+    tt.style.top='auto';
+    tt.style.bottom='auto';
     if(s.pos==='bottom'){
-      tt.style.top=(r.bottom+14)+'px';
-      tt.style.bottom='auto';
+      const topPos=r.bottom+14;
+      if(topPos+160>window.innerHeight){
+        tt.style.bottom=(window.innerHeight-r.top+14)+'px';
+      }else{
+        tt.style.top=topPos+'px';
+      }
     }else{
-      tt.style.bottom=(window.innerHeight-r.top+14)+'px';
-      tt.style.top='auto';
+      const botPos=window.innerHeight-r.top+14;
+      if(botPos+160>window.innerHeight){
+        tt.style.top=(r.bottom+14)+'px';
+      }else{
+        tt.style.bottom=botPos+'px';
+      }
     }
   }
   function next(){cur++;if(cur>=steps.length){finish();return;}show(cur);}
