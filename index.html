@@ -3167,10 +3167,14 @@ function startOnboarding(){
     if(!el){cur++;if(cur<steps.length)show(cur);else finish();return;}
     const r=el.getBoundingClientRect();
     const pad=6;
-    hl.style.left=(r.left-pad)+'px';
-    hl.style.top=(r.top-pad)+'px';
-    hl.style.width=(r.width+pad*2)+'px';
-    hl.style.height=(r.height+pad*2)+'px';
+    const hlL=Math.max(2,r.left-pad);
+    const hlT=Math.max(2,r.top-pad);
+    const hlW=Math.min(r.width+pad*2,window.innerWidth-hlL-2);
+    const hlH=Math.min(r.height+pad*2,window.innerHeight-hlT-2);
+    hl.style.left=hlL+'px';
+    hl.style.top=hlT+'px';
+    hl.style.width=hlW+'px';
+    hl.style.height=hlH+'px';
     st.textContent=(i+1)+' / '+steps.length;
     tx.textContent=s.text;
     nb.textContent=i===steps.length-1?'Готово':'Далi';
