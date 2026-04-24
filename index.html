@@ -3144,7 +3144,7 @@ function startOnboarding(){
   if(localStorage.getItem('dc_onboarded'))return;
   const steps=[
     {el:'#bn-catalog',text:'Каталог - всi диски спiльноти. Переглядай, фiльтруй, купуй, пропонуй обмiн або тест.',pos:'top'},
-    {el:'#ftabs-catalog',text:'Фiльтри - сортуй по статусу, бренду, цiнi та flight numbers. Зiрка - улюбленi.',pos:'bottom'},
+    {el:'.filter-bar',text:'Фiльтри - сортуй по статусу, бренду, цiнi та flight numbers. Шестерня - розширенi фiльтри.',pos:'bottom'},
     {el:'.disc-card',text:'Натисни на диск щоб побачити деталi, фото, та зробити дiю - купити, обмiняти або взяти на тест.',pos:'bottom'},
     {el:'.bnav-item-add',text:'Додай свiй диск на продаж, обмiн або тест. Завантаж фото, вкажи стан i цiну.',pos:'top'},
     {el:'#bn-cabinet',text:'Твiй кабiнет - твої диски, запити на тест та обмiн, статистика.',pos:'top'},
@@ -3154,7 +3154,7 @@ function startOnboarding(){
   let cur=0;
   const ov=document.createElement('div');
   ov.className='onb-overlay';
-  ov.innerHTML='<div class="onb-highlight"></div><div class="onb-tooltip"><div class="onb-step"></div><div class="onb-text"></div><div class="onb-btns"><button class="onb-skip">Пропустити</button><button class="onb-next">Далi</button></div></div>';
+  ov.innerHTML='<div class="onb-highlight" style="opacity:0"></div><div class="onb-tooltip" style="opacity:0"><div class="onb-step"></div><div class="onb-text"></div><div class="onb-btns"><button class="onb-skip">Пропустити</button><button class="onb-next">Далi</button></div></div>';
   document.body.appendChild(ov);
   const hl=ov.querySelector('.onb-highlight');
   const tt=ov.querySelector('.onb-tooltip');
@@ -3176,6 +3176,8 @@ function startOnboarding(){
     hl.style.top=hlT+'px';
     hl.style.width=hlW+'px';
     hl.style.height=hlH+'px';
+    hl.style.opacity='1';
+    tt.style.opacity='1';
     st.textContent=(i+1)+' / '+steps.length;
     tx.textContent=s.text;
     nb.textContent=i===steps.length-1?'Готово':'Далi';
