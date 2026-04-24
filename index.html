@@ -1183,7 +1183,7 @@ function cardHTML(d){
 }
 
 // ── FILTERS ──
-function toggleAdvFilters(){const el=document.getElementById('advFilters'),btn=document.getElementById('advBtn'),open=!el.classList.contains('open');el.classList.toggle('open',open);btn.style.borderColor=open?'var(--lime)':'var(--b1)';btn.style.color=open?'var(--lime)':'';}
+function toggleAdvFilters(){const el=document.getElementById('advFilters'),btn=document.getElementById('advBtn'),open=!el.classList.contains('open');el.classList.toggle('open',open);const isBrutal=document.documentElement.classList.contains('brutal');if(open){btn.style.borderColor=isBrutal?'var(--text)':'var(--lime)';btn.style.color=isBrutal?'var(--bg)':'var(--lime)';btn.style.background=isBrutal?'var(--text)':'';}else{btn.style.borderColor='';btn.style.color='';btn.style.background='';}}
 function resetFilters(){['f-speed','f-glide','f-turn','f-fade','f-price','f-city'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});document.getElementById('f-sort').value='new';document.getElementById('mainSearch').value='';CF='all';const tabs=document.getElementById('ftabs-catalog');if(tabs){tabs.querySelectorAll('.ft').forEach((b,i)=>b.classList.toggle('active',i===0));const first=tabs.querySelector('.ft.active');if(first)moveFtabsPill(first);}applyFilters();}
 function applyFilters(){
   const q=(document.getElementById('mainSearch')||{value:''}).value.toLowerCase();
