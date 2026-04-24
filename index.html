@@ -3143,6 +3143,7 @@ restoreTheme();
 // ── ONBOARDING GUIDE ──
 function startOnboarding(){
   if(localStorage.getItem('dc_onboarded'))return;
+  if(window.innerWidth>1024)return;
   const steps=[
     {el:'#bn-catalog',text:'Каталог - всi диски спiльноти. Переглядай, фiльтруй, купуй, пропонуй обмiн або тест.',pos:'top'},
     {el:'.filter-bar',text:'Фiльтри - сортуй по статусу, бренду, цiнi та flight numbers. Шестерня - розширенi фiльтри.',pos:'bottom'},
