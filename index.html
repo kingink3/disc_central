@@ -454,7 +454,7 @@ input[type=range]::-moz-range-track{height:6px;background:rgba(255,255,255,0.06)
   </nav>
   <div class="header-right">
     <button class="btn btn-lime btn-sm" onclick="openModal('addDisc')" id="addDiscBtn2">+ Диск</button>
-    <button class="btn btn-ghost btn-sm onb-help" onclick="localStorage.removeItem('dc_onboarded');startOnboarding()" style="padding:5px 8px"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></button>
+    <button class="btn btn-ghost btn-sm onb-help" onclick="goPage('catalog');localStorage.removeItem('dc_onboarded');setTimeout(startOnboarding,300)" style="padding:5px 8px"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></button>
     <button class="btn btn-ghost btn-sm" onclick="toggleBrutal()" id="brutalBtn" style="padding:5px 8px"><svg viewBox="0 0 20 20" width="16" height="16"><defs><clipPath id="bL"><rect x="0" y="0" width="10" height="20"/></clipPath><clipPath id="bR"><rect x="10" y="0" width="10" height="20"/></clipPath></defs><g clip-path="url(#bL)"><rect x="1" y="1" width="18" height="18" rx="4" fill="none" stroke="currentColor" stroke-width="1.5" opacity="0.4"/><rect x="4" y="5" width="5" height="2" rx="1" fill="currentColor" opacity="0.3"/><rect x="4" y="9" width="4" height="2" rx="1" fill="currentColor" opacity="0.2"/><rect x="4" y="13" width="6" height="2" rx="1" fill="currentColor" opacity="0.25"/></g><g clip-path="url(#bR)"><rect x="1" y="1" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"/><rect x="11" y="5" width="5" height="2" fill="currentColor"/><rect x="11" y="9" width="4" height="2" fill="currentColor"/><rect x="11" y="13" width="6" height="2" fill="currentColor"/></g></svg></button>
     <button class="btn btn-ghost btn-sm" onclick="toggleTheme()" id="themeBtn" style="padding:5px 8px;font-size:0.9rem">🌙</button>
   </div>
@@ -2175,8 +2175,9 @@ function moveBnavPill(target){
   if(!pill||!glass||!target||target.classList.contains('bnav-item-add'))return;
   const gRect=glass.getBoundingClientRect();
   const tRect=target.getBoundingClientRect();
-  const padX=8;
-  const padY=4;
+  const isBrutal=document.documentElement.classList.contains('brutal');
+  const padX=isBrutal?3:8;
+  const padY=isBrutal?2:4;
   pill.style.left=(tRect.left - gRect.left - padX)+'px';
   pill.style.top=(tRect.top - gRect.top - padY)+'px';
   pill.style.width=(tRect.width + padX*2)+'px';
@@ -3232,6 +3233,7 @@ function toggleTheme(){
   const isLight=cl.toggle('light');
   localStorage.setItem('dc_theme',isLight?'light':'dark');
   document.getElementById('themeBtn').textContent=isLight?'☀️':'🌙';
+  setTimeout(initBnavPill,50);
 }
 function toggleBrutal(){
   const cl=document.documentElement.classList;
@@ -3240,6 +3242,7 @@ function toggleBrutal(){
   const btn=document.getElementById('brutalBtn');
   btn.style.background=isBrutal?'var(--text)':'';
   btn.style.color=isBrutal?'var(--bg)':'';
+  setTimeout(initBnavPill,50);
 }
 function restoreTheme(){
   const t=localStorage.getItem('dc_theme');
