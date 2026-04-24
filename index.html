@@ -119,10 +119,11 @@
 .brutal .btn-ghost:hover{background:var(--s1);box-shadow:none;border-color:var(--b1)}
 .brutal .btn-danger{background:var(--bg);color:var(--text);border:1.5px solid var(--b1);box-shadow:none}
 .brutal .btn-orange{background:var(--bg);color:var(--text);border:1.5px solid var(--b1);box-shadow:none}
-.brutal .ft{border-radius:0;font-family:'Space Mono',monospace}
+.brutal .ft{border-radius:0!important;font-family:'Space Mono',monospace}
 .brutal .ft.active{background:var(--text);color:var(--bg)}
-.brutal .ftabs,.brutal .cab-tabs{border-radius:0;border:1.5px solid var(--b1);background:var(--bg);backdrop-filter:none!important;-webkit-backdrop-filter:none!important;box-shadow:none;padding:3px}
-.brutal .ftabs-pill{display:none}
+.brutal .ftabs,.brutal .cab-tabs{border-radius:0!important;border:1.5px solid var(--b1);background:var(--bg)!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important;box-shadow:none!important;padding:3px}
+.brutal .ftabs-pill{display:none!important}
+.brutal .ftabs::-webkit-scrollbar,.brutal .cab-tabs::-webkit-scrollbar{display:none}
 .brutal header{background:var(--bg);border-bottom:1.5px solid var(--b1)}
 .brutal .modal{border:1.5px solid var(--b1);border-radius:0;box-shadow:none;background:var(--bg)}
 .brutal .overlay{background:rgba(128,128,128,0.5)}
@@ -141,8 +142,9 @@
 .brutal .disc-price{font-family:'Space Mono',monospace}
 .brutal .fv{border-radius:0}
 .brutal .bottom-nav{padding:0;padding-bottom:0}
-.brutal .bottom-nav-glass,.brutal.light .bottom-nav-glass{border-radius:0;border:none;border-top:1.5px solid var(--b1);background:var(--bg);box-shadow:none;backdrop-filter:none!important;-webkit-backdrop-filter:none!important;max-width:none;width:100%;padding:8px 10px calc(8px + env(safe-area-inset-bottom,0px)) 10px;margin:0}
-.brutal .bnav-pill{display:none}
+.brutal .bottom-nav{padding:0 0 0 0}
+.brutal .bottom-nav-glass,.brutal.light .bottom-nav-glass{border-radius:0;border:none;border-top:1.5px solid var(--b1);background:var(--bg);box-shadow:none;backdrop-filter:none!important;-webkit-backdrop-filter:none!important;max-width:none;width:100%;padding:8px 16px calc(8px + env(safe-area-inset-bottom,0px)) 16px;margin:0}
+.brutal .bnav-pill{border-radius:0;background:var(--s1);border:1px solid var(--b1);box-shadow:none}
 .brutal .bnav-item{color:var(--m1);font-family:'Space Mono',monospace}
 .brutal .bnav-item.active{color:var(--text)}
 .brutal .bnav-add{background:var(--text);border-radius:0;box-shadow:none}
