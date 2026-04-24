@@ -151,13 +151,18 @@
 .brutal .bnav-add svg{color:var(--bg)}
 .brutal .bnav-add svg *{stroke:var(--bg)!important}
 .brutal.light .bnav-item svg{stroke:var(--text)}
-.brutal.light .bnav-item.active{border:1px solid var(--b1)}
+.brutal.light .bnav-pill{background:var(--s1);border:1px solid var(--b1)}
 .brutal .photo-slot{border:1.5px dashed var(--b1);border-radius:0}
 .brutal .toggle-row{border:1.5px solid var(--b1);border-radius:0;background:var(--bg)}
 .brutal .adv-filters{border:1.5px solid var(--b1);border-radius:0;background:var(--bg)}
 .brutal .disc-photo{border-radius:0}
 .brutal .disc-photo-wrap{background:var(--s1);margin:0}
-.brutal .disc-strip{height:3px;opacity:1}
+.brutal .disc-strip{height:0;padding:0;margin:0}
+.brutal .disc-card:has(.disc-strip.av){border-top:3px solid #4ade80}
+.brutal .disc-card:has(.disc-strip.re){border-top:3px solid #facc15}
+.brutal .disc-card:has(.disc-strip.te){border-top:3px solid #60a5fa}
+.brutal .disc-card:has(.disc-strip.pe){border-top:3px solid #fb923c}
+.brutal .disc-card:has(.disc-strip.so){border-top:3px solid #94a3b8}
 .brutal .disc-strip.av{background:#4ade80}.brutal .disc-strip.re{background:#facc15}.brutal .disc-strip.te{background:#60a5fa}.brutal .disc-strip.pe{background:#fb923c}.brutal .disc-strip.so{background:#94a3b8}
 .brutal .detail-photos{border-radius:0;background:var(--s1);border-bottom:1.5px solid var(--b1)}
 .brutal .status-overlay{background:rgba(0,0,0,0.55);backdrop-filter:none;border-radius:0;border:none}
