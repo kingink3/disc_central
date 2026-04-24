@@ -32,30 +32,33 @@
   --r:12px;--r2:16px
 }
 .brutal{
-  --glass:rgba(255,255,255,0.95);--glass-hi:#f5f5f5;--glass-border:#000;
   --glass-glow:none;
   --glass-blur:none;
-  --lime:#000;--cyan:#000;--orange:#000;--purple:#555;
-  --av:#000;--re:#000;--te:#000;--pe:#000;--so:#ccc;
   --r:0px;--r2:0px
 }
 :root.brutal{
-  --bg:#ffffff;--s1:#f5f5f5;--s2:#eeeeee;--s3:#f0f0f0;
-  --b1:#000;--b2:#000;
-  --text:#000;--m1:#666;--m2:#333
+  --bg:#050505;--s1:#121212;--s2:#0e0e0e;--s3:#161616;
+  --b1:rgba(255,255,255,0.2);--b2:rgba(255,255,255,0.3);
+  --glass:rgba(15,15,15,0.95);--glass-hi:#161616;--glass-border:rgba(255,255,255,0.2);
+  --lime:#ccc;--cyan:#aaa;--orange:#999;--purple:#888;
+  --text:#d0d0d0;--m1:#555;--m2:#888;
+  --av:#ccc;--re:#ccc;--te:#ccc;--pe:#ccc;--so:#333
 }
 .brutal.light{
   --bg:#ffffff;--s1:#f5f5f5;--s2:#eeeeee;--s3:#f0f0f0;
   --b1:#000;--b2:#000;
-  --text:#000;--m1:#666;--m2:#333
+  --glass:rgba(255,255,255,0.95);--glass-hi:#f5f5f5;--glass-border:#000;
+  --lime:#000;--cyan:#000;--orange:#000;--purple:#555;
+  --text:#000;--m1:#666;--m2:#333;
+  --av:#000;--re:#000;--te:#000;--pe:#000;--so:#ccc
 }
 :root:not(.light).brutal{
-  --bg:#0a0a0a;--s1:#151515;--s2:#111;--s3:#1a1a1a;
-  --b1:rgba(255,255,255,0.25);--b2:rgba(255,255,255,0.35);
-  --glass:rgba(20,20,20,0.95);--glass-hi:#1a1a1a;--glass-border:rgba(255,255,255,0.25);
+  --bg:#050505;--s1:#121212;--s2:#0e0e0e;--s3:#161616;
+  --b1:rgba(255,255,255,0.2);--b2:rgba(255,255,255,0.3);
+  --glass:rgba(15,15,15,0.95);--glass-hi:#161616;--glass-border:rgba(255,255,255,0.2);
   --lime:#ccc;--cyan:#aaa;--orange:#999;--purple:#888;
-  --text:#e0e0e0;--m1:#666;--m2:#999;
-  --av:#ccc;--re:#ccc;--te:#ccc;--pe:#ccc;--so:#444
+  --text:#d0d0d0;--m1:#555;--m2:#888;
+  --av:#ccc;--re:#ccc;--te:#ccc;--pe:#ccc;--so:#333
 }
 .light header{box-shadow:none}
 .light .disc-card{box-shadow:0 2px 12px rgba(0,0,0,0.04)}
@@ -143,20 +146,22 @@
 .brutal .fv{border-radius:0}
 .brutal .bottom-nav{padding:0;padding-bottom:0}
 .brutal .bottom-nav{padding:0 0 0 0}
-.brutal .bottom-nav-glass,.brutal.light .bottom-nav-glass{border-radius:0;border:none;border-top:1.5px solid var(--b1);background:var(--bg);box-shadow:none;backdrop-filter:none!important;-webkit-backdrop-filter:none!important;max-width:none;width:100%;padding:8px 16px calc(14px + env(safe-area-inset-bottom,0px)) 16px;margin:0}
-.brutal .bnav-pill{border-radius:0;background:var(--s1);border:1px solid var(--b1);box-shadow:none}
+.brutal .bottom-nav-glass,.brutal.light .bottom-nav-glass{border-radius:0;border:none;border-top:1.5px solid var(--b1);background:var(--bg);box-shadow:none;backdrop-filter:none!important;-webkit-backdrop-filter:none!important;max-width:none;width:100%;padding:8px 16px calc(20px + env(safe-area-inset-bottom,0px)) 16px;margin:0}
+.brutal .bnav-pill{border-radius:0;background:var(--s1);border:1px solid var(--b1);box-shadow:none;transition:left 0.45s cubic-bezier(0.4,0,0.1,1),width 0.45s cubic-bezier(0.4,0,0.1,1),top 0.45s cubic-bezier(0.4,0,0.1,1),height 0.45s cubic-bezier(0.4,0,0.1,1)}
 .brutal .bnav-item{color:var(--m1);font-family:'Space Mono',monospace}
 .brutal .bnav-item.active{color:var(--text)}
 .brutal .bnav-add{background:var(--text);border-radius:0;box-shadow:none;border:1.5px solid var(--b1)}
 .brutal .bnav-add svg{color:var(--bg)}
 .brutal .bnav-add svg *{stroke:var(--bg)!important}
 .brutal.light .bnav-item svg{stroke:var(--text)}
-.brutal.light .bnav-pill{background:var(--s1);border:1px solid var(--b1)}
+.brutal.light .bnav-pill{background:#f0f0f0;border:1px solid #000}
 .brutal .photo-slot{border:1.5px dashed var(--b1);border-radius:0}
 .brutal .toggle-row{border:1.5px solid var(--b1);border-radius:0;background:var(--bg)}
 .brutal .adv-filters{border:1.5px solid var(--b1);border-radius:0;background:var(--bg)}
 .brutal .disc-photo{border-radius:0}
 .brutal .disc-photo-wrap{background:var(--s1);margin:0}
+.brutal.light .disc-photo-wrap{background:#222}
+.brutal.light .detail-photos{background:#222}
 .brutal .disc-strip{height:0;padding:0;margin:0}
 .brutal .disc-card:has(.disc-strip.av){border-top:3px solid #4ade80}
 .brutal .disc-card:has(.disc-strip.re){border-top:3px solid #facc15}
