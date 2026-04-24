@@ -2203,7 +2203,7 @@ function initBnavPill(){
   const pill=document.getElementById('bnavPill');
   if(pill){pill.style.transition='none';moveBnavPill(active);requestAnimationFrame(()=>{requestAnimationFrame(()=>{pill.style.transition='';});});}
 }
-window.addEventListener('resize',()=>{const a=document.querySelector('.bnav-item.active:not(.bnav-item-add)');const p=document.getElementById('bnavPill');if(p){p.style.transition='none';moveBnavPill(a);requestAnimationFrame(()=>{p.style.transition='';});}});
+window.addEventListener('resize',()=>{const a=document.querySelector('.bnav-item.active:not(.bnav-item-add)');const p=document.getElementById('bnavPill');if(p){p.style.transition='none';moveBnavPill(a);requestAnimationFrame(()=>{p.style.transition='';});}setTimeout(()=>{const a2=document.querySelector('.bnav-item.active:not(.bnav-item-add)');if(a2)moveBnavPill(a2);},300);});
 setTimeout(initBnavPill,300);
 
 // ── FTABS SLIDING PILL ──
