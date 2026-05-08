@@ -394,6 +394,21 @@ input[type=range]::-moz-range-track{height:6px;background:rgba(255,255,255,0.06)
 .auc-waiting-text span{color:var(--m1);animation:aucGlow 2.5s ease-in-out infinite;animation-delay:var(--d)}
 @keyframes aucGlow{0%,100%{color:rgba(255,255,255,0.2);text-shadow:none}40%,60%{color:var(--lime);text-shadow:0 0 12px rgba(212,240,64,0.5)}}
 .auc-waiting-sub{position:relative;z-index:1;font-size:0.78rem;color:var(--m1)}
+/* Dual range slider */
+.drs{position:relative;height:24px;margin:4px 0 2px}
+.drs-track{position:absolute;top:10px;left:0;right:0;height:4px;background:var(--s2);border-radius:2px}
+.drs-fill{position:absolute;top:10px;height:4px;background:var(--lime);border-radius:2px}
+.drs input[type=range]{position:absolute;top:0;left:0;width:100%;height:24px;margin:0;padding:0;background:none;pointer-events:none;-webkit-appearance:none;appearance:none;outline:none}
+.drs input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:var(--lime);border:2px solid var(--bg);cursor:pointer;pointer-events:all;box-shadow:0 1px 4px rgba(0,0,0,0.3)}
+.drs input[type=range]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;background:var(--lime);border:2px solid var(--bg);cursor:pointer;pointer-events:all;box-shadow:0 1px 4px rgba(0,0,0,0.3)}
+.drs-vals{display:flex;justify-content:space-between;align-items:center;gap:4px;margin-top:2px}
+.drs-vals input{width:40px;text-align:center;font-size:0.7rem;padding:2px 4px;background:var(--s2);border:0.5px solid var(--glass-border);border-radius:6px;color:var(--text);font-family:'DM Sans',sans-serif}
+.drs-vals span{font-size:0.65rem;color:var(--m1)}
+.brutal .drs-track{border-radius:0}
+.brutal .drs-fill{border-radius:0}
+.brutal .drs input[type=range]::-webkit-slider-thumb{border-radius:0;background:var(--text)}
+.brutal .drs input[type=range]::-moz-range-thumb{border-radius:0;background:var(--text)}
+.brutal .drs-vals input{border-radius:0;border:1.5px solid var(--b1)}
 /* Onboarding guide */
 .onb-overlay{position:fixed;inset:0;z-index:600;pointer-events:all;transition:opacity 0.3s}
 .onb-overlay.fade-out{opacity:0;pointer-events:none}
@@ -529,11 +544,11 @@ input[type=range]::-moz-range-track{height:6px;background:rgba(255,255,255,0.06)
       </div>
       <div class="adv-row">
         <div><span class="fl">Сортування</span><select id="f-sort" onchange="applyFilters()"><option value="new">Новіші</option><option value="old">Старіші</option><option value="price-asc">Ціна ↑</option><option value="price-desc">Ціна ↓</option><option value="speed-desc">Speed ↓</option><option value="speed-asc">Speed ↑</option><option value="cond-desc">Стан ↓</option></select></div>
-        <div><span class="fl">Speed від</span><input type="number" id="f-speed" placeholder="0" oninput="applyFilters()"></div>
-        <div><span class="fl">Glide від</span><input type="number" id="f-glide" placeholder="0" oninput="applyFilters()"></div>
-        <div><span class="fl">Turn до</span><input type="number" id="f-turn" placeholder="1" step="0.5" oninput="applyFilters()"></div>
-        <div><span class="fl">Fade до</span><input type="number" id="f-fade" placeholder="5" oninput="applyFilters()"></div>
-        <div><span class="fl">Ціна до ₴</span><input type="number" id="f-price" placeholder="9999" oninput="applyFilters()"></div>
+        <div><span class="fl">Speed</span><div class="drs" data-min="1" data-max="15" data-step="1" data-lo="f-speed" data-hi="f-speed-max"><div class="drs-track"></div><div class="drs-fill"></div><input type="range" min="1" max="15" step="1" value="1" class="drs-min"><input type="range" min="1" max="15" step="1" value="15" class="drs-max"></div><div class="drs-vals"><input type="number" id="f-speed" min="1" max="15" placeholder="1" oninput="drsFromInput(this)"><span>-</span><input type="number" id="f-speed-max" min="1" max="15" placeholder="15" oninput="drsFromInput(this)"></div></div>
+        <div><span class="fl">Glide</span><div class="drs" data-min="1" data-max="7" data-step="1" data-lo="f-glide" data-hi="f-glide-max"><div class="drs-track"></div><div class="drs-fill"></div><input type="range" min="1" max="7" step="1" value="1" class="drs-min"><input type="range" min="1" max="7" step="1" value="7" class="drs-max"></div><div class="drs-vals"><input type="number" id="f-glide" min="1" max="7" placeholder="1" oninput="drsFromInput(this)"><span>-</span><input type="number" id="f-glide-max" min="1" max="7" placeholder="7" oninput="drsFromInput(this)"></div></div>
+        <div><span class="fl">Turn</span><div class="drs" data-min="-5" data-max="2" data-step="0.5" data-lo="f-turn" data-hi="f-turn-max"><div class="drs-track"></div><div class="drs-fill"></div><input type="range" min="-5" max="2" step="0.5" value="-5" class="drs-min"><input type="range" min="-5" max="2" step="0.5" value="2" class="drs-max"></div><div class="drs-vals"><input type="number" id="f-turn" min="-5" max="2" step="0.5" placeholder="-5" oninput="drsFromInput(this)"><span>-</span><input type="number" id="f-turn-max" min="-5" max="2" step="0.5" placeholder="2" oninput="drsFromInput(this)"></div></div>
+        <div><span class="fl">Fade</span><div class="drs" data-min="0" data-max="5" data-step="0.5" data-lo="f-fade" data-hi="f-fade-max"><div class="drs-track"></div><div class="drs-fill"></div><input type="range" min="0" max="5" step="0.5" value="0" class="drs-min"><input type="range" min="0" max="5" step="0.5" value="5" class="drs-max"></div><div class="drs-vals"><input type="number" id="f-fade" min="0" max="5" step="0.5" placeholder="0" oninput="drsFromInput(this)"><span>-</span><input type="number" id="f-fade-max" min="0" max="5" step="0.5" placeholder="5" oninput="drsFromInput(this)"></div></div>
+        <div><span class="fl">Ціна ₴</span><div style="display:flex;gap:4px;align-items:center"><input type="number" id="f-price" placeholder="від" min="0" oninput="applyFilters()" style="flex:1"><span style="color:var(--m1);font-size:0.7rem">-</span><input type="number" id="f-price-max" placeholder="до" min="0" oninput="applyFilters()" style="flex:1"></div></div>
         <div><span class="fl">Місто</span><input id="f-city" placeholder="Київ, Луцьк, Кременчук..." oninput="applyFilters()"></div>
         <div style="display:flex;align-items:flex-end"><button class="btn btn-ghost btn-sm btn-full" onclick="resetFilters()">✕ Скинути</button></div>
       </div>
@@ -1184,12 +1199,77 @@ function cardHTML(d){
 
 // ── FILTERS ──
 function toggleAdvFilters(){const el=document.getElementById('advFilters'),btn=document.getElementById('advBtn'),open=!el.classList.contains('open');el.classList.toggle('open',open);const isBrutal=document.documentElement.classList.contains('brutal');if(open){btn.style.borderColor=isBrutal?'var(--text)':'var(--lime)';btn.style.color=isBrutal?'var(--bg)':'var(--lime)';btn.style.background=isBrutal?'var(--text)':'';}else{btn.style.borderColor='';btn.style.color='';btn.style.background='';}}
-function resetFilters(){['f-speed','f-glide','f-turn','f-fade','f-price','f-city'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});document.getElementById('f-sort').value='new';document.getElementById('mainSearch').value='';CF='all';const tabs=document.getElementById('ftabs-catalog');if(tabs){tabs.querySelectorAll('.ft').forEach((b,i)=>b.classList.toggle('active',i===0));const first=tabs.querySelector('.ft.active');if(first)moveFtabsPill(first);}applyFilters();}
+function resetFilters(){['f-speed','f-speed-max','f-glide','f-glide-max','f-turn','f-turn-max','f-fade','f-fade-max','f-price','f-price-max','f-city'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});resetDualRangeSliders();document.getElementById('f-sort').value='new';document.getElementById('mainSearch').value='';CF='all';const tabs=document.getElementById('ftabs-catalog');if(tabs){tabs.querySelectorAll('.ft').forEach((b,i)=>b.classList.toggle('active',i===0));const first=tabs.querySelector('.ft.active');if(first)moveFtabsPill(first);}applyFilters();}
+// ── DUAL RANGE SLIDERS ──
+function initDualRangeSliders(){
+  document.querySelectorAll('.drs').forEach(drs=>{
+    const lo=drs.querySelector('.drs-min');
+    const hi=drs.querySelector('.drs-max');
+    const fill=drs.querySelector('.drs-fill');
+    const loId=drs.dataset.lo;
+    const hiId=drs.dataset.hi;
+    const loInp=document.getElementById(loId);
+    const hiInp=document.getElementById(hiId);
+    function updateFill(){
+      const mn=parseFloat(lo.min),mx=parseFloat(lo.max);
+      const lv=parseFloat(lo.value),hv=parseFloat(hi.value);
+      const lp=((lv-mn)/(mx-mn))*100;
+      const hp=((hv-mn)/(mx-mn))*100;
+      fill.style.left=lp+'%';fill.style.width=(hp-lp)+'%';
+    }
+    function sync(){
+      if(parseFloat(lo.value)>parseFloat(hi.value))lo.value=hi.value;
+      if(parseFloat(hi.value)<parseFloat(lo.value))hi.value=lo.value;
+      loInp.value=lo.value;hiInp.value=hi.value;
+      updateFill();applyFilters();
+    }
+    lo.addEventListener('input',()=>{if(parseFloat(lo.value)>parseFloat(hi.value))lo.value=hi.value;sync();});
+    hi.addEventListener('input',()=>{if(parseFloat(hi.value)<parseFloat(lo.value))hi.value=lo.value;sync();});
+    updateFill();
+  });
+}
+function drsFromInput(inp){
+  const valsDiv=inp.closest('.drs-vals');
+  const drs=valsDiv?.previousElementSibling;
+  if(!drs||!drs.classList.contains('drs'))return;
+  const lo=drs.querySelector('.drs-min');
+  const hi=drs.querySelector('.drs-max');
+  const loInp=document.getElementById(drs.dataset.lo);
+  const hiInp=document.getElementById(drs.dataset.hi);
+  const fill=drs.querySelector('.drs-fill');
+  const mn=parseFloat(lo.min),mx=parseFloat(lo.max);
+  let lv=parseFloat(loInp.value);if(isNaN(lv))lv=mn;
+  let hv=parseFloat(hiInp.value);if(isNaN(hv))hv=mx;
+  lv=Math.max(mn,Math.min(mx,lv));hv=Math.max(mn,Math.min(mx,hv));
+  if(lv>hv){const t=lv;lv=hv;hv=t;}
+  lo.value=lv;hi.value=hv;
+  const lp=((lv-mn)/(mx-mn))*100;
+  const hp=((hv-mn)/(mx-mn))*100;
+  fill.style.left=lp+'%';fill.style.width=(hp-lp)+'%';
+  applyFilters();
+}
+function resetDualRangeSliders(){
+  document.querySelectorAll('.drs').forEach(drs=>{
+    const lo=drs.querySelector('.drs-min');
+    const hi=drs.querySelector('.drs-max');
+    const fill=drs.querySelector('.drs-fill');
+    lo.value=lo.min;hi.value=hi.max;
+    fill.style.left='0%';fill.style.width='100%';
+  });
+}
+
 function applyFilters(){
   const q=(document.getElementById('mainSearch')||{value:''}).value.toLowerCase();
-  const fSpeed=parseFloat(document.getElementById('f-speed')?.value)||0;
-  const fGlide=parseFloat(document.getElementById('f-glide')?.value)||0;
-  const fPrice=parseFloat(document.getElementById('f-price')?.value)||0;
+  const fSpeed=parseFloat(document.getElementById('f-speed')?.value);
+  const fSpeedMax=parseFloat(document.getElementById('f-speed-max')?.value);
+  const fGlide=parseFloat(document.getElementById('f-glide')?.value);
+  const fGlideMax=parseFloat(document.getElementById('f-glide-max')?.value);
+  const fTurn=parseFloat(document.getElementById('f-turn')?.value);
+  const fTurnMax=parseFloat(document.getElementById('f-turn-max')?.value);
+  const fFade=parseFloat(document.getElementById('f-fade')?.value);
+  const fFadeMax=parseFloat(document.getElementById('f-fade-max')?.value);
+  const fPrice=parseFloat(document.getElementById('f-price')?.value);
+  const fPriceMax=parseFloat(document.getElementById('f-price-max')?.value);
   const fCity=(document.getElementById('f-city')?.value||'').toLowerCase().trim();
   const sort=document.getElementById('f-sort')?.value||'new';
   let list=allDiscs.filter(d=>d.status!=='sold');
@@ -1197,13 +1277,16 @@ function applyFilters(){
   else if(CF==='trade')list=list.filter(d=>{const tw=String(d.tradeWant||'').trim();return tw&&tw!=='false';});
   else if(CF!=='all')list=list.filter(d=>d.status===CF||d.status==='trade'&&CF==='available');
   if(q)list=list.filter(d=>[d.brand,d.model,d.plastic,d.color,d.owner,d.city].join(' ').toLowerCase().includes(q));
-  if(fSpeed>0)list=list.filter(d=>parseFloat(d.speed)>=fSpeed);
-  if(fGlide>0)list=list.filter(d=>parseFloat(d.glide)>=fGlide);
-  const fTurnEl=document.getElementById('f-turn');
-  const fFadeEl=document.getElementById('f-fade');
-  if(fTurnEl?.value!=='')list=list.filter(d=>parseFloat(d.turn)<=(parseFloat(fTurnEl.value)));
-  if(fFadeEl?.value!=='')list=list.filter(d=>parseFloat(d.fade)<=(parseFloat(fFadeEl.value)));
-  if(fPrice>0)list=list.filter(d=>parseFloat(d.buyout)<=fPrice);
+  if(!isNaN(fSpeed))list=list.filter(d=>parseFloat(d.speed)>=fSpeed);
+  if(!isNaN(fSpeedMax))list=list.filter(d=>parseFloat(d.speed)<=fSpeedMax);
+  if(!isNaN(fGlide))list=list.filter(d=>parseFloat(d.glide)>=fGlide);
+  if(!isNaN(fGlideMax))list=list.filter(d=>parseFloat(d.glide)<=fGlideMax);
+  if(!isNaN(fTurn))list=list.filter(d=>parseFloat(d.turn)>=fTurn);
+  if(!isNaN(fTurnMax))list=list.filter(d=>parseFloat(d.turn)<=fTurnMax);
+  if(!isNaN(fFade))list=list.filter(d=>parseFloat(d.fade)>=fFade);
+  if(!isNaN(fFadeMax))list=list.filter(d=>parseFloat(d.fade)<=fFadeMax);
+  if(!isNaN(fPrice))list=list.filter(d=>parseFloat(d.buyout)>=fPrice);
+  if(!isNaN(fPriceMax))list=list.filter(d=>parseFloat(d.buyout)<=fPriceMax);
   if(fCity)list=list.filter(d=>(d.city||'').toLowerCase().includes(fCity));
   if(sort==='price-asc')list.sort((a,b)=>(parseFloat(a.buyout)||0)-(parseFloat(b.buyout)||0));
   else if(sort==='price-desc')list.sort((a,b)=>(parseFloat(b.buyout)||0)-(parseFloat(a.buyout)||0));
@@ -2205,6 +2288,7 @@ function initBnavPill(){
 }
 window.addEventListener('resize',()=>{const a=document.querySelector('.bnav-item.active:not(.bnav-item-add)');const p=document.getElementById('bnavPill');if(p){p.style.transition='none';moveBnavPill(a);requestAnimationFrame(()=>{p.style.transition='';});}setTimeout(()=>{const a2=document.querySelector('.bnav-item.active:not(.bnav-item-add)');if(a2)moveBnavPill(a2);},300);});
 setTimeout(initBnavPill,300);
+setTimeout(initDualRangeSliders,400);
 
 // ── FTABS SLIDING PILL ──
 function moveFtabsPill(btn){
