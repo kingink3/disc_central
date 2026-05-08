@@ -395,12 +395,12 @@ input[type=range]::-moz-range-track{height:6px;background:rgba(255,255,255,0.06)
 @keyframes aucGlow{0%,100%{color:rgba(255,255,255,0.2);text-shadow:none}40%,60%{color:var(--lime);text-shadow:0 0 12px rgba(212,240,64,0.5)}}
 .auc-waiting-sub{position:relative;z-index:1;font-size:0.78rem;color:var(--m1)}
 /* Dual range slider */
-.drs{position:relative;height:24px;margin:4px 0 2px}
-.drs-track{position:absolute;top:10px;left:0;right:0;height:4px;background:var(--s2);border-radius:2px}
-.drs-fill{position:absolute;top:10px;height:4px;background:var(--lime);border-radius:2px}
-.drs input[type=range]{position:absolute;top:0;left:0;width:100%;height:24px;margin:0;padding:0;background:none;pointer-events:none;-webkit-appearance:none;appearance:none;outline:none}
-.drs input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:var(--lime);border:2px solid var(--bg);cursor:pointer;pointer-events:all;box-shadow:0 1px 4px rgba(0,0,0,0.3)}
-.drs input[type=range]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;background:var(--lime);border:2px solid var(--bg);cursor:pointer;pointer-events:all;box-shadow:0 1px 4px rgba(0,0,0,0.3)}
+.drs{position:relative;height:28px;margin:6px 0 2px}
+.drs-track{position:absolute;top:12px;left:0;right:0;height:2px;background:var(--m1);border-radius:1px;opacity:0.3}
+.drs-fill{position:absolute;top:12px;height:2px;background:var(--lime);border-radius:1px}
+.drs input[type=range]{position:absolute;top:0;left:0;width:100%;height:28px;margin:0;padding:0;background:none;pointer-events:none;-webkit-appearance:none;appearance:none;outline:none}
+.drs input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:20px;height:20px;border-radius:50%;background:var(--lime);border:2px solid var(--bg);cursor:pointer;pointer-events:all;box-shadow:0 1px 4px rgba(0,0,0,0.3)}
+.drs input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;background:var(--lime);border:2px solid var(--bg);cursor:pointer;pointer-events:all;box-shadow:0 1px 4px rgba(0,0,0,0.3)}
 .drs-vals{display:flex;justify-content:space-between;align-items:center;gap:4px;margin-top:2px}
 .drs-vals input{width:40px;text-align:center;font-size:0.7rem;padding:2px 4px;background:var(--s2);border:0.5px solid var(--glass-border);border-radius:6px;color:var(--text);font-family:'DM Sans',sans-serif}
 .drs-vals span{font-size:0.65rem;color:var(--m1)}
@@ -542,15 +542,17 @@ input[type=range]::-moz-range-track{height:6px;background:rgba(255,255,255,0.06)
       <div class="adv-row" style="margin-bottom:0.6rem">
         <div style="grid-column:1/-1"><span class="fl">Пошук</span><input id="mainSearch" placeholder="🔍 Бренд, модель, пластик..." oninput="applyFilters()"></div>
       </div>
-      <div class="adv-row">
+      <div class="adv-row" style="margin-bottom:0.6rem">
         <div><span class="fl">Сортування</span><select id="f-sort" onchange="applyFilters()"><option value="new">Новіші</option><option value="old">Старіші</option><option value="price-asc">Ціна ↑</option><option value="price-desc">Ціна ↓</option><option value="speed-desc">Speed ↓</option><option value="speed-asc">Speed ↑</option><option value="cond-desc">Стан ↓</option></select></div>
+        <div><span class="fl">Ціна ₴</span><div style="display:flex;gap:4px;align-items:center"><input type="number" id="f-price" placeholder="від" min="0" oninput="applyFilters()" style="flex:1"><span style="color:var(--m1);font-size:0.7rem">-</span><input type="number" id="f-price-max" placeholder="до" min="0" oninput="applyFilters()" style="flex:1"></div></div>
+        <div><span class="fl">Місто</span><input id="f-city" placeholder="Київ, Луцьк..." oninput="applyFilters()"></div>
+        <div style="display:flex;align-items:flex-end"><button class="btn btn-ghost btn-sm btn-full" onclick="resetFilters()">✕ Скинути</button></div>
+      </div>
+      <div class="adv-row">
         <div><span class="fl">Speed</span><div class="drs" data-min="1" data-max="15" data-step="1" data-lo="f-speed" data-hi="f-speed-max"><div class="drs-track"></div><div class="drs-fill"></div><input type="range" min="1" max="15" step="1" value="1" class="drs-min"><input type="range" min="1" max="15" step="1" value="15" class="drs-max"></div><div class="drs-vals"><input type="number" id="f-speed" min="1" max="15" placeholder="1" oninput="drsFromInput(this)"><span>-</span><input type="number" id="f-speed-max" min="1" max="15" placeholder="15" oninput="drsFromInput(this)"></div></div>
         <div><span class="fl">Glide</span><div class="drs" data-min="1" data-max="7" data-step="1" data-lo="f-glide" data-hi="f-glide-max"><div class="drs-track"></div><div class="drs-fill"></div><input type="range" min="1" max="7" step="1" value="1" class="drs-min"><input type="range" min="1" max="7" step="1" value="7" class="drs-max"></div><div class="drs-vals"><input type="number" id="f-glide" min="1" max="7" placeholder="1" oninput="drsFromInput(this)"><span>-</span><input type="number" id="f-glide-max" min="1" max="7" placeholder="7" oninput="drsFromInput(this)"></div></div>
         <div><span class="fl">Turn</span><div class="drs" data-min="-5" data-max="2" data-step="0.5" data-lo="f-turn" data-hi="f-turn-max"><div class="drs-track"></div><div class="drs-fill"></div><input type="range" min="-5" max="2" step="0.5" value="-5" class="drs-min"><input type="range" min="-5" max="2" step="0.5" value="2" class="drs-max"></div><div class="drs-vals"><input type="number" id="f-turn" min="-5" max="2" step="0.5" placeholder="-5" oninput="drsFromInput(this)"><span>-</span><input type="number" id="f-turn-max" min="-5" max="2" step="0.5" placeholder="2" oninput="drsFromInput(this)"></div></div>
         <div><span class="fl">Fade</span><div class="drs" data-min="0" data-max="5" data-step="0.5" data-lo="f-fade" data-hi="f-fade-max"><div class="drs-track"></div><div class="drs-fill"></div><input type="range" min="0" max="5" step="0.5" value="0" class="drs-min"><input type="range" min="0" max="5" step="0.5" value="5" class="drs-max"></div><div class="drs-vals"><input type="number" id="f-fade" min="0" max="5" step="0.5" placeholder="0" oninput="drsFromInput(this)"><span>-</span><input type="number" id="f-fade-max" min="0" max="5" step="0.5" placeholder="5" oninput="drsFromInput(this)"></div></div>
-        <div><span class="fl">Ціна ₴</span><div style="display:flex;gap:4px;align-items:center"><input type="number" id="f-price" placeholder="від" min="0" oninput="applyFilters()" style="flex:1"><span style="color:var(--m1);font-size:0.7rem">-</span><input type="number" id="f-price-max" placeholder="до" min="0" oninput="applyFilters()" style="flex:1"></div></div>
-        <div><span class="fl">Місто</span><input id="f-city" placeholder="Київ, Луцьк, Кременчук..." oninput="applyFilters()"></div>
-        <div style="display:flex;align-items:flex-end"><button class="btn btn-ghost btn-sm btn-full" onclick="resetFilters()">✕ Скинути</button></div>
       </div>
     </div>
     <div class="disc-grid" id="discGrid"><div class="empty"><div class="empty-icon">🥏</div>Завантаження...</div></div>
