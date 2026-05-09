@@ -422,13 +422,14 @@ input[type=range]::-moz-range-track{height:6px;background:rgba(255,255,255,0.06)
 @media(min-width:1025px){.onb-help{display:none}}
 @media(pointer:coarse){.onb-help{display:inline-flex}}
 
-.city-drop{background:var(--glass);backdrop-filter:var(--glass-blur);-webkit-backdrop-filter:var(--glass-blur);border:0.5px solid var(--glass-border);border-radius:var(--r);padding:4px;box-shadow:0 4px 20px rgba(0,0,0,0.3);max-height:220px;overflow-y:auto}
-.brutal .city-drop{background:var(--bg);border:1.5px solid var(--b1);border-radius:0;backdrop-filter:none!important;-webkit-backdrop-filter:none!important;box-shadow:none}
-.light .city-drop{background:var(--glass);border-color:var(--glass-border);box-shadow:0 4px 16px rgba(0,0,0,0.08)}
-
-.city-filter-btn{background:var(--glass);border:0.5px solid var(--glass-border);border-radius:var(--r);padding:5px 8px;font-size:0.78rem;color:var(--text);cursor:pointer;min-height:28px;display:flex;align-items:center;justify-content:space-between;gap:4px}
-.brutal .city-filter-btn{background:var(--bg);border:1.5px solid var(--b1);border-radius:0}
-.light .city-filter-btn{background:rgba(255,255,255,0.4);border-color:rgba(255,255,255,0.5)}
+.city-drop{background:rgba(20,24,35,0.97);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,0.15);border-radius:12px;padding:6px;box-shadow:0 8px 32px rgba(0,0,0,0.5);max-height:260px;overflow-y:auto}
+.brutal .city-drop{border-radius:0;backdrop-filter:none!important;-webkit-backdrop-filter:none!important;border:1.5px solid rgba(255,255,255,0.2)}
+.city-drop label{color:#edf0f8}
+.city-drop input[type=checkbox]{accent-color:#d4f040}
+.city-drop .city-search{width:100%;padding:6px 10px;font-size:0.78rem;border-radius:8px;background:rgba(255,255,255,0.08);border:0.5px solid rgba(255,255,255,0.15);color:#edf0f8;outline:none;margin-bottom:4px;font-family:'DM Sans',sans-serif}
+.city-drop .city-search:focus{border-color:#d4f040}
+.city-drop .city-search::placeholder{color:rgba(255,255,255,0.35)}
+.brutal .city-drop .city-search{border-radius:0;border:1.5px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.05)}
 </style>
 </head>
 <body>
@@ -976,12 +977,12 @@ function cityKey(name){if(!name)return'';const n=name.toLowerCase().trim();for(c
 function cityOptions(selected){return Object.entries(CITIES).map(([k,v])=>'<option value="'+k+'"'+(k===selected?' selected':'')+'>'+v[LANG]+'</option>').join('');}
 function getActiveCities(){const used={};allDiscs.forEach(d=>{if(d.city){const k=cityKey(d.city);if(k&&CITIES[k])used[k]=true;}});return Object.keys(CITIES).filter(k=>used[k]);}
 function cityFilterHTML(){const keys=getActiveCities();if(!keys.length)return'<div style="color:var(--m1);font-size:0.75rem">—</div>';const sel=window._selectedCities||[];const selLabels=sel.map(k=>tCity(k));const btnText=selLabels.length?selLabels.join(', '):t('city');
-// Render dropdown into body so it escapes all stacking contexts
 let dd=document.getElementById('cityFilterDrop');if(!dd){dd=document.createElement('div');dd.id='cityFilterDrop';dd.className='city-drop';dd.style.display='none';document.body.appendChild(dd);}
-dd.innerHTML='<div id="cityCheckList">'+keys.map(k=>'<label style="display:flex;align-items:center;gap:6px;padding:6px 8px;font-size:0.78rem;cursor:pointer;border-radius:6px" ontouchstart="this.style.background=\'var(--glass-hi)\'" ontouchend="this.style.background=\'\'"><input type="checkbox" value="'+k+'"'+(sel.includes(k)?' checked':'')+' onchange="applyCityFilter()" style="width:auto;accent-color:var(--lime);margin:0"><span>'+CITIES[k][LANG]+'</span></label>').join('')+'</div>';
-return'<div class="city-filter-wrap" style="position:relative"><div onclick="toggleCityDrop()" class="city-filter-btn" id="cityFilterBtn"><span style="'+(selLabels.length?'':'color:var(--m1)')+';overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+btnText+'</span><span style="color:var(--m1);font-size:0.6rem">▾</span></div></div>';}
+dd.innerHTML='<input class="city-search" placeholder="🔍 '+t('search')+'..." oninput="filterCityList(this.value)" onclick="event.stopPropagation()"><div id="cityCheckList">'+keys.map(k=>'<label style="display:flex;align-items:center;gap:6px;padding:6px 8px;font-size:0.8rem;cursor:pointer;border-radius:6px;transition:background 0.15s" class="city-opt" data-city="'+k+'" onmouseover="this.style.background=\'rgba(255,255,255,0.08)\'" onmouseout="this.style.background=\'\'"><input type="checkbox" value="'+k+'"'+(sel.includes(k)?' checked':'')+' onchange="applyCityFilter()" style="width:auto;margin:0"><span>'+CITIES[k][LANG]+'</span></label>').join('')+'</div>';
+return'<div class="city-filter-wrap" style="position:relative"><div onclick="toggleCityDrop()" style="background:var(--glass);border:0.5px solid var(--glass-border);border-radius:var(--r);padding:5px 8px;font-size:0.78rem;color:var(--text);cursor:pointer;min-height:28px;display:flex;align-items:center;justify-content:space-between;gap:4px" id="cityFilterBtn"><span style="'+(selLabels.length?'':'color:var(--m1)')+';overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+btnText+'</span><span style="color:var(--m1);font-size:0.6rem">▾</span></div></div>';}
 let _cityDropOpen=false;
 function posCityDrop(){const btn=document.getElementById('cityFilterBtn');const d=document.getElementById('cityFilterDrop');if(!btn||!d||!_cityDropOpen)return;const r=btn.getBoundingClientRect();d.style.position='fixed';d.style.left=r.left+'px';d.style.right='auto';d.style.width=r.width+'px';d.style.top=(r.bottom+2)+'px';d.style.bottom='auto';d.style.zIndex='300';if(r.top<0||r.bottom>window.innerHeight){_cityDropOpen=false;d.style.display='none';}}
+function filterCityList(q){q=q.toLowerCase();document.querySelectorAll('#cityCheckList .city-opt').forEach(el=>{const k=el.dataset.city;const name=(CITIES[k]?CITIES[k][LANG]:'').toLowerCase();el.style.display=(!q||name.includes(q)||k.includes(q))?'flex':'none';});}
 function toggleCityDrop(){_cityDropOpen=!_cityDropOpen;const d=document.getElementById('cityFilterDrop');if(!d)return;if(_cityDropOpen){d.style.display='block';posCityDrop();}else{d.style.display='none';}}
 document.addEventListener('click',e=>{if(_cityDropOpen&&!e.target.closest('.city-filter-wrap')&&!e.target.closest('#cityFilterDrop')){_cityDropOpen=false;const d=document.getElementById('cityFilterDrop');if(d)d.style.display='none';}});
 window.addEventListener('scroll',()=>{if(_cityDropOpen)posCityDrop();},true);
