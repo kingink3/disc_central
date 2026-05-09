@@ -1957,7 +1957,7 @@ async function submitBuy(){
   try{
     const req={id:genId(),disc_id:buyId,tester:CU.name,tester_tg:CU.tg||'',tester_tg_id:CU.tgId||'',note:'Запит на купівлю'+(buyNote?' · '+buyNote:''),request_type:'buy',status:'pending'};
     const {error}=await sb.from('requests').insert(req);
-    const {error:e2}=await sb.from('discs').update({status:'reserved',tester:CU.name,tester_tg:CU.tg||''}).eq('id',buyId);
+    const {error:e2}=await sb.rpc('request_to_buy',{p_disc_id:buyId});
     if(!error&&!e2){closeModal('buy');await loadDiscs();if(CU)renderCabinet();toast(t('buySent'));notifyAppsScript('buy',d,CU,buyNote);}
     else toast(t('errGeneric'),true);
   }catch(e){toast(t('errGeneric'),true);}
@@ -1970,7 +1970,7 @@ async function submitReturn(){
   const btn=document.getElementById('retBtn');btn.disabled=true;btn.textContent='...';
   try{
     const d=allDiscs.find(x=>x.id===retId||String(x.id)===String(retId));
-    const {error}=await sb.from('discs').update({status:'pending'}).eq('id',retId);
+    const {error}=await sb.rpc('return_disc',{p_disc_id:retId});
     if(!error){
       closeModal('return');
       await loadDiscs();
