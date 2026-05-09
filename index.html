@@ -422,14 +422,20 @@ input[type=range]::-moz-range-track{height:6px;background:rgba(255,255,255,0.06)
 @media(min-width:1025px){.onb-help{display:none}}
 @media(pointer:coarse){.onb-help{display:inline-flex}}
 
-.city-drop{background:rgba(20,24,35,0.97);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,0.15);border-radius:12px;padding:6px;box-shadow:0 8px 32px rgba(0,0,0,0.5);max-height:260px;overflow-y:auto}
-.brutal .city-drop{border-radius:0;backdrop-filter:none!important;-webkit-backdrop-filter:none!important;border:1.5px solid rgba(255,255,255,0.2)}
-.city-drop label{color:#edf0f8}
-.city-drop input[type=checkbox]{accent-color:#d4f040}
-.city-drop .city-search{width:100%;padding:6px 10px;font-size:0.78rem;border-radius:8px;background:rgba(255,255,255,0.08);border:0.5px solid rgba(255,255,255,0.15);color:#edf0f8;outline:none;margin-bottom:4px;font-family:'DM Sans',sans-serif}
-.city-drop .city-search:focus{border-color:#d4f040}
-.city-drop .city-search::placeholder{color:rgba(255,255,255,0.35)}
-.brutal .city-drop .city-search{border-radius:0;border:1.5px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.05)}
+.city-drop{background:var(--glass);backdrop-filter:var(--glass-blur);-webkit-backdrop-filter:var(--glass-blur);border:0.5px solid var(--glass-border);border-radius:var(--r);padding:6px;box-shadow:var(--glass-glow),0 8px 32px rgba(0,0,0,0.3);max-height:260px;overflow-y:auto}
+.city-drop label{color:var(--text);border-radius:var(--r);transition:background 0.15s}
+.city-drop label:hover{background:var(--glass-hi)}
+.city-drop input[type=checkbox]{accent-color:var(--lime)}
+.city-drop .city-search{width:100%;padding:6px 10px;font-size:0.78rem;border-radius:var(--r);background:var(--s2);border:0.5px solid var(--glass-border);color:var(--text);outline:none;margin-bottom:4px;font-family:'DM Sans',sans-serif}
+.city-drop .city-search:focus{border-color:var(--lime)}
+.city-drop .city-search::placeholder{color:var(--m1)}
+.light .city-drop{background:var(--glass);border-color:var(--glass-border);box-shadow:0 4px 20px rgba(0,0,0,0.1)}
+.brutal .city-drop{background:var(--bg);border:1.5px solid var(--b1);border-radius:0;backdrop-filter:none!important;-webkit-backdrop-filter:none!important;box-shadow:none}
+.brutal .city-drop label{border-radius:0}
+.brutal .city-drop .city-search{border-radius:0;border:1.5px solid var(--b1);background:var(--bg);font-family:'Space Mono',monospace}
+
+.brutal .city-form-btn{background:var(--bg)!important;border:1.5px solid var(--b1)!important;border-radius:0!important;font-family:'Space Mono',monospace}
+.light .city-form-btn{background:rgba(255,255,255,0.4)!important;border-color:rgba(255,255,255,0.5)!important}
 </style>
 </head>
 <body>
@@ -712,7 +718,7 @@ input[type=range]::-moz-range-track{height:6px;background:rgba(255,255,255,0.06)
     </div>
     <div class="fr"><div class="fg"><label class="fl"data-i18n="brand">Бренд *</label><input id="auc-brand" placeholder="Innova, Discraft..." style="font-size:14px"></div><div class="fg"><label class="fl"data-i18n="model">Модель *</label><input id="auc-model" placeholder="Boss, Buzzz..." style="font-size:14px"></div></div>
     <div class="fr"><div class="fg"><label class="fl"data-i18n="plastic">Пластик</label><input id="auc-plastic" placeholder="Star, ESP..." style="font-size:14px"></div><div class="fg"><label class="fl"data-i18n="weightG">Вага (г)</label><input id="auc-weight" type="number" placeholder="175" style="font-size:14px"></div></div>
-    <div class="fr"><div class="fg"><label class="fl"data-i18n="color">Колір</label><input id="auc-color" placeholder="Жовтий..." data-i18n="colorPh" style="font-size:14px"></div><div class="fg"><label class="fl"data-i18n="city">Місто</label><select id="auc-city" style="font-size:14px"><option value="">—</option></select></div></div>
+    <div class="fr"><div class="fg"><label class="fl"data-i18n="color">Колір</label><input id="auc-color" placeholder="Жовтий..." data-i18n="colorPh" style="font-size:14px"></div><div class="fg"><label class="fl"data-i18n="city">Місто</label><div class="city-filter-wrap" style="position:relative"><div onclick="toggleFormCityDrop('auc')" class="city-form-btn" id="aucCityBtn" style="background:var(--glass);border:0.5px solid var(--glass-border);border-radius:var(--r);padding:7px 10px;font-size:14px;color:var(--text);cursor:pointer;display:flex;align-items:center;justify-content:space-between"><span id="aucCityLabel" style="color:var(--m1)">—</span><span style="color:var(--m1);font-size:0.6rem">▾</span></div><div id="aucCityDrop" class="city-drop" style="display:none;position:absolute;top:100%;left:0;right:0;z-index:50;margin-top:2px"></div></div><input type="hidden" id="auc-city" value=""></div></div>
     <div class="fg"><label class="fl"><span data-i18n="condition">Стан</span>: <span id="aucCondLabel">7</span>/10</label>
       <div style="display:flex;align-items:center">
         <input type="range" id="auc-cond" min="1" max="10" value="7" step="1" style="flex:1" oninput="document.getElementById('aucCondLabel').textContent=this.value">
@@ -825,7 +831,7 @@ input[type=range]::-moz-range-track{height:6px;background:rgba(255,255,255,0.06)
     <div class="fr"><div class="fg"><label class="fl"data-i18n="brand">Бренд *</label><input id="ad-brand" placeholder="Innova, Discraft..."></div><div class="fg"><label class="fl"data-i18n="model">Модель *</label><input id="ad-model" placeholder="Boss, Buzzz..."></div></div>
     <div class="fr"><div class="fg"><label class="fl"data-i18n="plastic">Пластик</label><input id="ad-plastic" placeholder="Star, ESP..."></div><div class="fg"><label class="fl"data-i18n="weightG">Вага (г)</label><input id="ad-weight" type="number" inputmode="numeric" pattern="[0-9]*" placeholder="175"></div></div>
     <div class="fr"><div class="fg"><label class="fl"data-i18n="color">Колір</label><input id="ad-color" placeholder="Жовтий..." data-i18n="colorPh"></div><div class="fg"><label class="fl">Buyout (UAH)</label><input id="ad-buyout" type="number" inputmode="numeric" pattern="[0-9]*" placeholder="850"></div></div>
-    <div class="fg"><label class="fl"data-i18n="city">Місто</label><select id="ad-city"><option value="">—</option></select></div>
+    <div class="fg"><label class="fl"data-i18n="city">Місто</label><div class="city-filter-wrap" style="position:relative"><div onclick="toggleFormCityDrop('ad')" class="city-form-btn" id="adCityBtn" style="background:var(--glass);border:0.5px solid var(--glass-border);border-radius:var(--r);padding:7px 10px;font-size:16px;color:var(--text);cursor:pointer;display:flex;align-items:center;justify-content:space-between"><span id="adCityLabel" style="color:var(--m1)">—</span><span style="color:var(--m1);font-size:0.6rem">▾</span></div><div id="adCityDrop" class="city-drop" style="display:none;position:absolute;top:100%;left:0;right:0;z-index:50;margin-top:2px"></div></div><input type="hidden" id="ad-city" value=""></div>
     <div class="fg"><label class="fl" ><span data-i18n="condition">Стан</span>: <span id="condValLabel">7</span>/10</label>
       <div style="display:flex;align-items:center">
         <input type="range" id="ad-cond" min="1" max="10" value="7" step="1" style="flex:1" oninput="document.getElementById('condValLabel').textContent=this.value;updateCondBar()">
@@ -882,7 +888,7 @@ input[type=range]::-moz-range-track{height:6px;background:rgba(255,255,255,0.06)
     <div class="fg" id="editTradeWrap" style="display:none"><label class="fl"data-i18n="tradeWant">Що хочу отримати</label><textarea id="edit-trade-desc"></textarea></div>
     <label class="toggle-row fg"><input type="checkbox" id="edit-bargain"><span style="font-size:0.84rem"data-i18n="bargain">⚖️ Торг</span></label>
     <div class="fg"><label class="fl"data-i18n="notes">Нотатки</label><textarea id="edit-notes"></textarea></div>
-    <div class="fg"><label class="fl"data-i18n="city">Місто</label><select id="edit-city"><option value="">—</option></select></div>
+    <div class="fg"><label class="fl"data-i18n="city">Місто</label><div class="city-filter-wrap" style="position:relative"><div onclick="toggleFormCityDrop('edit')" class="city-form-btn" id="editCityBtn" style="background:var(--glass);border:0.5px solid var(--glass-border);border-radius:var(--r);padding:7px 10px;font-size:16px;color:var(--text);cursor:pointer;display:flex;align-items:center;justify-content:space-between"><span id="editCityLabel" style="color:var(--m1)">—</span><span style="color:var(--m1);font-size:0.6rem">▾</span></div><div id="editCityDrop" class="city-drop" style="display:none;position:absolute;top:100%;left:0;right:0;z-index:50;margin-top:2px"></div></div><input type="hidden" id="edit-city" value=""></div>
     
     <div class="fg"><label class="fl"data-i18n="status">Статус</label><select id="edit-status"><option value="available" data-i18n="stOptAvailable">Доступний</option><option value="reserved" data-i18n="stOptReserved">Резерв</option><option value="testing" data-i18n="stOptTesting">На тестуванні</option><option value="sold" data-i18n="stOptSold">Продано</option><option value="unlisted" data-i18n="stOptUnlisted">Знято з продажу</option></select></div>
     <div style="display:flex;gap:0.5rem"><button class="btn btn-lime btn-full" onclick="submitEditDisc()"data-i18n="save">Зберегти</button></div>
@@ -978,7 +984,7 @@ function cityOptions(selected){return Object.entries(CITIES).map(([k,v])=>'<opti
 function getActiveCities(){const used={};allDiscs.forEach(d=>{if(d.city){const k=cityKey(d.city);if(k&&CITIES[k])used[k]=true;}});return Object.keys(CITIES).filter(k=>used[k]);}
 function cityFilterHTML(){const keys=getActiveCities();if(!keys.length)return'<div style="color:var(--m1);font-size:0.75rem">—</div>';const sel=window._selectedCities||[];const selLabels=sel.map(k=>tCity(k));const btnText=selLabels.length?selLabels.join(', '):t('city');
 let dd=document.getElementById('cityFilterDrop');if(!dd){dd=document.createElement('div');dd.id='cityFilterDrop';dd.className='city-drop';dd.style.display='none';document.body.appendChild(dd);}
-dd.innerHTML='<input class="city-search" placeholder="🔍 '+t('search')+'..." oninput="filterCityList(this.value)" onclick="event.stopPropagation()"><div id="cityCheckList">'+keys.map(k=>'<label style="display:flex;align-items:center;gap:6px;padding:6px 8px;font-size:0.8rem;cursor:pointer;border-radius:6px;transition:background 0.15s" class="city-opt" data-city="'+k+'" onmouseover="this.style.background=\'rgba(255,255,255,0.08)\'" onmouseout="this.style.background=\'\'"><input type="checkbox" value="'+k+'"'+(sel.includes(k)?' checked':'')+' onchange="applyCityFilter()" style="width:auto;margin:0"><span>'+CITIES[k][LANG]+'</span></label>').join('')+'</div>';
+dd.innerHTML='<input class="city-search" placeholder="🔍 '+t('search')+'..." oninput="filterCityList(this.value)" onclick="event.stopPropagation()"><div id="cityCheckList">'+keys.map(k=>'<label style="display:flex;align-items:center;gap:6px;padding:6px 8px;font-size:0.8rem;cursor:pointer;border-radius:6px;transition:background 0.15s" class="city-opt" data-city="'+k+'" "><input type="checkbox" value="'+k+'"'+(sel.includes(k)?' checked':'')+' onchange="applyCityFilter()" style="width:auto;margin:0"><span>'+CITIES[k][LANG]+'</span></label>').join('')+'</div>';
 return'<div class="city-filter-wrap" style="position:relative"><div onclick="toggleCityDrop()" style="background:var(--glass);border:0.5px solid var(--glass-border);border-radius:var(--r);padding:5px 8px;font-size:0.78rem;color:var(--text);cursor:pointer;min-height:28px;display:flex;align-items:center;justify-content:space-between;gap:4px" id="cityFilterBtn"><span style="'+(selLabels.length?'':'color:var(--m1)')+';overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+btnText+'</span><span style="color:var(--m1);font-size:0.6rem">▾</span></div></div>';}
 let _cityDropOpen=false;
 function posCityDrop(){const btn=document.getElementById('cityFilterBtn');const d=document.getElementById('cityFilterDrop');if(!btn||!d||!_cityDropOpen)return;const r=btn.getBoundingClientRect();d.style.position='fixed';d.style.left=r.left+'px';d.style.right='auto';d.style.width=r.width+'px';d.style.top=(r.bottom+2)+'px';d.style.bottom='auto';d.style.zIndex='300';if(r.top<0||r.bottom>window.innerHeight){_cityDropOpen=false;d.style.display='none';}}
@@ -989,7 +995,6 @@ window.addEventListener('scroll',()=>{if(_cityDropOpen)posCityDrop();},true);
 
 function applyCityFilter(){const checks=document.querySelectorAll('#cityCheckList input[type=checkbox]');const sel=[];checks.forEach(ch=>{if(ch.checked)sel.push(ch.value);});window._selectedCities=sel;const btn=document.getElementById('cityFilterBtn');if(btn){const sp=btn.querySelector('span');if(sp){if(sel.length){sp.textContent=sel.map(k=>tCity(k)).join(', ');sp.style.color='';}else{sp.textContent=t('city');sp.style.color='var(--m1)';}}}applyFilters();}
 function initCitySelects(){
-  ['ad-city','auc-city'].forEach(id=>{const el=document.getElementById(id);if(el&&el.tagName==='SELECT'){const cur=el.value;el.innerHTML='<option value="">—</option>'+cityOptions(cur);}});
   const cf=document.getElementById('cityFilterContainer');if(cf)cf.innerHTML=cityFilterHTML();
 }
 
@@ -1093,6 +1098,33 @@ function tgLinkFull(tg){
   return` · <a href="https://t.me/${clean}" target="_blank" style="color:var(--cyan)">@${clean}</a>`;
 }
 
+
+// ── FORM CITY DROPDOWNS ──
+function renderFormCityDrop(prefix){
+  const drop=document.getElementById(prefix+'CityDrop');
+  if(!drop)return;
+  const cur=document.getElementById(prefix===('ad')?'ad-city':prefix===('edit')?'edit-city':'auc-city')?.value||'';
+  drop.innerHTML='<input class="city-search" placeholder="🔍 '+t('search')+'..." oninput="filterFormCityList(\''+prefix+'\',this.value)" onclick="event.stopPropagation()"><div class="city-form-list" id="'+prefix+'CityList">'+Object.entries(CITIES).map(([k,v])=>'<label class="city-opt" data-city="'+k+'" style="display:flex;align-items:center;gap:6px;padding:6px 8px;font-size:0.82rem;cursor:pointer" onclick="event.preventDefault();selectFormCity(\''+prefix+'\',\''+k+'\')"><span style="width:16px;text-align:center">'+(k===cur?'✓':'')+'</span><span>'+v[LANG]+'</span></label>').join('')+'</div>';
+}
+function toggleFormCityDrop(prefix){
+  const drop=document.getElementById(prefix+'CityDrop');
+  if(!drop)return;
+  const isOpen=drop.style.display!=='none';
+  // Close all form city drops first
+  ['ad','edit','auc'].forEach(p=>{const d=document.getElementById(p+'CityDrop');if(d)d.style.display='none';});
+  if(!isOpen){renderFormCityDrop(prefix);drop.style.display='block';}
+}
+function selectFormCity(prefix,key){
+  const idMap={ad:'ad-city',edit:'edit-city',auc:'auc-city'};
+  const input=document.getElementById(idMap[prefix]);
+  const label=document.getElementById(prefix+'CityLabel');
+  if(input)input.value=key;
+  if(label){label.textContent=tCity(key)||'—';label.style.color=key?'var(--text)':'var(--m1)';}
+  const drop=document.getElementById(prefix+'CityDrop');
+  if(drop)drop.style.display='none';
+}
+function filterFormCityList(prefix,q){q=q.toLowerCase();document.querySelectorAll('#'+prefix+'CityList .city-opt').forEach(el=>{const k=el.dataset.city;const name=(CITIES[k]?CITIES[k][LANG]:'').toLowerCase();el.style.display=(!q||name.includes(q)||k.includes(q))?'flex':'none';});}
+document.addEventListener('click',e=>{if(!e.target.closest('.city-filter-wrap')){['ad','edit','auc'].forEach(p=>{const d=document.getElementById(p+'CityDrop');if(d)d.style.display='none';});}});
 // ── LOAD DISCS ──
 const HIDDEN=['sold','deleted','unlisted'];
 async function loadDiscs(){
@@ -1704,7 +1736,7 @@ function openEditDiscWithData(d){
   document.getElementById('editTradeWrap').style.display=d.tradeWant?'block':'none';
   document.getElementById('edit-bargain').checked=!!d.bargain;
   document.getElementById('edit-notes').value=d.notes||'';
-  document.getElementById('edit-city').innerHTML='<option value="">—</option>'+cityOptions(cityKey(d.city));
+  document.getElementById('edit-city').value=cityKey(d.city)||'';const _ecl=document.getElementById('editCityLabel');if(_ecl){_ecl.textContent=tCity(cityKey(d.city))||'—';_ecl.style.color=d.city?'var(--text)':'var(--m1)';}
   document.getElementById('edit-status').value=d.status||'available';
   document.getElementById('edit-speed').value=d.speed||0;
   document.getElementById('edit-glide').value=d.glide||0;
@@ -2820,7 +2852,7 @@ function discToAuction(discId){
   document.getElementById('auc-plastic').value=d.plastic||'';
   document.getElementById('auc-weight').value=d.weight||'';
   document.getElementById('auc-color').value=d.color||'';
-  document.getElementById('auc-city').innerHTML='<option value="">—</option>'+cityOptions(cityKey(d.city));
+  document.getElementById('auc-city').value=cityKey(d.city)||'';const _acl=document.getElementById('aucCityLabel');if(_acl){_acl.textContent=tCity(cityKey(d.city))||'—';_acl.style.color=d.city?'var(--text)':'var(--m1)';}
   document.getElementById('auc-cond').value=d.condition||7;
   document.getElementById('aucCondLabel').textContent=d.condition||7;
   document.getElementById('auc-speed').value=d.speed||'';
@@ -2852,7 +2884,7 @@ function restartAuction(aucId){
   document.getElementById('auc-plastic').value=a.plastic||'';
   document.getElementById('auc-weight').value=a.weight||'';
   document.getElementById('auc-color').value=a.color||'';
-  document.getElementById('auc-city').innerHTML='<option value="">—</option>'+cityOptions(cityKey(a.city));
+  document.getElementById('auc-city').value=cityKey(a.city)||'';const _acl2=document.getElementById('aucCityLabel');if(_acl2){_acl2.textContent=tCity(cityKey(a.city))||'—';_acl2.style.color=a.city?'var(--text)':'var(--m1)';}
   document.getElementById('auc-cond').value=a.condition||7;
   document.getElementById('aucCondLabel').textContent=a.condition||7;
   document.getElementById('auc-speed').value=a.speed||'';
@@ -2920,7 +2952,7 @@ async function auctionToCatalog(aucId){
   document.getElementById('ad-plastic').value=a.plastic||(desc.match(/Пластик:\s*(.+)/)||[])[1]||'';
   document.getElementById('ad-weight').value=a.weight||(desc.match(/Вага:\s*(\d+)/)||[])[1]||'';
   document.getElementById('ad-color').value=a.color||(desc.match(/Колір:\s*(.+)/)||[])[1]||'';
-  const _acity=a.city||(desc.match(/Місто:\s*(.+)/)||[])[1]||'';document.getElementById('ad-city').innerHTML='<option value="">—</option>'+cityOptions(cityKey(_acity));
+  const _acity=a.city||(desc.match(/Місто:\s*(.+)/)||[])[1]||'';document.getElementById('ad-city').value=cityKey(_acity)||'';const _adcl=document.getElementById('adCityLabel');if(_adcl){_adcl.textContent=tCity(cityKey(_acity))||'—';_adcl.style.color=_acity?'var(--text)':'var(--m1)';}
   const cond=a.condition||(desc.match(/Стан:\s*(\d+)/)||[])[1]||7;
   document.getElementById('ad-cond').value=cond;
   document.getElementById('condValLabel').textContent=cond;
