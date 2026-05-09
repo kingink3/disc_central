@@ -996,7 +996,6 @@ function applyLang(){ST.available.l=t('stAvailable');ST.reserved.l=t('stReserved
 const CITIES={kyiv:{uk:'Київ',en:'Kyiv'},lutsk:{uk:'Луцьк',en:'Lutsk'},kremenchuk:{uk:'Кременчук',en:'Kremenchuk'},odesa:{uk:'Одеса',en:'Odesa'},lviv:{uk:'Львів',en:'Lviv'},kharkiv:{uk:'Харків',en:'Kharkiv'},dnipro:{uk:'Дніпро',en:'Dnipro'},other:{uk:'Інше',en:'Other'}};
 function tCity(key){if(!key)return'';const c=CITIES[key];if(c)return c[LANG]||c.uk;return key;}
 function cityKey(name){if(!name)return'';const n=name.toLowerCase().trim();for(const[k,v]of Object.entries(CITIES)){if(v.uk.toLowerCase()===n||v.en.toLowerCase()===n||k===n)return k;}for(const[k,v]of Object.entries(CITIES)){if(n.includes(v.uk.toLowerCase())||v.uk.toLowerCase().includes(n)||n.includes(v.en.toLowerCase())||v.en.toLowerCase().includes(n))return k;}return name;}
-function cityOptions(selected){return Object.entries(CITIES).map(([k,v])=>'<option value="'+k+'"'+(k===selected?' selected':'')+'>'+v[LANG]+'</option>').join('');}
 function getActiveCities(){const used={};allDiscs.forEach(d=>{if(d.city){const k=cityKey(d.city);if(k&&CITIES[k])used[k]=true;}});return Object.keys(CITIES).filter(k=>used[k]);}
 function cityFilterHTML(){const keys=getActiveCities();if(!keys.length)return'<div style="color:var(--m1);font-size:0.75rem">—</div>';const sel=window._selectedCities||[];const selLabels=sel.map(k=>tCity(k));const btnText=selLabels.length?selLabels.join(', '):t('city');
 return'<div class="city-filter-wrap" style="position:relative"><div onclick="toggleCityDrop()" style="background:var(--glass);border:0.5px solid var(--glass-border);border-radius:var(--r);padding:5px 8px;font-size:0.78rem;color:var(--text);cursor:pointer;min-height:28px;display:flex;align-items:center;justify-content:space-between;gap:4px" id="cityFilterBtn"><span style="'+(selLabels.length?'':'color:var(--m1)')+';overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+btnText+'</span><span style="color:var(--m1);font-size:0.6rem">▾</span></div><div id="cityFilterDrop" class="city-drop" style="display:none;position:absolute;top:100%;left:0;right:0;z-index:50;margin-top:2px"><input class="city-search" placeholder="🔍 '+t('search')+'..." oninput="filterCityList(this.value)" onclick="event.stopPropagation()"><div id="cityCheckList">'+keys.map(k=>'<label class="city-opt" data-city="'+k+'" style="display:flex;align-items:center;gap:6px;padding:6px 8px;font-size:0.8rem;cursor:pointer"><input type="checkbox" value="'+k+'"'+(sel.includes(k)?' checked':'')+' onchange="applyCityFilter()" style="width:auto;margin:0"><span>'+CITIES[k][LANG]+'</span></label>').join('')+'</div></div></div>';}
@@ -1015,7 +1014,6 @@ function initCitySelects(){
 
 let CU = null, CF = 'all', allDiscs = [], buyId = null, retId = null, reqTestId = null;
 let photoFiles = [null, null, null];
-let isAdmin = false;
 let bannedUsers = [];
 let isTradeReq = false;
 let favorites = [];
@@ -1100,7 +1098,6 @@ function fmtDate(iso){if(!iso)return'—';try{return new Date(iso).toLocaleDateS
 function fmtDateTime(iso){if(!iso)return'—';try{const d=new Date(iso);return d.toLocaleDateString(LANG==='uk'?'uk-UA':'en-GB',{day:'2-digit',month:'2-digit',year:'numeric'})+' '+d.toLocaleTimeString(LANG==='uk'?'uk-UA':'en-GB',{hour:'2-digit',minute:'2-digit'});}catch(e){return iso;}}
 function genId(){return Date.now().toString(36)+Math.random().toString(36).slice(2,5);}
 function escHtml(s){if(!s)return'';return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
-function hasTgUsername(tg){return tg&&!/^\d+$/.test(String(tg).replace('@','').trim());}
 function tgLinkFull(tg){
   const clean=String(tg).replace('@','').trim();
   if(!clean)return'';
@@ -1247,8 +1244,6 @@ function photoCarousel(urls, prefix, photoPos){
   </div>`;
 }
 function photoNav(p,dir){const w=document.getElementById('pw-'+p);if(!w)return;const imgs=w.querySelectorAll('img'),dots=w.querySelectorAll('.photo-dot');let c=Array.from(imgs).findIndex(i=>i.classList.contains('active'));imgs[c].classList.remove('active');if(dots[c])dots[c].classList.remove('active');c=(c+dir+imgs.length)%imgs.length;imgs[c].classList.add('active');if(dots[c])dots[c].classList.add('active');}
-function photoGo(p,idx){const w=document.getElementById('pw-'+p);if(!w)return;const imgs=w.querySelectorAll('img'),dots=w.querySelectorAll('.photo-dot');imgs.forEach((img,i)=>{img.classList.toggle('active',i===idx);if(dots[i])dots[i].classList.toggle('active',i===idx);});}
-
 // ── CONDITION BAR ──
 function condBar(val){const v=parseInt(val)||0;return`<div class="cond-bar">${Array(10).fill(0).map((_,i)=>`<div class="cond-seg${i<v?' filled':''}"></div>`).join('')}</div>`;}
 
@@ -1838,18 +1833,6 @@ async function submitEditDisc(){
   }catch(e){toast(t('errGeneric'),true);}
   btn.disabled=false;btn.textContent=t('save');
 }
-async function confirmDeleteDisc(){
-  const id=document.getElementById('edit-id').value;
-  const d=allDiscs.find(x=>String(x.id)===String(id));
-  if(!confirm(`${t('confirmDelete')} "${d?.brand} ${d?.model}"?`))return;
-  try{
-    await sb.from('requests').delete().eq('disc_id',id);
-    const {error}=await sb.from('discs').delete().eq('id',id);
-    if(!error){closeModal('editDisc');await loadDiscs();renderCabinet();toast(t('deleted'));}
-    else toast('⚠️ '+error.message,true);
-  }catch(e){toast(t('errGeneric'),true);}
-}
-
 // ── REQ TEST ──
 function openReqTest(id){
   reqTestId=id;
@@ -2470,7 +2453,6 @@ function goPageBn(page){
   goPage(page);
   window.scrollTo(0,0);
 }
-function goPageM(page){goPage(page);}
 
 let _scrollY=0;
 function openModal(n){
@@ -2528,10 +2510,6 @@ function restoreUser(){
       const u=tg.initDataUnsafe.user;
       CU={name:(u.first_name+(u.last_name?' '+u.last_name:'')).trim(),tg:u.username||String(u.id),tgId:String(u.id),role:'both'};
       localStorage.setItem('dcUser',JSON.stringify(CU));updateUserBtn();
-      tg.expand();
-      const _mob=/android|ios/i.test(tg.platform||'')||/iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-      if(_mob){try{tg.disableVerticalSwipes();}catch(e){} try{tg.requestFullscreen();}catch(e){}}
-      try{tg.setHeaderColor('#060810');tg.setBackgroundColor('#060810');}catch(e){}
       if(document.getElementById('page-admin')?.classList.contains('active'))checkAdminAccess();
       // Register/update user in Supabase
       sb.from('users').upsert({name:CU.name,telegram_id:CU.tgId,tg_username:CU.tg,role:'both'},{onConflict:'telegram_id'}).then(()=>{});
@@ -2549,15 +2527,6 @@ function updateUserBtn(){
   const el=document.getElementById('mobileUserInfo');
   if(el){el.textContent='👤 '+CU.name+(CU.tg?' · @'+CU.tg:'');el.style.display='block';}
 }
-function doLogin(){
-  const name=document.getElementById('li-name').value.trim();
-  if(!name){toast(t('enterPass'),true);return;}
-  CU={name,tg:document.getElementById('li-tg').value.trim(),tgId:'',role:'both'};
-  localStorage.setItem('dcUser',JSON.stringify(CU));
-  updateUserBtn();closeModal('login');renderCabinet();
-  toast(`👋 Привіт, ${name}!`);
-}
-
 // ── AUCTIONS ──
 let allAuctions=[], aucFilter='active', aucPhotoFiles=[null,null,null], aucTimerInterval=null;
 function bidWord(n){
