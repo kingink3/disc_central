@@ -555,12 +555,12 @@ input[type=range]::-moz-range-track{height:6px;background:rgba(255,255,255,0.06)
       </div>
       <div class="adv-row">
         <div style="grid-column:1/-1;display:grid;grid-template-columns:1fr auto;gap:0.5rem;align-items:end">
-          <div><span class="fl"data-i18n="city">Місто</span><input id="f-city" placeholder="Київ, Луцьк..." data-i18n="cityPh" oninput="applyFilters()"></div>
+          <div><span class="fl"data-i18n="city">Місто</span><div id="cityFilterContainer"></div></div>
           <button class="btn btn-ghost btn-sm" onclick="resetFilters()" style="white-space:nowrap"data-i18n="reset">✕ Скинути</button>
         </div>
       </div>
     </div>
-    <div class="disc-grid" id="discGrid"><div class="empty"><div class="empty-icon">🥏</div>Завантаження...</div></div>
+    <div class="disc-grid" id="discGrid"><div class="empty"><div class="empty-icon">🥏</div><span data-i18n="loading">Завантаження...</span></div></div>
   </div>
 </div>
 
@@ -614,8 +614,8 @@ input[type=range]::-moz-range-track{height:6px;background:rgba(255,255,255,0.06)
     <div id="adminNoAuth">
       <div class="empty"><div class="empty-icon">🔐</div><div id="adminNoAuthMsg"data-i18n="admin">Адмін-панель</div><br>
         <div style="max-width:260px;margin:0 auto">
-          <div class="fg"><label class="fl"data-i18n="password">Пароль</label><input type="password" id="adminPassInput" placeholder="Пароль" onkeydown="if(event.key==='Enter')adminLoginPass()"></div>
-          <button class="btn btn-lime btn-full" onclick="adminLoginPass()">Увійти</button>
+          <div class="fg"><label class="fl"data-i18n="password">Пароль</label><input type="password" id="adminPassInput" placeholder="Пароль" data-i18n="password" onkeydown="if(event.key==='Enter')adminLoginPass()"></div>
+          <button class="btn btn-lime btn-full" onclick="adminLoginPass()" data-i18n="loginBtn">Увійти</button>
         </div>
       </div>
     </div>
@@ -632,14 +632,14 @@ input[type=range]::-moz-range-track{height:6px;background:rgba(255,255,255,0.06)
         <div class="tw"><table><thead><tr><th data-i18n="disc">Диск</th><th data-i18n="owner">Власник</th><th data-i18n="condition">Стан</th><th data-i18n="status">Статус</th><th data-i18n="price">Ціна</th><th data-i18n="actions">Дії</th></tr></thead><tbody id="adminDiscTable"></tbody></table></div>
       </div>
       <div class="card" style="margin-bottom:1rem">
-        <div class="sec-hdr"><div class="sec-ttl">ЗАПИТИ</div></div>
+        <div class="sec-hdr"><div class="sec-ttl" data-i18n="requests">ЗАПИТИ</div></div>
         <div class="tw"><table><thead><tr><th>From</th><th data-i18n="disc">Диск</th><th>Type</th><th>Date</th><th data-i18n="status">Статус</th></tr></thead><tbody id="adminReqTable"></tbody></table></div>
       </div>
       <div class="card">
         <div class="sec-hdr"><div class="sec-ttl"data-i18n="banned">ЗАБЛОКОВАНІ</div></div>
         <div id="bannedList"></div>
         <div style="margin-top:0.875rem;display:flex;gap:0.5rem">
-          <input id="banInput" placeholder="Telegram ID або username">
+          <input id="banInput" placeholder="Telegram ID або username" data-i18n="banPh">
           <button class="btn btn-danger btn-sm" onclick="banUser()"data-i18n="ban">Бан</button>
         </div>
       </div>
@@ -672,8 +672,8 @@ input[type=range]::-moz-range-track{height:6px;background:rgba(255,255,255,0.06)
     </div>
     <!-- Post form -->
     <div class="card" style="margin-bottom:1rem;display:none" id="postFormWrap">
-      <div class="fg" style="margin-bottom:0.4rem"><input id="post-url" placeholder="YouTube, TikTok, Instagram, Facebook..." style="font-size:14px"></div>
-      <div class="fg" style="margin-bottom:0.5rem"><input id="post-desc" placeholder="Опис (опційно)" style="font-size:14px"></div>
+      <div class="fg" style="margin-bottom:0.4rem"><input id="post-url" placeholder="YouTube, TikTok, Instagram, Facebook..." data-i18n="urlPh" style="font-size:14px"></div>
+      <div class="fg" style="margin-bottom:0.5rem"><input id="post-desc" placeholder="Опис (опційно)" data-i18n="descPh" style="font-size:14px"></div>
       <div style="display:flex;gap:0.4rem">
         <button class="btn btn-lime btn-full" onclick="submitPost()"data-i18n="publish">Опублікувати</button>
         <button class="btn btn-ghost btn-sm" onclick="togglePostForm()" style="flex-shrink:0">✕</button>
@@ -703,8 +703,8 @@ input[type=range]::-moz-range-track{height:6px;background:rgba(255,255,255,0.06)
     </div>
     <div class="fr"><div class="fg"><label class="fl"data-i18n="brand">Бренд *</label><input id="auc-brand" placeholder="Innova, Discraft..." style="font-size:14px"></div><div class="fg"><label class="fl"data-i18n="model">Модель *</label><input id="auc-model" placeholder="Boss, Buzzz..." style="font-size:14px"></div></div>
     <div class="fr"><div class="fg"><label class="fl"data-i18n="plastic">Пластик</label><input id="auc-plastic" placeholder="Star, ESP..." style="font-size:14px"></div><div class="fg"><label class="fl"data-i18n="weightG">Вага (г)</label><input id="auc-weight" type="number" placeholder="175" style="font-size:14px"></div></div>
-    <div class="fr"><div class="fg"><label class="fl"data-i18n="color">Колір</label><input id="auc-color" placeholder="Жовтий..." style="font-size:14px"></div><div class="fg"><label class="fl"data-i18n="city">Місто</label><input id="auc-city" placeholder="Київ, Луцьк, Одеса..." style="font-size:14px"></div></div>
-    <div class="fg"><label class="fl">Стан: <span id="aucCondLabel">7</span>/10</label>
+    <div class="fr"><div class="fg"><label class="fl"data-i18n="color">Колір</label><input id="auc-color" placeholder="Жовтий..." data-i18n="colorPh" style="font-size:14px"></div><div class="fg"><label class="fl"data-i18n="city">Місто</label><select id="auc-city" style="font-size:14px"><option value="">—</option></select></div></div>
+    <div class="fg"><label class="fl"><span data-i18n="condition">Стан</span>: <span id="aucCondLabel">7</span>/10</label>
       <div style="display:flex;align-items:center">
         <input type="range" id="auc-cond" min="1" max="10" value="7" step="1" style="flex:1" oninput="document.getElementById('aucCondLabel').textContent=this.value">
       </div>
@@ -715,7 +715,7 @@ input[type=range]::-moz-range-track{height:6px;background:rgba(255,255,255,0.06)
       </div>
     </div>
     <label class="toggle-row fg"><input type="checkbox" id="auc-inked"><span style="font-size:0.84rem">🖊️ Inked</span></label>
-    <div class="fg"><label class="fl"data-i18n="notes">Нотатки</label><textarea id="auc-desc" placeholder="Додаткова інформація..." style="font-size:14px"></textarea></div>
+    <div class="fg"><label class="fl"data-i18n="notes">Нотатки</label><textarea id="auc-desc" placeholder="Додаткова інформація..." data-i18n="notesPh" style="font-size:14px"></textarea></div>
     <div style="border-top:2px solid var(--lime);margin:0.75rem 0;padding-top:0.75rem">
       <div style="font-family:'Bebas Neue';font-size:1.1rem;letter-spacing:1px;color:var(--lime);margin-bottom:0.5rem"data-i18n="auctionParams">⚡ ПАРАМЕТРИ АУКЦІОНУ</div>
       <div class="fg"><label class="fl"data-i18n="aucType">Тип аукціону</label>
@@ -724,7 +724,7 @@ input[type=range]::-moz-range-track{height:6px;background:rgba(255,255,255,0.06)
           <option value="buyout" data-i18n="aucBuyout">💰 Англійський + Купити зараз</option>
           <option value="reverse" data-i18n="aucDutch">📉 Голландський</option>
         </select>
-        <div id="auc-type-desc" style="font-size:0.68rem;color:var(--m1);margin-top:0.3rem;line-height:1.5">Ціна росте зі ставками. Перемагає найвища ставка.</div>
+        <div id="auc-type-desc" style="font-size:0.68rem;color:var(--m1);margin-top:0.3rem;line-height:1.5" data-i18n="aucDescClassic">Ціна росте зі ставками. Перемагає найвища ставка.</div>
       </div>
       <div id="auc-fields-classic">
         <div class="fr">
@@ -751,17 +751,17 @@ input[type=range]::-moz-range-track{height:6px;background:rgba(255,255,255,0.06)
       </div>
       <div class="fg"><label class="fl"data-i18n="duration">Тривалість</label>
         <select id="auc-dur-preset" style="font-size:14px">
-          <option value="5m">⚡ 5 хвилин</option>
-          <option value="15m">⚡ 15 хвилин</option>
-          <option value="30m">⚡ 30 хвилин</option>
-          <option value="1h">1 година</option>
-          <option value="3h">3 години</option>
-          <option value="6h">6 годин</option>
-          <option value="12h">12 годин</option>
-          <option value="24h" selected>24 години</option>
-          <option value="48h">2 дні</option>
-          <option value="72h">3 дні</option>
-          <option value="168h">7 днів</option>
+          <option value="5m" data-i18n="dur5m">⚡ 5 хвилин</option>
+          <option value="15m" data-i18n="dur15m">⚡ 15 хвилин</option>
+          <option value="30m" data-i18n="dur30m">⚡ 30 хвилин</option>
+          <option value="1h" data-i18n="dur1h">1 година</option>
+          <option value="3h" data-i18n="dur3h">3 години</option>
+          <option value="6h" data-i18n="dur6h">6 годин</option>
+          <option value="12h" data-i18n="dur12h">12 годин</option>
+          <option value="24h" selected data-i18n="dur24h">24 години</option>
+          <option value="48h" data-i18n="dur48h">2 дні</option>
+          <option value="72h" data-i18n="dur72h">3 дні</option>
+          <option value="168h" data-i18n="dur168h">7 днів</option>
         </select>
       </div>
     </div>
@@ -780,7 +780,7 @@ input[type=range]::-moz-range-track{height:6px;background:rgba(255,255,255,0.06)
 <div class="overlay" id="ov-login">
   <div class="modal" style="max-width:360px">
     <button class="mc" onclick="closeModal('login')">❌</button>
-    <div class="mt">ВХІД</div>
+    <div class="mt" data-i18n="login">ВХІД</div>
     <div class="empty" style="padding:1rem 0">
       <div class="empty-icon">🔐</div>
       <div style="font-size:0.9rem;margin-bottom:1rem"data-i18n="openInTg">Відкрий через Telegram бота</div>
@@ -801,11 +801,11 @@ input[type=range]::-moz-range-track{height:6px;background:rgba(255,255,255,0.06)
         <div class="photo-slot" id="slot2" onclick="triggerUpload(2)"><span class="slot-icon">📸</span></div>
       </div>
       <div id="cropWrap" style="display:none;margin-top:0.5rem">
-        <label class="fl">Область прев'ю (перетягніть фото)</label>
+        <label class="fl"data-i18n="cropPreview">Область прев'ю (перетягніть фото)</label>
         <div id="cropBox" style="width:100%;height:90px;overflow:hidden;border-radius:var(--r);border:2px solid var(--lime);position:relative;cursor:grab;touch-action:none">
           <img id="cropImg" style="width:100%;position:absolute;left:0;user-select:none;pointer-events:none" draggable="false">
         </div>
-        <div style="font-size:0.6rem;color:var(--m1);margin-top:3px;text-align:center">↕ Перетягніть вгору/вниз</div>
+        <div style="font-size:0.6rem;color:var(--m1);margin-top:3px;text-align:center"data-i18n="cropHint">↕ Перетягніть вгору/вниз</div>
       </div>
       <input type="file" id="photoFile0" accept="image/*" style="display:none" onchange="handlePhoto(0,this)">
       <input type="file" id="photoFile1" accept="image/*" style="display:none" onchange="handlePhoto(1,this)">
@@ -815,9 +815,9 @@ input[type=range]::-moz-range-track{height:6px;background:rgba(255,255,255,0.06)
     </div>
     <div class="fr"><div class="fg"><label class="fl"data-i18n="brand">Бренд *</label><input id="ad-brand" placeholder="Innova, Discraft..."></div><div class="fg"><label class="fl"data-i18n="model">Модель *</label><input id="ad-model" placeholder="Boss, Buzzz..."></div></div>
     <div class="fr"><div class="fg"><label class="fl"data-i18n="plastic">Пластик</label><input id="ad-plastic" placeholder="Star, ESP..."></div><div class="fg"><label class="fl"data-i18n="weightG">Вага (г)</label><input id="ad-weight" type="number" inputmode="numeric" pattern="[0-9]*" placeholder="175"></div></div>
-    <div class="fr"><div class="fg"><label class="fl"data-i18n="color">Колір</label><input id="ad-color" placeholder="Жовтий..."></div><div class="fg"><label class="fl">Buyout (UAH)</label><input id="ad-buyout" type="number" inputmode="numeric" pattern="[0-9]*" placeholder="850"></div></div>
-    <div class="fg"><label class="fl"data-i18n="city">Місто</label><input id="ad-city" placeholder="Київ, Луцьк, Кременчук, Одеса, Львів..."></div>
-    <div class="fg"><label class="fl">Стан: <span id="condValLabel">7</span>/10</label>
+    <div class="fr"><div class="fg"><label class="fl"data-i18n="color">Колір</label><input id="ad-color" placeholder="Жовтий..." data-i18n="colorPh"></div><div class="fg"><label class="fl">Buyout (UAH)</label><input id="ad-buyout" type="number" inputmode="numeric" pattern="[0-9]*" placeholder="850"></div></div>
+    <div class="fg"><label class="fl"data-i18n="city">Місто</label><select id="ad-city"><option value="">—</option></select></div>
+    <div class="fg"><label class="fl" ><span data-i18n="condition">Стан</span>: <span id="condValLabel">7</span>/10</label>
       <div style="display:flex;align-items:center">
         <input type="range" id="ad-cond" min="1" max="10" value="7" step="1" style="flex:1" oninput="document.getElementById('condValLabel').textContent=this.value;updateCondBar()">
       </div>
@@ -837,8 +837,8 @@ input[type=range]::-moz-range-track{height:6px;background:rgba(255,255,255,0.06)
       <label class="toggle-row fg" style="flex:1"><input type="checkbox" id="ad-bargain"><span style="font-size:0.84rem"data-i18n="bargain">⚖️ Торг</span></label>
       <div style="flex:1"></div>
     </div>
-    <div class="fg" id="tradeDescWrap" style="display:none"><label class="fl">Що хочу отримати</label><textarea id="ad-trade-desc" placeholder="Опиши що шукаєш..."></textarea></div>
-    <div class="fg"><label class="fl"data-i18n="notes">Нотатки</label><textarea id="ad-notes" placeholder="Додаткова інформація..."></textarea></div>
+    <div class="fg" id="tradeDescWrap" style="display:none"><label class="fl"data-i18n="tradeWant">Що хочу отримати</label><textarea id="ad-trade-desc" placeholder="Опиши що шукаєш..." data-i18n="tradeWantPh"></textarea></div>
+    <div class="fg"><label class="fl"data-i18n="notes">Нотатки</label><textarea id="ad-notes" placeholder="Додаткова інформація..." data-i18n="notesPh"></textarea></div>
     <button class="btn btn-lime btn-full" id="addDiscBtn" onclick="submitDisc()"data-i18n="addToCtlg">Додати до каталогу</button>
   </div>
 </div>
@@ -860,7 +860,7 @@ input[type=range]::-moz-range-track{height:6px;background:rgba(255,255,255,0.06)
       <input type="file" id="epFile1" accept="image/*" style="display:none" onchange="handleEditPhoto(1,this)">
       <input type="file" id="epFile2" accept="image/*" style="display:none" onchange="handleEditPhoto(2,this)">
     </div>
-    <div class="fr"><div class="fg"><label class="fl">Buyout (UAH)</label><input id="edit-buyout" type="number" inputmode="numeric" pattern="[0-9]*"></div><div class="fg"><label class="fl">Стан: <span id="editCondLabel">7</span>/10</label><div style="display:flex;align-items:center"><input type="range" id="edit-cond" min="1" max="10" value="7" step="1" style="flex:1" oninput="document.getElementById('editCondLabel').textContent=this.value"></div></div></div>
+    <div class="fr"><div class="fg"><label class="fl">Buyout (UAH)</label><input id="edit-buyout" type="number" inputmode="numeric" pattern="[0-9]*"></div><div class="fg"><label class="fl"><span data-i18n="condition">Стан</span>: <span id="editCondLabel">7</span>/10</label><div style="display:flex;align-items:center"><input type="range" id="edit-cond" min="1" max="10" value="7" step="1" style="flex:1" oninput="document.getElementById('editCondLabel').textContent=this.value"></div></div></div>
     <div class="fg"><label class="fl">Speed / Glide / Turn / Fade</label>
       <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:0.4rem">
         <input id="edit-speed" type="number" inputmode="decimal" pattern="[0-9.,\-]*" placeholder="Speed" step="0.5">
@@ -870,10 +870,10 @@ input[type=range]::-moz-range-track{height:6px;background:rgba(255,255,255,0.06)
       </div>
     </div>
     <label class="toggle-row fg"><input type="checkbox" id="edit-trade"><span style="font-size:0.84rem"data-i18n="readyToTrade">🔄 Готовий до обміну</span></label>
-    <div class="fg" id="editTradeWrap" style="display:none"><label class="fl">Що хочу отримати</label><textarea id="edit-trade-desc"></textarea></div>
+    <div class="fg" id="editTradeWrap" style="display:none"><label class="fl"data-i18n="tradeWant">Що хочу отримати</label><textarea id="edit-trade-desc"></textarea></div>
     <label class="toggle-row fg"><input type="checkbox" id="edit-bargain"><span style="font-size:0.84rem"data-i18n="bargain">⚖️ Торг</span></label>
     <div class="fg"><label class="fl"data-i18n="notes">Нотатки</label><textarea id="edit-notes"></textarea></div>
-    <div class="fg"><label class="fl"data-i18n="city">Місто</label><input id="edit-city" placeholder="Київ, Луцьк, Кременчук, Одеса, Львів..."></div>
+    <div class="fg"><label class="fl"data-i18n="city">Місто</label><select id="edit-city"><option value="">—</option></select></div>
     
     <div class="fg"><label class="fl"data-i18n="status">Статус</label><select id="edit-status"><option value="available" data-i18n="stOptAvailable">Доступний</option><option value="reserved" data-i18n="stOptReserved">Резерв</option><option value="testing" data-i18n="stOptTesting">На тестуванні</option><option value="sold" data-i18n="stOptSold">Продано</option><option value="unlisted" data-i18n="stOptUnlisted">Знято з продажу</option></select></div>
     <div style="display:flex;gap:0.5rem"><button class="btn btn-lime btn-full" onclick="submitEditDisc()"data-i18n="save">Зберегти</button></div>
@@ -885,7 +885,7 @@ input[type=range]::-moz-range-track{height:6px;background:rgba(255,255,255,0.06)
     <button class="mc" onclick="closeModal('reqTest')">❌</button>
     <div class="mt"><span data-i18n="testRequest">ЗАПИТ НА ТЕСТ</span></div>
     <div id="reqDiscInfo" class="info-box cy" style="margin-bottom:0.875rem"></div>
-    <div class="fg"><label class="fl"data-i18n="commentOpt">Коментар (опційно)</label><textarea id="rt-note" placeholder="Залишити коментар"></textarea></div>
+    <div class="fg"><label class="fl"data-i18n="commentOpt">Коментар (опційно)</label><textarea id="rt-note" placeholder="Залишити коментар" data-i18n="commentPh"></textarea></div>
     <button class="btn btn-lime btn-full" id="reqTestBtn" onclick="submitTestReq()"data-i18n="sendRequest">Надіслати запит</button>
   </div>
 </div>
@@ -896,7 +896,7 @@ input[type=range]::-moz-range-track{height:6px;background:rgba(255,255,255,0.06)
     <div class="mt"><span data-i18n="buyDisc">КУПИТИ ДИСК</span></div>
     <div id="buyInfo" class="info-box"></div>
     <div id="buySellerLink" style="display:none;margin-bottom:0.875rem"></div>
-    <div class="fg"><label class="fl"data-i18n="comment">Коментар</label><textarea id="buy-note" placeholder="Побажання..."></textarea></div>
+    <div class="fg"><label class="fl"data-i18n="comment">Коментар</label><textarea id="buy-note" placeholder="Побажання..." data-i18n="wishes"></textarea></div>
     <button class="btn btn-lime btn-full" id="buyBtn" onclick="submitBuy()"data-i18n="confirm">Підтвердити</button>
   </div>
 </div>
@@ -906,7 +906,7 @@ input[type=range]::-moz-range-track{height:6px;background:rgba(255,255,255,0.06)
     <button class="mc" onclick="closeModal('return')">❌</button>
     <div class="mt"><span data-i18n="returnTitle">ПОВЕРНЕННЯ ДИСКА</span></div>
     <div id="retInfo" class="info-box"></div>
-    <div class="fg"><label class="fl"data-i18n="comment">Коментар</label><textarea id="ret-note" placeholder="Враження..."></textarea></div>
+    <div class="fg"><label class="fl"data-i18n="comment">Коментар</label><textarea id="ret-note" placeholder="Враження..." data-i18n="impressions"></textarea></div>
     <button class="btn btn-orange btn-full" id="retBtn" onclick="submitReturn()"data-i18n="confirm">Підтвердити</button>
   </div>
 </div>
@@ -922,7 +922,7 @@ input[type=range]::-moz-range-track{height:6px;background:rgba(255,255,255,0.06)
     <input type="hidden" id="ap-disc-id">
     <div id="ap-current" style="margin-bottom:1rem"></div>
     <div class="fg">
-      <label class="fl">Завантажити / замінити фото</label>
+      <label class="fl"data-i18n="clickToUpload">Завантажити / замінити фото</label>
       <div class="photo-upload-grid">
         <div class="photo-slot" id="ap-slot0" onclick="document.getElementById('apFile0').click()"><span class="slot-icon">📸</span></div>
         <div class="photo-slot" id="ap-slot1" onclick="document.getElementById('apFile1').click()"><span class="slot-icon">📸</span></div>
@@ -954,12 +954,28 @@ const ADMINS = ['280215742'];
 
 // ── i18n ──
 let LANG=localStorage.getItem('dc_lang')||'uk';
-const I={uk:{catalog:'Каталог',cabinet:'Кабінет',auctions:'Аукціони',community:'Спільнота',total:'Всього',available:'Доступно',onTest:'На тесті',trade:'Обмін',all:'Всі',availableF:'Доступні',testF:'Тест',tradeF:'Обмін',search:'Пошук',searchPh:'🔍 Бренд, модель, пластик...',sorting:'Сортування',newer:'Новіші',older:'Старіші',priceUp:'Ціна ↑',priceDown:'Ціна ↓',speedDown:'Speed ↓',speedUp:'Speed ↑',condDown:'Стан ↓',priceLabel:'Ціна ₴',from:'від',to:'до',city:'Місто',cityPh:'Київ, Луцьк...',reset:'✕ Скинути',stAvailable:'Доступний',stReserved:'Резерв',stTesting:'На тестуванні',stPending:'Очікує повернення',stSold:'Продано',stDeleted:'Видалено',stUnlisted:'Знято з продажу',yourDisc:'Ваш диск',test:'Тест',buy:'Купити',exchange:'Обмін',condition:'Стан',plastic:'Пластик',weight:'Вага',color:'Колір',owner:'Власник',tester:'Тестер',bargain:'Торг',bargainPh:'Ваша ціна ₴',send:'Надіслати',shareLink:'🔗 Поділитись посиланням',comments:'Коментарі',writeComment:'Написати коментар...',loginToComment:'Увійдіть щоб коментувати',thisIsYourDisc:'Це ваш диск',nothingFound:'Нічого не знайдено',catalogEmpty:'Каталог порожній!',writeTo:'написати ↗',returnDisc:'↩ Повернути',addDisc:'ДОДАТИ ДИСК',editDisc:'РЕДАГУВАТИ ДИСК',addToCtlg:'Додати до каталогу',save:'Зберегти',photo:'Фото',photosUpTo3:'Фото (до 3х)',brand:'Бренд',model:'Модель',weightG:'Вага (г)',notes:'Нотатки',notesPh:'Додаткова інформація...',cityPh2:'Київ, Луцьк, Кременчук, Одеса, Львів...',tradeWant:'Що хочу отримати',tradeWantPh:'Опиши що шукаєш...',readyToTrade:'🔄 Готовий до обміну',status:'Статус',stOptAvailable:'Доступний',stOptReserved:'Резерв',stOptTesting:'На тестуванні',stOptSold:'Продано',stOptUnlisted:'Знято з продажу',cropPreview:'Область прев\'ю (перетягніть фото)',cropHint:'↕ Перетягніть вгору/вниз',newAuction:'НОВИЙ АУКЦІОН',createAuction:'Створити аукціон',auctionParams:'⚡ ПАРАМЕТРИ АУКЦІОНУ',aucType:'Тип аукціону',aucEnglish:'📈 Англійський',aucBuyout:'💰 Англійський + Купити зараз',aucDutch:'📉 Голландський',aucDescClassic:'Ціна росте зі ставками. Перемагає найвища ставка.',aucDescBuyout:'Ціна росте зі ставками або можна купити одразу за фіксовану ціну.',aucDescReverse:'Ціна знижується автоматично. Перший хто купить — забирає.',startPrice:'Стартова ціна ₴',minStep:'Мін. крок ₴',buyNowPrice:'Купити зараз ₴',initialPrice:'Початкова ціна ₴',minPrice:'Мінімальна ціна ₴',dropAmount:'Зниження ₴',everyMin:'Кожні (хвилин)',duration:'Тривалість',active:'Активні',my:'Мої',bids:'Ставки',ended:'Завершені',bid:'Ставка',buyNow:'Купити зараз за',currentPrice:'Поточна ціна',timeLeft:'Залишилось',startPriceL:'Стартова',bidHistory:'Історія ставок',noBidsYet:'Ще немає ставок',seller:'Продавець',yourAuction:'Це ваш аукціон',winner:'Переможець',noBids:'Ніхто не зробив ставку',toCatalog:'📦 В каталог',restartAuc:'🔄 Перезапустити аукціон',yourPrice:'Ваша ціна ₴',yourPriceHint:'Ваша ціна — коли падаюча ціна дійде до вашої ставки, ви автоматично виграєте',step:'Крок',waitAuc:'ОЧІКУЄМО АУКЦІОНИ',createYourAuc:'Створіть свій аукціон',finished:'Завершено',notSold:'Не продано',aucEnglishL:'📈 Англійський аукціон',aucBuyoutL:'💰 Англійський + Купити зараз',aucDutchL:'📉 Голландський аукціон',discs:'Диски',discsCount:'Дисків',requests:'Запити',testing:'Тестую',myDiscs:'МОЇ ДИСКИ',requestsToMe:'ЗАПИТИ ДО МЕНЕ',iTest:'Я ТЕСТУЮ',sold:'Продано',earned:'Зароблено',noDiscs:'Немає дисків',noRequests:'Немає запитів',noActiveTests:'Немає активних тестів',requestHistory:'Історія запитів',purchase:'Купівля',accepted:'Прийняти',confirm:'Підтвердити',login:'ВХІД',loginPrompt:'Увійдіть щоб побачити кабінет',loginBtn:'Увійти',openInTg:'Відкрий через Telegram бота',openTg:'Відкрити в Telegram',loginFirst:'⚠️ Спочатку увійдіть',loginPlease:'⚠️ Увійдіть',testRequest:'ЗАПИТ НА ТЕСТ',sendRequest:'Надіслати запит',commentOpt:'Коментар (опційно)',commentPh:'Залишити коментар',tradeOffer:'ПРОПОЗИЦІЯ ОБМІНУ',sendOffer:'Надіслати пропозицію',descYourDisc:'Опиши свій диск для обміну...',ownerLooking:'Власник шукає',buyDisc:'КУПИТИ ДИСК',price:'Ціна',comment:'Коментар',wishes:'Побажання...',writeToSeller:'💬 Написати продавцю',returnTitle:'ПОВЕРНЕННЯ ДИСКА',impressions:'Враження...',admin:'АДМІН',password:'Пароль',allDiscsL:'УСІ ДИСКИ',banned:'ЗАБЛОКОВАНІ',banPh:'Telegram ID або username',ban:'Бан',unblock:'Розблок',disc:'Диск',actions:'Дії',revenue:'Виручка',statusSelect:'— статус —',hide:'Приховати',errGeneric:'⚠️ Помилка',linkCopied:'🔗 Посилання скопійовано!',offerSent:'✅ Пропозицію надіслано!',discAdded:'додано!',discUpdated:'✅ Диск оновлено!',deleted:'🗑 Видалено',reqSent:'📝 Запит відправлено!',tradeReqSent:'🔄 Пропозицію обміну відправлено!',buySent:'🛒 Запит відправлено!',returnSent:'↩️ Запит на повернення відправлено',saleDone:'🎉 Продаж підтверджено!',brandRequired:'⚠️ Бренд і модель обов\'язкові',uploading:'Завантаження...',discNotFound:'⚠️ Диск не знайдено',saving:'Збереження...',specifyPrice:'⚠️ Вкажіть ціну',photoSaved:'✅ Фото оновлено',statusChanged:'✅ Статус змінено',discHidden:'🗑 Диск приховано',userNotFound:'⚠️ Користувача не знайдено',userBanned:'заблоковано',unblocked:'✅ Розблоковано',welcome:'✅ Ласкаво просимо!',wrongPass:'Невірний пароль',connError:'⚠️ Помилка з\'єднання',enterBrand:'⚠️ Введіть бренд і модель',addPhoto:'⚠️ Додайте хоча б одне фото',creating:'Створення...',aucCreated:'✅ Аукціон створено!',minBidIs:'⚠️ Мінімальна ставка:',aucEnded:'⚠️ Аукціон завершено',cantBidOwn:'⚠️ Не можна ставити на свій аукціон',cantBuyOwn:'⚠️ Не можна купити свій аукціон',enterPrice:'⚠️ Введіть вашу ціну',priceLess:'⚠️ Ціна має бути менше початкової',confirmBuyNow:'Купити зараз?',currentPriceIs:'Поточна ціна',boughtFor:'🎉 Куплено за',bidPlaced:'✅ Ставка',antiSnipe:'⏱ +5 хвилин',youWinWhen:'Ви виграєте коли ціна впаде до',fillReverse:'⚠️ Заповніть всі поля зворотнього аукціону',minPriceLess:'⚠️ Мінімальна ціна має бути менше початкової',enterStartPrice:'⚠️ Введіть стартову ціну',buyoutMore:'⚠️ Ціна "Купити зараз" має бути більше стартової',minDuration:'⚠️ Мінімальна тривалість: 1 хвилина',enterPass:'⚠️ Введіть пароль',confirmSaleQ:'Підтвердити продаж',confirmDelete:'Видалити',hideDisc:'Приховати диск?',acceptQ:'Прийняти',from2:'від',post:'+ Публікація',publish:'Опублікувати',published:'✅ Опубліковано!',urlPh:'YouTube, TikTok, Instagram, Facebook...',descPh:'Опис (опційно)',pasteLink:'⚠️ Вставте посилання',noPosts:'Поки немає публікацій',noComments:'Поки немає коментарів',commentPh2:'Коментар...',watchTikTok:'Дивитись в TikTok',watchFb:'Дивитись в Facebook',openIg:'Відкрити публікацію',linkLabel:'Посилання',onb1:'Каталог - всi диски спiльноти. Переглядай, фiльтруй, купуй, пропонуй обмiн або тест.',onb2:'Фiльтри - сортуй по статусу, бренду, цiнi та flight numbers. Шестерня - розширенi фiльтри.',onb3:'Натисни на диск щоб побачити деталi, фото, та зробити дiю - купити, обмiняти або взяти на тест.',onb4:'Додай свiй диск на продаж, обмiн або тест. Завантаж фото, вкажi стан i цiну.',onb5:'Твiй кабiнет - твої диски, запити на тест та обмiн, статистика.',onb6:'Аукцiони - створюй i бери участь. Три типи: англiйський, з купiвлею зараз i голландський.',onb7:'Спiльнота - вiдео та пости з YouTube, TikTok, Instagram i Facebook.',skip:'Пропустити',next:'Далi',done:'Готово',d:'д',h:'г',m:'хв',s:'с',inked:'Inked',loading:'Завантаження...'},
-en:{catalog:'Catalog',cabinet:'Cabinet',auctions:'Auctions',community:'Community',total:'Total',available:'Available',onTest:'Testing',trade:'Trade',all:'All',availableF:'Available',testF:'Test',tradeF:'Trade',search:'Search',searchPh:'🔍 Brand, model, plastic...',sorting:'Sort',newer:'Newest',older:'Oldest',priceUp:'Price ↑',priceDown:'Price ↓',speedDown:'Speed ↓',speedUp:'Speed ↑',condDown:'Cond ↓',priceLabel:'Price ₴',from:'from',to:'to',city:'City',cityPh:'Kyiv, Lutsk...',reset:'✕ Reset',stAvailable:'Available',stReserved:'Reserved',stTesting:'Testing',stPending:'Pending return',stSold:'Sold',stDeleted:'Deleted',stUnlisted:'Unlisted',yourDisc:'Your disc',test:'Test',buy:'Buy',exchange:'Trade',condition:'Condition',plastic:'Plastic',weight:'Weight',color:'Color',owner:'Owner',tester:'Tester',bargain:'Bargain',bargainPh:'Your price ₴',send:'Send',shareLink:'🔗 Share link',comments:'Comments',writeComment:'Write a comment...',loginToComment:'Log in to comment',thisIsYourDisc:'This is your disc',nothingFound:'Nothing found',catalogEmpty:'Catalog is empty!',writeTo:'message ↗',returnDisc:'↩ Return',addDisc:'ADD DISC',editDisc:'EDIT DISC',addToCtlg:'Add to catalog',save:'Save',photo:'Photo',photosUpTo3:'Photos (up to 3)',brand:'Brand',model:'Model',weightG:'Weight (g)',notes:'Notes',notesPh:'Additional info...',cityPh2:'Kyiv, Lutsk, Kremenchuk, Odesa, Lviv...',tradeWant:'What I want',tradeWantPh:'Describe what you\'re looking for...',readyToTrade:'🔄 Ready to trade',status:'Status',stOptAvailable:'Available',stOptReserved:'Reserved',stOptTesting:'Testing',stOptSold:'Sold',stOptUnlisted:'Unlisted',cropPreview:'Preview area (drag photo)',cropHint:'↕ Drag up/down',newAuction:'NEW AUCTION',createAuction:'Create auction',auctionParams:'⚡ AUCTION SETTINGS',aucType:'Auction type',aucEnglish:'📈 English',aucBuyout:'💰 English + Buy now',aucDutch:'📉 Dutch',aucDescClassic:'Price rises with bids. Highest bid wins.',aucDescBuyout:'Price rises with bids or buy instantly at fixed price.',aucDescReverse:'Price drops automatically. First buyer wins.',startPrice:'Start price ₴',minStep:'Min step ₴',buyNowPrice:'Buy now ₴',initialPrice:'Initial price ₴',minPrice:'Minimum price ₴',dropAmount:'Drop ₴',everyMin:'Every (minutes)',duration:'Duration',active:'Active',my:'My',bids:'Bids',ended:'Ended',bid:'Bid',buyNow:'Buy now for',currentPrice:'Current price',timeLeft:'Time left',startPriceL:'Start',bidHistory:'Bid history',noBidsYet:'No bids yet',seller:'Seller',yourAuction:'Your auction',winner:'Winner',noBids:'No bids placed',toCatalog:'📦 To catalog',restartAuc:'🔄 Restart auction',yourPrice:'Your price ₴',yourPriceHint:'Your price — when the dropping price reaches your bid, you win automatically',step:'Step',waitAuc:'WAITING FOR AUCTIONS',createYourAuc:'Create your auction',finished:'Finished',notSold:'Not sold',aucEnglishL:'📈 English auction',aucBuyoutL:'💰 English + Buy now',aucDutchL:'📉 Dutch auction',discs:'Discs',discsCount:'Discs',requests:'Requests',testing:'Testing',myDiscs:'MY DISCS',requestsToMe:'REQUESTS TO ME',iTest:'I\'M TESTING',sold:'Sold',earned:'Earned',noDiscs:'No discs',noRequests:'No requests',noActiveTests:'No active tests',requestHistory:'Request history',purchase:'Purchase',accepted:'Accept',confirm:'Confirm',login:'LOGIN',loginPrompt:'Log in to see cabinet',loginBtn:'Log in',openInTg:'Open via Telegram bot',openTg:'Open in Telegram',loginFirst:'⚠️ Please log in first',loginPlease:'⚠️ Please log in',testRequest:'TEST REQUEST',sendRequest:'Send request',commentOpt:'Comment (optional)',commentPh:'Leave a comment',tradeOffer:'TRADE OFFER',sendOffer:'Send offer',descYourDisc:'Describe your disc for trade...',ownerLooking:'Owner is looking for',buyDisc:'BUY DISC',price:'Price',comment:'Comment',wishes:'Wishes...',writeToSeller:'💬 Message seller',returnTitle:'DISC RETURN',impressions:'Impressions...',admin:'ADMIN',password:'Password',allDiscsL:'ALL DISCS',banned:'BANNED',banPh:'Telegram ID or username',ban:'Ban',unblock:'Unblock',disc:'Disc',actions:'Actions',revenue:'Revenue',statusSelect:'— status —',hide:'Hide',errGeneric:'⚠️ Error',linkCopied:'🔗 Link copied!',offerSent:'✅ Offer sent!',discAdded:'added!',discUpdated:'✅ Disc updated!',deleted:'🗑 Deleted',reqSent:'📝 Request sent!',tradeReqSent:'🔄 Trade offer sent!',buySent:'🛒 Request sent!',returnSent:'↩️ Return request sent',saleDone:'🎉 Sale confirmed!',brandRequired:'⚠️ Brand and model required',uploading:'Uploading...',discNotFound:'⚠️ Disc not found',saving:'Saving...',specifyPrice:'⚠️ Specify price',photoSaved:'✅ Photos updated',statusChanged:'✅ Status changed',discHidden:'🗑 Disc hidden',userNotFound:'⚠️ User not found',userBanned:'banned',unblocked:'✅ Unblocked',welcome:'✅ Welcome!',wrongPass:'Wrong password',connError:'⚠️ Connection error',enterBrand:'⚠️ Enter brand and model',addPhoto:'⚠️ Add at least one photo',creating:'Creating...',aucCreated:'✅ Auction created!',minBidIs:'⚠️ Minimum bid:',aucEnded:'⚠️ Auction ended',cantBidOwn:'⚠️ Cannot bid on own auction',cantBuyOwn:'⚠️ Cannot buy own auction',enterPrice:'⚠️ Enter your price',priceLess:'⚠️ Price must be less than starting',confirmBuyNow:'Buy now?',currentPriceIs:'Current price',boughtFor:'🎉 Bought for',bidPlaced:'✅ Bid',antiSnipe:'⏱ +5 minutes',youWinWhen:'You\'ll win when price drops to',fillReverse:'⚠️ Fill all Dutch auction fields',minPriceLess:'⚠️ Minimum price must be less than starting',enterStartPrice:'⚠️ Enter start price',buyoutMore:'⚠️ Buy now price must exceed start price',minDuration:'⚠️ Minimum duration: 1 minute',enterPass:'⚠️ Enter password',confirmSaleQ:'Confirm sale',confirmDelete:'Delete',hideDisc:'Hide disc?',acceptQ:'Accept',from2:'from',post:'+ Post',publish:'Publish',published:'✅ Published!',urlPh:'YouTube, TikTok, Instagram, Facebook...',descPh:'Description (optional)',pasteLink:'⚠️ Paste a link',noPosts:'No posts yet',noComments:'No comments yet',commentPh2:'Comment...',watchTikTok:'Watch on TikTok',watchFb:'Watch on Facebook',openIg:'Open post',linkLabel:'Link',onb1:'Catalog — all community discs. Browse, filter, buy, offer trades or tests.',onb2:'Filters — sort by status, brand, price and flight numbers. Gear icon — advanced filters.',onb3:'Tap a disc to see details, photos, and take action — buy, trade or test.',onb4:'Add your disc for sale, trade or test. Upload photos, set condition and price.',onb5:'Your cabinet — your discs, test and trade requests, stats.',onb6:'Auctions — create and participate. Three types: English, Buy now, and Dutch.',onb7:'Community — videos and posts from YouTube, TikTok, Instagram and Facebook.',skip:'Skip',next:'Next',done:'Done',d:'d',h:'h',m:'m',s:'s',inked:'Inked',loading:'Loading...'}
+const I={uk:{catalog:'Каталог',cabinet:'Кабінет',auctions:'Аукціони',community:'Спільнота',total:'Всього',available:'Доступно',onTest:'На тесті',trade:'Обмін',all:'Всі',availableF:'Доступні',testF:'Тест',tradeF:'Обмін',search:'Пошук',searchPh:'🔍 Бренд, модель, пластик...',sorting:'Сортування',newer:'Новіші',older:'Старіші',priceUp:'Ціна ↑',priceDown:'Ціна ↓',speedDown:'Speed ↓',speedUp:'Speed ↑',condDown:'Стан ↓',priceLabel:'Ціна ₴',from:'від',to:'до',city:'Місто',cityPh:'Київ, Луцьк...',reset:'✕ Скинути',stAvailable:'Доступний',stReserved:'Резерв',stTesting:'На тестуванні',stPending:'Очікує повернення',stSold:'Продано',stDeleted:'Видалено',stUnlisted:'Знято з продажу',yourDisc:'Ваш диск',test:'Тест',buy:'Купити',exchange:'Обмін',condition:'Стан',plastic:'Пластик',weight:'Вага',color:'Колір',owner:'Власник',tester:'Тестер',bargain:'Торг',bargainPh:'Ваша ціна ₴',send:'Надіслати',shareLink:'🔗 Поділитись посиланням',comments:'Коментарі',writeComment:'Написати коментар...',loginToComment:'Увійдіть щоб коментувати',thisIsYourDisc:'Це ваш диск',nothingFound:'Нічого не знайдено',catalogEmpty:'Каталог порожній!',writeTo:'написати ↗',returnDisc:'↩ Повернути',addDisc:'ДОДАТИ ДИСК',editDisc:'РЕДАГУВАТИ ДИСК',addToCtlg:'Додати до каталогу',save:'Зберегти',photo:'Фото',photosUpTo3:'Фото (до 3х)',brand:'Бренд',model:'Модель',weightG:'Вага (г)',notes:'Нотатки',notesPh:'Додаткова інформація...',cityPh2:'Київ, Луцьк, Кременчук, Одеса, Львів...',tradeWant:'Що хочу отримати',tradeWantPh:'Опиши що шукаєш...',readyToTrade:'🔄 Готовий до обміну',status:'Статус',stOptAvailable:'Доступний',stOptReserved:'Резерв',stOptTesting:'На тестуванні',stOptSold:'Продано',stOptUnlisted:'Знято з продажу',cropPreview:'Область прев\'ю (перетягніть фото)',cropHint:'↕ Перетягніть вгору/вниз',newAuction:'НОВИЙ АУКЦІОН',createAuction:'Створити аукціон',auctionParams:'⚡ ПАРАМЕТРИ АУКЦІОНУ',aucType:'Тип аукціону',aucEnglish:'📈 Англійський',aucBuyout:'💰 Англійський + Купити зараз',aucDutch:'📉 Голландський',aucDescClassic:'Ціна росте зі ставками. Перемагає найвища ставка.',aucDescBuyout:'Ціна росте зі ставками або можна купити одразу за фіксовану ціну.',aucDescReverse:'Ціна знижується автоматично. Перший хто купить — забирає.',startPrice:'Стартова ціна ₴',minStep:'Мін. крок ₴',buyNowPrice:'Купити зараз ₴',initialPrice:'Початкова ціна ₴',minPrice:'Мінімальна ціна ₴',dropAmount:'Зниження ₴',everyMin:'Кожні (хвилин)',duration:'Тривалість',active:'Активні',my:'Мої',bids:'Ставки',ended:'Завершені',bid:'Ставка',buyNow:'Купити зараз за',currentPrice:'Поточна ціна',timeLeft:'Залишилось',startPriceL:'Стартова',bidHistory:'Історія ставок',noBidsYet:'Ще немає ставок',seller:'Продавець',yourAuction:'Це ваш аукціон',winner:'Переможець',noBids:'Ніхто не зробив ставку',toCatalog:'📦 В каталог',restartAuc:'🔄 Перезапустити аукціон',yourPrice:'Ваша ціна ₴',yourPriceHint:'Ваша ціна — коли падаюча ціна дійде до вашої ставки, ви автоматично виграєте',step:'Крок',waitAuc:'ОЧІКУЄМО АУКЦІОНИ',createYourAuc:'Створіть свій аукціон',finished:'Завершено',notSold:'Не продано',aucEnglishL:'📈 Англійський аукціон',aucBuyoutL:'💰 Англійський + Купити зараз',aucDutchL:'📉 Голландський аукціон',discs:'Диски',discsCount:'Дисків',requests:'Запити',testing:'Тестую',myDiscs:'МОЇ ДИСКИ',requestsToMe:'ЗАПИТИ ДО МЕНЕ',iTest:'Я ТЕСТУЮ',sold:'Продано',earned:'Зароблено',noDiscs:'Немає дисків',noRequests:'Немає запитів',noActiveTests:'Немає активних тестів',requestHistory:'Історія запитів',purchase:'Купівля',accepted:'Прийняти',confirm:'Підтвердити',login:'ВХІД',loginPrompt:'Увійдіть щоб побачити кабінет',loginBtn:'Увійти',openInTg:'Відкрий через Telegram бота',openTg:'Відкрити в Telegram',loginFirst:'⚠️ Спочатку увійдіть',loginPlease:'⚠️ Увійдіть',testRequest:'ЗАПИТ НА ТЕСТ',sendRequest:'Надіслати запит',commentOpt:'Коментар (опційно)',commentPh:'Залишити коментар',tradeOffer:'ПРОПОЗИЦІЯ ОБМІНУ',sendOffer:'Надіслати пропозицію',descYourDisc:'Опиши свій диск для обміну...',ownerLooking:'Власник шукає',buyDisc:'КУПИТИ ДИСК',price:'Ціна',comment:'Коментар',wishes:'Побажання...',writeToSeller:'💬 Написати продавцю',returnTitle:'ПОВЕРНЕННЯ ДИСКА',impressions:'Враження...',admin:'АДМІН',password:'Пароль',allDiscsL:'УСІ ДИСКИ',banned:'ЗАБЛОКОВАНІ',banPh:'Telegram ID або username',ban:'Бан',unblock:'Розблок',disc:'Диск',actions:'Дії',revenue:'Виручка',statusSelect:'— статус —',hide:'Приховати',errGeneric:'⚠️ Помилка',linkCopied:'🔗 Посилання скопійовано!',offerSent:'✅ Пропозицію надіслано!',discAdded:'додано!',discUpdated:'✅ Диск оновлено!',deleted:'🗑 Видалено',reqSent:'📝 Запит відправлено!',tradeReqSent:'🔄 Пропозицію обміну відправлено!',buySent:'🛒 Запит відправлено!',returnSent:'↩️ Запит на повернення відправлено',saleDone:'🎉 Продаж підтверджено!',brandRequired:'⚠️ Бренд і модель обов\'язкові',uploading:'Завантаження...',discNotFound:'⚠️ Диск не знайдено',saving:'Збереження...',specifyPrice:'⚠️ Вкажіть ціну',photoSaved:'✅ Фото оновлено',statusChanged:'✅ Статус змінено',discHidden:'🗑 Диск приховано',userNotFound:'⚠️ Користувача не знайдено',userBanned:'заблоковано',unblocked:'✅ Розблоковано',welcome:'✅ Ласкаво просимо!',wrongPass:'Невірний пароль',connError:'⚠️ Помилка з\'єднання',enterBrand:'⚠️ Введіть бренд і модель',addPhoto:'⚠️ Додайте хоча б одне фото',creating:'Створення...',aucCreated:'✅ Аукціон створено!',minBidIs:'⚠️ Мінімальна ставка:',aucEnded:'⚠️ Аукціон завершено',cantBidOwn:'⚠️ Не можна ставити на свій аукціон',cantBuyOwn:'⚠️ Не можна купити свій аукціон',enterPrice:'⚠️ Введіть вашу ціну',priceLess:'⚠️ Ціна має бути менше початкової',confirmBuyNow:'Купити зараз?',currentPriceIs:'Поточна ціна',boughtFor:'🎉 Куплено за',bidPlaced:'✅ Ставка',antiSnipe:'⏱ +5 хвилин',youWinWhen:'Ви виграєте коли ціна впаде до',fillReverse:'⚠️ Заповніть всі поля зворотнього аукціону',minPriceLess:'⚠️ Мінімальна ціна має бути менше початкової',enterStartPrice:'⚠️ Введіть стартову ціну',buyoutMore:'⚠️ Ціна "Купити зараз" має бути більше стартової',minDuration:'⚠️ Мінімальна тривалість: 1 хвилина',enterPass:'⚠️ Введіть пароль',confirmSaleQ:'Підтвердити продаж',confirmDelete:'Видалити',hideDisc:'Приховати диск?',acceptQ:'Прийняти',from2:'від',post:'+ Публікація',publish:'Опублікувати',published:'✅ Опубліковано!',urlPh:'YouTube, TikTok, Instagram, Facebook...',descPh:'Опис (опційно)',pasteLink:'⚠️ Вставте посилання',noPosts:'Поки немає публікацій',noComments:'Поки немає коментарів',commentPh2:'Коментар...',watchTikTok:'Дивитись в TikTok',watchFb:'Дивитись в Facebook',openIg:'Відкрити публікацію',linkLabel:'Посилання',onb1:'Каталог - всi диски спiльноти. Переглядай, фiльтруй, купуй, пропонуй обмiн або тест.',onb2:'Фiльтри - сортуй по статусу, бренду, цiнi та flight numbers. Шестерня - розширенi фiльтри.',onb3:'Натисни на диск щоб побачити деталi, фото, та зробити дiю - купити, обмiняти або взяти на тест.',onb4:'Додай свiй диск на продаж, обмiн або тест. Завантаж фото, вкажi стан i цiну.',onb5:'Твiй кабiнет - твої диски, запити на тест та обмiн, статистика.',onb6:'Аукцiони - створюй i бери участь. Три типи: англiйський, з купiвлею зараз i голландський.',onb7:'Спiльнота - вiдео та пости з YouTube, TikTok, Instagram i Facebook.',skip:'Пропустити',next:'Далi',done:'Готово',d:'д',h:'г',m:'хв',s:'с',inked:'Inked',loading:'Завантаження...',colorPh:'Жовтий...',dur5m:'⚡ 5 хвилин',dur15m:'⚡ 15 хвилин',dur30m:'⚡ 30 хвилин',dur1h:'1 година',dur3h:'3 години',dur6h:'6 годин',dur12h:'12 годин',dur24h:'24 години',dur48h:'2 дні',dur72h:'3 дні',dur168h:'7 днів'},
+en:{catalog:'Catalog',cabinet:'Cabinet',auctions:'Auctions',community:'Community',total:'Total',available:'Available',onTest:'Testing',trade:'Trade',all:'All',availableF:'Available',testF:'Test',tradeF:'Trade',search:'Search',searchPh:'🔍 Brand, model, plastic...',sorting:'Sort',newer:'Newest',older:'Oldest',priceUp:'Price ↑',priceDown:'Price ↓',speedDown:'Speed ↓',speedUp:'Speed ↑',condDown:'Cond ↓',priceLabel:'Price ₴',from:'from',to:'to',city:'City',cityPh:'Kyiv, Lutsk...',reset:'✕ Reset',stAvailable:'Available',stReserved:'Reserved',stTesting:'Testing',stPending:'Pending return',stSold:'Sold',stDeleted:'Deleted',stUnlisted:'Unlisted',yourDisc:'Your disc',test:'Test',buy:'Buy',exchange:'Trade',condition:'Condition',plastic:'Plastic',weight:'Weight',color:'Color',owner:'Owner',tester:'Tester',bargain:'Bargain',bargainPh:'Your price ₴',send:'Send',shareLink:'🔗 Share link',comments:'Comments',writeComment:'Write a comment...',loginToComment:'Log in to comment',thisIsYourDisc:'This is your disc',nothingFound:'Nothing found',catalogEmpty:'Catalog is empty!',writeTo:'message ↗',returnDisc:'↩ Return',addDisc:'ADD DISC',editDisc:'EDIT DISC',addToCtlg:'Add to catalog',save:'Save',photo:'Photo',photosUpTo3:'Photos (up to 3)',brand:'Brand',model:'Model',weightG:'Weight (g)',notes:'Notes',notesPh:'Additional info...',cityPh2:'Kyiv, Lutsk, Kremenchuk, Odesa, Lviv...',tradeWant:'What I want',tradeWantPh:'Describe what you\'re looking for...',readyToTrade:'🔄 Ready to trade',status:'Status',stOptAvailable:'Available',stOptReserved:'Reserved',stOptTesting:'Testing',stOptSold:'Sold',stOptUnlisted:'Unlisted',cropPreview:'Preview area (drag photo)',cropHint:'↕ Drag up/down',newAuction:'NEW AUCTION',createAuction:'Create auction',auctionParams:'⚡ AUCTION SETTINGS',aucType:'Auction type',aucEnglish:'📈 English',aucBuyout:'💰 English + Buy now',aucDutch:'📉 Dutch',aucDescClassic:'Price rises with bids. Highest bid wins.',aucDescBuyout:'Price rises with bids or buy instantly at fixed price.',aucDescReverse:'Price drops automatically. First buyer wins.',startPrice:'Start price ₴',minStep:'Min step ₴',buyNowPrice:'Buy now ₴',initialPrice:'Initial price ₴',minPrice:'Minimum price ₴',dropAmount:'Drop ₴',everyMin:'Every (minutes)',duration:'Duration',active:'Active',my:'My',bids:'Bids',ended:'Ended',bid:'Bid',buyNow:'Buy now for',currentPrice:'Current price',timeLeft:'Time left',startPriceL:'Start',bidHistory:'Bid history',noBidsYet:'No bids yet',seller:'Seller',yourAuction:'Your auction',winner:'Winner',noBids:'No bids placed',toCatalog:'📦 To catalog',restartAuc:'🔄 Restart auction',yourPrice:'Your price ₴',yourPriceHint:'Your price — when the dropping price reaches your bid, you win automatically',step:'Step',waitAuc:'WAITING FOR AUCTIONS',createYourAuc:'Create your auction',finished:'Finished',notSold:'Not sold',aucEnglishL:'📈 English auction',aucBuyoutL:'💰 English + Buy now',aucDutchL:'📉 Dutch auction',discs:'Discs',discsCount:'Discs',requests:'Requests',testing:'Testing',myDiscs:'MY DISCS',requestsToMe:'REQUESTS TO ME',iTest:'I\'M TESTING',sold:'Sold',earned:'Earned',noDiscs:'No discs',noRequests:'No requests',noActiveTests:'No active tests',requestHistory:'Request history',purchase:'Purchase',accepted:'Accept',confirm:'Confirm',login:'LOGIN',loginPrompt:'Log in to see cabinet',loginBtn:'Log in',openInTg:'Open via Telegram bot',openTg:'Open in Telegram',loginFirst:'⚠️ Please log in first',loginPlease:'⚠️ Please log in',testRequest:'TEST REQUEST',sendRequest:'Send request',commentOpt:'Comment (optional)',commentPh:'Leave a comment',tradeOffer:'TRADE OFFER',sendOffer:'Send offer',descYourDisc:'Describe your disc for trade...',ownerLooking:'Owner is looking for',buyDisc:'BUY DISC',price:'Price',comment:'Comment',wishes:'Wishes...',writeToSeller:'💬 Message seller',returnTitle:'DISC RETURN',impressions:'Impressions...',admin:'ADMIN',password:'Password',allDiscsL:'ALL DISCS',banned:'BANNED',banPh:'Telegram ID or username',ban:'Ban',unblock:'Unblock',disc:'Disc',actions:'Actions',revenue:'Revenue',statusSelect:'— status —',hide:'Hide',errGeneric:'⚠️ Error',linkCopied:'🔗 Link copied!',offerSent:'✅ Offer sent!',discAdded:'added!',discUpdated:'✅ Disc updated!',deleted:'🗑 Deleted',reqSent:'📝 Request sent!',tradeReqSent:'🔄 Trade offer sent!',buySent:'🛒 Request sent!',returnSent:'↩️ Return request sent',saleDone:'🎉 Sale confirmed!',brandRequired:'⚠️ Brand and model required',uploading:'Uploading...',discNotFound:'⚠️ Disc not found',saving:'Saving...',specifyPrice:'⚠️ Specify price',photoSaved:'✅ Photos updated',statusChanged:'✅ Status changed',discHidden:'🗑 Disc hidden',userNotFound:'⚠️ User not found',userBanned:'banned',unblocked:'✅ Unblocked',welcome:'✅ Welcome!',wrongPass:'Wrong password',connError:'⚠️ Connection error',enterBrand:'⚠️ Enter brand and model',addPhoto:'⚠️ Add at least one photo',creating:'Creating...',aucCreated:'✅ Auction created!',minBidIs:'⚠️ Minimum bid:',aucEnded:'⚠️ Auction ended',cantBidOwn:'⚠️ Cannot bid on own auction',cantBuyOwn:'⚠️ Cannot buy own auction',enterPrice:'⚠️ Enter your price',priceLess:'⚠️ Price must be less than starting',confirmBuyNow:'Buy now?',currentPriceIs:'Current price',boughtFor:'🎉 Bought for',bidPlaced:'✅ Bid',antiSnipe:'⏱ +5 minutes',youWinWhen:'You\'ll win when price drops to',fillReverse:'⚠️ Fill all Dutch auction fields',minPriceLess:'⚠️ Minimum price must be less than starting',enterStartPrice:'⚠️ Enter start price',buyoutMore:'⚠️ Buy now price must exceed start price',minDuration:'⚠️ Minimum duration: 1 minute',enterPass:'⚠️ Enter password',confirmSaleQ:'Confirm sale',confirmDelete:'Delete',hideDisc:'Hide disc?',acceptQ:'Accept',from2:'from',post:'+ Post',publish:'Publish',published:'✅ Published!',urlPh:'YouTube, TikTok, Instagram, Facebook...',descPh:'Description (optional)',pasteLink:'⚠️ Paste a link',noPosts:'No posts yet',noComments:'No comments yet',commentPh2:'Comment...',watchTikTok:'Watch on TikTok',watchFb:'Watch on Facebook',openIg:'Open post',linkLabel:'Link',onb1:'Catalog — all community discs. Browse, filter, buy, offer trades or tests.',onb2:'Filters — sort by status, brand, price and flight numbers. Gear icon — advanced filters.',onb3:'Tap a disc to see details, photos, and take action — buy, trade or test.',onb4:'Add your disc for sale, trade or test. Upload photos, set condition and price.',onb5:'Your cabinet — your discs, test and trade requests, stats.',onb6:'Auctions — create and participate. Three types: English, Buy now, and Dutch.',onb7:'Community — videos and posts from YouTube, TikTok, Instagram and Facebook.',skip:'Skip',next:'Next',done:'Done',d:'d',h:'h',m:'m',s:'s',inked:'Inked',loading:'Loading...',colorPh:'Yellow...',dur5m:'⚡ 5 minutes',dur15m:'⚡ 15 minutes',dur30m:'⚡ 30 minutes',dur1h:'1 hour',dur3h:'3 hours',dur6h:'6 hours',dur12h:'12 hours',dur24h:'24 hours',dur48h:'2 days',dur72h:'3 days',dur168h:'7 days'}
 };
 function t(k){return I[LANG]?.[k]||I.uk[k]||k;}
 function toggleLang(){LANG=LANG==='uk'?'en':'uk';localStorage.setItem('dc_lang',LANG);document.getElementById('langBtn').textContent=LANG==='uk'?'EN':'UA';applyLang();}
-function applyLang(){ST.available.l=t('stAvailable');ST.reserved.l=t('stReserved');ST.testing.l=t('stTesting');ST.pending.l=t('stPending');ST.sold.l=t('stSold');ST.deleted.l=t('stDeleted');ST.unlisted.l=t('stUnlisted');ST.trade.l=t('stAvailable');document.querySelectorAll('[data-i18n]').forEach(el=>{const k=el.dataset.i18n;if(el.tagName==='INPUT'||el.tagName==='TEXTAREA'){el.placeholder=t(k);}else{el.textContent=t(k);}});applyFilters();if(document.getElementById('page-auctions')?.classList.contains('active'))renderAuctions();if(document.getElementById('cabinetContent')?.style.display!=='none'&&CU)renderCabinet();if(document.getElementById('page-settings')?.classList.contains('active'))renderFeed();}
+function applyLang(){ST.available.l=t('stAvailable');ST.reserved.l=t('stReserved');ST.testing.l=t('stTesting');ST.pending.l=t('stPending');ST.sold.l=t('stSold');ST.deleted.l=t('stDeleted');ST.unlisted.l=t('stUnlisted');ST.trade.l=t('stAvailable');document.querySelectorAll('[data-i18n]').forEach(el=>{const k=el.dataset.i18n;if(el.tagName==='INPUT'||el.tagName==='TEXTAREA'){el.placeholder=t(k);}else{el.textContent=t(k);}});initCitySelects();applyFilters();if(document.getElementById('page-auctions')?.classList.contains('active'))renderAuctions();if(document.getElementById('cabinetContent')?.style.display!=='none'&&CU)renderCabinet();if(document.getElementById('page-settings')?.classList.contains('active'))renderFeed();}
+
+// ── CITIES ──
+const CITIES={kyiv:{uk:'Київ',en:'Kyiv'},lutsk:{uk:'Луцьк',en:'Lutsk'},kremenchuk:{uk:'Кременчук',en:'Kremenchuk'},odesa:{uk:'Одеса',en:'Odesa'},lviv:{uk:'Львів',en:'Lviv'},kharkiv:{uk:'Харків',en:'Kharkiv'},dnipro:{uk:'Дніпро',en:'Dnipro'},other:{uk:'Інше',en:'Other'}};
+function tCity(key){if(!key)return'';const c=CITIES[key];if(c)return c[LANG]||c.uk;return key;}
+function cityKey(name){if(!name)return'';const n=name.toLowerCase().trim();for(const[k,v]of Object.entries(CITIES)){if(v.uk.toLowerCase()===n||v.en.toLowerCase()===n||k===n)return k;}return name;}
+function cityOptions(selected){return Object.entries(CITIES).map(([k,v])=>'<option value="'+k+'"'+(k===selected?' selected':'')+'>'+v[LANG]+'</option>').join('');}
+function cityFilterHTML(){const keys=Object.keys(CITIES);return'<div class="city-filter-wrap" style="position:relative"><div class="city-filter-btn" onclick="toggleCityFilter()" style="background:var(--glass);border:0.5px solid var(--glass-border);border-radius:var(--r);padding:5px 8px;font-size:0.8rem;color:var(--text);cursor:pointer;min-height:28px;display:flex;align-items:center;gap:4px;flex-wrap:wrap" id="cityFilterBtn"><span style="color:var(--m1)" data-i18n="city">'+t('city')+'</span></div><div id="cityFilterDrop" style="display:none;position:absolute;top:100%;left:0;right:0;z-index:10;background:var(--glass);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:0.5px solid var(--glass-border);border-radius:var(--r);margin-top:2px;padding:4px;max-height:240px;overflow-y:auto;box-shadow:0 8px 24px rgba(0,0,0,0.3)"><input id="citySearchInput" placeholder="🔍" oninput="filterCityList(this.value)" onclick="event.stopPropagation()" style="width:100%;padding:4px 8px;font-size:0.75rem;margin-bottom:3px;border-radius:6px;background:var(--s2);border:0.5px solid var(--glass-border);color:var(--text);outline:none"><div id="cityCheckList">'+keys.map(k=>'<label class="city-opt" data-city="'+k+'" style="display:flex;align-items:center;gap:6px;padding:5px 6px;font-size:0.78rem;cursor:pointer;border-radius:6px" onmouseover="this.style.background=\'var(--glass-hi)\'" onmouseout="this.style.background=\'\'"><input type="checkbox" value="'+k+'" onchange="applyCityFilter()" style="width:auto;accent-color:var(--lime)"><span>'+CITIES[k][LANG]+'</span></label>').join('')+'</div></div></div>';}
+function filterCityList(q){q=q.toLowerCase();document.querySelectorAll('#cityCheckList .city-opt').forEach(el=>{const k=el.dataset.city;const name=(CITIES[k]?CITIES[k][LANG]:'').toLowerCase();el.style.display=(!q||name.includes(q)||k.includes(q))?'flex':'none';});}
+let _cityFilterOpen=false;
+function toggleCityFilter(){const d=document.getElementById('cityFilterDrop');_cityFilterOpen=!_cityFilterOpen;d.style.display=_cityFilterOpen?'block':'none';}
+function applyCityFilter(){const checks=document.querySelectorAll('#cityFilterDrop input[type=checkbox]');const sel=[];checks.forEach(ch=>{if(ch.checked)sel.push(ch.value);});const btn=document.getElementById('cityFilterBtn');if(sel.length){btn.innerHTML=sel.map(k=>'<span style="background:var(--lime);color:#1a1d24;padding:1px 6px;border-radius:6px;font-size:0.68rem;font-weight:600">'+tCity(k)+'</span>').join('');}else{btn.innerHTML='<span style="color:var(--m1)">'+t('city')+'</span>';}window._selectedCities=sel;applyFilters();}
+function initCitySelects(){
+  ['ad-city','auc-city'].forEach(id=>{const el=document.getElementById(id);if(el&&el.tagName==='SELECT'){const cur=el.value;el.innerHTML='<option value="">—</option>'+cityOptions(cur);}});
+  const cf=document.getElementById('cityFilterContainer');if(cf)cf.innerHTML=cityFilterHTML();
+}
+document.addEventListener('click',e=>{if(_cityFilterOpen&&!e.target.closest('.city-filter-wrap')){_cityFilterOpen=false;const d=document.getElementById('cityFilterDrop');if(d)d.style.display='none';}});
 
 let CU = null, CF = 'all', allDiscs = [], buyId = null, retId = null, reqTestId = null;
 let photoFiles = [null, null, null];
@@ -1187,7 +1203,7 @@ function cardHTML(d){
     </div>
     <div class="disc-body">
       <div class="disc-title">${escHtml(d.brand)} ${escHtml(d.model)}</div>
-      <div class="disc-sub">${[d.plastic,d.weight?d.weight+'г':'',d.city].filter(Boolean).join(' · ')}</div>
+      <div class="disc-sub">${[d.plastic,d.weight?d.weight+(LANG==='uk'?'г':'g'):'',tCity(d.city)].filter(Boolean).join(' · ')}</div>
       ${condBar(d.condition)}
       <div class="flight-row">
         <div class="fc"><div class="fv">${d.speed||0}</div><div class="fk">Spd</div></div>
@@ -1197,7 +1213,7 @@ function cardHTML(d){
       </div>
       <div class="disc-footer">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.35rem">
-          <div class="disc-price">${d.buyout?d.buyout+' ₴':'—'}${d.bargain?' <span style="font-size:0.7rem" title="Торг">⚖️</span>':''}</div>
+          <div class="disc-price">${d.buyout?d.buyout+' ₴':'—'}${d.bargain?' <span style="font-size:0.7rem" title="⚖️">⚖️</span>':''}</div>
           <div style="display:flex;align-items:center;gap:0.4rem">
             <span onclick="event.stopPropagation();toggleFav('${d.id}')" style="cursor:pointer;font-size:0.85rem">${isFav(d.id)?'⭐':'☆'}</span>
             <div class="disc-own" onclick="event.stopPropagation();filterByOwner('${escHtml(d.owner)}')">👤 ${escHtml((d.owner||'').split(' ')[0])}</div>
@@ -1215,7 +1231,7 @@ function cardHTML(d){
 
 // ── FILTERS ──
 function toggleAdvFilters(){const el=document.getElementById('advFilters'),btn=document.getElementById('advBtn'),open=!el.classList.contains('open');el.classList.toggle('open',open);const isBrutal=document.documentElement.classList.contains('brutal');if(open){btn.style.borderColor=isBrutal?'var(--text)':'var(--lime)';btn.style.color=isBrutal?'var(--bg)':'var(--lime)';btn.style.background=isBrutal?'var(--text)':'';}else{btn.style.borderColor='';btn.style.color='';btn.style.background='';}}
-function resetFilters(){['f-speed','f-speed-max','f-glide','f-glide-max','f-turn','f-turn-max','f-fade','f-fade-max','f-price','f-price-max','f-city'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});resetDualRangeSliders();document.getElementById('f-sort').value='new';document.getElementById('mainSearch').value='';CF='all';const tabs=document.getElementById('ftabs-catalog');if(tabs){tabs.querySelectorAll('.ft').forEach((b,i)=>b.classList.toggle('active',i===0));const first=tabs.querySelector('.ft.active');if(first)moveFtabsPill(first);}applyFilters();}
+function resetFilters(){['f-speed','f-speed-max','f-glide','f-glide-max','f-turn','f-turn-max','f-fade','f-fade-max','f-price','f-price-max'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});resetDualRangeSliders();window._selectedCities=[];document.querySelectorAll('#cityFilterDrop input[type=checkbox]').forEach(ch=>ch.checked=false);const cfBtn=document.getElementById('cityFilterBtn');if(cfBtn)cfBtn.innerHTML='<span style="color:var(--m1)">'+t('city')+'</span>';document.getElementById('f-sort').value='new';document.getElementById('mainSearch').value='';CF='all';const tabs=document.getElementById('ftabs-catalog');if(tabs){tabs.querySelectorAll('.ft').forEach((b,i)=>b.classList.toggle('active',i===0));const first=tabs.querySelector('.ft.active');if(first)moveFtabsPill(first);}applyFilters();}
 // ── DUAL RANGE SLIDERS ──
 function initDualRangeSliders(){
   document.querySelectorAll('.drs').forEach(drs=>{
@@ -1286,7 +1302,7 @@ function applyFilters(){
   const fFadeMax=parseFloat(document.getElementById('f-fade-max')?.value);
   const fPrice=parseFloat(document.getElementById('f-price')?.value);
   const fPriceMax=parseFloat(document.getElementById('f-price-max')?.value);
-  const fCity=(document.getElementById('f-city')?.value||'').toLowerCase().trim();
+  const fCities=window._selectedCities||[];
   const sort=document.getElementById('f-sort')?.value||'new';
   let list=allDiscs.filter(d=>d.status!=='sold');
   if(CF==='fav')list=list.filter(d=>isFav(d.id));
@@ -1303,7 +1319,7 @@ function applyFilters(){
   if(!isNaN(fFadeMax))list=list.filter(d=>parseFloat(d.fade)<=fFadeMax);
   if(!isNaN(fPrice))list=list.filter(d=>parseFloat(d.buyout)>=fPrice);
   if(!isNaN(fPriceMax))list=list.filter(d=>parseFloat(d.buyout)<=fPriceMax);
-  if(fCity)list=list.filter(d=>(d.city||'').toLowerCase().includes(fCity));
+  if(fCities.length)list=list.filter(d=>{const dk=cityKey(d.city);return fCities.includes(dk);});
   if(sort==='price-asc')list.sort((a,b)=>(parseFloat(a.buyout)||0)-(parseFloat(b.buyout)||0));
   else if(sort==='price-desc')list.sort((a,b)=>(parseFloat(b.buyout)||0)-(parseFloat(a.buyout)||0));
   else if(sort==='speed-desc')list.sort((a,b)=>(parseFloat(b.speed)||0)-(parseFloat(a.speed)||0));
@@ -1350,7 +1366,7 @@ function showDetail(id){
       <div class="detail-info-item"><span class="di-label">${t('weight')}:</span> ${d.weight||'—'}${LANG==='uk'?'г':'g'}</div>
       <div class="detail-info-item"><span class="di-label">${t('color')}:</span> ${escHtml(d.color||'—')}</div>
       ${d.inked?'<div class="detail-info-item"><span style="color:var(--purple)">🖊️ Inked</span></div>':'<div></div>'}
-      ${d.city?`<div class="detail-info-item full"><span class="di-label">${t('city')}:</span> ${escHtml(d.city)}</div>`:''}
+      ${d.city?`<div class="detail-info-item full"><span class="di-label">${t('city')}:</span> ${escHtml(tCity(d.city))}</div>`:''}
       <div class="detail-info-item full"><span class="di-label">${t('owner')}:</span> ${escHtml(d.owner||'—')}${tgLinkFull(d.ownerTg)}</div>
       ${d.tester&&d.status==='testing'?`<div class="detail-info-item full"><span class="di-label">${t('tester')}:</span> ${escHtml(d.tester)}</div>`:''}
     </div>
@@ -1491,7 +1507,7 @@ async function submitDisc(){
     plastic:document.getElementById('ad-plastic').value,
     weight:parseInt(document.getElementById('ad-weight').value)||175,
     color:document.getElementById('ad-color').value,
-    city:document.getElementById('ad-city').value.trim(),
+    city:document.getElementById('ad-city').value||'',
     condition:parseInt(document.getElementById('ad-cond').value)||7,
     speed:parseFloat(document.getElementById('ad-speed').value)||0,
     glide:parseFloat(document.getElementById('ad-glide').value)||0,
@@ -1662,7 +1678,7 @@ function openEditDiscWithData(d){
   document.getElementById('editTradeWrap').style.display=d.tradeWant?'block':'none';
   document.getElementById('edit-bargain').checked=!!d.bargain;
   document.getElementById('edit-notes').value=d.notes||'';
-  document.getElementById('edit-city').value=d.city||'';
+  document.getElementById('edit-city').innerHTML='<option value="">—</option>'+cityOptions(cityKey(d.city));
   document.getElementById('edit-status').value=d.status||'available';
   document.getElementById('edit-speed').value=d.speed||0;
   document.getElementById('edit-glide').value=d.glide||0;
@@ -1733,7 +1749,7 @@ async function submitEditDisc(){
     status:document.getElementById('edit-status').value,
     trade_want:isTrade?(document.getElementById('edit-trade-desc').value.trim()||'Пропонуйте'):'',
     notes:document.getElementById('edit-notes').value,
-    city:document.getElementById('edit-city').value.trim(),
+    city:document.getElementById('edit-city').value||'',
     speed:parseFloat(document.getElementById('edit-speed').value)||0,
     glide:parseFloat(document.getElementById('edit-glide').value)||0,
     turn:parseFloat(document.getElementById('edit-turn').value)||0,
@@ -2305,6 +2321,7 @@ function initBnavPill(){
 window.addEventListener('resize',()=>{const a=document.querySelector('.bnav-item.active:not(.bnav-item-add)');const p=document.getElementById('bnavPill');if(p){p.style.transition='none';moveBnavPill(a);requestAnimationFrame(()=>{p.style.transition='';});}setTimeout(()=>{const a2=document.querySelector('.bnav-item.active:not(.bnav-item-add)');if(a2)moveBnavPill(a2);},300);});
 setTimeout(initBnavPill,300);
 setTimeout(initDualRangeSliders,400);
+setTimeout(initCitySelects,100);
 
 // ── FTABS SLIDING PILL ──
 function moveFtabsPill(btn){
@@ -2688,7 +2705,7 @@ async function submitAuction(){
     plastic:document.getElementById('auc-plastic').value.trim(),
     weight:parseInt(document.getElementById('auc-weight').value)||0,
     color:document.getElementById('auc-color').value.trim(),
-    city:document.getElementById('auc-city').value.trim(),
+    city:document.getElementById('auc-city').value||'',
     condition:parseInt(document.getElementById('auc-cond').value)||7,
     speed:parseFloat(document.getElementById('auc-speed').value)||0,
     glide:parseFloat(document.getElementById('auc-glide').value)||0,
@@ -2731,7 +2748,7 @@ function discToAuction(discId){
   document.getElementById('auc-plastic').value=d.plastic||'';
   document.getElementById('auc-weight').value=d.weight||'';
   document.getElementById('auc-color').value=d.color||'';
-  document.getElementById('auc-city').value=d.city||'';
+  document.getElementById('auc-city').innerHTML='<option value="">—</option>'+cityOptions(cityKey(d.city));
   document.getElementById('auc-cond').value=d.condition||7;
   document.getElementById('aucCondLabel').textContent=d.condition||7;
   document.getElementById('auc-speed').value=d.speed||'';
@@ -2763,7 +2780,7 @@ function restartAuction(aucId){
   document.getElementById('auc-plastic').value=a.plastic||'';
   document.getElementById('auc-weight').value=a.weight||'';
   document.getElementById('auc-color').value=a.color||'';
-  document.getElementById('auc-city').value=a.city||'';
+  document.getElementById('auc-city').innerHTML='<option value="">—</option>'+cityOptions(cityKey(a.city));
   document.getElementById('auc-cond').value=a.condition||7;
   document.getElementById('aucCondLabel').textContent=a.condition||7;
   document.getElementById('auc-speed').value=a.speed||'';
@@ -2831,7 +2848,7 @@ async function auctionToCatalog(aucId){
   document.getElementById('ad-plastic').value=a.plastic||(desc.match(/Пластик:\s*(.+)/)||[])[1]||'';
   document.getElementById('ad-weight').value=a.weight||(desc.match(/Вага:\s*(\d+)/)||[])[1]||'';
   document.getElementById('ad-color').value=a.color||(desc.match(/Колір:\s*(.+)/)||[])[1]||'';
-  document.getElementById('ad-city').value=a.city||(desc.match(/Місто:\s*(.+)/)||[])[1]||'';
+  const _acity=a.city||(desc.match(/Місто:\s*(.+)/)||[])[1]||'';document.getElementById('ad-city').innerHTML='<option value="">—</option>'+cityOptions(cityKey(_acity));
   const cond=a.condition||(desc.match(/Стан:\s*(\d+)/)||[])[1]||7;
   document.getElementById('ad-cond').value=cond;
   document.getElementById('condValLabel').textContent=cond;
