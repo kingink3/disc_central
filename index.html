@@ -974,7 +974,63 @@ input[type=range]::-moz-range-track{height:6px;background:rgba(255,255,255,0.06)
 // ── SUPABASE ──
 const SUPABASE_URL = 'https://bxbpyletoouksllnifej.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_990YeXA-COsdfAJn6p-1Rw_jkgm0CQJ';
-const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+let sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+// Telegram-issued JWT (signed by Apps Script using Supabase JWT secret).
+// Once present, Supabase REST + Realtime requests are authenticated as that user.
+let TG_JWT = null;
+function _readCachedJwt(){
+  try{
+    const raw=localStorage.getItem('dc_jwt');
+    if(!raw)return null;
+    const o=JSON.parse(raw);
+    if(!o||!o.token||!o.exp)return null;
+    if(Math.floor(Date.now()/1000) >= o.exp - 60)return null; // expired or 1 min away
+    return o;
+  }catch(e){return null;}
+}
+function _saveCachedJwt(token,expSec){
+  try{localStorage.setItem('dc_jwt',JSON.stringify({token,exp:expSec}));}catch(e){}
+}
+function _decodeJwtExp(token){
+  try{
+    const parts=token.split('.');
+    if(parts.length!==3)return 0;
+    const payload=JSON.parse(atob(parts[1].replace(/-/g,'+').replace(/_/g,'/')));
+    return Number(payload.exp)||0;
+  }catch(e){return 0;}
+}
+function _applyJwtToSupabase(token){
+  TG_JWT=token;
+  // Rebuild client with Authorization header so REST + Realtime auth as this user.
+  // Existing references to `sb` keep working because we mutate the binding.
+  sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
+    global: { headers: { Authorization: 'Bearer '+token } },
+    auth: { persistSession: false, autoRefreshToken: false }
+  });
+  try{ sb.realtime.setAuth(token); }catch(e){}
+}
+async function ensureSupabaseAuth(){
+  // 1) cached?
+  const cached=_readCachedJwt();
+  if(cached){_applyJwtToSupabase(cached.token);return true;}
+  // 2) request fresh
+  const initData=window.Telegram?.WebApp?.initData||'';
+  if(!initData)return false;
+  try{
+    const r=await fetch(APPS_SCRIPT,{
+      method:'POST',
+      headers:{'Content-Type':'text/plain'},
+      body:JSON.stringify({action:'getAuthToken',initData})
+    });
+    const j=await r.json();
+    if(!j||!j.ok||!j.token)return false;
+    const exp=_decodeJwtExp(j.token);
+    if(!exp)return false;
+    _saveCachedJwt(j.token,exp);
+    _applyJwtToSupabase(j.token);
+    return true;
+  }catch(e){return false;}
+}
 
 // ── APPS SCRIPT (for Telegram notifications only) ──
 const APPS_SCRIPT = 'https://script.google.com/macros/s/AKfycbwybos79QSCBbtzu_XVFtp5fZRoz70xL4vAWu0H1TCrxw0rMsnzhZVZuRCcwWlYo4oAjw/exec';
@@ -1097,15 +1153,21 @@ function st(s){return ST[s]||ST.available;}
 function fmtDate(iso){if(!iso)return'—';try{return new Date(iso).toLocaleDateString(LANG==='uk'?'uk-UA':'en-GB',{day:'2-digit',month:'2-digit',year:'numeric'});}catch(e){return iso;}}
 function fmtDateTime(iso){if(!iso)return'—';try{const d=new Date(iso);return d.toLocaleDateString(LANG==='uk'?'uk-UA':'en-GB',{day:'2-digit',month:'2-digit',year:'numeric'})+' '+d.toLocaleTimeString(LANG==='uk'?'uk-UA':'en-GB',{hour:'2-digit',minute:'2-digit'});}catch(e){return iso;}}
 function genId(){return Date.now().toString(36)+Math.random().toString(36).slice(2,5);}
-function escHtml(s){if(!s)return'';return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function escHtml(s){if(!s)return'';return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');}
+// Safe interpolation into single-quoted JS string inside an HTML attribute (e.g. onclick="fn('${escJs(x)}')")
+function escJs(s){return String(s||'').replace(/\\/g,'\\\\').replace(/'/g,'\\x27').replace(/"/g,'\\x22').replace(/</g,'\\x3C').replace(/>/g,'\\x3E').replace(/\r?\n/g,'\\n');}
+// Safely set CSS background-image from a URL (escape closing paren and quotes to prevent CSS injection)
+function setBgImage(el,url){if(!el)return;const safe=String(url||'').replace(/\\/g,'\\\\').replace(/"/g,'%22').replace(/\)/g,'%29').replace(/\r?\n/g,'');el.style.backgroundImage=`url("${safe}")`;}
 function tgLinkFull(tg){
-  const clean=String(tg).replace('@','').trim();
+  const clean=String(tg||'').replace('@','').trim();
   if(!clean)return'';
   if(/^\d+$/.test(clean)){
     const tgApp=window.Telegram?.WebApp;
-    if(tgApp)return` · <a href="#" onclick="event.preventDefault();window.Telegram.WebApp.openTelegramLink('https://t.me/@id${clean}')" style="color:var(--cyan)">${t('writeTo')}</a>`;
-    return` · <a href="tg://user?id=${clean}" target="_blank" style="color:var(--cyan)">${t('writeTo')}</a>`;
+    if(tgApp)return` · <a href="#" onclick="event.preventDefault();window.Telegram.WebApp.openTelegramLink('https://t.me/@id${clean}')" style="color:var(--cyan)">${escHtml(t('writeTo'))}</a>`;
+    return` · <a href="tg://user?id=${clean}" target="_blank" style="color:var(--cyan)">${escHtml(t('writeTo'))}</a>`;
   }
+  // Telegram username allows only [a-zA-Z0-9_]; reject anything else outright
+  if(!/^[a-zA-Z0-9_]{1,64}$/.test(clean))return'';
   return` · <a href="https://t.me/${clean}" target="_blank" style="color:var(--cyan)">@${clean}</a>`;
 }
 
@@ -1264,7 +1326,7 @@ function cardHTML(d){
     </div>
     <div class="disc-body">
       <div class="disc-title">${escHtml(d.brand)} ${escHtml(d.model)}</div>
-      <div class="disc-sub">${[d.plastic,d.weight?d.weight+(LANG==='uk'?'г':'g'):'',tCity(d.city)].filter(Boolean).join(' · ')}</div>
+      <div class="disc-sub">${[d.plastic,d.weight?d.weight+(LANG==='uk'?'г':'g'):'',tCity(d.city)].filter(Boolean).map(escHtml).join(' · ')}</div>
       ${condBar(d.condition)}
       <div class="flight-row">
         <div class="fc"><div class="fv">${d.speed||0}</div><div class="fk">Spd</div></div>
@@ -1277,7 +1339,7 @@ function cardHTML(d){
           <div class="disc-price">${d.buyout?d.buyout+' ₴':'—'}${d.bargain?' <span style="font-size:0.7rem" title="⚖️">⚖️</span>':''}</div>
           <div style="display:flex;align-items:center;gap:0.4rem">
             <span onclick="event.stopPropagation();toggleFav('${d.id}')" style="cursor:pointer;font-size:0.85rem">${isFav(d.id)?'⭐':'☆'}</span>
-            <div class="disc-own" onclick="event.stopPropagation();filterByOwner('${escHtml(d.owner)}')">👤 ${escHtml((d.owner||'').split(' ')[0])}</div>
+            <div class="disc-own" onclick="event.stopPropagation();filterByOwner('${escJs(d.owner)}')">👤 ${escHtml((d.owner||'').split(' ')[0])}</div>
           </div>
         </div>
         ${isOwn?`<div style="display:flex;align-items:center;justify-content:center;width:100%;font-size:0.7rem;color:var(--m1);padding:0.25rem 0">${t('yourDisc')}</div>`:`<div onclick="event.stopPropagation()" style="display:flex;gap:3px;width:100%">
@@ -1403,7 +1465,7 @@ function showDetail(id){
   const canB=d.status!=='sold';
   const hasTrade=String(d.tradeWant||'').trim()&&String(d.tradeWant)!=='false';
   const isDetailOwner=CU&&String(CU.name).trim()===String(d.owner).trim();
-  const photos=urls.length?`<div class="detail-photos" id="pw-d${d.id}" style="position:relative">${urls.map((u,i)=>`<img src="${u}" class="${i===0?'active':''}" alt="">`).join('')}${urls.length>1?`<button class="photo-nav prev" onclick="photoNav('d${d.id}',-1)">‹</button><button class="photo-nav next" onclick="photoNav('d${d.id}',1)">›</button>`:''}
+  const photos=urls.length?`<div class="detail-photos" id="pw-d${d.id}" style="position:relative">${urls.map((u,i)=>`<img src="${escHtml(u)}" class="${i===0?'active':''}" alt="">`).join('')}${urls.length>1?`<button class="photo-nav prev" onclick="photoNav('d${d.id}',-1)">‹</button><button class="photo-nav next" onclick="photoNav('d${d.id}',1)">›</button>`:''}
     <span onclick="toggleLike('${d.id}',event)" style="position:absolute;bottom:10px;right:10px;cursor:pointer;font-size:0.95rem;z-index:2;background:rgba(0,0,0,0.6);padding:4px 8px;border-radius:12px;display:flex;align-items:center;gap:4px;color:#fff;backdrop-filter:blur(4px)"><span>${getLikes(d.id).liked?'❤️':'🤍'}</span><span style="font-size:0.8rem;font-weight:600">${getLikes(d.id).count||''}</span></span>
   </div>`:`<div style="height:120px;background:var(--s2);border-radius:var(--r2);display:flex;align-items:center;justify-content:center;font-size:3rem;margin-bottom:1rem">🥏</div>`;
   document.getElementById('detailContent').innerHTML=`
@@ -1757,7 +1819,7 @@ function openEditDiscWithData(d){
   [0,1,2].forEach(i=>{
     const slot=document.getElementById('ep-slot'+i);
     if(editPhotoExisting[i]){
-      slot.style.backgroundImage='url('+editPhotoExisting[i]+')';slot.style.backgroundSize='cover';slot.style.backgroundPosition='center';
+      setBgImage(slot,editPhotoExisting[i]);slot.style.backgroundSize='cover';slot.style.backgroundPosition='center';
       slot.querySelector('.slot-icon').style.display='none';
     }else{
       slot.style.backgroundImage='';slot.querySelector('.slot-icon').style.display='';
@@ -1772,7 +1834,7 @@ function renderEditPhotoCurrent(){
   const el=document.getElementById('edit-photo-current');
   const has=editPhotoExisting.filter(Boolean);
   el.innerHTML=has.length
-    ?`<div style="display:flex;gap:0.4rem">${editPhotoExisting.map((u,i)=>u?`<div style="position:relative"><img src="${u}" style="width:70px;height:50px;object-fit:cover;border-radius:var(--r);border:1px solid var(--b1)"><button class="btn btn-danger btn-xs" style="position:absolute;top:1px;right:1px;padding:0 3px;font-size:0.55rem" onclick="editRemovePhoto(${i})">❌</button></div>`:''
+    ?`<div style="display:flex;gap:0.4rem">${editPhotoExisting.map((u,i)=>u?`<div style="position:relative"><img src="${escHtml(u)}" style="width:70px;height:50px;object-fit:cover;border-radius:var(--r);border:1px solid var(--b1)"><button class="btn btn-danger btn-xs" style="position:absolute;top:1px;right:1px;padding:0 3px;font-size:0.55rem" onclick="editRemovePhoto(${i})">❌</button></div>`:''
     ).join('')}</div>`:'';
 }
 function editRemovePhoto(idx){
@@ -1843,7 +1905,7 @@ function openReqTest(id){
   document.getElementById('reqDiscInfo').innerHTML=
     `<strong>${escHtml(d.brand)} ${escHtml(d.model)}</strong> · ${escHtml(d.plastic)} · ${d.weight||''}г · <strong style="color:var(--lime)">${d.buyout||0}₴</strong><br>`+
     `'+t('owner')+': <strong>${escHtml(d.owner)}</strong>${tgLinkFull(owTg)}<br>`+
-    `<span style="color:var(--m1);font-size:0.75rem">Від: <strong style="color:var(--text)">${CU.name}</strong>${tgLinkFull(CU.tg)}</span>`;
+    `<span style="color:var(--m1);font-size:0.75rem">Від: <strong style="color:var(--text)">${escHtml(CU.name)}</strong>${tgLinkFull(CU.tg)}</span>`;
   document.getElementById('rt-note').value='';
   document.getElementById('rt-note').placeholder=t('commentPh');
   document.querySelector('#ov-reqTest .mt').innerHTML=t('testRequest').split(' ').map((w,i)=>i?'<span>'+w+'</span>':w).join(' ');
@@ -1878,11 +1940,12 @@ function oBuy(id){
   document.getElementById('buy-note').value='';
   const lEl=document.getElementById('buySellerLink');
   const owClean=String(d.ownerTg||'').replace('@','').trim();
-  if(owClean){
+  const owValid=owClean&&(/^\d+$/.test(owClean)||/^[a-zA-Z0-9_]{1,64}$/.test(owClean));
+  if(owValid){
     const isNum=/^\d+$/.test(owClean);
     const href=isNum?'tg://user?id='+owClean:'https://t.me/'+owClean;
     const label=isNum?t('writeToSeller'):'💬 @'+owClean;
-    lEl.style.display='block';lEl.innerHTML=`<a href="${href}" target="_blank" class="btn btn-cyan btn-full">${label}</a>`;
+    lEl.style.display='block';lEl.innerHTML=`<a href="${escHtml(href)}" target="_blank" class="btn btn-cyan btn-full">${escHtml(label)}</a>`;
   }else lEl.style.display='none';
   openModal('buy');
 }
@@ -1973,7 +2036,7 @@ function openTradeOffer(id){
     `<strong>${escHtml(d.brand)} ${escHtml(d.model)}</strong><br>`+
     `${t('ownerLooking')}: <strong style="color:var(--purple)">${escHtml(d.tradeWant)}</strong><br>`+
     `Власник: ${escHtml(d.owner)}${tgLinkFull(owTg)}<br>`+
-    `<span style="color:var(--m1);font-size:0.75rem">Від: ${CU.name}</span>`;
+    `<span style="color:var(--m1);font-size:0.75rem">Від: ${escHtml(CU.name)}</span>`;
   document.getElementById('rt-note').placeholder=t('descYourDisc');
   document.getElementById('rt-note').value='';
   document.querySelector('#ov-reqTest .mt').innerHTML=t('tradeOffer').replace(/(\S+)$/,'<span>$1</span>');
@@ -2034,8 +2097,8 @@ function renderSeller(){
       const historyId='hist-'+d.id;
       return`<div style="border:1px solid var(--b1);border-radius:var(--r);overflow:hidden;background:var(--s2);margin-bottom:0.3rem">
         <div class="dash-item" style="border:none;margin:0">
-          ${d.photoUrl?`<img src="${d.photoUrl}" style="width:34px;height:34px;object-fit:cover;border-radius:6px;flex-shrink:0">`:'<div style="width:34px;height:34px;background:var(--s3);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0">🥏</div>'}
-          <div style="flex:1;min-width:0"><div class="di-title">${escHtml(d.brand)} ${escHtml(d.model)}</div><div class="di-sub"><span class="badge b-${st(d.status).c}">${st(d.status).l}</span>${d.tester&&['testing','reserved'].includes(d.status)?' · '+d.tester:''}</div></div>
+          ${d.photoUrl?`<img src="${escHtml(d.photoUrl)}" style="width:34px;height:34px;object-fit:cover;border-radius:6px;flex-shrink:0">`:'<div style="width:34px;height:34px;background:var(--s3);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0">🥏</div>'}
+          <div style="flex:1;min-width:0"><div class="di-title">${escHtml(d.brand)} ${escHtml(d.model)}</div><div class="di-sub"><span class="badge b-${st(d.status).c}">${st(d.status).l}</span>${d.tester&&['testing','reserved'].includes(d.status)?' · '+escHtml(d.tester):''}</div></div>
           <div style="text-align:right;display:flex;flex-direction:column;align-items:flex-end;gap:3px">
             <div class="di-price">${d.buyout||0}₴</div>
             <div style="display:flex;gap:3px">
@@ -2056,11 +2119,11 @@ function renderSeller(){
               const typeBadge=isBuy?'b-av':isExch?'b-tr':'b-te';
               return`<div style="padding:0.4rem 0.5rem;border-top:1px solid var(--b1);font-size:0.78rem;display:flex;align-items:center;gap:0.4rem">
                 <div style="flex:1;min-width:0">
-                  <div>${r.tester} <span class="badge ${typeBadge}" style="font-size:0.58rem">${typeLabel}</span> <span class="badge b-te" style="font-size:0.58rem">${r.status||'pending'}</span></div>
-                  <div style="font-size:0.68rem;color:var(--m1)">${fmtDate(r.created_at)}${r.tester_tg?' · @'+r.tester_tg.replace('@',''):''}${r.note?' · '+r.note.substring(0,40)+(r.note.length>40?'…':''):''}</div>
+                  <div>${escHtml(r.tester)} <span class="badge ${typeBadge}" style="font-size:0.58rem">${escHtml(typeLabel)}</span> <span class="badge b-te" style="font-size:0.58rem">${escHtml(r.status||'pending')}</span></div>
+                  <div style="font-size:0.68rem;color:var(--m1)">${fmtDate(r.created_at)}${r.tester_tg?' · @'+escHtml(String(r.tester_tg).replace('@','')):''}${r.note?' · '+escHtml(r.note.substring(0,40))+(r.note.length>40?'…':''):''}</div>
                 </div>
-                ${isBuy&&r.status==='pending'?`<button class="btn btn-lime btn-xs" onclick="event.stopPropagation();confirmSale('${d.id}')" style="flex-shrink:0">✓</button>`:''}
-                ${!isBuy&&r.status==='pending'?`<button class="btn btn-cyan btn-xs" onclick="event.stopPropagation();acceptRequest('${r.id}','${d.id}','${(r.tester||'').replace(/'/g,"\\'")}','${(r.tester_tg||'').replace(/'/g,"\\'")}','${r.request_type}')" style="flex-shrink:0">Прийняти</button>`:''}
+                ${isBuy&&r.status==='pending'?`<button class="btn btn-lime btn-xs" onclick="event.stopPropagation();confirmSale('${escJs(d.id)}')" style="flex-shrink:0">✓</button>`:''}
+                ${!isBuy&&r.status==='pending'?`<button class="btn btn-cyan btn-xs" onclick="event.stopPropagation();acceptRequest('${escJs(r.id)}','${escJs(d.id)}','${escJs(r.tester||'')}','${escJs(r.tester_tg||'')}','${escJs(r.request_type)}')" style="flex-shrink:0">Прийняти</button>`:''}
               </div>`;
             }).join(''):'<div style="padding:0.4rem 0.5rem;font-size:0.75rem;color:var(--m1)">Немає запитів</div>'}
           </div>
@@ -2082,11 +2145,11 @@ function renderSeller(){
         return`<div class="dash-item" style="flex-direction:column;align-items:stretch;gap:0.35rem">
           <div style="display:flex;align-items:center;gap:0.5rem">
             <div style="flex:1;min-width:0">
-              <div class="di-title">${r.tester} → ${disc?disc.brand+' '+disc.model:'?'} <span class="badge ${typeBadge}">${typeLabel}</span></div>
+              <div class="di-title">${escHtml(r.tester)} → ${disc?escHtml(disc.brand)+' '+escHtml(disc.model):'?'} <span class="badge ${typeBadge}">${escHtml(typeLabel)}</span></div>
               <div class="di-sub">${fmtDate(r.created_at)}${tgLinkFull(r.tester_tg)}</div>
             </div>
-            ${disc&&isBuy&&r.status==='pending'?`<button class="btn btn-lime btn-xs" onclick="confirmSale('${disc.id}')">✓ ${t('sold')}</button>`:''}
-            ${disc&&!isBuy&&r.status==='pending'?`<button class="btn btn-cyan btn-xs" onclick="acceptRequest('${r.id}','${disc.id}','${(r.tester||'').replace(/'/g,"\\'")}','${(r.tester_tg||'').replace(/'/g,"\\'")}','${r.request_type}')">Прийняти</button>`:''}
+            ${disc&&isBuy&&r.status==='pending'?`<button class="btn btn-lime btn-xs" onclick="confirmSale('${escJs(disc.id)}')">✓ ${escHtml(t('sold'))}</button>`:''}
+            ${disc&&!isBuy&&r.status==='pending'?`<button class="btn btn-cyan btn-xs" onclick="acceptRequest('${escJs(r.id)}','${escJs(disc.id)}','${escJs(r.tester||'')}','${escJs(r.tester_tg||'')}','${escJs(r.request_type)}')">Прийняти</button>`:''}
           </div>
         </div>`;
       }).join('')
@@ -2100,11 +2163,11 @@ async function renderTester(){
   if(al){
     al.innerHTML=active.length
       ?active.map(d=>`<div class="dash-item">
-          ${d.photoUrl?`<img src="${d.photoUrl}" style="width:38px;height:38px;object-fit:cover;border-radius:7px;flex-shrink:0">`:'<div style="width:38px;height:38px;background:var(--s3);border-radius:7px;display:flex;align-items:center;justify-content:center">🥏</div>'}
+          ${d.photoUrl?`<img src="${escHtml(d.photoUrl)}" style="width:38px;height:38px;object-fit:cover;border-radius:7px;flex-shrink:0">`:'<div style="width:38px;height:38px;background:var(--s3);border-radius:7px;display:flex;align-items:center;justify-content:center">🥏</div>'}
           <div style="flex:1;min-width:0"><div class="di-title">${escHtml(d.brand)} ${escHtml(d.model)}</div><div class="di-sub">👤 ${escHtml(d.owner)} · ${d.buyout||0}₴</div></div>
           <div style="display:flex;gap:0.3rem">
-            <button class="btn btn-lime btn-xs" onclick="oBuy('${d.id}')">Купити</button>
-            <button class="btn btn-ghost btn-xs" onclick="oRet('${d.id}')">↩</button>
+            <button class="btn btn-lime btn-xs" onclick="oBuy('${escJs(d.id)}')">Купити</button>
+            <button class="btn btn-ghost btn-xs" onclick="oRet('${escJs(d.id)}')">↩</button>
           </div>
         </div>`).join('')
       :`<div class="empty" style="padding:1.5rem"><div class="empty-icon" style="font-size:1.25rem">🎯</div>Немає активних тестів</div>`;
@@ -2140,7 +2203,7 @@ function checkAdminAccess(){
   if(isAdminUser()){document.getElementById('adminNoAuth').style.display='none';document.getElementById('adminContent').style.display='block';setTimeout(loadAdminData,100);return true;}
   document.getElementById('adminNoAuth').style.display='block';document.getElementById('adminContent').style.display='none';
   const m=document.getElementById('adminNoAuthMsg');
-  if(m&&CU)m.innerHTML=`ID: ${CU.tgId||'?'} · @${CU.tg||'?'}`;
+  if(m&&CU)m.innerHTML=`ID: ${escHtml(CU.tgId||'?')} · @${escHtml(CU.tg||'?')}`;
   return false;
 }
 
@@ -2157,12 +2220,12 @@ async function loadAdminData(){
     document.getElementById('adm-rev').textContent=all.filter(d=>d.status==='sold').reduce((a,d)=>a+(Number(d.buyout)||0),0)+'₴';
     document.getElementById('adminDiscTable').innerHTML=all.map(d=>`<tr>
       <td><strong>${escHtml(d.brand)} ${escHtml(d.model)}</strong><br><span style="color:var(--m1);font-size:0.7rem">${escHtml(d.plastic)}</span></td>
-      <td>${d.owner||'-'}</td>
+      <td>${escHtml(d.owner||'-')}</td>
       <td><span style="font-family:'Space Mono';font-size:0.78rem;color:var(--lime)">${d.condition||0}/10</span></td>
       <td><span class="badge b-${(ST[d.status]||ST.available).c}">${(ST[d.status]||ST.available).l}</span></td>
       <td style="font-family:'Space Mono';font-size:0.75rem">${d.buyout||0}₴</td>
       <td style="white-space:nowrap">
-        <select onchange="adminSetStatus('${d.id}',this.value)" style="padding:2px 5px;font-size:0.72rem;width:auto;background:var(--s2);color:var(--text);border:1px solid var(--b1);border-radius:5px">
+        <select onchange="adminSetStatus('${escJs(d.id)}',this.value)" style="padding:2px 5px;font-size:0.72rem;width:auto;background:var(--s2);color:var(--text);border:1px solid var(--b1);border-radius:5px">
           <option value="">— статус —</option>
           <option value="available" data-i18n="stOptAvailable">Доступний</option>
           <option value="testing">На тесті</option>
@@ -2171,13 +2234,13 @@ async function loadAdminData(){
           <option value="sold" data-i18n="stOptSold">Продано</option>
           <option value="unlisted" data-i18n="stOptUnlisted">Знято з продажу</option>
         </select>
-        <button class="btn btn-ghost btn-xs" style="margin-top:3px" onclick="adminEditPhotos('${d.id}')">📷</button>
-        <button class="btn btn-danger btn-xs" style="margin-top:3px" onclick="adminDelete('${d.id}')">🗑</button>
+        <button class="btn btn-ghost btn-xs" style="margin-top:3px" onclick="adminEditPhotos('${escJs(d.id)}')">📷</button>
+        <button class="btn btn-danger btn-xs" style="margin-top:3px" onclick="adminDelete('${escJs(d.id)}')">🗑</button>
       </td></tr>`).join('');
     document.getElementById('adminReqTable').innerHTML=(reqs||[]).map(r=>{
       const d=all.find(x=>x.id===r.disc_id);
       const isBuy=r.request_type==='buy'||(r.note&&r.note.includes('купів'));
-      return`<tr><td>${r.tester||'-'}${r.tester_tg?' · @'+r.tester_tg:''}</td><td>${d?d.brand+' '+d.model:'?'}</td><td>${isBuy?'Купівля':'Тест'}</td><td>${fmtDate(r.created_at)}</td><td><span class="badge b-te">${r.status||'-'}</span></td></tr>`;
+      return`<tr><td>${escHtml(r.tester||'-')}${r.tester_tg?' · @'+escHtml(String(r.tester_tg).replace('@','')):''}</td><td>${d?escHtml(d.brand)+' '+escHtml(d.model):'?'}</td><td>${isBuy?'Купівля':'Тест'}</td><td>${fmtDate(r.created_at)}</td><td><span class="badge b-te">${escHtml(r.status||'-')}</span></td></tr>`;
     }).join('');
     await loadBanned();
   }catch(e){toast(t('errGeneric'),true);}
@@ -2212,14 +2275,14 @@ async function adminEditPhotos(discId){
   adminPhotoExisting=[d.photoUrl||'',d.photoUrl2||'',d.photoUrl3||''];
   // Show current photos
   document.getElementById('ap-current').innerHTML=adminPhotoExisting.filter(Boolean).length
-    ?`<div style="display:flex;gap:0.4rem;flex-wrap:wrap">${adminPhotoExisting.map((u,i)=>u?`<div style="position:relative"><img src="${u}" style="width:100px;height:70px;object-fit:cover;border-radius:var(--r);border:1px solid var(--b1)"><button class="btn btn-danger btn-xs" style="position:absolute;top:2px;right:2px;padding:1px 4px;font-size:0.6rem" onclick="adminRemovePhoto(${i})">❌</button></div>`:''
+    ?`<div style="display:flex;gap:0.4rem;flex-wrap:wrap">${adminPhotoExisting.map((u,i)=>u?`<div style="position:relative"><img src="${escHtml(u)}" style="width:100px;height:70px;object-fit:cover;border-radius:var(--r);border:1px solid var(--b1)"><button class="btn btn-danger btn-xs" style="position:absolute;top:2px;right:2px;padding:1px 4px;font-size:0.6rem" onclick="adminRemovePhoto(${i})">❌</button></div>`:''
     ).join('')}</div>`
     :'<div style="color:var(--m1);font-size:0.8rem">Немає фото</div>';
   // Reset slots
   [0,1,2].forEach(i=>{
     const slot=document.getElementById('ap-slot'+i);
     if(adminPhotoExisting[i]){
-      slot.style.backgroundImage='url('+adminPhotoExisting[i]+')';slot.style.backgroundSize='cover';slot.style.backgroundPosition='center';
+      slot.style.backgroundImage='';setBgImage(slot,adminPhotoExisting[i]);slot.style.backgroundSize='cover';slot.style.backgroundPosition='center';
       slot.querySelector('.slot-icon').style.display='none';
     }else{
       slot.style.backgroundImage='';slot.querySelector('.slot-icon').style.display='';
@@ -2237,7 +2300,7 @@ function adminRemovePhoto(idx){
   document.getElementById('apFile'+idx).value='';
   // Refresh current display
   document.getElementById('ap-current').innerHTML=adminPhotoExisting.filter(Boolean).length
-    ?`<div style="display:flex;gap:0.4rem;flex-wrap:wrap">${adminPhotoExisting.map((u,i)=>u?`<div style="position:relative"><img src="${u}" style="width:100px;height:70px;object-fit:cover;border-radius:var(--r);border:1px solid var(--b1)"><button class="btn btn-danger btn-xs" style="position:absolute;top:2px;right:2px;padding:1px 4px;font-size:0.6rem" onclick="adminRemovePhoto(${i})">❌</button></div>`:''
+    ?`<div style="display:flex;gap:0.4rem;flex-wrap:wrap">${adminPhotoExisting.map((u,i)=>u?`<div style="position:relative"><img src="${escHtml(u)}" style="width:100px;height:70px;object-fit:cover;border-radius:var(--r);border:1px solid var(--b1)"><button class="btn btn-danger btn-xs" style="position:absolute;top:2px;right:2px;padding:1px 4px;font-size:0.6rem" onclick="adminRemovePhoto(${i})">❌</button></div>`:''
     ).join('')}</div>`
     :'<div style="color:var(--m1);font-size:0.8rem">Немає фото</div>';
 }
@@ -2288,8 +2351,8 @@ function renderBanned(){
   const el=document.getElementById('bannedList');if(!el)return;
   el.innerHTML=bannedUsers.length
     ?bannedUsers.map(u=>{
-      const label=(u.name||'')+(u.tg?' · @'+u.tg:'')+(u.id?' · '+u.id:'');
-      return`<div class="dash-item">${label}<button class="btn btn-ghost btn-xs" style="margin-left:auto" onclick="unbanUser('${u.id}')">Розблок</button></div>`;
+      const label=escHtml(u.name||'')+(u.tg?' · @'+escHtml(u.tg):'')+(u.id?' · '+escHtml(u.id):'');
+      return`<div class="dash-item">${label}<button class="btn btn-ghost btn-xs" style="margin-left:auto" onclick="unbanUser('${escJs(u.id)}')">Розблок</button></div>`;
     }).join('')
     :'<div style="color:var(--m1);font-size:0.8rem">Немає</div>';
 }
@@ -2632,13 +2695,13 @@ function renderAuctions(){
     const city=a.city||(desc.match(/Місто:\s*(.+)/)||[])[1]||'';
     const cond=a.condition||(desc.match(/Стан:\s*(\d+)/)||[])[1]||'';
     const color=a.color||(desc.match(/Колір:\s*(.+)/)||[])[1]||'';
-    const sub=[plastic,weight?weight+(LANG==='uk'?'г':'g'):'',color,city].filter(Boolean).join(' · ');
+    const sub=[plastic,weight?weight+(LANG==='uk'?'г':'g'):'',color,city].filter(Boolean).map(escHtml).join(' · ');
     const sp=a.speed||0,gl=a.glide||0,tn=a.turn||0,fd2=a.fade||0;
     const hasFlights=sp||gl||tn||fd2;
-    return`<div class="disc-card" onclick="showAucDetail('${a.id}')">
+    return`<div class="disc-card" onclick="showAucDetail('${escJs(a.id)}')">
       <div class="disc-strip ${statusClass}"></div>
       <div style="position:relative">
-        ${a.photo_url?`<div class="disc-photo-wrap"><img src="${a.photo_url}" class="active" alt="" loading="lazy"></div>`:`<div class="disc-photo-placeholder">🏆</div>`}
+        ${a.photo_url?`<div class="disc-photo-wrap"><img src="${escHtml(a.photo_url)}" class="active" alt="" loading="lazy"></div>`:`<div class="disc-photo-placeholder">🏆</div>`}
         <span class="s-${statusClass} status-overlay">${statusLabel}</span>
         ${aucTypeBadge(a.auction_type)?`<span style="position:absolute;top:5px;right:6px;z-index:2">${aucTypeBadge(a.auction_type)}</span>`:''}
       </div>
@@ -2850,7 +2913,7 @@ function discToAuction(discId){
   urls.forEach((u,i)=>{
     if(!u)return;
     const slot=document.getElementById('auc-slot'+i);
-    if(slot){slot.style.backgroundImage='url('+u+')';slot.style.backgroundSize='cover';slot.style.backgroundPosition='center';const ic=slot.querySelector('.slot-icon');if(ic)ic.style.display='none';}
+    if(slot){setBgImage(slot,u);slot.style.backgroundSize='cover';slot.style.backgroundPosition='center';const ic=slot.querySelector('.slot-icon');if(ic)ic.style.display='none';}
   });
   // Store photo URLs to use directly (skip upload)
   window._aucPrefilledPhotos=urls;
@@ -2887,7 +2950,7 @@ function restartAuction(aucId){
   urls.forEach((u,i)=>{
     if(!u)return;
     const slot=document.getElementById('auc-slot'+i);
-    if(slot){slot.style.backgroundImage='url('+u+')';slot.style.backgroundSize='cover';slot.style.backgroundPosition='center';const ic=slot.querySelector('.slot-icon');if(ic)ic.style.display='none';}
+    if(slot){setBgImage(slot,u);slot.style.backgroundSize='cover';slot.style.backgroundPosition='center';const ic=slot.querySelector('.slot-icon');if(ic)ic.style.display='none';}
   });
   window._aucPrefilledPhotos=urls;
   // Keep source disc link
@@ -2956,7 +3019,7 @@ async function auctionToCatalog(aucId){
   const urls=[a.photo_url,a.photo_url2,a.photo_url3].filter(Boolean);
   urls.forEach((u,i)=>{
     const slot=document.getElementById('slot'+i);
-    if(slot){slot.style.backgroundImage='url('+u+')';slot.style.backgroundSize='cover';slot.style.backgroundPosition='center';slot.querySelector('.slot-icon').style.display='none';}
+    if(slot){setBgImage(slot,u);slot.style.backgroundSize='cover';slot.style.backgroundPosition='center';slot.querySelector('.slot-icon').style.display='none';}
   });
   window._catalogPrefilledPhotos=urls;
   openModal('addDisc');
@@ -3006,10 +3069,10 @@ async function showAucDetail(id){
   const city=a.city||(desc.match(/Місто:\s*(.+)/)||[])[1]||'';
   const notes=desc.replace(/Пластик:.*|Вага:.*|Колір:.*|Стан:.*|Flight:.*|Inked:.*|Місто:.*/g,'').trim();
   const photos=[a.photo_url,a.photo_url2,a.photo_url3].filter(Boolean);
-  const sub=[plastic,weight?weight+(LANG==='uk'?'г':'g'):'',color,city].filter(Boolean).join(' · ');
+  const sub=[plastic,weight?weight+(LANG==='uk'?'г':'g'):'',color,city].filter(Boolean).map(escHtml).join(' · ');
 
   document.getElementById('aucDetailContent').innerHTML=`
-    ${photos.length?`<div class="detail-photos" id="pw-aucD">${photos.map((u,i)=>`<img src="${u}" class="${i===0?'active':''}" alt="">`).join('')}${photos.length>1?`<button class="photo-nav prev" onclick="photoNav('aucD',-1)">‹</button><button class="photo-nav next" onclick="photoNav('aucD',1)">›</button>`:''}</div>`:''}
+    ${photos.length?`<div class="detail-photos" id="pw-aucD">${photos.map((u,i)=>`<img src="${escHtml(u)}" class="${i===0?'active':''}" alt="">`).join('')}${photos.length>1?`<button class="photo-nav prev" onclick="photoNav('aucD',-1)">‹</button><button class="photo-nav next" onclick="photoNav('aucD',1)">›</button>`:''}</div>`:''}
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.2rem">
       <div style="font-family:'Bebas Neue';font-size:1.6rem;letter-spacing:1px;line-height:1">${escHtml(a.title)}</div>
       <span class="badge ${statusClass}">${statusLabel}</span>
@@ -3024,7 +3087,7 @@ async function showAucDetail(id){
       <div class="fc"><div class="fv">${fd}</div><div class="fk">Fde</div></div>
     </div>`:''}
     ${inked?`<div style="font-size:0.78rem;color:var(--m2);margin-bottom:0.4rem">🖊️ Inked</div>`:''}
-    ${notes?`<div style="font-size:0.82rem;color:var(--m2);margin-bottom:0.5rem">${notes}</div>`:''}
+    ${notes?`<div style="font-size:0.82rem;color:var(--m2);margin-bottom:0.5rem">${escHtml(notes)}</div>`:''}
     <div style="border-top:1px solid var(--b1);padding-top:0.75rem;margin-top:0.5rem">
       <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:0.5rem;margin-bottom:0.75rem">
         <div class="stat-m"><div class="stat-mn" id="aucPrice">${curPrice} ₴</div><div class="stat-ml">${t('currentPrice')}</div></div>
@@ -3298,11 +3361,11 @@ function getEmbed(url,platform){
         </div>
       </div>`;
     }
-    return`<div onclick="openExtLink('${url}')" style="cursor:pointer;padding:0.75rem;background:var(--s2);border:1px solid var(--b1);border-radius:var(--r);display:flex;align-items:center;gap:0.75rem">
+    return`<div onclick="openExtLink('${escJs(url)}')" style="cursor:pointer;padding:0.75rem;background:var(--s2);border:1px solid var(--b1);border-radius:var(--r);display:flex;align-items:center;gap:0.75rem">
       <div style="width:48px;height:48px;background:#010101;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0">
         <svg width="24" height="24" viewBox="0 0 24 24"><path d="M16.6 5.82A4.27 4.27 0 0115.54 3h-2.68l-.01 13.27a2.56 2.56 0 01-2.54 2.42 2.56 2.56 0 01-2.56-2.57 2.56 2.56 0 012.56-2.57c.26 0 .5.04.74.1v-2.72a5.26 5.26 0 00-.74-.05A5.28 5.28 0 005 16.12a5.28 5.28 0 005.31 5.25 5.28 5.28 0 005.31-5.25V10.2a6.9 6.9 0 004.03 1.29V8.77a4.28 4.28 0 01-3.05-2.95z" fill="#25F4EE"/></svg>
       </div>
-      <div style="flex:1;min-width:0"><div style="font-weight:700;font-size:0.85rem;color:var(--text)">${t('watchTikTok')}</div><div style="font-size:0.7rem;color:var(--m1);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${url}</div></div>
+      <div style="flex:1;min-width:0"><div style="font-weight:700;font-size:0.85rem;color:var(--text)">${escHtml(t('watchTikTok'))}</div><div style="font-size:0.7rem;color:var(--m1);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${escHtml(url)}</div></div>
       <div style="width:32px;height:32px;background:var(--s3);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0"><span style="font-size:0.9rem">▶</span></div>
     </div>`;
   }
@@ -3313,28 +3376,28 @@ function getEmbed(url,platform){
           <iframe src="https://www.instagram.com/${m[1]}/${m[2]}/embed/" style="width:100%;height:1200px;border:none" scrolling="no" allowfullscreen loading="lazy"></iframe>
         </div>
       </div>`;
-    return`<div onclick="openExtLink('${url}')" style="cursor:pointer;padding:0.75rem;background:var(--s2);border:1px solid var(--b1);border-radius:var(--r);display:flex;align-items:center;gap:0.75rem">
+    return`<div onclick="openExtLink('${escJs(url)}')" style="cursor:pointer;padding:0.75rem;background:var(--s2);border:1px solid var(--b1);border-radius:var(--r);display:flex;align-items:center;gap:0.75rem">
       <div style="width:40px;height:40px;background:linear-gradient(45deg,#f09433,#e6683c,#dc2743,#cc2366,#bc1888);border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><rect x="2" y="2" width="20" height="20" rx="5" stroke="#fff" stroke-width="1.8"/><circle cx="12" cy="12" r="4.5" stroke="#fff" stroke-width="1.8"/><circle cx="18" cy="6" r="1.2" fill="#fff"/></svg>
       </div>
-      <div style="flex:1"><div style="font-weight:700;font-size:0.82rem;color:var(--text)">Instagram</div><div style="font-size:0.72rem;color:var(--m1)">${t('openIg')}</div></div>
+      <div style="flex:1"><div style="font-weight:700;font-size:0.82rem;color:var(--text)">Instagram</div><div style="font-size:0.72rem;color:var(--m1)">${escHtml(t('openIg'))}</div></div>
       <div style="color:var(--cyan);font-size:0.82rem;flex-shrink:0">↗</div>
     </div>`;
   }
   if(platform==='facebook'){
-    return`<div onclick="openExtLink('${url}')" style="cursor:pointer;padding:0.75rem;background:var(--s2);border:1px solid var(--b1);border-radius:var(--r);display:flex;align-items:center;gap:0.75rem">
+    return`<div onclick="openExtLink('${escJs(url)}')" style="cursor:pointer;padding:0.75rem;background:var(--s2);border:1px solid var(--b1);border-radius:var(--r);display:flex;align-items:center;gap:0.75rem">
       <div style="width:48px;height:48px;background:#1877f2;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0">
         <svg width="24" height="24" viewBox="0 0 24 24"><path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z" fill="#fff"/></svg>
       </div>
-      <div style="flex:1;min-width:0"><div style="font-weight:700;font-size:0.85rem;color:var(--text)">${t('watchFb')}</div><div style="font-size:0.7rem;color:var(--m1);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${url}</div></div>
+      <div style="flex:1;min-width:0"><div style="font-weight:700;font-size:0.85rem;color:var(--text)">${escHtml(t('watchFb'))}</div><div style="font-size:0.7rem;color:var(--m1);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${escHtml(url)}</div></div>
       <div style="width:32px;height:32px;background:var(--s3);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0"><span style="font-size:0.9rem">▶</span></div>
     </div>`;
   }
-  return`<div onclick="openExtLink('${url}')" style="cursor:pointer;padding:1rem;background:var(--s2);border:1px solid var(--b1);border-radius:var(--r);display:flex;align-items:center;gap:0.75rem">
+  return`<div onclick="openExtLink('${escJs(url)}')" style="cursor:pointer;padding:1rem;background:var(--s2);border:1px solid var(--b1);border-radius:var(--r);display:flex;align-items:center;gap:0.75rem">
     <div style="width:44px;height:44px;background:var(--s3);border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--m1)" stroke-width="2" stroke-linecap="round"><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/></svg>
     </div>
-    <div style="flex:1;min-width:0"><div style="font-weight:700;font-size:0.82rem;color:var(--text)">${t('linkLabel')}</div><div style="font-size:0.72rem;color:var(--m1);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${url}</div></div>
+    <div style="flex:1;min-width:0"><div style="font-weight:700;font-size:0.82rem;color:var(--text)">${escHtml(t('linkLabel'))}</div><div style="font-size:0.72rem;color:var(--m1);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${escHtml(url)}</div></div>
     <div style="color:var(--cyan);font-size:0.82rem;flex-shrink:0">↗</div>
   </div>`;
 }
@@ -3414,16 +3477,16 @@ function renderFeed(){
       :'<svg width="18" height="18" viewBox="0 0 24 24" style="vertical-align:middle"><rect width="24" height="24" rx="4" fill="var(--s3)"/><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71" fill="none" stroke="var(--m1)" stroke-width="1.5" stroke-linecap="round"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71" fill="none" stroke="var(--m1)" stroke-width="1.5" stroke-linecap="round"/></svg>';
     return`<div class="card" style="margin-bottom:0.75rem">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.5rem">
-        <div style="font-size:0.78rem"><span style="font-weight:700">${p.author}</span> <span style="color:var(--m1)">${fmtDateTime(p.created_at)}</span></div>
-        <span onclick="openExtLink('${p.url}')" style="cursor:pointer">${pIcon}</span>
+        <div style="font-size:0.78rem"><span style="font-weight:700">${escHtml(p.author)}</span> <span style="color:var(--m1)">${fmtDateTime(p.created_at)}</span></div>
+        <span onclick="openExtLink('${escJs(p.url)}')" style="cursor:pointer">${pIcon}</span>
       </div>
       ${p.description?`<div style="font-size:0.82rem;margin-bottom:0.5rem;color:var(--m2)">${escHtml(p.description)}</div>`:''}
       <div style="margin-bottom:0.5rem">${getEmbed(p.url,p.platform)}</div>
       <div style="display:flex;align-items:center;gap:0.75rem;font-size:0.78rem">
-        <span id="post-like-${p.id}" onclick="togglePostLike('${p.id}')" style="cursor:pointer">${lk.liked?'❤️':'🤍'} ${lk.count||''}</span>
-        <span onclick="togglePostComments('${p.id}')" style="cursor:pointer;color:var(--m1)">💬 ${t('comments')}</span>
+        <span id="post-like-${escHtml(p.id)}" onclick="togglePostLike('${escJs(p.id)}')" style="cursor:pointer">${lk.liked?'❤️':'🤍'} ${lk.count||''}</span>
+        <span onclick="togglePostComments('${escJs(p.id)}')" style="cursor:pointer;color:var(--m1)">💬 ${escHtml(t('comments'))}</span>
       </div>
-      <div id="post-comments-${p.id}" style="display:none;margin-top:0.5rem;border-top:1px solid var(--b1);padding-top:0.5rem"></div>
+      <div id="post-comments-${escHtml(p.id)}" style="display:none;margin-top:0.5rem;border-top:1px solid var(--b1);padding-top:0.5rem"></div>
     </div>`;
   }).join('');
 }
@@ -3594,6 +3657,11 @@ async function init(){
   }
   restoreUser();
   if(await checkBanned())return;
+  // Get a Supabase JWT (signed by Apps Script using the project's JWT secret).
+  // Once obtained, every REST/Realtime call carries Authorization: Bearer <jwt>,
+  // so RLS policies can use auth.jwt() ->> 'sub' to identify the Telegram user.
+  // Failure is non-fatal here — policies are still permissive at this stage.
+  await ensureSupabaseAuth();
   setTimeout(updateCondBar,100);
   const savedToken=sessionStorage.getItem('adminToken');
   if(savedToken)ADMIN_TOKEN=savedToken;
