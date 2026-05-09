@@ -541,7 +541,7 @@ input[type=range]::-moz-range-track{height:6px;background:rgba(255,255,255,0.06)
     </div>
     <div class="adv-filters" id="advFilters">
       <div class="adv-row" style="margin-bottom:0.6rem">
-        <div style="grid-column:1/-1"><span class="fl"data-i18n="search">Пошук</span><input id="mainSearch" placeholder="🔍 Бренд, модель, пластик..." oninput="applyFilters()"></div>
+        <div style="grid-column:1/-1"><span class="fl"data-i18n="search">Пошук</span><input id="mainSearch" placeholder="🔍 Бренд, модель, пластик..." data-i18n="searchPh" oninput="applyFilters()"></div>
       </div>
       <div class="adv-row" style="margin-bottom:0.6rem">
         <div><span class="fl"data-i18n="sorting">Сортування</span><select id="f-sort" onchange="applyFilters()"><option value="new" data-i18n="newer">Новіші</option><option value="old" data-i18n="older">Старіші</option><option value="price-asc" data-i18n="priceUp">Ціна ↑</option><option value="price-desc" data-i18n="priceDown">Ціна ↓</option><option value="speed-desc" data-i18n="speedDown">Speed ↓</option><option value="speed-asc" data-i18n="speedUp">Speed ↑</option><option value="cond-desc" data-i18n="condDown">Стан ↓</option></select></div>
@@ -964,11 +964,15 @@ function applyLang(){ST.available.l=t('stAvailable');ST.reserved.l=t('stReserved
 // ── CITIES ──
 const CITIES={kyiv:{uk:'Київ',en:'Kyiv'},lutsk:{uk:'Луцьк',en:'Lutsk'},kremenchuk:{uk:'Кременчук',en:'Kremenchuk'},odesa:{uk:'Одеса',en:'Odesa'},lviv:{uk:'Львів',en:'Lviv'},kharkiv:{uk:'Харків',en:'Kharkiv'},dnipro:{uk:'Дніпро',en:'Dnipro'},other:{uk:'Інше',en:'Other'}};
 function tCity(key){if(!key)return'';const c=CITIES[key];if(c)return c[LANG]||c.uk;return key;}
-function cityKey(name){if(!name)return'';const n=name.toLowerCase().trim();for(const[k,v]of Object.entries(CITIES)){if(v.uk.toLowerCase()===n||v.en.toLowerCase()===n||k===n)return k;}return name;}
+function cityKey(name){if(!name)return'';const n=name.toLowerCase().trim();for(const[k,v]of Object.entries(CITIES)){if(v.uk.toLowerCase()===n||v.en.toLowerCase()===n||k===n)return k;}for(const[k,v]of Object.entries(CITIES)){if(n.includes(v.uk.toLowerCase())||v.uk.toLowerCase().includes(n)||n.includes(v.en.toLowerCase())||v.en.toLowerCase().includes(n))return k;}return name;}
 function cityOptions(selected){return Object.entries(CITIES).map(([k,v])=>'<option value="'+k+'"'+(k===selected?' selected':'')+'>'+v[LANG]+'</option>').join('');}
-function cityFilterHTML(){const keys=Object.keys(CITIES);return'<div style="display:flex;flex-wrap:wrap;gap:4px" id="cityCheckList">'+keys.map(k=>'<label class="city-opt" data-city="'+k+'" style="display:flex;align-items:center;gap:4px;padding:3px 8px;font-size:0.72rem;cursor:pointer;border-radius:8px;background:var(--glass);border:0.5px solid var(--glass-border);white-space:nowrap;user-select:none;-webkit-user-select:none"><input type="checkbox" value="'+k+'" onchange="applyCityFilter()" style="width:auto;accent-color:var(--lime);margin:0"><span>'+CITIES[k][LANG]+'</span></label>').join('')+'</div>';}
+function getActiveCities(){const used={};allDiscs.forEach(d=>{if(d.city){const k=cityKey(d.city);if(k&&CITIES[k])used[k]=true;}});return Object.keys(CITIES).filter(k=>used[k]);}
+function cityFilterHTML(){const keys=getActiveCities();if(!keys.length)return'<div style="color:var(--m1);font-size:0.75rem">—</div>';const sel=window._selectedCities||[];const selLabels=sel.map(k=>tCity(k));const btnText=selLabels.length?selLabels.join(', '):t('city');return'<div class="city-filter-wrap" style="position:relative"><div onclick="toggleCityDrop()" style="background:var(--glass);border:0.5px solid var(--glass-border);border-radius:var(--r);padding:5px 8px;font-size:0.78rem;color:var(--text);cursor:pointer;min-height:28px;display:flex;align-items:center;justify-content:space-between;gap:4px" id="cityFilterBtn"><span style="'+(selLabels.length?'':'color:var(--m1)')+';overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+btnText+'</span><span style="color:var(--m1);font-size:0.6rem">▾</span></div><div id="cityFilterDrop" style="display:none;position:fixed;left:0;right:0;z-index:300;background:var(--glass);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:0.5px solid var(--glass-border);border-radius:var(--r);padding:4px;box-shadow:0 -4px 20px rgba(0,0,0,0.3);max-height:220px;overflow-y:auto"><div id="cityCheckList">'+keys.map(k=>'<label style="display:flex;align-items:center;gap:6px;padding:6px 8px;font-size:0.78rem;cursor:pointer;border-radius:6px" ontouchstart="this.style.background=\'var(--glass-hi)\'" ontouchend="this.style.background=\'\'"><input type="checkbox" value="'+k+'"'+(sel.includes(k)?' checked':'')+' onchange="applyCityFilter()" style="width:auto;accent-color:var(--lime);margin:0"><span>'+CITIES[k][LANG]+'</span></label>').join('')+'</div></div></div>';}
+let _cityDropOpen=false;
+function toggleCityDrop(){_cityDropOpen=!_cityDropOpen;const d=document.getElementById('cityFilterDrop');if(!d)return;if(_cityDropOpen){const btn=document.getElementById('cityFilterBtn');const r=btn.getBoundingClientRect();d.style.position='fixed';d.style.left=r.left+'px';d.style.width=r.width+'px';d.style.bottom=(window.innerHeight-r.top+4)+'px';d.style.top='auto';d.style.display='block';d.style.zIndex='300';}else{d.style.display='none';}}
+document.addEventListener('click',e=>{if(_cityDropOpen&&!e.target.closest('.city-filter-wrap')){_cityDropOpen=false;const d=document.getElementById('cityFilterDrop');if(d)d.style.display='none';}});
 
-function applyCityFilter(){const checks=document.querySelectorAll('#cityCheckList input[type=checkbox]');const sel=[];checks.forEach(ch=>{if(ch.checked)sel.push(ch.value);});window._selectedCities=sel;applyFilters();}
+function applyCityFilter(){const checks=document.querySelectorAll('#cityCheckList input[type=checkbox]');const sel=[];checks.forEach(ch=>{if(ch.checked)sel.push(ch.value);});window._selectedCities=sel;const btn=document.getElementById('cityFilterBtn');if(btn){const sp=btn.querySelector('span');if(sp){if(sel.length){sp.textContent=sel.map(k=>tCity(k)).join(', ');sp.style.color='';}else{sp.textContent=t('city');sp.style.color='var(--m1)';}}}applyFilters();}
 function initCitySelects(){
   ['ad-city','auc-city'].forEach(id=>{const el=document.getElementById(id);if(el&&el.tagName==='SELECT'){const cur=el.value;el.innerHTML='<option value="">—</option>'+cityOptions(cur);}});
   const cf=document.getElementById('cityFilterContainer');if(cf)cf.innerHTML=cityFilterHTML();
@@ -1086,6 +1090,7 @@ async function loadDiscs(){
       localStorage.setItem('dc_discs',JSON.stringify(allDiscs));
       applyFilters();
       updateStats();
+      updateFilterRanges();initCitySelects();
     }
   }catch(e){console.error(e);}
 }
@@ -1229,7 +1234,7 @@ function cardHTML(d){
 
 // ── FILTERS ──
 function toggleAdvFilters(){const el=document.getElementById('advFilters'),btn=document.getElementById('advBtn'),open=!el.classList.contains('open');el.classList.toggle('open',open);const isBrutal=document.documentElement.classList.contains('brutal');if(open){btn.style.borderColor=isBrutal?'var(--text)':'var(--lime)';btn.style.color=isBrutal?'var(--bg)':'var(--lime)';btn.style.background=isBrutal?'var(--text)':'';}else{btn.style.borderColor='';btn.style.color='';btn.style.background='';}}
-function resetFilters(){['f-speed','f-speed-max','f-glide','f-glide-max','f-turn','f-turn-max','f-fade','f-fade-max','f-price','f-price-max'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});resetDualRangeSliders();window._selectedCities=[];document.querySelectorAll('#cityCheckList input[type=checkbox]').forEach(ch=>ch.checked=false);document.getElementById('f-sort').value='new';document.getElementById('mainSearch').value='';CF='all';const tabs=document.getElementById('ftabs-catalog');if(tabs){tabs.querySelectorAll('.ft').forEach((b,i)=>b.classList.toggle('active',i===0));const first=tabs.querySelector('.ft.active');if(first)moveFtabsPill(first);}applyFilters();}
+function resetFilters(){['f-speed','f-speed-max','f-glide','f-glide-max','f-turn','f-turn-max','f-fade','f-fade-max','f-price','f-price-max'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});resetDualRangeSliders();window._selectedCities=[];_cityDropOpen=false;initCitySelects();document.getElementById('f-sort').value='new';document.getElementById('mainSearch').value='';CF='all';const tabs=document.getElementById('ftabs-catalog');if(tabs){tabs.querySelectorAll('.ft').forEach((b,i)=>b.classList.toggle('active',i===0));const first=tabs.querySelector('.ft.active');if(first)moveFtabsPill(first);}applyFilters();}
 // ── DUAL RANGE SLIDERS ──
 function initDualRangeSliders(){
   document.querySelectorAll('.drs').forEach(drs=>{
@@ -1491,6 +1496,14 @@ async function submitDisc(){
   const model=document.getElementById('ad-model').value.trim();
   const owner=CU?.name||document.getElementById('ad-owner')?.value?.trim();
   if(!brand||!model||!owner){toast(t('brandRequired'),true);return;}
+  const sp=parseFloat(document.getElementById('ad-speed').value);
+  const gl=parseFloat(document.getElementById('ad-glide').value);
+  const tn=parseFloat(document.getElementById('ad-turn').value);
+  const fd=parseFloat(document.getElementById('ad-fade').value);
+  if(sp&&(sp<1||sp>15)){toast('⚠️ Speed: 1-15',true);return;}
+  if(gl&&(gl<1||gl>7)){toast('⚠️ Glide: 1-7',true);return;}
+  if(tn&&(tn<-5||tn>2)){toast('⚠️ Turn: -5 to 2',true);return;}
+  if(fd&&(fd<0||fd>5)){toast('⚠️ Fade: 0-5',true);return;}
   const btn=document.getElementById('addDiscBtn');
   btn.disabled=true;btn.textContent=t('uploading');
   let photos=await uploadAllPhotos();
@@ -2320,6 +2333,44 @@ window.addEventListener('resize',()=>{const a=document.querySelector('.bnav-item
 setTimeout(initBnavPill,300);
 setTimeout(initDualRangeSliders,400);
 setTimeout(initCitySelects,100);
+function updateFilterRanges(){
+  if(!allDiscs.length)return;
+  const av=allDiscs.filter(d=>!['sold','deleted','unlisted'].includes(d.status));
+  if(!av.length)return;
+  const ranges={speed:{min:15,max:1},glide:{min:7,max:1},turn:{min:2,max:-5},fade:{min:5,max:0}};
+  av.forEach(d=>{
+    ['speed','glide','turn','fade'].forEach(k=>{
+      const v=parseFloat(d[k])||0;
+      if(v<ranges[k].min)ranges[k].min=v;
+      if(v>ranges[k].max)ranges[k].max=v;
+    });
+  });
+  const map={speed:['f-speed','f-speed-max'],glide:['f-glide','f-glide-max'],turn:['f-turn','f-turn-max'],fade:['f-fade','f-fade-max']};
+  Object.entries(map).forEach(([k,[loId,hiId]])=>{
+    const mn=ranges[k].min,mx=ranges[k].max;
+    if(mn>mx)return;
+    const loInp=document.getElementById(loId),hiInp=document.getElementById(hiId);
+    if(!loInp||!hiInp)return;
+    loInp.min=mn;loInp.max=mx;loInp.placeholder=mn;
+    hiInp.min=mn;hiInp.max=mx;hiInp.placeholder=mx;
+    // Update associated dual range slider
+    const valsDiv=loInp.closest('.drs-vals')||loInp.parentElement;
+    if(!valsDiv)return;
+    const drs=valsDiv.previousElementSibling;
+    if(!drs||!drs.classList.contains('drs'))return;
+    const sLo=drs.querySelector('.drs-min'),sHi=drs.querySelector('.drs-max');
+    if(!sLo||!sHi)return;
+    sLo.min=mn;sLo.max=mx;sHi.min=mn;sHi.max=mx;
+    // Only reset values if current values are at old extremes
+    if(parseFloat(sLo.value)<=parseFloat(sLo.min)||!loInp.value)sLo.value=mn;
+    if(parseFloat(sHi.value)>=parseFloat(sHi.max)||!hiInp.value)sHi.value=mx;
+    loInp.value=sLo.value;hiInp.value=sHi.value;
+    const fill=drs.querySelector('.drs-fill');
+    const range=mx-mn||1;
+    fill.style.left=((parseFloat(sLo.value)-mn)/range*100)+'%';
+    fill.style.width=((parseFloat(sHi.value)-parseFloat(sLo.value))/range*100)+'%';
+  });
+}
 
 // ── FTABS SLIDING PILL ──
 function moveFtabsPill(btn){
@@ -2677,6 +2728,14 @@ async function submitAuction(){
   }
   const btn=document.getElementById('aucSubmitBtn');
   if(!aucPhotoFiles[0]&&!(window._aucPrefilledPhotos&&window._aucPrefilledPhotos.length)){toast(t('addPhoto'),true);return;}
+  const aspd=parseFloat(document.getElementById('auc-speed').value);
+  const agl=parseFloat(document.getElementById('auc-glide').value);
+  const atn=parseFloat(document.getElementById('auc-turn').value);
+  const afd=parseFloat(document.getElementById('auc-fade').value);
+  if(aspd&&(aspd<1||aspd>15)){toast('⚠️ Speed: 1-15',true);return;}
+  if(agl&&(agl<1||agl>7)){toast('⚠️ Glide: 1-7',true);return;}
+  if(atn&&(atn<-5||atn>2)){toast('⚠️ Turn: -5 to 2',true);return;}
+  if(afd&&(afd<0||afd>5)){toast('⚠️ Fade: 0-5',true);return;}
   btn.disabled=true;btn.textContent=t('creating');
   const photos=[...(window._aucPrefilledPhotos||['','',''])];
   while(photos.length<3)photos.push('');
