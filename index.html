@@ -3156,22 +3156,10 @@ async function placeBid(aucId,minBid){
   // Get previous top bidder for notification
   const {data:prevBids}=await sb.from('bids').select('bidder_tg_id,bidder').eq('auction_id',aucId).order('amount',{ascending:false}).limit(1);
   const prevTop=prevBids&&prevBids.length?prevBids[0]:null;
-  // Insert bid
-  const {error}=await sb.from('bids').insert({auction_id:aucId,bidder:CU.name,bidder_tg:CU.tg||'',bidder_tg_id:CU.tgId,amount});
+  // Server-side bid via RPC: validates, anti-snipes, updates auction atomically
+  const {error}=await sb.rpc('place_bid',{p_auction_id:aucId,p_amount:amount});
   if(error){toast('⚠️ '+error.message,true);return;}
-  // Anti-snipe: extend by 5 min if less than 5 min left
-  const ANTI_SNIPE_MS=5*60*1000;
-  const timeLeft=new Date(a.ends_at)-new Date();
-  let updateFields={current_price:amount,bid_count:(a.bid_count||0)+1,winner:CU.name,winner_tg:CU.tg||'',winner_tg_id:CU.tgId};
-  if(timeLeft>0&&timeLeft<ANTI_SNIPE_MS){
-    const newEnds=new Date(Date.now()+ANTI_SNIPE_MS).toISOString();
-    updateFields.ends_at=newEnds;
-    a.ends_at=newEnds;
-    toast(t('bidPlaced')+' '+amount+' ₴! '+t('antiSnipe'));
-  }else{
-    toast(t('bidPlaced')+' '+amount+' ₴!');
-  }
-  await sb.from('auctions').update(updateFields).eq('id',aucId);
+  toast(t('bidPlaced')+' '+amount+' ₴!');
   // Notifications
   notifyAuction('new_bid',a,CU,amount);
   if(prevTop&&prevTop.bidder_tg_id&&prevTop.bidder_tg_id!==CU.tgId){
@@ -3190,20 +3178,18 @@ async function placeReverseBid(aucId){
   if(!amount||amount<=0){toast(t('enterPrice'),true);return;}
   if(amount>(a.reverse_end||0)&&amount>=(a.reverse_start||0)){toast(t('priceLess'),true);return;}
   const curPrice=getReverseCurPrice(a);
-  // If bid >= current price, instant buy
+  // Confirm if instant buy (matches server logic in bid_dutch)
   if(amount>=curPrice){
     if(!confirm(t('currentPriceIs')+' '+curPrice+' ₴. '+t('confirmBuyNow')))return;
-    await sb.from('bids').insert({auction_id:aucId,bidder:CU.name,bidder_tg:CU.tg||'',bidder_tg_id:CU.tgId,amount:curPrice});
-    await sb.from('auctions').update({current_price:curPrice,status:'sold',winner:CU.name,winner_tg:CU.tg||'',winner_tg_id:CU.tgId,bid_count:(a.bid_count||0)+1}).eq('id',aucId);
+  }
+  const {data,error}=await sb.rpc('bid_dutch',{p_auction_id:aucId,p_amount:amount});
+  if(error){toast('⚠️ '+error.message,true);return;}
+  if(data==='sold'){
     toast(t('boughtFor')+' '+curPrice+' ₴!');
     notifyAuction('sold',a,CU,curPrice);
     closeModal('aucDetail');await loadAuctions();startAucGridTimer();
     return;
   }
-  // Otherwise place a waiting bid
-  const {error}=await sb.from('bids').insert({auction_id:aucId,bidder:CU.name,bidder_tg:CU.tg||'',bidder_tg_id:CU.tgId,amount});
-  if(error){toast('⚠️ '+error.message,true);return;}
-  await sb.from('auctions').update({bid_count:(a.bid_count||0)+1,winner:CU.name,winner_tg:CU.tg||'',winner_tg_id:CU.tgId}).eq('id',aucId);
   toast(t('bidPlaced')+' '+amount+' ₴! '+t('youWinWhen')+' '+amount+' ₴');
   notifyAuction('new_bid',a,CU,amount);
   await loadAuctions();
@@ -3214,24 +3200,16 @@ async function buyoutAuction(aucId){
   if(!CU||!CU.tgId){toast(t('loginFirst'),true);return;}
   const a=allAuctions.find(x=>x.id===aucId);
   if(a.owner_tg_id===CU.tgId){toast(t('cantBuyOwn'),true);return;}
-  // For reverse auction - buy at current dropping price
-  if(a.auction_type==='reverse'){
-    const curPrice=getReverseCurPrice(a);
-    if(!confirm(t('buyNow')+' '+curPrice+' ₴?'))return;
-    await sb.from('bids').insert({auction_id:aucId,bidder:CU.name,bidder_tg:CU.tg||'',bidder_tg_id:CU.tgId,amount:curPrice});
-    await sb.from('auctions').update({current_price:curPrice,status:'sold',winner:CU.name,winner_tg:CU.tg||'',winner_tg_id:CU.tgId,bid_count:(a.bid_count||0)+1}).eq('id',aucId);
-    toast(t('boughtFor')+' '+curPrice+' ₴!');
-    notifyAuction('sold',a,CU,curPrice);
-    closeModal('aucDetail');await loadAuctions();startAucGridTimer();
-    return;
-  }
-  // For buyout auction
-  if(!a.buyout_price){return;}
-  if(!confirm(t('buyNow')+' '+a.buyout_price+' ₴?'))return;
-  await sb.from('bids').insert({auction_id:aucId,bidder:CU.name,bidder_tg:CU.tg||'',bidder_tg_id:CU.tgId,amount:a.buyout_price});
-  await sb.from('auctions').update({current_price:a.buyout_price,status:'sold',winner:CU.name,winner_tg:CU.tg||'',winner_tg_id:CU.tgId,bid_count:(a.bid_count||0)+1}).eq('id',aucId);
-  toast(t('boughtFor')+' '+a.buyout_price+' ₴!');
-  notifyAuction('sold',a,CU,a.buyout_price);
+  // Confirm with the price the user sees (server will validate the real one)
+  let displayPrice;
+  if(a.auction_type==='reverse')displayPrice=getReverseCurPrice(a);
+  else displayPrice=a.buyout_price;
+  if(!displayPrice){return;}
+  if(!confirm(t('buyNow')+' '+displayPrice+' ₴?'))return;
+  const {data:price,error}=await sb.rpc('buyout_auction',{p_auction_id:aucId});
+  if(error){toast('⚠️ '+error.message,true);return;}
+  toast(t('boughtFor')+' '+price+' ₴!');
+  notifyAuction('sold',a,CU,price);
   closeModal('aucDetail');await loadAuctions();startAucGridTimer();
 }
 
