@@ -1591,7 +1591,7 @@ async function postComment(discId){
   const input=document.getElementById('comment-input-'+discId);
   const text=input?.value?.trim();if(!text||!CU)return;
   try{
-    const {error}=await sb.from('comments').insert({disc_id:discId,author:CU.name,author_tg:CU.tg||'',text:text});
+    const {error}=await sb.from('comments').insert({disc_id:discId,author:CU.name,author_tg:CU.tg||'',author_tg_id:CU.tgId||'',text:text});
     if(!error){
       input.value='';loadComments(discId);
       const d=allDiscs.find(x=>x.id===discId);
@@ -1920,7 +1920,7 @@ async function submitTestReq(){
   const notifyType=isTradeReq?'exchange':'test';
   try{
     const noteVal=document.getElementById('rt-note').value;
-    const req={id:genId(),disc_id:reqTestId,tester:CU.name,tester_tg:CU.tg||'',note:noteVal,request_type:reqType,status:'pending'};
+    const req={id:genId(),disc_id:reqTestId,tester:CU.name,tester_tg:CU.tg||'',tester_tg_id:CU.tgId||'',note:noteVal,request_type:reqType,status:'pending'};
     const {error}=await sb.from('requests').insert(req);
     if(!error){
       closeModal('reqTest');await loadDiscs();if(CU)renderCabinet();
@@ -1955,7 +1955,7 @@ async function submitBuy(){
   const d=allDiscs.find(x=>x.id===buyId||String(x.id)===String(buyId));
   const buyNote=document.getElementById('buy-note').value;
   try{
-    const req={id:genId(),disc_id:buyId,tester:CU.name,tester_tg:CU.tg||'',note:'Запит на купівлю'+(buyNote?' · '+buyNote:''),request_type:'buy',status:'pending'};
+    const req={id:genId(),disc_id:buyId,tester:CU.name,tester_tg:CU.tg||'',tester_tg_id:CU.tgId||'',note:'Запит на купівлю'+(buyNote?' · '+buyNote:''),request_type:'buy',status:'pending'};
     const {error}=await sb.from('requests').insert(req);
     const {error:e2}=await sb.from('discs').update({status:'reserved',tester:CU.name,tester_tg:CU.tg||''}).eq('id',buyId);
     if(!error&&!e2){closeModal('buy');await loadDiscs();if(CU)renderCabinet();toast(t('buySent'));notifyAppsScript('buy',d,CU,buyNote);}
@@ -3505,7 +3505,7 @@ async function togglePostComments(postId){
 async function submitPostComment(postId){
   const input=document.getElementById('pc-'+postId);
   const text=input?.value?.trim();if(!text||!CU)return;
-  const {error}=await sb.from('post_comments').insert({post_id:postId,author:CU.name,author_tg:CU.tg||'',text});
+  const {error}=await sb.from('post_comments').insert({post_id:postId,author:CU.name,author_tg:CU.tg||'',author_tg_id:CU.tgId||'',text});
   if(!error){input.value='';togglePostComments(postId);togglePostComments(postId);}
   else toast('⚠️ '+error.message,true);
 }
