@@ -301,6 +301,20 @@ select option{background:var(--bg);color:var(--text)}
 textarea{resize:vertical;min-height:65px;-webkit-user-select:text;user-select:text}
 input,textarea,select{-webkit-user-select:text;user-select:text}
 .toggle-row{display:flex;align-items:center;gap:0.75rem;padding:0.6rem 0.75rem;background:var(--glass);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:0.5px solid var(--glass-border);border-radius:var(--r);cursor:pointer;box-shadow:inset 0 1px 0 rgba(255,255,255,0.05)}
+/* Custom glass <select> replacements (built by enhanceSelects) */
+.gs-wrap{position:relative;width:100%}
+.gs-btn{width:100%;display:flex;align-items:center;justify-content:space-between;gap:8px;background:var(--glass);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:0.5px solid var(--glass-border);border-radius:var(--r);padding:7px 10px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;outline:none;cursor:pointer;text-align:left;box-shadow:inset 0 1px 0 rgba(255,255,255,0.05);transition:border-color 0.15s}
+.gs-btn:focus,.gs-wrap.open .gs-btn{border-color:var(--lime)}
+.gs-btn .gs-arrow{font-size:10px;color:var(--m1);flex-shrink:0;transition:transform 0.15s}
+.gs-wrap.open .gs-arrow{transform:rotate(180deg)}
+.gs-drop{position:absolute;left:0;right:0;top:calc(100% + 4px);background:#0b0e18;border:0.5px solid var(--glass-border);border-radius:var(--r);box-shadow:0 8px 32px rgba(0,0,0,0.5),inset 0 1px 0 rgba(255,255,255,0.05);max-height:240px;overflow-y:auto;z-index:1000;display:none;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px)}
+.gs-wrap.open .gs-drop{display:block}
+.gs-wrap.up .gs-drop{top:auto;bottom:calc(100% + 4px)}
+.gs-opt{padding:8px 10px;color:var(--text);font-size:14px;cursor:pointer;transition:background 0.1s}
+.gs-opt:hover,.gs-opt.active{background:rgba(212,240,64,0.12);color:var(--lime)}
+.gs-opt.selected{background:rgba(212,240,64,0.06);color:var(--lime)}
+.brutal .gs-btn{border-radius:0;border:1.5px solid var(--b1);background:var(--bg)}
+.brutal .gs-drop{border-radius:0;border:1.5px solid var(--b1);background:var(--bg)}
 .toggle-row input[type=checkbox]{width:auto;cursor:pointer;accent-color:var(--lime)}
 .photo-upload-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:0.5rem;margin-bottom:0.5rem}
 .photo-slot{height:80px;border:1px dashed var(--glass-border);border-radius:var(--r);display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;transition:all 0.2s;background:var(--glass);position:relative;overflow:hidden;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
@@ -1046,7 +1060,7 @@ en:{catalog:'Catalog',cabinet:'Cabinet',auctions:'Auctions',community:'Community
 };
 function t(k){return I[LANG]?.[k]||I.uk[k]||k;}
 function toggleLang(){LANG=LANG==='uk'?'en':'uk';localStorage.setItem('dc_lang',LANG);document.getElementById('langBtn').textContent=LANG==='uk'?'EN':'UA';applyLang();}
-function applyLang(){ST.available.l=t('stAvailable');ST.reserved.l=t('stReserved');ST.testing.l=t('stTesting');ST.pending.l=t('stPending');ST.sold.l=t('stSold');ST.deleted.l=t('stDeleted');ST.unlisted.l=t('stUnlisted');ST.trade.l=t('stAvailable');document.querySelectorAll('[data-i18n]').forEach(el=>{const k=el.dataset.i18n;if(el.tagName==='INPUT'||el.tagName==='TEXTAREA'){el.placeholder=t(k);}else{el.textContent=t(k);}});initCitySelects();applyFilters();if(document.getElementById('page-auctions')?.classList.contains('active'))renderAuctions();if(document.getElementById('cabinetContent')?.style.display!=='none'&&CU)renderCabinet();if(document.getElementById('page-settings')?.classList.contains('active'))renderFeed();}
+function applyLang(){ST.available.l=t('stAvailable');ST.reserved.l=t('stReserved');ST.testing.l=t('stTesting');ST.pending.l=t('stPending');ST.sold.l=t('stSold');ST.deleted.l=t('stDeleted');ST.unlisted.l=t('stUnlisted');ST.trade.l=t('stAvailable');document.querySelectorAll('[data-i18n]').forEach(el=>{const k=el.dataset.i18n;if(el.tagName==='INPUT'||el.tagName==='TEXTAREA'){el.placeholder=t(k);}else{el.textContent=t(k);}});initCitySelects();if(typeof refreshAllGs==='function')refreshAllGs();applyFilters();if(document.getElementById('page-auctions')?.classList.contains('active'))renderAuctions();if(document.getElementById('cabinetContent')?.style.display!=='none'&&CU)renderCabinet();if(document.getElementById('page-settings')?.classList.contains('active'))renderFeed();}
 
 // ── CITIES ──
 const CITIES={kyiv:{uk:'Київ',en:'Kyiv'},lutsk:{uk:'Луцьк',en:'Lutsk'},kremenchuk:{uk:'Кременчук',en:'Kremenchuk'},odesa:{uk:'Одеса',en:'Odesa'},lviv:{uk:'Львів',en:'Lviv'},kharkiv:{uk:'Харків',en:'Kharkiv'},dnipro:{uk:'Дніпро',en:'Dnipro'},other:{uk:'Інше',en:'Other'}};
@@ -1354,7 +1368,7 @@ function cardHTML(d){
 
 // ── FILTERS ──
 function toggleAdvFilters(){const el=document.getElementById('advFilters'),btn=document.getElementById('advBtn'),open=!el.classList.contains('open');el.classList.toggle('open',open);const isBrutal=document.documentElement.classList.contains('brutal');if(open){btn.style.borderColor=isBrutal?'var(--text)':'var(--lime)';btn.style.color=isBrutal?'var(--bg)':'var(--lime)';btn.style.background=isBrutal?'var(--text)':'';}else{btn.style.borderColor='';btn.style.color='';btn.style.background='';}}
-function resetFilters(){['f-speed','f-speed-max','f-glide','f-glide-max','f-turn','f-turn-max','f-fade','f-fade-max','f-price','f-price-max'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});resetDualRangeSliders();window._selectedCities=[];_cityDropOpen=false;initCitySelects();document.getElementById('f-sort').value='new';document.getElementById('mainSearch').value='';CF='all';const tabs=document.getElementById('ftabs-catalog');if(tabs){tabs.querySelectorAll('.ft').forEach((b,i)=>b.classList.toggle('active',i===0));const first=tabs.querySelector('.ft.active');if(first)moveFtabsPill(first);}applyFilters();}
+function resetFilters(){['f-speed','f-speed-max','f-glide','f-glide-max','f-turn','f-turn-max','f-fade','f-fade-max','f-price','f-price-max'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});resetDualRangeSliders();window._selectedCities=[];_cityDropOpen=false;initCitySelects();document.getElementById('f-sort').value='new';document.getElementById('mainSearch').value='';CF='all';const tabs=document.getElementById('ftabs-catalog');if(tabs){tabs.querySelectorAll('.ft').forEach((b,i)=>b.classList.toggle('active',i===0));const first=tabs.querySelector('.ft.active');if(first)moveFtabsPill(first);}const _fs=document.getElementById('f-sort');_fs.value='new';if(_fs._gsRefresh)_fs._gsRefresh();applyFilters();}
 // ── DUAL RANGE SLIDERS ──
 function initDualRangeSliders(){
   document.querySelectorAll('.drs').forEach(drs=>{
@@ -1810,7 +1824,7 @@ function openEditDiscWithData(d){
   document.getElementById('edit-bargain').checked=!!d.bargain;
   document.getElementById('edit-notes').value=d.notes||'';
   document.getElementById('edit-city').value=cityKey(d.city)||'';const _ecl=document.getElementById('editCityLabel');if(_ecl){_ecl.textContent=tCity(cityKey(d.city))||'—';_ecl.style.color=d.city?'var(--text)':'var(--m1)';}
-  document.getElementById('edit-status').value=d.status||'available';
+  const _est=document.getElementById('edit-status');_est.value=d.status||'available';if(_est._gsRefresh)_est._gsRefresh();
   document.getElementById('edit-speed').value=d.speed||0;
   document.getElementById('edit-glide').value=d.glide||0;
   document.getElementById('edit-turn').value=d.turn||0;
@@ -1904,8 +1918,8 @@ function openReqTest(id){
   const owTg=(d.ownerTg||'').replace('@','');
   document.getElementById('reqDiscInfo').innerHTML=
     `<strong>${escHtml(d.brand)} ${escHtml(d.model)}</strong> · ${escHtml(d.plastic)} · ${d.weight||''}г · <strong style="color:var(--lime)">${d.buyout||0}₴</strong><br>`+
-    `'+t('owner')+': <strong>${escHtml(d.owner)}</strong>${tgLinkFull(owTg)}<br>`+
-    `<span style="color:var(--m1);font-size:0.75rem">Від: <strong style="color:var(--text)">${escHtml(CU.name)}</strong>${tgLinkFull(CU.tg)}</span>`;
+    `${t('owner')}: <strong>${escHtml(d.owner)}</strong>${tgLinkFull(owTg)}<br>`+
+    `<span style="color:var(--m1);font-size:0.75rem">${t('from')}: <strong style="color:var(--text)">${escHtml(CU.name)}</strong>${tgLinkFull(CU.tg)}</span>`;
   document.getElementById('rt-note').value='';
   document.getElementById('rt-note').placeholder=t('commentPh');
   document.querySelector('#ov-reqTest .mt').innerHTML=t('testRequest').split(' ').map((w,i)=>i?'<span>'+w+'</span>':w).join(' ');
@@ -1936,7 +1950,7 @@ async function submitTestReq(){
 function oBuy(id){
   if(!CU){toast(t('loginFirst'),true);openModal('login');return;}
   buyId=id;const d=allDiscs.find(x=>x.id===id||String(x.id)===String(id));
-  document.getElementById('buyInfo').innerHTML=`<strong>${escHtml(d.brand)} ${escHtml(d.model)}</strong> · ${escHtml(d.plastic)}<br>'+t('price')+': <strong>${d.buyout||0} ₴</strong><br>'+t('owner')+': <strong>${escHtml(d.owner)}</strong>`;
+  document.getElementById('buyInfo').innerHTML=`<strong>${escHtml(d.brand)} ${escHtml(d.model)}</strong> · ${escHtml(d.plastic)}<br>${t('price')}: <strong>${d.buyout||0} ₴</strong><br>${t('owner')}: <strong>${escHtml(d.owner)}</strong>`;
   document.getElementById('buy-note').value='';
   const lEl=document.getElementById('buySellerLink');
   const owClean=String(d.ownerTg||'').replace('@','').trim();
@@ -2956,7 +2970,7 @@ function restartAuction(aucId){
   // Keep source disc link
   window._aucSourceDiscId=a.source_disc_id||null;
   // Pre-fill auction type settings
-  document.getElementById('auc-type').value=a.auction_type||'classic';
+  const _at=document.getElementById('auc-type');_at.value=a.auction_type||'classic';if(_at._gsRefresh)_at._gsRefresh();
   toggleAucTypeFields();
   if(a.auction_type==='classic'){
     document.getElementById('auc-start').value=a.start_price||'';
@@ -3031,8 +3045,8 @@ function resetAucForm(){
   aucPhotoFiles=[null,null,null];
   ['auc-brand','auc-model','auc-plastic','auc-weight','auc-color','auc-city','auc-desc','auc-start','auc-buyout','auc-speed','auc-glide','auc-turn','auc-fade','auc-start-b','auc-step-b','auc-buyout-b','auc-reverse-start','auc-reverse-end','auc-reverse-drop','auc-reverse-interval'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
   document.getElementById('auc-step').value='10';
-  document.getElementById('auc-dur-preset').value='24h';
-  document.getElementById('auc-type').value='classic';
+  const _adp=document.getElementById('auc-dur-preset');_adp.value='24h';if(_adp._gsRefresh)_adp._gsRefresh();
+  const _atp=document.getElementById('auc-type');_atp.value='classic';if(_atp._gsRefresh)_atp._gsRefresh();
   toggleAucTypeFields();
   document.getElementById('auc-cond').value='7';
   document.getElementById('aucCondLabel').textContent='7';
@@ -3445,7 +3459,7 @@ async function togglePostLike(postId){
 }
 function renderFeed(){
   const el=document.getElementById('feedList');
-  if(!feedPosts.length){el.innerHTML='<div style="text-align:center;color:var(--m1);padding:2rem;font-size:0.85rem">Поки немає публікацій</div>';return;}
+  if(!feedPosts.length){el.innerHTML='<div style="text-align:center;color:var(--m1);padding:2rem;font-size:0.85rem">'+t('noPosts')+'</div>';return;}
   el.innerHTML=feedPosts.map(p=>{
     const lk=getFeedLike(p.id);
     const pIcon=p.platform==='youtube'?'<svg width="18" height="18" viewBox="0 0 24 24" style="vertical-align:middle"><rect width="24" height="24" rx="4" fill="#FF0000"/><polygon points="10,7 17,12 10,17" fill="#fff"/></svg>'
@@ -3522,6 +3536,94 @@ restoreTheme();
 // Init lang button
 (function(){const lb=document.getElementById('langBtn');if(lb)lb.textContent=LANG==='uk'?'EN':'UA';if(LANG!=='uk')applyLang();})();
 
+// ── CUSTOM GLASS DROPDOWNS ──
+// Replaces native <select> with a glass-styled overlay while keeping the
+// underlying <select> in the DOM (hidden) so external code reading .value
+// or listening for 'change' continues to work without modification.
+function enhanceSelect(sel){
+  if(!sel||sel._gsEnhanced)return;
+  if(sel.dataset.gsSkip==='1')return;
+  sel._gsEnhanced=true;
+  const wrap=document.createElement('div');
+  wrap.className='gs-wrap';
+  // copy width-affecting inline styles (e.g. width:auto on admin-table dropdown)
+  if(sel.style.width)wrap.style.width=sel.style.width;
+  const btn=document.createElement('button');
+  btn.type='button';
+  btn.className='gs-btn';
+  if(sel.style.fontSize)btn.style.fontSize=sel.style.fontSize;
+  if(sel.style.padding)btn.style.padding=sel.style.padding;
+  const lbl=document.createElement('span');lbl.className='gs-lbl';
+  const arr=document.createElement('span');arr.className='gs-arrow';arr.textContent='▾';
+  btn.appendChild(lbl);btn.appendChild(arr);
+  const drop=document.createElement('div');drop.className='gs-drop';
+  function refresh(){
+    const opt=sel.options[sel.selectedIndex];
+    lbl.textContent=opt?opt.textContent:'';
+    drop.innerHTML='';
+    Array.from(sel.options).forEach((o,i)=>{
+      const it=document.createElement('div');
+      it.className='gs-opt'+(i===sel.selectedIndex?' selected':'');
+      it.textContent=o.textContent;
+      it.onclick=function(ev){
+        ev.stopPropagation();
+        if(sel.selectedIndex!==i){
+          sel.selectedIndex=i;
+          sel.dispatchEvent(new Event('change',{bubbles:true}));
+        }
+        close();
+        refresh();
+      };
+      drop.appendChild(it);
+    });
+  }
+  function open(){
+    closeAllGs();
+    wrap.classList.add('open');
+    // Decide flip-up if not enough space below
+    const r=btn.getBoundingClientRect();
+    const need=Math.min(240,sel.options.length*36+8);
+    const spaceBelow=window.innerHeight-r.bottom;
+    if(spaceBelow<need&&r.top>need)wrap.classList.add('up');else wrap.classList.remove('up');
+  }
+  function close(){wrap.classList.remove('open');wrap.classList.remove('up');}
+  btn.onclick=function(ev){
+    ev.stopPropagation();
+    if(wrap.classList.contains('open'))close();else open();
+  };
+  // Insert wrap before sel, hide sel, append both
+  sel.parentNode.insertBefore(wrap,sel);
+  wrap.appendChild(btn);
+  wrap.appendChild(drop);
+  wrap.appendChild(sel);
+  sel.style.display='none';
+  refresh();
+  // Re-render label if external code changes value programmatically
+  sel._gsRefresh=refresh;
+}
+function closeAllGs(){
+  document.querySelectorAll('.gs-wrap.open').forEach(w=>{w.classList.remove('open');w.classList.remove('up');});
+}
+document.addEventListener('click',closeAllGs);
+function enhanceAllSelects(root){
+  (root||document).querySelectorAll('select').forEach(enhanceSelect);
+}
+// Refresh labels after applyLang() updates option text
+function refreshAllGs(){
+  document.querySelectorAll('select').forEach(s=>{if(s._gsRefresh)s._gsRefresh();});
+}
+// Watch for dynamically added selects (admin table, etc.)
+new MutationObserver(muts=>{
+  muts.forEach(m=>{
+    m.addedNodes.forEach(n=>{
+      if(n.nodeType!==1)return;
+      if(n.tagName==='SELECT')enhanceSelect(n);
+      else if(n.querySelectorAll)n.querySelectorAll('select').forEach(enhanceSelect);
+    });
+  });
+}).observe(document.body,{childList:true,subtree:true});
+enhanceAllSelects();
+
 // ── ONBOARDING GUIDE ──
 function startOnboarding(){
   if(localStorage.getItem('dc_onboarded'))return;
@@ -3530,7 +3632,7 @@ function startOnboarding(){
     {el:'#bn-catalog',text:t('onb1'),pos:'top'},
     {el:'.filter-bar',text:t('onb2'),pos:'bottom'},
     {el:'.disc-card',text:t('onb3'),pos:'bottom'},
-    {el:'.bnav-item-add',text:'Додай свiй диск на продаж, обмiн або тест. Завантаж фото, вкажи стан i цiну.',pos:'top'},
+    {el:'.bnav-item-add',text:t('onb4'),pos:'top'},
     {el:'#bn-cabinet',text:t('onb5'),pos:'top'},
     {el:'#bn-auctions',text:t('onb6'),pos:'top'},
     {el:'#bn-settings',text:t('onb7'),pos:'top'}
