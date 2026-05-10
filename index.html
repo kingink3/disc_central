@@ -301,6 +301,13 @@ select option{background:var(--bg);color:var(--text)}
 textarea{resize:vertical;min-height:65px;-webkit-user-select:text;user-select:text}
 input,textarea,select{-webkit-user-select:text;user-select:text}
 .toggle-row{display:flex;align-items:center;gap:0.75rem;padding:0.6rem 0.75rem;background:var(--glass);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:0.5px solid var(--glass-border);border-radius:var(--r);cursor:pointer;box-shadow:inset 0 1px 0 rgba(255,255,255,0.05)}
+/* Flight-number validation */
+.fnum-wrap{position:relative;display:block}
+.fnum-wrap > input{padding-right:24px!important;width:100%}
+.fnum-wrap > .fnum-warn{display:none;position:absolute;right:6px;top:50%;transform:translateY(-50%);width:18px;height:18px;border-radius:50%;background:#ef4444;color:#fff;font-size:11px;font-weight:700;text-align:center;line-height:18px;cursor:help;user-select:none;pointer-events:auto}
+.fnum-wrap.fnum-bad > input{border-color:#ef4444!important;color:#ef4444}
+.fnum-wrap.fnum-bad > .fnum-warn{display:block}
+.brutal .fnum-wrap.fnum-bad > input{border:1.5px solid #ef4444!important}
 /* Custom glass <select> replacements (built by enhanceSelects) */
 .gs-wrap{position:relative;width:100%}
 .gs-btn{width:100%;display:flex;align-items:center;justify-content:space-between;gap:8px;background:var(--glass);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:0.5px solid var(--glass-border);border-radius:var(--r);padding:7px 10px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;outline:none;cursor:pointer;text-align:left;box-shadow:inset 0 1px 0 rgba(255,255,255,0.05);transition:border-color 0.15s}
@@ -1688,6 +1695,7 @@ function resetAddForm(){
   document.getElementById('condValLabel').textContent='7';
   document.getElementById('ad-cond').value='7';
   ['ad-brand','ad-model','ad-plastic','ad-weight','ad-color','ad-city','ad-buyout','ad-speed','ad-glide','ad-turn','ad-fade','ad-notes','ad-trade-desc'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  ['ad-speed','ad-glide','ad-turn','ad-fade'].forEach(id=>{const el=document.getElementById(id);if(el&&typeof _fnumValidate==='function')_fnumValidate(el);});
 }
 
 document.getElementById('ad-trade').addEventListener('change',function(){document.getElementById('tradeDescWrap').style.display=this.checked?'block':'none';});
@@ -3622,6 +3630,67 @@ new MutationObserver(muts=>{
   });
 }).observe(document.body,{childList:true,subtree:true});
 enhanceAllSelects();
+
+// ── FLIGHT-NUMBER VALIDATION ──
+// Speed 1..14, Glide 1..7, Turn -5..1, Fade 0..5.
+// On invalid input, the field is wrapped with a red (!) badge whose tooltip shows the allowed range.
+const FNUM_RANGES={speed:{min:1,max:14,label:'1..14'},glide:{min:1,max:7,label:'1..7'},turn:{min:-5,max:1,label:'-5..1'},fade:{min:0,max:5,label:'0..5'}};
+function _fnumKindOf(input){
+  const id=(input.id||'').toLowerCase();
+  if(id.endsWith('-speed'))return 'speed';
+  if(id.endsWith('-glide'))return 'glide';
+  if(id.endsWith('-turn'))return 'turn';
+  if(id.endsWith('-fade'))return 'fade';
+  return null;
+}
+function _fnumWrap(input){
+  if(input._fnumWrapped)return input.parentNode.classList.contains('fnum-wrap')?input.parentNode:null;
+  input._fnumWrapped=true;
+  const wrap=document.createElement('span');
+  wrap.className='fnum-wrap';
+  // Preserve grid/flex layout: inherit positional styling from input
+  if(input.style.flex)wrap.style.flex=input.style.flex;
+  input.parentNode.insertBefore(wrap,input);
+  wrap.appendChild(input);
+  const warn=document.createElement('span');
+  warn.className='fnum-warn';
+  warn.textContent='!';
+  wrap.appendChild(warn);
+  return wrap;
+}
+function _fnumValidate(input){
+  const kind=_fnumKindOf(input);
+  if(!kind)return;
+  const wrap=_fnumWrap(input);
+  if(!wrap)return;
+  const raw=String(input.value).replace(',','.').trim();
+  if(raw==='' || raw==='-'){wrap.classList.remove('fnum-bad');return;}
+  const v=parseFloat(raw);
+  const r=FNUM_RANGES[kind];
+  const bad=isNaN(v) || v<r.min || v>r.max;
+  wrap.classList.toggle('fnum-bad',bad);
+  if(bad){
+    const w=wrap.querySelector('.fnum-warn');
+    if(w)w.title=kind.charAt(0).toUpperCase()+kind.slice(1)+': '+r.label;
+  }
+}
+function _fnumAttach(input){
+  if(input._fnumAttached)return;
+  input._fnumAttached=true;
+  _fnumWrap(input);
+  input.addEventListener('input',()=>_fnumValidate(input));
+  input.addEventListener('blur',()=>_fnumValidate(input));
+  // Validate any pre-existing value once
+  if(input.value)_fnumValidate(input);
+}
+function attachAllFlightValidators(){
+  ['speed','glide','turn','fade'].forEach(k=>{
+    document.querySelectorAll('input[id$="-'+k+'"]').forEach(_fnumAttach);
+  });
+}
+attachAllFlightValidators();
+// Re-attach when modals render dynamically inserted inputs
+new MutationObserver(()=>attachAllFlightValidators()).observe(document.body,{childList:true,subtree:true});
 
 // ── ONBOARDING GUIDE ──
 function startOnboarding(){
