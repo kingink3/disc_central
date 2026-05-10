@@ -1536,7 +1536,7 @@ function showDetail(id){
     const canAuc=isOwner&&['available','trade'].includes(d.status);
     editBtn.style.display=isOwner?'flex':'none';
     editBtn.onclick=()=>{closeModal('detail');openEditDisc(d.id);};
-    if(aucBtn){aucBtn.style.display=canAuc?'flex':'none';aucBtn.onclick=()=>{console.log('GAVEL CLICK: canAuc=',canAuc,'isOwner=',isOwner,'status=',d.status,'discId=',d.id);closeModal('detail');try{discToAuction(d.id);console.log('GAVEL: discToAuction done, addAuction open?',document.getElementById('ov-addAuction')?.classList.contains('open'));}catch(e){console.error('GAVEL ERROR:',e);}};}
+    if(aucBtn){aucBtn.style.display=canAuc?'flex':'none';aucBtn.onclick=()=>{closeModal('detail');try{discToAuction(d.id);setTimeout(()=>{const isOpen=document.getElementById('ov-addAuction')?.classList.contains('open');if(!isOpen)alert('DIAG: модалка не открылась. canAuc='+canAuc+', isOwner='+isOwner+', status='+d.status+', discId='+d.id);},150);}catch(e){alert('DIAG ERROR: '+e.message+'\n\n'+(e.stack||''));}};}
   }
   openModal('detail');
   loadComments(d.id);
