@@ -764,7 +764,7 @@ input[type=range]::-moz-range-track{height:6px;background:rgba(255,255,255,0.06)
     </div>
     <div class="fg"><label class="fl">Speed / Glide / Turn / Fade</label>
       <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:0.4rem">
-        <input id="auc-speed" type="number" inputmode="decimal" pattern="[0-9.,\-]*" placeholder="S" style="font-size:14px"><input id="auc-glide" type="number" inputmode="decimal" pattern="[0-9.,\-]*" placeholder="G" style="font-size:14px"><input id="auc-turn" type="number" inputmode="decimal" pattern="[0-9.,\-]*" placeholder="T" step="0.5" style="font-size:14px"><input id="auc-fade" type="number" inputmode="decimal" pattern="[0-9.,\-]*" placeholder="F" style="font-size:14px">
+        <input id="auc-speed" type="number" inputmode="decimal" pattern="[0-9.,\-]*" placeholder="1..14" style="font-size:14px"><input id="auc-glide" type="number" inputmode="decimal" pattern="[0-9.,\-]*" placeholder="1..7" style="font-size:14px"><input id="auc-turn" type="number" inputmode="decimal" pattern="[0-9.,\-]*" placeholder="-5..1" step="0.5" style="font-size:14px"><input id="auc-fade" type="number" inputmode="decimal" pattern="[0-9.,\-]*" placeholder="0..5" style="font-size:14px">
       </div>
     </div>
     <label class="toggle-row fg"><input type="checkbox" id="auc-inked"><span style="font-size:0.84rem">🖊️ Inked</span></label>
@@ -877,7 +877,7 @@ input[type=range]::-moz-range-track{height:6px;background:rgba(255,255,255,0.06)
     </div>
     <div class="fg"><label class="fl">Speed / Glide / Turn / Fade</label>
       <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:0.4rem">
-        <input id="ad-speed" type="number" placeholder="Speed" inputmode="decimal" pattern="[0-9.,\-]*"><input id="ad-glide" type="number" placeholder="Glide" inputmode="decimal" pattern="[0-9.,\-]*"><input id="ad-turn" type="number" placeholder="Turn" inputmode="decimal" pattern="[0-9.,\-]*" step="0.5"><input id="ad-fade" type="number" placeholder="Fade" inputmode="decimal" pattern="[0-9.,\-]*">
+        <input id="ad-speed" type="number" placeholder="1..14" inputmode="decimal" pattern="[0-9.,\-]*"><input id="ad-glide" type="number" placeholder="1..7" inputmode="decimal" pattern="[0-9.,\-]*"><input id="ad-turn" type="number" placeholder="-5..1" inputmode="decimal" pattern="[0-9.,\-]*" step="0.5"><input id="ad-fade" type="number" placeholder="0..5" inputmode="decimal" pattern="[0-9.,\-]*">
       </div>
     </div>
     <div style="display:flex;gap:0.5rem">
@@ -914,10 +914,10 @@ input[type=range]::-moz-range-track{height:6px;background:rgba(255,255,255,0.06)
     <div class="fr"><div class="fg"><label class="fl">Buyout (UAH)</label><input id="edit-buyout" type="number" inputmode="numeric" pattern="[0-9]*"></div><div class="fg"><label class="fl"><span data-i18n="condition">Стан</span>: <span id="editCondLabel">7</span>/10</label><div style="display:flex;align-items:center"><input type="range" id="edit-cond" min="1" max="10" value="7" step="1" style="flex:1" oninput="document.getElementById('editCondLabel').textContent=this.value"></div></div></div>
     <div class="fg"><label class="fl">Speed / Glide / Turn / Fade</label>
       <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:0.4rem">
-        <input id="edit-speed" type="number" inputmode="decimal" pattern="[0-9.,\-]*" placeholder="Speed" step="0.5">
-        <input id="edit-glide" type="number" inputmode="decimal" pattern="[0-9.,\-]*" placeholder="Glide" step="0.5">
-        <input id="edit-turn" type="number" inputmode="decimal" pattern="[0-9.,\-]*" placeholder="Turn" step="0.5">
-        <input id="edit-fade" type="number" inputmode="decimal" pattern="[0-9.,\-]*" placeholder="Fade" step="0.5">
+        <input id="edit-speed" type="number" inputmode="decimal" pattern="[0-9.,\-]*" placeholder="1..14" step="0.5">
+        <input id="edit-glide" type="number" inputmode="decimal" pattern="[0-9.,\-]*" placeholder="1..7" step="0.5">
+        <input id="edit-turn" type="number" inputmode="decimal" pattern="[0-9.,\-]*" placeholder="-5..1" step="0.5">
+        <input id="edit-fade" type="number" inputmode="decimal" pattern="[0-9.,\-]*" placeholder="0..5" step="0.5">
       </div>
     </div>
     <label class="toggle-row fg"><input type="checkbox" id="edit-trade"><span style="font-size:0.84rem"data-i18n="readyToTrade">🔄 Готовий до обміну</span></label>
