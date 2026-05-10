@@ -1536,7 +1536,7 @@ function showDetail(id){
     const canAuc=isOwner&&['available','trade'].includes(d.status);
     editBtn.style.display=isOwner?'flex':'none';
     editBtn.onclick=()=>{closeModal('detail');openEditDisc(d.id);};
-    if(aucBtn){aucBtn.style.display=canAuc?'flex':'none';aucBtn.onclick=()=>{closeModal('detail');try{discToAuction(d.id);setTimeout(()=>{const isOpen=document.getElementById('ov-addAuction')?.classList.contains('open');if(!isOpen)alert('DIAG: модалка не открылась. canAuc='+canAuc+', isOwner='+isOwner+', status='+d.status+', discId='+d.id);},150);}catch(e){alert('DIAG ERROR: '+e.message+'\n\n'+(e.stack||''));}};}
+    if(aucBtn){aucBtn.style.display=canAuc?'flex':'none';aucBtn.onclick=()=>{closeModal('detail');discToAuction(d.id);};}
   }
   openModal('detail');
   loadComments(d.id);
@@ -2617,12 +2617,12 @@ function bidWord(n){
 }
 
 function toggleAucTypeFields(){
-  const t=document.getElementById('auc-type').value;
-  document.getElementById('auc-fields-classic').style.display=t==='classic'?'block':'none';
-  document.getElementById('auc-fields-buyout').style.display=t==='buyout'?'block':'none';
-  document.getElementById('auc-fields-reverse').style.display=t==='reverse'?'block':'none';
+  const typ=document.getElementById('auc-type').value;
+  document.getElementById('auc-fields-classic').style.display=typ==='classic'?'block':'none';
+  document.getElementById('auc-fields-buyout').style.display=typ==='buyout'?'block':'none';
+  document.getElementById('auc-fields-reverse').style.display=typ==='reverse'?'block':'none';
   const descs={classic:t('aucDescClassic'),buyout:t('aucDescBuyout'),reverse:t('aucDescReverse')};
-  const d=document.getElementById('auc-type-desc');if(d)d.textContent=descs[t]||'';
+  const d=document.getElementById('auc-type-desc');if(d)d.textContent=descs[typ]||'';
 }
 function getAucDurationMs(){
   const v=document.getElementById('auc-dur-preset').value;
@@ -2672,9 +2672,9 @@ function getReverseCurPrice(a){
   const price=Math.max(a.reverse_end||0,(a.reverse_start||0)-(drops*(a.reverse_drop||0)));
   return price;
 }
-function aucTypeBadge(t){
-  if(t==='reverse')return'<span style="font-size:0.55rem;background:var(--purple);color:#fff;padding:1px 4px;border-radius:3px;font-weight:700">📉 Голландський</span>';
-  if(t==='buyout')return'<span style="font-size:0.55rem;background:var(--cyan);color:#fff;padding:1px 4px;border-radius:3px;font-weight:700">💰 + Купити</span>';
+function aucTypeBadge(typ){
+  if(typ==='reverse')return'<span style="font-size:0.55rem;background:var(--purple);color:#fff;padding:1px 4px;border-radius:3px;font-weight:700">📉 Dutch</span>';
+  if(typ==='buyout')return'<span style="font-size:0.55rem;background:var(--cyan);color:#fff;padding:1px 4px;border-radius:3px;font-weight:700">💰 + Buyout</span>';
   return'';
 }
 async function updateSourceDisc(auction,newStatus){
