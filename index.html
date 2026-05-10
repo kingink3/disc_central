@@ -881,12 +881,9 @@ input[type=range]::-moz-range-track{height:6px;background:rgba(255,255,255,0.06)
       </div>
     </div>
     <div style="display:flex;gap:0.5rem">
-      <label class="toggle-row fg" style="flex:1"><input type="checkbox" id="ad-trade"><span style="font-size:0.84rem"data-i18n="exchange">🔄 Обмін</span></label>
-      <label class="toggle-row fg" style="flex:1"><input type="checkbox" id="ad-inked"><span style="font-size:0.84rem">🖊️ Inked</span></label>
-    </div>
-    <div style="display:flex;gap:0.5rem">
-      <label class="toggle-row fg" style="flex:1"><input type="checkbox" id="ad-bargain"><span style="font-size:0.84rem"data-i18n="bargain">⚖️ Торг</span></label>
-      <div style="flex:1"></div>
+      <label class="toggle-row fg" style="flex:1"><input type="checkbox" id="ad-trade"><span style="font-size:0.84rem"data-i18n="exchange">Обмін</span></label>
+      <label class="toggle-row fg" style="flex:1"><input type="checkbox" id="ad-inked"><span style="font-size:0.84rem">Inked</span></label>
+      <label class="toggle-row fg" style="flex:1"><input type="checkbox" id="ad-bargain"><span style="font-size:0.84rem"data-i18n="bargain">Торг</span></label>
     </div>
     <div class="fg" id="tradeDescWrap" style="display:none"><label class="fl"data-i18n="tradeWant">Що хочу отримати</label><textarea id="ad-trade-desc" placeholder="Опиши що шукаєш..." data-i18n="tradeWantPh"></textarea></div>
     <div class="fg"><label class="fl"data-i18n="notes">Нотатки</label><textarea id="ad-notes" placeholder="Додаткова інформація..." data-i18n="notesPh"></textarea></div>
@@ -920,9 +917,12 @@ input[type=range]::-moz-range-track{height:6px;background:rgba(255,255,255,0.06)
         <input id="edit-fade" type="number" inputmode="decimal" pattern="[0-9.,\-]*" placeholder="0..5" step="0.5">
       </div>
     </div>
-    <label class="toggle-row fg"><input type="checkbox" id="edit-trade"><span style="font-size:0.84rem"data-i18n="readyToTrade">🔄 Готовий до обміну</span></label>
+    <div style="display:flex;gap:0.5rem">
+      <label class="toggle-row fg" style="flex:1"><input type="checkbox" id="edit-trade"><span style="font-size:0.84rem"data-i18n="exchange">Обмін</span></label>
+      <label class="toggle-row fg" style="flex:1"><input type="checkbox" id="edit-inked"><span style="font-size:0.84rem">Inked</span></label>
+      <label class="toggle-row fg" style="flex:1"><input type="checkbox" id="edit-bargain"><span style="font-size:0.84rem"data-i18n="bargain">Торг</span></label>
+    </div>
     <div class="fg" id="editTradeWrap" style="display:none"><label class="fl"data-i18n="tradeWant">Що хочу отримати</label><textarea id="edit-trade-desc"></textarea></div>
-    <label class="toggle-row fg"><input type="checkbox" id="edit-bargain"><span style="font-size:0.84rem"data-i18n="bargain">⚖️ Торг</span></label>
     <div class="fg"><label class="fl"data-i18n="notes">Нотатки</label><textarea id="edit-notes"></textarea></div>
     <div class="fg"><label class="fl"data-i18n="city">Місто</label><div class="city-filter-wrap" style="position:relative"><div onclick="toggleFormCityDrop('edit')" class="city-form-btn" id="editCityBtn" style="background:var(--glass);border:0.5px solid var(--glass-border);border-radius:var(--r);padding:7px 10px;font-size:16px;color:var(--text);cursor:pointer;display:flex;align-items:center;justify-content:space-between"><span id="editCityLabel" style="color:var(--m1)">—</span><span style="color:var(--m1);font-size:0.6rem">▾</span></div><div id="editCityDrop" class="city-drop" style="display:none;position:absolute;top:100%;left:0;right:0;z-index:50;margin-top:2px"></div></div><input type="hidden" id="edit-city" value=""></div>
     
@@ -1829,6 +1829,7 @@ function openEditDiscWithData(d){
   document.getElementById('edit-trade-desc').value=d.tradeWant||'';
   document.getElementById('editTradeWrap').style.display=d.tradeWant?'block':'none';
   document.getElementById('edit-bargain').checked=!!d.bargain;
+  document.getElementById('edit-inked').checked=!!d.inked;
   document.getElementById('edit-notes').value=d.notes||'';
   document.getElementById('edit-city').value=cityKey(d.city)||'';const _ecl=document.getElementById('editCityLabel');if(_ecl){_ecl.textContent=tCity(cityKey(d.city))||'—';_ecl.style.color=d.city?'var(--text)':'var(--m1)';}
   const _est=document.getElementById('edit-status');_est.value=d.status||'available';if(_est._gsRefresh)_est._gsRefresh();
@@ -1908,6 +1909,7 @@ async function submitEditDisc(){
     fade:parseFloat(document.getElementById('edit-fade').value)||0,
     photo_url:urls[0]||'',photo_url2:urls[1]||'',photo_url3:urls[2]||'',
     bargain:document.getElementById('edit-bargain').checked,
+    inked:document.getElementById('edit-inked').checked,
   };
   try{
     const {error}=await sb.from('discs').update(updates).eq('id',id);
