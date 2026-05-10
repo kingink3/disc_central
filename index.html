@@ -307,8 +307,8 @@ input,textarea,select{-webkit-user-select:text;user-select:text}
 .gs-btn:focus,.gs-wrap.open .gs-btn{border-color:var(--lime)}
 .gs-btn .gs-arrow{font-size:10px;color:var(--m1);flex-shrink:0;transition:transform 0.15s}
 .gs-wrap.open .gs-arrow{transform:rotate(180deg)}
-.gs-drop{position:absolute;left:0;right:0;top:calc(100% + 4px);background:rgba(15,18,28,0.55);border:0.5px solid var(--glass-border);border-radius:var(--r);box-shadow:0 8px 32px rgba(0,0,0,0.4),inset 0 1px 0 rgba(255,255,255,0.05);max-height:240px;overflow-y:auto;z-index:1000;display:none;backdrop-filter:blur(8px) saturate(1.2);-webkit-backdrop-filter:blur(8px) saturate(1.2)}
-.light .gs-drop{background:rgba(244,245,250,0.65)}
+.gs-drop{position:absolute;left:0;right:0;top:calc(100% + 4px);background:linear-gradient(rgba(255,255,255,0.08),rgba(255,255,255,0.05)),rgba(15,18,28,0.85);border:0.5px solid var(--glass-border);border-radius:var(--r);box-shadow:0 12px 40px rgba(0,0,0,0.5),inset 0 1px 0 rgba(255,255,255,0.08);max-height:240px;overflow-y:auto;z-index:1000;display:none;backdrop-filter:blur(24px) saturate(1.3);-webkit-backdrop-filter:blur(24px) saturate(1.3)}
+.light .gs-drop{background:linear-gradient(rgba(255,255,255,0.6),rgba(255,255,255,0.45)),rgba(244,245,250,0.85)}
 .gs-wrap.open .gs-drop{display:block}
 .gs-wrap.up .gs-drop{top:auto;bottom:calc(100% + 4px)}
 .gs-opt{padding:8px 10px;color:var(--text);font-size:14px;cursor:pointer;transition:background 0.1s}
@@ -438,7 +438,7 @@ input[type=range]::-moz-range-track{height:6px;background:rgba(255,255,255,0.06)
 @media(min-width:1025px){.onb-help{display:none}}
 @media(pointer:coarse){.onb-help{display:inline-flex}}
 
-.city-drop{background:rgba(15,18,28,0.55);backdrop-filter:blur(8px) saturate(1.2);-webkit-backdrop-filter:blur(8px) saturate(1.2);border:0.5px solid var(--glass-border);border-radius:var(--r);padding:6px;box-shadow:0 8px 32px rgba(0,0,0,0.4),inset 0 1px 0 rgba(255,255,255,0.05);max-height:260px;overflow-y:auto}
+.city-drop{background:linear-gradient(rgba(255,255,255,0.08),rgba(255,255,255,0.05)),rgba(15,18,28,0.85);backdrop-filter:blur(24px) saturate(1.3);-webkit-backdrop-filter:blur(24px) saturate(1.3);border:0.5px solid var(--glass-border);border-radius:var(--r);padding:6px;box-shadow:0 12px 40px rgba(0,0,0,0.5),inset 0 1px 0 rgba(255,255,255,0.08);max-height:260px;overflow-y:auto}
 .city-drop label{color:var(--text);border-radius:var(--r);transition:background 0.15s}
 .city-drop label:hover{background:var(--glass-hi)}
 .city-drop input[type=checkbox]{accent-color:var(--lime)}
@@ -454,8 +454,8 @@ input[type=range]::-moz-range-track{height:6px;background:rgba(255,255,255,0.06)
 .light .city-form-btn{background:rgba(255,255,255,0.4)!important;border-color:rgba(255,255,255,0.5)!important}
 /* Stitch button + dropdown into a single visual block when open */
 .city-filter-wrap.open{z-index:400;position:relative}
-.city-filter-wrap.open>.city-drop{background:rgba(15,18,28,0.55)!important;backdrop-filter:blur(8px) saturate(1.2)!important;-webkit-backdrop-filter:blur(8px) saturate(1.2)!important}
-.light .city-filter-wrap.open>.city-drop{background:rgba(244,245,250,0.65)!important}
+.city-filter-wrap.open>.city-drop{background:linear-gradient(rgba(255,255,255,0.08),rgba(255,255,255,0.05)),rgba(15,18,28,0.85)!important;backdrop-filter:blur(24px) saturate(1.3)!important;-webkit-backdrop-filter:blur(24px) saturate(1.3)!important}
+.light .city-filter-wrap.open>.city-drop{background:linear-gradient(rgba(255,255,255,0.6),rgba(255,255,255,0.45)),rgba(244,245,250,0.85)!important}
 .brutal .city-filter-wrap.open>.city-drop{background:var(--bg)!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important}
 .city-filter-wrap.open>.city-form-btn,.city-filter-wrap.open>#cityFilterBtn{border-bottom:none!important;border-bottom-left-radius:0!important;border-bottom-right-radius:0!important}
 .city-filter-wrap.open>.city-drop{border-top:none!important;border-top-left-radius:0!important;border-top-right-radius:0!important;margin-top:0!important;box-shadow:0 8px 32px rgba(0,0,0,0.4)!important}
