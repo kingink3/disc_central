@@ -865,10 +865,8 @@ input[type=range]::-moz-range-track{height:6px;background:rgba(255,255,255,0.06)
     <div class="fg"><label class="fl"data-i18n="city">Місто</label><div class="city-filter-wrap" style="position:relative"><div onclick="toggleFormCityDrop('ad')" class="city-form-btn" id="adCityBtn" style="background:var(--glass);border:0.5px solid var(--glass-border);border-radius:var(--r);padding:7px 10px;font-size:16px;color:var(--text);cursor:pointer;display:flex;align-items:center;justify-content:space-between"><span id="adCityLabel" style="color:var(--m1)">—</span><span style="color:var(--m1);font-size:0.6rem">▾</span></div><div id="adCityDrop" class="city-drop" style="display:none;position:absolute;top:100%;left:0;right:0;z-index:50;margin-top:2px"></div></div><input type="hidden" id="ad-city" value=""></div>
     <div class="fg"><label class="fl" ><span data-i18n="condition">Стан</span>: <span id="condValLabel">7</span>/10</label>
       <div style="display:flex;align-items:center">
-        <input type="range" id="ad-cond" min="1" max="10" value="7" step="1" style="flex:1" oninput="document.getElementById('condValLabel').textContent=this.value;updateCondBar()">
+        <input type="range" id="ad-cond" min="1" max="10" value="7" step="1" style="flex:1" oninput="document.getElementById('condValLabel').textContent=this.value">
       </div>
-      <div style="display:flex;gap:2px;margin-top:0.4rem" id="condBarPreview"></div>
-      <div style="display:flex;justify-content:space-between;font-size:0.6rem;color:var(--m1);margin-top:2px"><span>1</span><span>5</span><span>10</span></div>
     </div>
     <div class="fg"><label class="fl">Speed / Glide / Turn / Fade</label>
       <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:0.4rem">
