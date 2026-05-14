@@ -2067,7 +2067,7 @@ async function submitReturn(){
 async function notifyAppsScript(type,disc,buyer,note){
   try{
     const ownerTg=disc.ownerTgId||disc.ownerTg||'';
-    const url=APPS_SCRIPT+'?notify=1&type='+type+'&discId='+disc.id+'&discBrand='+encodeURIComponent(disc.brand)+'&discModel='+encodeURIComponent(disc.model)+'&discBuyout='+(disc.buyout||0)+'&ownerTg='+encodeURIComponent(ownerTg)+'&testerName='+encodeURIComponent(buyer.name)+'&testerTg='+encodeURIComponent(buyer.tg||'')+'&note='+encodeURIComponent(note||'')+'&callback=cb_notify';
+    const url=APPS_SCRIPT+'?notify=1&type='+type+'&discId='+disc.id+'&discBrand='+encodeURIComponent(disc.brand)+'&discModel='+encodeURIComponent(disc.model)+'&discBuyout='+(disc.buyout||0)+'&ownerTg='+encodeURIComponent(ownerTg)+'&testerName='+encodeURIComponent(buyer.name)+'&testerTg='+encodeURIComponent(buyer.tg||'')+'&note='+encodeURIComponent(note||'')+'&lang='+encodeURIComponent(LANG||'uk')+'&callback=cb_notify';
     const s=document.createElement('script');
     window.cb_notify=(d)=>{delete window.cb_notify;s.remove();};
     s.onerror=()=>{s.remove();};
@@ -2203,14 +2203,14 @@ function renderSeller(){
                   <div style="font-size:0.68rem;color:var(--m1)">${fmtDate(r.created_at)}${r.tester_tg?' · @'+escHtml(String(r.tester_tg).replace('@','')):''}${r.note?' · '+escHtml(r.note.substring(0,40))+(r.note.length>40?'…':''):''}</div>
                 </div>
                 ${isBuy&&r.status==='pending'?`<button class="btn btn-lime btn-xs" onclick="event.stopPropagation();confirmSale('${escJs(d.id)}')" style="flex-shrink:0">✓</button>`:''}
-                ${!isBuy&&r.status==='pending'?`<button class="btn btn-cyan btn-xs" onclick="event.stopPropagation();acceptRequest('${escJs(r.id)}','${escJs(d.id)}','${escJs(r.tester||'')}','${escJs(r.tester_tg||'')}','${escJs(r.request_type)}')" style="flex-shrink:0">Прийняти</button>`:''}
+                ${!isBuy&&r.status==='pending'?`<button class="btn btn-cyan btn-xs" onclick="event.stopPropagation();acceptRequest('${escJs(r.id)}','${escJs(d.id)}','${escJs(r.tester||'')}','${escJs(r.tester_tg||'')}','${escJs(r.request_type)}')" style="flex-shrink:0">${t('accepted')}</button>`:''}
               </div>`;
-            }).join(''):'<div style="padding:0.4rem 0.5rem;font-size:0.75rem;color:var(--m1)">Немає запитів</div>'}
+            }).join(''):`<div style="padding:0.4rem 0.5rem;font-size:0.75rem;color:var(--m1)">${t('noRequests')}</div>`}
           </div>
         </div>
       </div>`;
     }).join('')
-    :`<div class="empty" style="padding:1.25rem"><div class="empty-icon" style="font-size:1.25rem">📦</div>Немає дисків</div>`;
+    :`<div class="empty" style="padding:1.25rem"><div class="empty-icon" style="font-size:1.25rem">📦</div>${t('noDiscs')}</div>`;
 
   // Render requests tab (unchanged logic)
   const reqTab=document.getElementById('cab-tab-requests');
@@ -2229,11 +2229,11 @@ function renderSeller(){
               <div class="di-sub">${fmtDate(r.created_at)}${tgLinkFull(r.tester_tg)}</div>
             </div>
             ${disc&&isBuy&&r.status==='pending'?`<button class="btn btn-lime btn-xs" onclick="confirmSale('${escJs(disc.id)}')">✓ ${escHtml(t('sold'))}</button>`:''}
-            ${disc&&!isBuy&&r.status==='pending'?`<button class="btn btn-cyan btn-xs" onclick="acceptRequest('${escJs(r.id)}','${escJs(disc.id)}','${escJs(r.tester||'')}','${escJs(r.tester_tg||'')}','${escJs(r.request_type)}')">Прийняти</button>`:''}
+            ${disc&&!isBuy&&r.status==='pending'?`<button class="btn btn-cyan btn-xs" onclick="acceptRequest('${escJs(r.id)}','${escJs(disc.id)}','${escJs(r.tester||'')}','${escJs(r.tester_tg||'')}','${escJs(r.request_type)}')">${t('accepted')}</button>`:''}
           </div>
         </div>`;
       }).join('')
-    :`<div style="color:var(--m1);font-size:0.84rem;padding:0.5rem 0">Немає запитів</div>`;
+    :`<div style="color:var(--m1);font-size:0.84rem;padding:0.5rem 0">${t('noRequests')}</div>`;
 }
 
 async function renderTester(){
@@ -2246,11 +2246,11 @@ async function renderTester(){
           ${d.photoUrl?`<img src="${escHtml(d.photoUrl)}" style="width:38px;height:38px;object-fit:cover;border-radius:7px;flex-shrink:0">`:'<div style="width:38px;height:38px;background:var(--s3);border-radius:7px;display:flex;align-items:center;justify-content:center">🥏</div>'}
           <div style="flex:1;min-width:0"><div class="di-title">${escHtml(d.brand)} ${escHtml(d.model)}</div><div class="di-sub">👤 ${escHtml(d.owner)} · ${d.buyout||0}₴</div></div>
           <div style="display:flex;gap:0.3rem">
-            <button class="btn btn-lime btn-xs" onclick="oBuy('${escJs(d.id)}')">Купити</button>
+            <button class="btn btn-lime btn-xs" onclick="oBuy('${escJs(d.id)}')">${t('buy')}</button>
             <button class="btn btn-ghost btn-xs" onclick="oRet('${escJs(d.id)}')">↩</button>
           </div>
         </div>`).join('')
-      :`<div class="empty" style="padding:1.5rem"><div class="empty-icon" style="font-size:1.25rem">🎯</div>Немає активних тестів</div>`;
+      :`<div class="empty" style="padding:1.5rem"><div class="empty-icon" style="font-size:1.25rem">🎯</div>${t('noActiveTests')}</div>`;
   }
 }
 
@@ -3376,7 +3376,7 @@ function notifyAuction(type,auction,user,amount){
   try{
     const tg=user.tg||user.tgId||'';
     const ownerTg=auction.owner_tg_id||auction.owner_tg||'';
-    let url=APPS_SCRIPT+'?notify=1&type=auc_'+type+'&aucTitle='+encodeURIComponent(auction.title)+'&aucId='+encodeURIComponent(auction.id||'')+'&amount='+amount+'&ownerTg='+encodeURIComponent(ownerTg)+'&testerName='+encodeURIComponent(user.name)+'&testerTg='+encodeURIComponent(tg)+'&callback=cb_notify';
+    let url=APPS_SCRIPT+'?notify=1&type=auc_'+type+'&aucTitle='+encodeURIComponent(auction.title)+'&aucId='+encodeURIComponent(auction.id||'')+'&amount='+amount+'&ownerTg='+encodeURIComponent(ownerTg)+'&testerName='+encodeURIComponent(user.name)+'&testerTg='+encodeURIComponent(tg)+'&lang='+encodeURIComponent(LANG||'uk')+'&callback=cb_notify';
     const s=document.createElement('script');
     window.cb_notify=d=>{delete window.cb_notify;s.remove();};
     s.src=url;document.head.appendChild(s);
