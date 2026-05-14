@@ -2093,6 +2093,7 @@ async function acceptRequest(reqId, discId, testerName, testerTg, reqType){
     const {error}=await sb.from('discs').update({status:newStatus,tester:testerName,tester_tg:testerTg||''}).eq('id',discId);
     const {error:e2}=await sb.from('requests').update({status:'accepted'}).eq('id',reqId);
     if(!error&&!e2){
+      cabinetCache.loaded=false;
       await loadDiscs();renderCabinet();
       toast(`✅ ${label.charAt(0).toUpperCase()+label.slice(1)} прийнято!`);
       // Notify tester that request was accepted
@@ -2161,7 +2162,7 @@ async function preloadCabinet(){
   }catch(e){}
 }
 async function renderCabinet(){
-  if(!cabinetCache.loaded)await preloadCabinet();
+  await preloadCabinet();
   renderSeller();renderTester();
 }
 
