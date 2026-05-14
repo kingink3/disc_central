@@ -302,6 +302,21 @@ select option{background:var(--bg);color:var(--text)}
 textarea{resize:vertical;min-height:65px;-webkit-user-select:text;user-select:text}
 input,textarea,select{-webkit-user-select:text;user-select:text}
 .toggle-row{display:flex;align-items:center;gap:0.75rem;padding:0.6rem 0.75rem;background:var(--glass);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:0.5px solid var(--glass-border);border-radius:var(--r);cursor:pointer;box-shadow:inset 0 1px 0 rgba(255,255,255,0.05)}
+/* Settings rows */
+.setting-row{display:flex;align-items:center;gap:0.7rem;padding:0.65rem 0.6rem;border-bottom:0.5px solid var(--glass-border);cursor:default}
+.setting-row[onclick]{cursor:pointer;transition:background 0.1s}
+.setting-row[onclick]:hover{background:rgba(255,255,255,0.04)}
+.setting-row:last-child{border-bottom:none}
+.setting-icon{width:28px;height:28px;display:flex;align-items:center;justify-content:center;color:var(--m1);flex-shrink:0}
+.setting-label{flex:1;font-size:0.9rem;color:var(--text)}
+.setting-arrow{color:var(--m1);font-size:1.1rem}
+.setting-segmented{display:flex;gap:0;background:var(--glass);border:0.5px solid var(--glass-border);border-radius:8px;padding:2px;overflow:hidden}
+.seg-btn{background:none;border:none;color:var(--m1);font-size:0.78rem;font-weight:600;padding:5px 10px;cursor:pointer;border-radius:6px;font-family:inherit;transition:all 0.12s}
+.seg-btn.active{background:var(--lime);color:#000}
+.seg-btn:hover:not(.active){color:var(--text)}
+.brutal .setting-segmented{border-radius:0;border:1.5px solid var(--b1);background:var(--bg)}
+.brutal .seg-btn{border-radius:0}
+.brutal .seg-btn.active{background:var(--b1);color:var(--bg)}
 /* Flight-number validation */
 .fnum-wrap{position:relative;display:block}
 .fnum-wrap > input{padding-right:24px!important;width:100%}
@@ -538,10 +553,7 @@ input[type=range]::-moz-range-track{height:6px;background:rgba(255,255,255,0.06)
   </nav>
   <div class="header-right">
     <button class="btn btn-lime btn-sm" onclick="openModal('addDisc')" id="addDiscBtn2"data-i18n="addDisc">+ Диск</button>
-    <button class="btn btn-ghost btn-sm onb-help" onclick="goPage('catalog');localStorage.removeItem('dc_onboarded');setTimeout(startOnboarding,300)" style="padding:5px 8px"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></button>
-    <button class="btn btn-ghost btn-sm" onclick="toggleBrutal()" id="brutalBtn" style="padding:5px 8px"><svg viewBox="0 0 20 20" width="18" height="18"><defs><clipPath id="bL"><rect x="0" y="0" width="10" height="20"/></clipPath><clipPath id="bR"><rect x="10" y="0" width="10" height="20"/></clipPath></defs><g clip-path="url(#bL)"><rect x="1" y="1" width="18" height="18" rx="4" fill="none" stroke="currentColor" stroke-width="1.5" opacity="0.4"/><rect x="4" y="5" width="5" height="2" rx="1" fill="currentColor" opacity="0.3"/><rect x="4" y="9" width="4" height="2" rx="1" fill="currentColor" opacity="0.2"/><rect x="4" y="13" width="6" height="2" rx="1" fill="currentColor" opacity="0.25"/></g><g clip-path="url(#bR)"><rect x="1" y="1" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"/><rect x="11" y="5" width="5" height="2" fill="currentColor"/><rect x="11" y="9" width="4" height="2" fill="currentColor"/><rect x="11" y="13" width="6" height="2" fill="currentColor"/></g></svg></button>
-    <button class="btn btn-ghost btn-sm" onclick="toggleLang()" id="langBtn" style="padding:5px 8px;font-size:0.78rem;font-weight:700;width:30px;height:30px;min-width:30px">EN</button>
-    <button class="btn btn-ghost btn-sm" onclick="toggleTheme()" id="themeBtn" style="padding:5px 8px"><svg id="themeIcon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1111.21 3a7 7 0 009.79 9.79z"/></svg></button>
+    <button class="btn btn-ghost btn-sm" onclick="openSettings()" id="settingsBtn" style="padding:5px 8px" title="Settings"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09a1.65 1.65 0 00-1-1.51 1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09a1.65 1.65 0 001.51-1 1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"/></svg></button>
   </div>
 </header>
 
@@ -593,7 +605,7 @@ input[type=range]::-moz-range-track{height:6px;background:rgba(255,255,255,0.06)
         <button class="ft" onclick="setFt(this,'trade')" data-i18n="tradeF">Обмін</button>
         <button class="ft" onclick="setFt(this,'fav')">⭐</button>
       </div>
-      <button class="btn btn-ghost btn-sm" onclick="toggleAdvFilters()" id="advBtn" style="flex-shrink:0;padding:5px 9px">⚙</button>
+      <button class="btn btn-ghost btn-sm" onclick="toggleAdvFilters()" id="advBtn" style="flex-shrink:0;padding:5px 9px" title="Filters"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg></button>
     </div>
     <div class="adv-filters" id="advFilters">
       <div class="adv-row" style="margin-bottom:0.6rem">
@@ -767,7 +779,7 @@ input[type=range]::-moz-range-track{height:6px;background:rgba(255,255,255,0.06)
     </div>
     <div class="fg"><label class="fl">Speed / Glide / Turn / Fade</label>
       <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:0.4rem">
-        <input id="auc-speed" type="number" inputmode="decimal" pattern="[0-9.,\-]*" placeholder="1..14" style="font-size:14px"><input id="auc-glide" type="number" inputmode="decimal" pattern="[0-9.,\-]*" placeholder="1..7" style="font-size:14px"><input id="auc-turn" type="number" inputmode="decimal" pattern="[0-9.,\-]*" placeholder="-5..1" step="0.5" style="font-size:14px"><input id="auc-fade" type="number" inputmode="decimal" pattern="[0-9.,\-]*" placeholder="0..5" style="font-size:14px">
+        <input id="auc-speed" type="number" inputmode="decimal" pattern="[0-9.,\-]*" placeholder="1..14" style="font-size:14px"><input id="auc-glide" type="number" inputmode="decimal" pattern="[0-9.,\-]*" placeholder="1..7" style="font-size:14px"><input id="auc-turn" type="text" inputmode="text" autocomplete="off" pattern="-?[0-9]*[.,]?[0-9]*" placeholder="-5..1" style="font-size:14px"><input id="auc-fade" type="number" inputmode="decimal" pattern="[0-9.,\-]*" placeholder="0..5" style="font-size:14px">
       </div>
     </div>
     <label class="toggle-row fg"><input type="checkbox" id="auc-inked"><span style="font-size:0.84rem">🖊️ Inked</span></label>
@@ -880,7 +892,7 @@ input[type=range]::-moz-range-track{height:6px;background:rgba(255,255,255,0.06)
     </div>
     <div class="fg"><label class="fl">Speed / Glide / Turn / Fade</label>
       <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:0.4rem">
-        <input id="ad-speed" type="number" placeholder="1..14" inputmode="decimal" pattern="[0-9.,\-]*"><input id="ad-glide" type="number" placeholder="1..7" inputmode="decimal" pattern="[0-9.,\-]*"><input id="ad-turn" type="number" placeholder="-5..1" inputmode="decimal" pattern="[0-9.,\-]*" step="0.5"><input id="ad-fade" type="number" placeholder="0..5" inputmode="decimal" pattern="[0-9.,\-]*">
+        <input id="ad-speed" type="number" placeholder="1..14" inputmode="decimal" pattern="[0-9.,\-]*"><input id="ad-glide" type="number" placeholder="1..7" inputmode="decimal" pattern="[0-9.,\-]*"><input id="ad-turn" type="text" placeholder="-5..1" inputmode="text" autocomplete="off" pattern="-?[0-9]*[.,]?[0-9]*"><input id="ad-fade" type="number" placeholder="0..5" inputmode="decimal" pattern="[0-9.,\-]*">
       </div>
     </div>
     <div style="display:flex;gap:0.5rem">
@@ -916,7 +928,7 @@ input[type=range]::-moz-range-track{height:6px;background:rgba(255,255,255,0.06)
       <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:0.4rem">
         <input id="edit-speed" type="number" inputmode="decimal" pattern="[0-9.,\-]*" placeholder="1..14" step="0.5">
         <input id="edit-glide" type="number" inputmode="decimal" pattern="[0-9.,\-]*" placeholder="1..7" step="0.5">
-        <input id="edit-turn" type="number" inputmode="decimal" pattern="[0-9.,\-]*" placeholder="-5..1" step="0.5">
+        <input id="edit-turn" type="text" inputmode="text" autocomplete="off" pattern="-?[0-9]*[.,]?[0-9]*" placeholder="-5..1">
         <input id="edit-fade" type="number" inputmode="decimal" pattern="[0-9.,\-]*" placeholder="0..5" step="0.5">
       </div>
     </div>
@@ -1063,16 +1075,40 @@ const ADMINS = ['280215742'];
 // Admin auth via server only
 
 // ── i18n ──
-let LANG=localStorage.getItem('dc_lang')||'uk';
-const I={uk:{catalog:'Каталог',cabinet:'Кабінет',auctions:'Аукціони',community:'Спільнота',total:'Всього',available:'Доступно',onTest:'На тесті',trade:'Обмін',all:'Всі',availableF:'Доступні',testF:'Тест',tradeF:'Обмін',search:'Пошук',searchPh:'🔍 Бренд, модель, пластик...',sorting:'Сортування',newer:'Новіші',older:'Старіші',priceUp:'Ціна ↑',priceDown:'Ціна ↓',speedDown:'Speed ↓',speedUp:'Speed ↑',condDown:'Стан ↓',priceLabel:'Ціна ₴',from:'від',to:'до',city:'Місто',cityPh:'Київ, Луцьк...',reset:'✕ Скинути',stAvailable:'Доступний',stReserved:'Резерв',stTesting:'На тестуванні',stPending:'Очікує повернення',stSold:'Продано',stDeleted:'Видалено',stUnlisted:'Знято з продажу',yourDisc:'Ваш диск',test:'Тест',buy:'Купити',exchange:'Обмін',condition:'Стан',plastic:'Пластик',weight:'Вага',color:'Колір',owner:'Власник',tester:'Тестер',bargain:'Торг',bargainPh:'Ваша ціна ₴',send:'Надіслати',shareLink:'🔗 Поділитись посиланням',comments:'Коментарі',writeComment:'Написати коментар...',loginToComment:'Увійдіть щоб коментувати',thisIsYourDisc:'Це ваш диск',nothingFound:'Нічого не знайдено',catalogEmpty:'Каталог порожній!',writeTo:'написати ↗',returnDisc:'↩ Повернути',addDisc:'ДОДАТИ ДИСК',editDisc:'РЕДАГУВАТИ ДИСК',addToCtlg:'Додати до каталогу',save:'Зберегти',photo:'Фото',photosUpTo3:'Фото (до 3х)',brand:'Бренд',model:'Модель',weightG:'Вага (г)',notes:'Нотатки',notesPh:'Додаткова інформація...',cityPh2:'Київ, Луцьк, Кременчук, Одеса, Львів...',tradeWant:'Що хочу отримати',tradeWantPh:'Опиши що шукаєш...',readyToTrade:'🔄 Готовий до обміну',status:'Статус',stOptAvailable:'Доступний',stOptReserved:'Резерв',stOptTesting:'На тестуванні',stOptSold:'Продано',stOptUnlisted:'Знято з продажу',cropPreview:'Область прев\'ю (перетягніть фото)',cropHint:'↕ Перетягніть вгору/вниз',newAuction:'НОВИЙ АУКЦІОН',createAuction:'Створити аукціон',auctionParams:'⚡ ПАРАМЕТРИ АУКЦІОНУ',aucType:'Тип аукціону',aucEnglish:'📈 Англійський',aucBuyout:'💰 Англійський + Купити зараз',aucDutch:'📉 Голландський',aucDescClassic:'Ціна росте зі ставками. Перемагає найвища ставка.',aucDescBuyout:'Ціна росте зі ставками або можна купити одразу за фіксовану ціну.',aucDescReverse:'Ціна знижується автоматично. Перший хто купить — забирає.',startPrice:'Стартова ціна ₴',minStep:'Мін. крок ₴',buyNowPrice:'Купити зараз ₴',initialPrice:'Початкова ціна ₴',minPrice:'Мінімальна ціна ₴',dropAmount:'Зниження ₴',everyMin:'Кожні (хвилин)',duration:'Тривалість',active:'Активні',my:'Мої',bids:'Ставки',ended:'Завершені',bid:'Ставка',buyNow:'Купити зараз за',currentPrice:'Поточна ціна',timeLeft:'Залишилось',startPriceL:'Стартова',bidHistory:'Історія ставок',noBidsYet:'Ще немає ставок',seller:'Продавець',yourAuction:'Це ваш аукціон',winner:'Переможець',noBids:'Ніхто не зробив ставку',toCatalog:'📦 В каталог',restartAuc:'🔄 Перезапустити аукціон',yourPrice:'Ваша ціна ₴',yourPriceHint:'Ваша ціна — коли падаюча ціна дійде до вашої ставки, ви автоматично виграєте',step:'Крок',waitAuc:'ОЧІКУЄМО АУКЦІОНИ',createYourAuc:'Створіть свій аукціон',finished:'Завершено',notSold:'Не продано',aucEnglishL:'📈 Англійський аукціон',aucBuyoutL:'💰 Англійський + Купити зараз',aucDutchL:'📉 Голландський аукціон',discs:'Диски',discsCount:'Дисків',requests:'Запити',testing:'Тестую',myDiscs:'МОЇ ДИСКИ',requestsToMe:'ЗАПИТИ ДО МЕНЕ',iTest:'Я ТЕСТУЮ',sold:'Продано',earned:'Зароблено',noDiscs:'Немає дисків',noRequests:'Немає запитів',noActiveTests:'Немає активних тестів',requestHistory:'Історія запитів',purchase:'Купівля',accepted:'Прийняти',confirm:'Підтвердити',login:'ВХІД',loginPrompt:'Увійдіть щоб побачити кабінет',loginBtn:'Увійти',openInTg:'Відкрий через Telegram бота',openTg:'Відкрити в Telegram',loginFirst:'⚠️ Спочатку увійдіть',loginPlease:'⚠️ Увійдіть',testRequest:'ЗАПИТ НА ТЕСТ',sendRequest:'Надіслати запит',commentOpt:'Коментар (опційно)',commentPh:'Залишити коментар',tradeOffer:'ПРОПОЗИЦІЯ ОБМІНУ',sendOffer:'Надіслати пропозицію',descYourDisc:'Опиши свій диск для обміну...',ownerLooking:'Власник шукає',buyDisc:'КУПИТИ ДИСК',price:'Ціна',comment:'Коментар',wishes:'Побажання...',writeToSeller:'💬 Написати продавцю',returnTitle:'ПОВЕРНЕННЯ ДИСКА',impressions:'Враження...',admin:'АДМІН',password:'Пароль',allDiscsL:'УСІ ДИСКИ',banned:'ЗАБЛОКОВАНІ',banPh:'Telegram ID або username',ban:'Бан',unblock:'Розблок',disc:'Диск',actions:'Дії',revenue:'Виручка',statusSelect:'— статус —',hide:'Приховати',errGeneric:'⚠️ Помилка',linkCopied:'🔗 Посилання скопійовано!',offerSent:'✅ Пропозицію надіслано!',discAdded:'додано!',discUpdated:'✅ Диск оновлено!',deleted:'🗑 Видалено',reqSent:'📝 Запит відправлено!',alreadyRequested:'⚠️ Ви вже надсилали запит на цей диск',discUnavailable:'⚠️ Диск більше недоступний',tradeReqSent:'🔄 Пропозицію обміну відправлено!',buySent:'🛒 Запит відправлено!',returnSent:'↩️ Запит на повернення відправлено',saleDone:'🎉 Продаж підтверджено!',brandRequired:'⚠️ Бренд і модель обов\'язкові',uploading:'Завантаження...',discNotFound:'⚠️ Диск не знайдено',saving:'Збереження...',specifyPrice:'⚠️ Вкажіть ціну',photoSaved:'✅ Фото оновлено',statusChanged:'✅ Статус змінено',discHidden:'🗑 Диск приховано',userNotFound:'⚠️ Користувача не знайдено',userBanned:'заблоковано',unblocked:'✅ Розблоковано',welcome:'✅ Ласкаво просимо!',wrongPass:'Невірний пароль',connError:'⚠️ Помилка з\'єднання',enterBrand:'⚠️ Введіть бренд і модель',addPhoto:'⚠️ Додайте хоча б одне фото',creating:'Створення...',aucCreated:'✅ Аукціон створено!',minBidIs:'⚠️ Мінімальна ставка:',aucEnded:'⚠️ Аукціон завершено',cantBidOwn:'⚠️ Не можна ставити на свій аукціон',cantBuyOwn:'⚠️ Не можна купити свій аукціон',enterPrice:'⚠️ Введіть вашу ціну',priceLess:'⚠️ Ціна має бути менше початкової',confirmBuyNow:'Купити зараз?',currentPriceIs:'Поточна ціна',boughtFor:'🎉 Куплено за',bidPlaced:'✅ Ставка',antiSnipe:'⏱ +5 хвилин',youWinWhen:'Ви виграєте коли ціна впаде до',fillReverse:'⚠️ Заповніть всі поля зворотнього аукціону',minPriceLess:'⚠️ Мінімальна ціна має бути менше початкової',enterStartPrice:'⚠️ Введіть стартову ціну',buyoutMore:'⚠️ Ціна "Купити зараз" має бути більше стартової',minDuration:'⚠️ Мінімальна тривалість: 1 хвилина',enterPass:'⚠️ Введіть пароль',confirmSaleQ:'Підтвердити продаж',confirmDelete:'Видалити',hideDisc:'Приховати диск?',acceptQ:'Прийняти',from2:'від',post:'+ Публікація',publish:'Опублікувати',published:'✅ Опубліковано!',urlPh:'YouTube, TikTok, Instagram, Facebook...',descPh:'Опис (опційно)',pasteLink:'⚠️ Вставте посилання',noPosts:'Поки немає публікацій',noComments:'Поки немає коментарів',commentPh2:'Коментар...',watchTikTok:'Дивитись в TikTok',watchFb:'Дивитись в Facebook',openIg:'Відкрити публікацію',linkLabel:'Посилання',onb1:'Каталог - всi диски спiльноти. Переглядай, фiльтруй, купуй, пропонуй обмiн або тест.',onb2:'Фiльтри - сортуй по статусу, бренду, цiнi та flight numbers. Шестерня - розширенi фiльтри.',onb3:'Натисни на диск щоб побачити деталi, фото, та зробити дiю - купити, обмiняти або взяти на тест.',onb4:'Додай свiй диск на продаж, обмiн або тест. Завантаж фото, вкажi стан i цiну.',onb5:'Твiй кабiнет - твої диски, запити на тест та обмiн, статистика.',onb6:'Аукцiони - створюй i бери участь. Три типи: англiйський, з купiвлею зараз i голландський.',onb7:'Спiльнота - вiдео та пости з YouTube, TikTok, Instagram i Facebook.',skip:'Пропустити',next:'Далi',done:'Готово',d:'д',h:'г',m:'хв',s:'с',inked:'Inked',loading:'Завантаження...',colorPh:'Жовтий...',dur5m:'⚡ 5 хвилин',dur15m:'⚡ 15 хвилин',dur30m:'⚡ 30 хвилин',dur1h:'1 година',dur3h:'3 години',dur6h:'6 годин',dur12h:'12 годин',dur24h:'24 години',dur48h:'2 дні',dur72h:'3 дні',dur168h:'7 днів'},
-en:{catalog:'Catalog',cabinet:'Cabinet',auctions:'Auctions',community:'Community',total:'Total',available:'Available',onTest:'Testing',trade:'Trade',all:'All',availableF:'Available',testF:'Test',tradeF:'Trade',search:'Search',searchPh:'🔍 Brand, model, plastic...',sorting:'Sort',newer:'Newest',older:'Oldest',priceUp:'Price ↑',priceDown:'Price ↓',speedDown:'Speed ↓',speedUp:'Speed ↑',condDown:'Cond ↓',priceLabel:'Price ₴',from:'from',to:'to',city:'City',cityPh:'Kyiv, Lutsk...',reset:'✕ Reset',stAvailable:'Available',stReserved:'Reserved',stTesting:'Testing',stPending:'Pending return',stSold:'Sold',stDeleted:'Deleted',stUnlisted:'Unlisted',yourDisc:'Your disc',test:'Test',buy:'Buy',exchange:'Trade',condition:'Condition',plastic:'Plastic',weight:'Weight',color:'Color',owner:'Owner',tester:'Tester',bargain:'Bargain',bargainPh:'Your price ₴',send:'Send',shareLink:'🔗 Share link',comments:'Comments',writeComment:'Write a comment...',loginToComment:'Log in to comment',thisIsYourDisc:'This is your disc',nothingFound:'Nothing found',catalogEmpty:'Catalog is empty!',writeTo:'message ↗',returnDisc:'↩ Return',addDisc:'ADD DISC',editDisc:'EDIT DISC',addToCtlg:'Add to catalog',save:'Save',photo:'Photo',photosUpTo3:'Photos (up to 3)',brand:'Brand',model:'Model',weightG:'Weight (g)',notes:'Notes',notesPh:'Additional info...',cityPh2:'Kyiv, Lutsk, Kremenchuk, Odesa, Lviv...',tradeWant:'What I want',tradeWantPh:'Describe what you\'re looking for...',readyToTrade:'🔄 Ready to trade',status:'Status',stOptAvailable:'Available',stOptReserved:'Reserved',stOptTesting:'Testing',stOptSold:'Sold',stOptUnlisted:'Unlisted',cropPreview:'Preview area (drag photo)',cropHint:'↕ Drag up/down',newAuction:'NEW AUCTION',createAuction:'Create auction',auctionParams:'⚡ AUCTION SETTINGS',aucType:'Auction type',aucEnglish:'📈 English',aucBuyout:'💰 English + Buy now',aucDutch:'📉 Dutch',aucDescClassic:'Price rises with bids. Highest bid wins.',aucDescBuyout:'Price rises with bids or buy instantly at fixed price.',aucDescReverse:'Price drops automatically. First buyer wins.',startPrice:'Start price ₴',minStep:'Min step ₴',buyNowPrice:'Buy now ₴',initialPrice:'Initial price ₴',minPrice:'Minimum price ₴',dropAmount:'Drop ₴',everyMin:'Every (minutes)',duration:'Duration',active:'Active',my:'My',bids:'Bids',ended:'Ended',bid:'Bid',buyNow:'Buy now for',currentPrice:'Current price',timeLeft:'Time left',startPriceL:'Start',bidHistory:'Bid history',noBidsYet:'No bids yet',seller:'Seller',yourAuction:'Your auction',winner:'Winner',noBids:'No bids placed',toCatalog:'📦 To catalog',restartAuc:'🔄 Restart auction',yourPrice:'Your price ₴',yourPriceHint:'Your price — when the dropping price reaches your bid, you win automatically',step:'Step',waitAuc:'WAITING FOR AUCTIONS',createYourAuc:'Create your auction',finished:'Finished',notSold:'Not sold',aucEnglishL:'📈 English auction',aucBuyoutL:'💰 English + Buy now',aucDutchL:'📉 Dutch auction',discs:'Discs',discsCount:'Discs',requests:'Requests',testing:'Testing',myDiscs:'MY DISCS',requestsToMe:'REQUESTS TO ME',iTest:'I\'M TESTING',sold:'Sold',earned:'Earned',noDiscs:'No discs',noRequests:'No requests',noActiveTests:'No active tests',requestHistory:'Request history',purchase:'Purchase',accepted:'Accept',confirm:'Confirm',login:'LOGIN',loginPrompt:'Log in to see cabinet',loginBtn:'Log in',openInTg:'Open via Telegram bot',openTg:'Open in Telegram',loginFirst:'⚠️ Please log in first',loginPlease:'⚠️ Please log in',testRequest:'TEST REQUEST',sendRequest:'Send request',commentOpt:'Comment (optional)',commentPh:'Leave a comment',tradeOffer:'TRADE OFFER',sendOffer:'Send offer',descYourDisc:'Describe your disc for trade...',ownerLooking:'Owner is looking for',buyDisc:'BUY DISC',price:'Price',comment:'Comment',wishes:'Wishes...',writeToSeller:'💬 Message seller',returnTitle:'DISC RETURN',impressions:'Impressions...',admin:'ADMIN',password:'Password',allDiscsL:'ALL DISCS',banned:'BANNED',banPh:'Telegram ID or username',ban:'Ban',unblock:'Unblock',disc:'Disc',actions:'Actions',revenue:'Revenue',statusSelect:'— status —',hide:'Hide',errGeneric:'⚠️ Error',linkCopied:'🔗 Link copied!',offerSent:'✅ Offer sent!',discAdded:'added!',discUpdated:'✅ Disc updated!',deleted:'🗑 Deleted',reqSent:'📝 Request sent!',alreadyRequested:'⚠️ You already sent a request for this disc',discUnavailable:'⚠️ Disc is no longer available',tradeReqSent:'🔄 Trade offer sent!',buySent:'🛒 Request sent!',returnSent:'↩️ Return request sent',saleDone:'🎉 Sale confirmed!',brandRequired:'⚠️ Brand and model required',uploading:'Uploading...',discNotFound:'⚠️ Disc not found',saving:'Saving...',specifyPrice:'⚠️ Specify price',photoSaved:'✅ Photos updated',statusChanged:'✅ Status changed',discHidden:'🗑 Disc hidden',userNotFound:'⚠️ User not found',userBanned:'banned',unblocked:'✅ Unblocked',welcome:'✅ Welcome!',wrongPass:'Wrong password',connError:'⚠️ Connection error',enterBrand:'⚠️ Enter brand and model',addPhoto:'⚠️ Add at least one photo',creating:'Creating...',aucCreated:'✅ Auction created!',minBidIs:'⚠️ Minimum bid:',aucEnded:'⚠️ Auction ended',cantBidOwn:'⚠️ Cannot bid on own auction',cantBuyOwn:'⚠️ Cannot buy own auction',enterPrice:'⚠️ Enter your price',priceLess:'⚠️ Price must be less than starting',confirmBuyNow:'Buy now?',currentPriceIs:'Current price',boughtFor:'🎉 Bought for',bidPlaced:'✅ Bid',antiSnipe:'⏱ +5 minutes',youWinWhen:'You\'ll win when price drops to',fillReverse:'⚠️ Fill all Dutch auction fields',minPriceLess:'⚠️ Minimum price must be less than starting',enterStartPrice:'⚠️ Enter start price',buyoutMore:'⚠️ Buy now price must exceed start price',minDuration:'⚠️ Minimum duration: 1 minute',enterPass:'⚠️ Enter password',confirmSaleQ:'Confirm sale',confirmDelete:'Delete',hideDisc:'Hide disc?',acceptQ:'Accept',from2:'from',post:'+ Post',publish:'Publish',published:'✅ Published!',urlPh:'YouTube, TikTok, Instagram, Facebook...',descPh:'Description (optional)',pasteLink:'⚠️ Paste a link',noPosts:'No posts yet',noComments:'No comments yet',commentPh2:'Comment...',watchTikTok:'Watch on TikTok',watchFb:'Watch on Facebook',openIg:'Open post',linkLabel:'Link',onb1:'Catalog - all community discs. Browse, filter, buy, offer trades or tests.',onb2:'Filters - sort by status, brand, price and flight numbers. Gear icon - advanced filters.',onb3:'Tap a disc to see details, photos, and take action - buy, trade or test.',onb4:'Add your disc for sale, trade or test. Upload photos, set condition and price.',onb5:'Your cabinet - your discs, test and trade requests, stats.',onb6:'Auctions - create and participate. Three types: English, Buy now, and Dutch.',onb7:'Community - videos and posts from YouTube, TikTok, Instagram and Facebook.',skip:'Skip',next:'Next',done:'Done',d:'d',h:'h',m:'m',s:'s',inked:'Inked',loading:'Loading...',colorPh:'Yellow...',dur5m:'⚡ 5 minutes',dur15m:'⚡ 15 minutes',dur30m:'⚡ 30 minutes',dur1h:'1 hour',dur3h:'3 hours',dur6h:'6 hours',dur12h:'12 hours',dur24h:'24 hours',dur48h:'2 days',dur72h:'3 days',dur168h:'7 days'}
+let LANG=(function(){const v=localStorage.getItem('dc_lang');return (v==='uk'||v==='en'||v==='pl')?v:'uk';})();
+const I={uk:{catalog:'Каталог',cabinet:'Кабінет',auctions:'Аукціони',community:'Спільнота',total:'Всього',available:'Доступно',onTest:'На тесті',trade:'Обмін',all:'Всі',availableF:'Доступні',testF:'Тест',tradeF:'Обмін',search:'Пошук',searchPh:'🔍 Бренд, модель, пластик...',sorting:'Сортування',newer:'Новіші',older:'Старіші',priceUp:'Ціна ↑',priceDown:'Ціна ↓',speedDown:'Speed ↓',speedUp:'Speed ↑',condDown:'Стан ↓',priceLabel:'Ціна ₴',from:'від',to:'до',city:'Місто',cityPh:'Київ, Луцьк...',reset:'✕ Скинути',stAvailable:'Доступний',stReserved:'Резерв',stTesting:'На тестуванні',stPending:'Очікує повернення',stSold:'Продано',stDeleted:'Видалено',stUnlisted:'Знято з продажу',yourDisc:'Ваш диск',test:'Тест',buy:'Купити',exchange:'Обмін',condition:'Стан',plastic:'Пластик',weight:'Вага',color:'Колір',owner:'Власник',tester:'Тестер',bargain:'Торг',bargainPh:'Ваша ціна ₴',send:'Надіслати',shareLink:'🔗 Поділитись посиланням',comments:'Коментарі',writeComment:'Написати коментар...',loginToComment:'Увійдіть щоб коментувати',thisIsYourDisc:'Це ваш диск',nothingFound:'Нічого не знайдено',catalogEmpty:'Каталог порожній!',writeTo:'написати ↗',returnDisc:'↩ Повернути',addDisc:'ДОДАТИ ДИСК',editDisc:'РЕДАГУВАТИ ДИСК',addToCtlg:'Додати до каталогу',save:'Зберегти',photo:'Фото',photosUpTo3:'Фото (до 3х)',brand:'Бренд',model:'Модель',weightG:'Вага (г)',notes:'Нотатки',notesPh:'Додаткова інформація...',cityPh2:'Київ, Луцьк, Кременчук, Одеса, Львів...',tradeWant:'Що хочу отримати',tradeWantPh:'Опиши що шукаєш...',readyToTrade:'🔄 Готовий до обміну',status:'Статус',stOptAvailable:'Доступний',stOptReserved:'Резерв',stOptTesting:'На тестуванні',stOptSold:'Продано',stOptUnlisted:'Знято з продажу',cropPreview:'Область прев\'ю (перетягніть фото)',cropHint:'↕ Перетягніть вгору/вниз',newAuction:'НОВИЙ АУКЦІОН',createAuction:'Створити аукціон',auctionParams:'⚡ ПАРАМЕТРИ АУКЦІОНУ',aucType:'Тип аукціону',aucEnglish:'📈 Англійський',aucBuyout:'💰 Англійський + Купити зараз',aucDutch:'📉 Голландський',aucDescClassic:'Ціна росте зі ставками. Перемагає найвища ставка.',aucDescBuyout:'Ціна росте зі ставками або можна купити одразу за фіксовану ціну.',aucDescReverse:'Ціна знижується автоматично. Перший хто купить — забирає.',startPrice:'Стартова ціна ₴',minStep:'Мін. крок ₴',buyNowPrice:'Купити зараз ₴',initialPrice:'Початкова ціна ₴',minPrice:'Мінімальна ціна ₴',dropAmount:'Зниження ₴',everyMin:'Кожні (хвилин)',duration:'Тривалість',active:'Активні',my:'Мої',bids:'Ставки',ended:'Завершені',bid:'Ставка',buyNow:'Купити зараз за',currentPrice:'Поточна ціна',timeLeft:'Залишилось',startPriceL:'Стартова',bidHistory:'Історія ставок',noBidsYet:'Ще немає ставок',seller:'Продавець',yourAuction:'Це ваш аукціон',winner:'Переможець',noBids:'Ніхто не зробив ставку',toCatalog:'📦 В каталог',restartAuc:'🔄 Перезапустити аукціон',yourPrice:'Ваша ціна ₴',yourPriceHint:'Ваша ціна — коли падаюча ціна дійде до вашої ставки, ви автоматично виграєте',step:'Крок',waitAuc:'ОЧІКУЄМО АУКЦІОНИ',createYourAuc:'Створіть свій аукціон',finished:'Завершено',notSold:'Не продано',aucEnglishL:'📈 Англійський аукціон',aucBuyoutL:'💰 Англійський + Купити зараз',aucDutchL:'📉 Голландський аукціон',discs:'Диски',discsCount:'Дисків',requests:'Запити',testing:'Тестую',myDiscs:'МОЇ ДИСКИ',requestsToMe:'ЗАПИТИ ДО МЕНЕ',iTest:'Я ТЕСТУЮ',sold:'Продано',earned:'Зароблено',noDiscs:'Немає дисків',noRequests:'Немає запитів',noActiveTests:'Немає активних тестів',requestHistory:'Історія запитів',purchase:'Купівля',accepted:'Прийняти',confirm:'Підтвердити',login:'ВХІД',loginPrompt:'Увійдіть щоб побачити кабінет',loginBtn:'Увійти',openInTg:'Відкрий через Telegram бота',openTg:'Відкрити в Telegram',loginFirst:'⚠️ Спочатку увійдіть',loginPlease:'⚠️ Увійдіть',testRequest:'ЗАПИТ НА ТЕСТ',sendRequest:'Надіслати запит',commentOpt:'Коментар (опційно)',commentPh:'Залишити коментар',tradeOffer:'ПРОПОЗИЦІЯ ОБМІНУ',sendOffer:'Надіслати пропозицію',descYourDisc:'Опиши свій диск для обміну...',ownerLooking:'Власник шукає',buyDisc:'КУПИТИ ДИСК',price:'Ціна',comment:'Коментар',wishes:'Побажання...',writeToSeller:'💬 Написати продавцю',returnTitle:'ПОВЕРНЕННЯ ДИСКА',impressions:'Враження...',admin:'АДМІН',password:'Пароль',allDiscsL:'УСІ ДИСКИ',banned:'ЗАБЛОКОВАНІ',banPh:'Telegram ID або username',ban:'Бан',unblock:'Розблок',disc:'Диск',actions:'Дії',revenue:'Виручка',statusSelect:'— статус —',hide:'Приховати',errGeneric:'⚠️ Помилка',linkCopied:'🔗 Посилання скопійовано!',offerSent:'✅ Пропозицію надіслано!',discAdded:'додано!',discUpdated:'✅ Диск оновлено!',deleted:'🗑 Видалено',reqSent:'📝 Запит відправлено!',alreadyRequested:'⚠️ Ви вже надсилали запит на цей диск',discUnavailable:'⚠️ Диск більше недоступний',chooseCountry:'Виберіть країну',countryHint:'Ви будете бачити диски лише з обраної країни',settings:'Налаштування',helpTour:'Гід по додатку',theme:'Тема',themeDark:'Темна',themeLight:'Світла',design:'Дизайн',designGlass:'Glass',designBrutal:'Brutal',language:'Мова',country:'Країна',confirmCountryChange:'Змінити країну? Ви побачите інший каталог.',tradeReqSent:'🔄 Пропозицію обміну відправлено!',buySent:'🛒 Запит відправлено!',returnSent:'↩️ Запит на повернення відправлено',saleDone:'🎉 Продаж підтверджено!',brandRequired:'⚠️ Бренд і модель обов\'язкові',uploading:'Завантаження...',discNotFound:'⚠️ Диск не знайдено',saving:'Збереження...',specifyPrice:'⚠️ Вкажіть ціну',photoSaved:'✅ Фото оновлено',statusChanged:'✅ Статус змінено',discHidden:'🗑 Диск приховано',userNotFound:'⚠️ Користувача не знайдено',userBanned:'заблоковано',unblocked:'✅ Розблоковано',welcome:'✅ Ласкаво просимо!',wrongPass:'Невірний пароль',connError:'⚠️ Помилка з\'єднання',enterBrand:'⚠️ Введіть бренд і модель',addPhoto:'⚠️ Додайте хоча б одне фото',creating:'Створення...',aucCreated:'✅ Аукціон створено!',minBidIs:'⚠️ Мінімальна ставка:',aucEnded:'⚠️ Аукціон завершено',cantBidOwn:'⚠️ Не можна ставити на свій аукціон',cantBuyOwn:'⚠️ Не можна купити свій аукціон',enterPrice:'⚠️ Введіть вашу ціну',priceLess:'⚠️ Ціна має бути менше початкової',confirmBuyNow:'Купити зараз?',currentPriceIs:'Поточна ціна',boughtFor:'🎉 Куплено за',bidPlaced:'✅ Ставка',antiSnipe:'⏱ +5 хвилин',youWinWhen:'Ви виграєте коли ціна впаде до',fillReverse:'⚠️ Заповніть всі поля зворотнього аукціону',minPriceLess:'⚠️ Мінімальна ціна має бути менше початкової',enterStartPrice:'⚠️ Введіть стартову ціну',buyoutMore:'⚠️ Ціна "Купити зараз" має бути більше стартової',minDuration:'⚠️ Мінімальна тривалість: 1 хвилина',enterPass:'⚠️ Введіть пароль',confirmSaleQ:'Підтвердити продаж',confirmDelete:'Видалити',hideDisc:'Приховати диск?',acceptQ:'Прийняти',from2:'від',post:'+ Публікація',publish:'Опублікувати',published:'✅ Опубліковано!',urlPh:'YouTube, TikTok, Instagram, Facebook...',descPh:'Опис (опційно)',pasteLink:'⚠️ Вставте посилання',noPosts:'Поки немає публікацій',noComments:'Поки немає коментарів',commentPh2:'Коментар...',watchTikTok:'Дивитись в TikTok',watchFb:'Дивитись в Facebook',openIg:'Відкрити публікацію',linkLabel:'Посилання',onb1:'Каталог - всi диски спiльноти. Переглядай, фiльтруй, купуй, пропонуй обмiн або тест.',onb2:'Фiльтри - сортуй по статусу, бренду, цiнi та flight numbers. Шестерня - розширенi фiльтри.',onb3:'Натисни на диск щоб побачити деталi, фото, та зробити дiю - купити, обмiняти або взяти на тест.',onb4:'Додай свiй диск на продаж, обмiн або тест. Завантаж фото, вкажi стан i цiну.',onb5:'Твiй кабiнет - твої диски, запити на тест та обмiн, статистика.',onb6:'Аукцiони - створюй i бери участь. Три типи: англiйський, з купiвлею зараз i голландський.',onb7:'Спiльнота - вiдео та пости з YouTube, TikTok, Instagram i Facebook.',skip:'Пропустити',next:'Далi',done:'Готово',d:'д',h:'г',m:'хв',s:'с',inked:'Inked',loading:'Завантаження...',colorPh:'Жовтий...',dur5m:'⚡ 5 хвилин',dur15m:'⚡ 15 хвилин',dur30m:'⚡ 30 хвилин',dur1h:'1 година',dur3h:'3 години',dur6h:'6 годин',dur12h:'12 годин',dur24h:'24 години',dur48h:'2 дні',dur72h:'3 дні',dur168h:'7 днів'},
+en:{catalog:'Catalog',cabinet:'Cabinet',auctions:'Auctions',community:'Community',total:'Total',available:'Available',onTest:'Testing',trade:'Trade',all:'All',availableF:'Available',testF:'Test',tradeF:'Trade',search:'Search',searchPh:'🔍 Brand, model, plastic...',sorting:'Sort',newer:'Newest',older:'Oldest',priceUp:'Price ↑',priceDown:'Price ↓',speedDown:'Speed ↓',speedUp:'Speed ↑',condDown:'Cond ↓',priceLabel:'Price ₴',from:'from',to:'to',city:'City',cityPh:'Kyiv, Lutsk...',reset:'✕ Reset',stAvailable:'Available',stReserved:'Reserved',stTesting:'Testing',stPending:'Pending return',stSold:'Sold',stDeleted:'Deleted',stUnlisted:'Unlisted',yourDisc:'Your disc',test:'Test',buy:'Buy',exchange:'Trade',condition:'Condition',plastic:'Plastic',weight:'Weight',color:'Color',owner:'Owner',tester:'Tester',bargain:'Bargain',bargainPh:'Your price ₴',send:'Send',shareLink:'🔗 Share link',comments:'Comments',writeComment:'Write a comment...',loginToComment:'Log in to comment',thisIsYourDisc:'This is your disc',nothingFound:'Nothing found',catalogEmpty:'Catalog is empty!',writeTo:'message ↗',returnDisc:'↩ Return',addDisc:'ADD DISC',editDisc:'EDIT DISC',addToCtlg:'Add to catalog',save:'Save',photo:'Photo',photosUpTo3:'Photos (up to 3)',brand:'Brand',model:'Model',weightG:'Weight (g)',notes:'Notes',notesPh:'Additional info...',cityPh2:'Kyiv, Lutsk, Kremenchuk, Odesa, Lviv...',tradeWant:'What I want',tradeWantPh:'Describe what you\'re looking for...',readyToTrade:'🔄 Ready to trade',status:'Status',stOptAvailable:'Available',stOptReserved:'Reserved',stOptTesting:'Testing',stOptSold:'Sold',stOptUnlisted:'Unlisted',cropPreview:'Preview area (drag photo)',cropHint:'↕ Drag up/down',newAuction:'NEW AUCTION',createAuction:'Create auction',auctionParams:'⚡ AUCTION SETTINGS',aucType:'Auction type',aucEnglish:'📈 English',aucBuyout:'💰 English + Buy now',aucDutch:'📉 Dutch',aucDescClassic:'Price rises with bids. Highest bid wins.',aucDescBuyout:'Price rises with bids or buy instantly at fixed price.',aucDescReverse:'Price drops automatically. First buyer wins.',startPrice:'Start price ₴',minStep:'Min step ₴',buyNowPrice:'Buy now ₴',initialPrice:'Initial price ₴',minPrice:'Minimum price ₴',dropAmount:'Drop ₴',everyMin:'Every (minutes)',duration:'Duration',active:'Active',my:'My',bids:'Bids',ended:'Ended',bid:'Bid',buyNow:'Buy now for',currentPrice:'Current price',timeLeft:'Time left',startPriceL:'Start',bidHistory:'Bid history',noBidsYet:'No bids yet',seller:'Seller',yourAuction:'Your auction',winner:'Winner',noBids:'No bids placed',toCatalog:'📦 To catalog',restartAuc:'🔄 Restart auction',yourPrice:'Your price ₴',yourPriceHint:'Your price — when the dropping price reaches your bid, you win automatically',step:'Step',waitAuc:'WAITING FOR AUCTIONS',createYourAuc:'Create your auction',finished:'Finished',notSold:'Not sold',aucEnglishL:'📈 English auction',aucBuyoutL:'💰 English + Buy now',aucDutchL:'📉 Dutch auction',discs:'Discs',discsCount:'Discs',requests:'Requests',testing:'Testing',myDiscs:'MY DISCS',requestsToMe:'REQUESTS TO ME',iTest:'I\'M TESTING',sold:'Sold',earned:'Earned',noDiscs:'No discs',noRequests:'No requests',noActiveTests:'No active tests',requestHistory:'Request history',purchase:'Purchase',accepted:'Accept',confirm:'Confirm',login:'LOGIN',loginPrompt:'Log in to see cabinet',loginBtn:'Log in',openInTg:'Open via Telegram bot',openTg:'Open in Telegram',loginFirst:'⚠️ Please log in first',loginPlease:'⚠️ Please log in',testRequest:'TEST REQUEST',sendRequest:'Send request',commentOpt:'Comment (optional)',commentPh:'Leave a comment',tradeOffer:'TRADE OFFER',sendOffer:'Send offer',descYourDisc:'Describe your disc for trade...',ownerLooking:'Owner is looking for',buyDisc:'BUY DISC',price:'Price',comment:'Comment',wishes:'Wishes...',writeToSeller:'💬 Message seller',returnTitle:'DISC RETURN',impressions:'Impressions...',admin:'ADMIN',password:'Password',allDiscsL:'ALL DISCS',banned:'BANNED',banPh:'Telegram ID or username',ban:'Ban',unblock:'Unblock',disc:'Disc',actions:'Actions',revenue:'Revenue',statusSelect:'— status —',hide:'Hide',errGeneric:'⚠️ Error',linkCopied:'🔗 Link copied!',offerSent:'✅ Offer sent!',discAdded:'added!',discUpdated:'✅ Disc updated!',deleted:'🗑 Deleted',reqSent:'📝 Request sent!',alreadyRequested:'⚠️ You already sent a request for this disc',discUnavailable:'⚠️ Disc is no longer available',chooseCountry:'Choose your country',countryHint:'You will only see discs from the chosen country',settings:'Settings',helpTour:'App tour',theme:'Theme',themeDark:'Dark',themeLight:'Light',design:'Design',designGlass:'Glass',designBrutal:'Brutal',language:'Language',country:'Country',confirmCountryChange:'Change country? You will see a different catalog.',tradeReqSent:'🔄 Trade offer sent!',buySent:'🛒 Request sent!',returnSent:'↩️ Return request sent',saleDone:'🎉 Sale confirmed!',brandRequired:'⚠️ Brand and model required',uploading:'Uploading...',discNotFound:'⚠️ Disc not found',saving:'Saving...',specifyPrice:'⚠️ Specify price',photoSaved:'✅ Photos updated',statusChanged:'✅ Status changed',discHidden:'🗑 Disc hidden',userNotFound:'⚠️ User not found',userBanned:'banned',unblocked:'✅ Unblocked',welcome:'✅ Welcome!',wrongPass:'Wrong password',connError:'⚠️ Connection error',enterBrand:'⚠️ Enter brand and model',addPhoto:'⚠️ Add at least one photo',creating:'Creating...',aucCreated:'✅ Auction created!',minBidIs:'⚠️ Minimum bid:',aucEnded:'⚠️ Auction ended',cantBidOwn:'⚠️ Cannot bid on own auction',cantBuyOwn:'⚠️ Cannot buy own auction',enterPrice:'⚠️ Enter your price',priceLess:'⚠️ Price must be less than starting',confirmBuyNow:'Buy now?',currentPriceIs:'Current price',boughtFor:'🎉 Bought for',bidPlaced:'✅ Bid',antiSnipe:'⏱ +5 minutes',youWinWhen:'You\'ll win when price drops to',fillReverse:'⚠️ Fill all Dutch auction fields',minPriceLess:'⚠️ Minimum price must be less than starting',enterStartPrice:'⚠️ Enter start price',buyoutMore:'⚠️ Buy now price must exceed start price',minDuration:'⚠️ Minimum duration: 1 minute',enterPass:'⚠️ Enter password',confirmSaleQ:'Confirm sale',confirmDelete:'Delete',hideDisc:'Hide disc?',acceptQ:'Accept',from2:'from',post:'+ Post',publish:'Publish',published:'✅ Published!',urlPh:'YouTube, TikTok, Instagram, Facebook...',descPh:'Description (optional)',pasteLink:'⚠️ Paste a link',noPosts:'No posts yet',noComments:'No comments yet',commentPh2:'Comment...',watchTikTok:'Watch on TikTok',watchFb:'Watch on Facebook',openIg:'Open post',linkLabel:'Link',onb1:'Catalog - all community discs. Browse, filter, buy, offer trades or tests.',onb2:'Filters - sort by status, brand, price and flight numbers. Gear icon - advanced filters.',onb3:'Tap a disc to see details, photos, and take action - buy, trade or test.',onb4:'Add your disc for sale, trade or test. Upload photos, set condition and price.',onb5:'Your cabinet - your discs, test and trade requests, stats.',onb6:'Auctions - create and participate. Three types: English, Buy now, and Dutch.',onb7:'Community - videos and posts from YouTube, TikTok, Instagram and Facebook.',skip:'Skip',next:'Next',done:'Done',d:'d',h:'h',m:'m',s:'s',inked:'Inked',loading:'Loading...',colorPh:'Yellow...',dur5m:'⚡ 5 minutes',dur15m:'⚡ 15 minutes',dur30m:'⚡ 30 minutes',dur1h:'1 hour',dur3h:'3 hours',dur6h:'6 hours',dur12h:'12 hours',dur24h:'24 hours',dur48h:'2 days',dur72h:'3 days',dur168h:'7 days'},
+pl:{catalog:'Katalog',cabinet:'Profil',auctions:'Aukcje',community:'Społeczność',total:'Razem',available:'Dostępne',onTest:'Testowane',trade:'Wymiana',all:'Wszystkie',availableF:'Dostępne',testF:'Test',tradeF:'Wymiana',search:'Szukaj',searchPh:'🔍 Marka, model, plastik...',sorting:'Sortuj',newer:'Najnowsze',older:'Najstarsze',priceUp:'Cena ↑',priceDown:'Cena ↓',speedDown:'Speed ↓',speedUp:'Speed ↑',condDown:'Stan ↓',priceLabel:'Cena zł',from:'od',to:'do',city:'Miasto',cityPh:'Warszawa, Kraków...',reset:'✕ Wyczyść',stAvailable:'Dostępny',stReserved:'Zarezerwowany',stTesting:'W teście',stPending:'Oczekuje na zwrot',stSold:'Sprzedany',stDeleted:'Usunięty',stUnlisted:'Wycofany',yourDisc:'Twój dysk',test:'Test',buy:'Kup',exchange:'Wymiana',condition:'Stan',plastic:'Plastik',weight:'Waga',color:'Kolor',owner:'Właściciel',tester:'Tester',bargain:'Targ',bargainPh:'Twoja cena zł',send:'Wyślij',shareLink:'🔗 Udostępnij link',comments:'Komentarze',writeComment:'Napisz komentarz...',loginToComment:'Zaloguj się, aby komentować',thisIsYourDisc:'To twój dysk',nothingFound:'Nic nie znaleziono',catalogEmpty:'Katalog jest pusty!',writeTo:'napisz ↗',returnDisc:'↩ Zwróć',addDisc:'DODAJ DYSK',editDisc:'EDYTUJ DYSK',addToCtlg:'Dodaj do katalogu',save:'Zapisz',photo:'Zdjęcie',photosUpTo3:'Zdjęcia (do 3)',brand:'Marka',model:'Model',weightG:'Waga (g)',notes:'Notatki',notesPh:'Dodatkowe info...',cityPh2:'Warszawa, Kraków, Gdańsk, Wrocław, Poznań...',tradeWant:'Czego szukam',tradeWantPh:'Opisz czego szukasz...',readyToTrade:'🔄 Gotowy do wymiany',status:'Status',stOptAvailable:'Dostępny',stOptReserved:'Zarezerwowany',stOptTesting:'W teście',stOptSold:'Sprzedany',stOptUnlisted:'Wycofany',cropPreview:'Podgląd (przeciągnij zdjęcie)',cropHint:'↕ Przeciągnij w górę/dół',newAuction:'NOWA AUKCJA',createAuction:'Utwórz aukcję',auctionParams:'⚡ PARAMETRY AUKCJI',aucType:'Typ aukcji',aucEnglish:'📈 Angielska',aucBuyout:'💰 Angielska + Kup teraz',aucDutch:'📉 Holenderska',aucDescClassic:'Cena rośnie wraz z ofertami. Wygrywa najwyższa.',aucDescBuyout:'Cena rośnie z ofertami lub kup od razu za stałą cenę.',aucDescReverse:'Cena automatycznie spada. Pierwszy kupujący wygrywa.',startPrice:'Cena startowa zł',minStep:'Min. krok zł',buyNowPrice:'Kup teraz zł',initialPrice:'Cena początkowa zł',minPrice:'Cena minimalna zł',dropAmount:'Spadek zł',everyMin:'Co (minut)',duration:'Czas trwania',active:'Aktywne',my:'Moje',bids:'Oferty',ended:'Zakończone',bid:'Oferta',buyNow:'Kup teraz za',currentPrice:'Aktualna cena',timeLeft:'Pozostało',startPriceL:'Start',bidHistory:'Historia ofert',noBidsYet:'Brak ofert',seller:'Sprzedawca',yourAuction:'Twoja aukcja',winner:'Zwycięzca',noBids:'Nikt nie złożył oferty',toCatalog:'📦 Do katalogu',restartAuc:'🔄 Uruchom ponownie',yourPrice:'Twoja cena zł',yourPriceHint:'Twoja cena — gdy spadająca cena osiągnie twoją ofertę, automatycznie wygrasz',step:'Krok',waitAuc:'OCZEKUJĄ AUKCJE',createYourAuc:'Utwórz swoją aukcję',finished:'Zakończono',notSold:'Niesprzedany',aucEnglishL:'📈 Aukcja angielska',aucBuyoutL:'💰 Angielska + Kup teraz',aucDutchL:'📉 Aukcja holenderska',discs:'Dyski',discsCount:'Dyski',requests:'Zapytania',testing:'Testuję',myDiscs:'MOJE DYSKI',requestsToMe:'ZAPYTANIA DO MNIE',iTest:'TESTUJĘ',sold:'Sprzedane',earned:'Zarobione',noDiscs:'Brak dysków',noRequests:'Brak zapytań',noActiveTests:'Brak aktywnych testów',requestHistory:'Historia zapytań',purchase:'Zakup',accepted:'Akceptuj',confirm:'Potwierdź',login:'LOGOWANIE',loginPrompt:'Zaloguj się, aby zobaczyć profil',loginBtn:'Zaloguj',openInTg:'Otwórz przez bota Telegram',openTg:'Otwórz w Telegramie',loginFirst:'⚠️ Najpierw się zaloguj',loginPlease:'⚠️ Zaloguj się',testRequest:'PROŚBA O TEST',sendRequest:'Wyślij prośbę',commentOpt:'Komentarz (opcjonalny)',commentPh:'Zostaw komentarz',tradeOffer:'OFERTA WYMIANY',sendOffer:'Wyślij ofertę',descYourDisc:'Opisz swój dysk do wymiany...',ownerLooking:'Właściciel szuka',buyDisc:'KUP DYSK',price:'Cena',comment:'Komentarz',wishes:'Życzenia...',writeToSeller:'💬 Napisz do sprzedawcy',returnTitle:'ZWROT DYSKU',impressions:'Wrażenia...',admin:'ADMIN',password:'Hasło',allDiscsL:'WSZYSTKIE DYSKI',banned:'ZABLOKOWANI',banPh:'Telegram ID lub username',ban:'Banuj',unblock:'Odblokuj',disc:'Dysk',actions:'Akcje',revenue:'Przychód',statusSelect:'— status —',hide:'Ukryj',errGeneric:'⚠️ Błąd',linkCopied:'🔗 Link skopiowany!',offerSent:'✅ Oferta wysłana!',discAdded:'dodany!',discUpdated:'✅ Dysk zaktualizowany!',deleted:'🗑 Usunięto',reqSent:'📝 Prośba wysłana!',alreadyRequested:'⚠️ Już wysłałeś prośbę o ten dysk',discUnavailable:'⚠️ Dysk nie jest już dostępny',chooseCountry:'Wybierz kraj',countryHint:'Zobaczysz tylko dyski z wybranego kraju',settings:'Ustawienia',helpTour:'Przewodnik po aplikacji',theme:'Motyw',themeDark:'Ciemny',themeLight:'Jasny',design:'Wygląd',designGlass:'Glass',designBrutal:'Brutal',language:'Język',country:'Kraj',confirmCountryChange:'Zmienić kraj? Zobaczysz inny katalog.',tradeReqSent:'🔄 Oferta wymiany wysłana!',buySent:'🛒 Prośba wysłana!',returnSent:'↩️ Prośba o zwrot wysłana',saleDone:'🎉 Sprzedaż potwierdzona!',brandRequired:'⚠️ Marka i model wymagane',uploading:'Przesyłanie...',discNotFound:'⚠️ Nie znaleziono dysku',saving:'Zapisywanie...',specifyPrice:'⚠️ Podaj cenę',photoSaved:'✅ Zdjęcia zaktualizowane',statusChanged:'✅ Status zmieniony',discHidden:'🗑 Dysk ukryty',userNotFound:'⚠️ Nie znaleziono użytkownika',userBanned:'zablokowany',unblocked:'✅ Odblokowany',welcome:'✅ Witamy!',wrongPass:'Nieprawidłowe hasło',connError:'⚠️ Błąd połączenia',enterBrand:'⚠️ Podaj markę i model',addPhoto:'⚠️ Dodaj przynajmniej jedno zdjęcie',creating:'Tworzenie...',aucCreated:'✅ Aukcja utworzona!',minBidIs:'⚠️ Minimalna oferta:',aucEnded:'⚠️ Aukcja zakończona',cantBidOwn:'⚠️ Nie można licytować własnej aukcji',cantBuyOwn:'⚠️ Nie można kupić własnej aukcji',enterPrice:'⚠️ Podaj swoją cenę',priceLess:'⚠️ Cena musi być niższa od początkowej',confirmBuyNow:'Kupić teraz?',currentPriceIs:'Aktualna cena',boughtFor:'🎉 Kupiono za',bidPlaced:'✅ Oferta',antiSnipe:'⏱ +5 minut',youWinWhen:'Wygrasz gdy cena spadnie do',fillReverse:'⚠️ Wypełnij wszystkie pola aukcji holenderskiej',minPriceLess:'⚠️ Cena minimalna musi być niższa od startowej',enterStartPrice:'⚠️ Podaj cenę startową',buyoutMore:'⚠️ Cena "Kup teraz" musi przekraczać startową',minDuration:'⚠️ Minimalny czas: 1 minuta',enterPass:'⚠️ Podaj hasło',confirmSaleQ:'Potwierdzić sprzedaż',confirmDelete:'Usunąć',hideDisc:'Ukryć dysk?',acceptQ:'Zaakceptować',from2:'od',post:'+ Post',publish:'Opublikuj',published:'✅ Opublikowano!',urlPh:'YouTube, TikTok, Instagram, Facebook...',descPh:'Opis (opcjonalny)',pasteLink:'⚠️ Wklej link',noPosts:'Brak postów',noComments:'Brak komentarzy',commentPh2:'Komentarz...',watchTikTok:'Oglądaj na TikToku',watchFb:'Oglądaj na Facebooku',openIg:'Otwórz post',linkLabel:'Link',onb1:'Katalog - wszystkie dyski społeczności. Przeglądaj, filtruj, kupuj, proponuj wymiany lub testy.',onb2:'Filtry - sortuj po statusie, marce, cenie i flight numbers. Ikona filtra - zaawansowane filtry.',onb3:'Kliknij dysk, aby zobaczyć szczegóły, zdjęcia i podjąć akcję - kup, wymień lub weź na test.',onb4:'Dodaj swój dysk do sprzedaży, wymiany lub testu. Wgraj zdjęcia, określ stan i cenę.',onb5:'Twój profil - twoje dyski, prośby o test i wymianę, statystyki.',onb6:'Aukcje - twórz i bierz udział. Trzy typy: angielska, z kup teraz i holenderska.',onb7:'Społeczność - filmy i posty z YouTube, TikTok, Instagram i Facebook.',skip:'Pomiń',next:'Dalej',done:'Gotowe',d:'d',h:'g',m:'min',s:'s',inked:'Inked',loading:'Ładowanie...',colorPh:'Żółty...',dur5m:'⚡ 5 minut',dur15m:'⚡ 15 minut',dur30m:'⚡ 30 minut',dur1h:'1 godzina',dur3h:'3 godziny',dur6h:'6 godzin',dur12h:'12 godzin',dur24h:'24 godziny',dur48h:'2 dni',dur72h:'3 dni',dur168h:'7 dni'}
 };
 function t(k){return I[LANG]?.[k]||I.uk[k]||k;}
-function toggleLang(){LANG=LANG==='uk'?'en':'uk';localStorage.setItem('dc_lang',LANG);document.getElementById('langBtn').textContent=LANG==='uk'?'EN':'UA';applyLang();}
+function toggleLang(){LANG=LANG==='uk'?'en':'uk';localStorage.setItem('dc_lang',LANG);const lb=document.getElementById('langBtn');if(lb)lb.textContent=LANG==='uk'?'EN':'UA';applyLang();}
 function applyLang(){ST.available.l=t('stAvailable');ST.reserved.l=t('stReserved');ST.testing.l=t('stTesting');ST.pending.l=t('stPending');ST.sold.l=t('stSold');ST.deleted.l=t('stDeleted');ST.unlisted.l=t('stUnlisted');ST.trade.l=t('stAvailable');document.querySelectorAll('[data-i18n]').forEach(el=>{const k=el.dataset.i18n;if(el.tagName==='INPUT'||el.tagName==='TEXTAREA'){el.placeholder=t(k);}else{el.textContent=t(k);}});initCitySelects();if(typeof refreshAllGs==='function')refreshAllGs();applyFilters();if(document.getElementById('page-auctions')?.classList.contains('active'))renderAuctions();if(document.getElementById('cabinetContent')?.style.display!=='none'&&CU)renderCabinet();if(document.getElementById('page-settings')?.classList.contains('active'))renderFeed();}
 
 // ── CITIES ──
-const CITIES={kyiv:{uk:'Київ',en:'Kyiv'},lutsk:{uk:'Луцьк',en:'Lutsk'},kremenchuk:{uk:'Кременчук',en:'Kremenchuk'},odesa:{uk:'Одеса',en:'Odesa'},lviv:{uk:'Львів',en:'Lviv'},kharkiv:{uk:'Харків',en:'Kharkiv'},dnipro:{uk:'Дніпро',en:'Dnipro'},other:{uk:'Інше',en:'Other'}};
+const COUNTRIES={
+  ua:{nameUk:'Україна',nameEn:'Ukraine',namePl:'Ukraina',currency:'UAH',symbol:'₴',defaultLang:'uk',flag:'🇺🇦'},
+  pl:{nameUk:'Польща',nameEn:'Poland',namePl:'Polska',currency:'PLN',symbol:'zł',defaultLang:'pl',flag:'🇵🇱'}
+};
+const CITIES={
+  kyiv:{uk:'Київ',en:'Kyiv',pl:'Kijów',country:'ua'},
+  lutsk:{uk:'Луцьк',en:'Lutsk',pl:'Łuck',country:'ua'},
+  kremenchuk:{uk:'Кременчук',en:'Kremenchuk',pl:'Krzemieńczuk',country:'ua'},
+  odesa:{uk:'Одеса',en:'Odesa',pl:'Odessa',country:'ua'},
+  lviv:{uk:'Львів',en:'Lviv',pl:'Lwów',country:'ua'},
+  kharkiv:{uk:'Харків',en:'Kharkiv',pl:'Charków',country:'ua'},
+  dnipro:{uk:'Дніпро',en:'Dnipro',pl:'Dniepr',country:'ua'},
+  warsaw:{uk:'Варшава',en:'Warsaw',pl:'Warszawa',country:'pl'},
+  krakow:{uk:'Краків',en:'Krakow',pl:'Kraków',country:'pl'},
+  gdansk:{uk:'Гданськ',en:'Gdansk',pl:'Gdańsk',country:'pl'},
+  wroclaw:{uk:'Вроцлав',en:'Wroclaw',pl:'Wrocław',country:'pl'},
+  poznan:{uk:'Познань',en:'Poznan',pl:'Poznań',country:'pl'},
+  lodz:{uk:'Лодзь',en:'Lodz',pl:'Łódź',country:'pl'},
+  katowice:{uk:'Катовіце',en:'Katowice',pl:'Katowice',country:'pl'},
+  szczecin:{uk:'Щецин',en:'Szczecin',pl:'Szczecin',country:'pl'},
+  lublin:{uk:'Люблін',en:'Lublin',pl:'Lublin',country:'pl'},
+  rzeszow:{uk:'Жешув',en:'Rzeszow',pl:'Rzeszów',country:'pl'},
+  other:{uk:'Інше',en:'Other',pl:'Inne',country:'all'}
+};
 function tCity(key){if(!key)return'';const c=CITIES[key];if(c)return c[LANG]||c.uk;return key;}
 function cityKey(name){if(!name)return'';const n=name.toLowerCase().trim();for(const[k,v]of Object.entries(CITIES)){if(v.uk.toLowerCase()===n||v.en.toLowerCase()===n||k===n)return k;}for(const[k,v]of Object.entries(CITIES)){if(n.includes(v.uk.toLowerCase())||v.uk.toLowerCase().includes(n)||n.includes(v.en.toLowerCase())||v.en.toLowerCase().includes(n))return k;}return name;}
 function getActiveCities(){const used={};allDiscs.forEach(d=>{if(d.city){const k=cityKey(d.city);if(k&&CITIES[k])used[k]=true;}});return Object.keys(CITIES).filter(k=>used[k]);}
@@ -1196,11 +1232,16 @@ function tgLinkFull(tg){
 
 
 // ── FORM CITY DROPDOWNS ──
+function _citiesForUser(){
+  const c=CU&&CU.country?CU.country:null;
+  if(!c)return Object.entries(CITIES);
+  return Object.entries(CITIES).filter(([k,v])=>v.country===c||v.country==='all');
+}
 function renderFormCityDrop(prefix){
   const drop=document.getElementById(prefix+'CityDrop');
   if(!drop)return;
   const cur=document.getElementById(prefix===('ad')?'ad-city':prefix===('edit')?'edit-city':'auc-city')?.value||'';
-  drop.innerHTML='<input class="city-search" placeholder="🔍 '+t('search')+'..." oninput="filterFormCityList(\''+prefix+'\',this.value)" onclick="event.stopPropagation()"><div class="city-form-list" id="'+prefix+'CityList">'+Object.entries(CITIES).map(([k,v])=>'<label class="city-opt" data-city="'+k+'" style="display:flex;align-items:center;gap:6px;padding:6px 8px;font-size:0.82rem;cursor:pointer" onclick="event.preventDefault();selectFormCity(\''+prefix+'\',\''+k+'\')"><span style="width:16px;text-align:center">'+(k===cur?'✓':'')+'</span><span>'+v[LANG]+'</span></label>').join('')+'</div>';
+  drop.innerHTML='<input class="city-search" placeholder="🔍 '+t('search')+'..." oninput="filterFormCityList(\''+prefix+'\',this.value)" onclick="event.stopPropagation()"><div class="city-form-list" id="'+prefix+'CityList">'+_citiesForUser().map(([k,v])=>'<label class="city-opt" data-city="'+k+'" style="display:flex;align-items:center;gap:6px;padding:6px 8px;font-size:0.82rem;cursor:pointer" onclick="event.preventDefault();selectFormCity(\''+prefix+'\',\''+k+'\')"><span style="width:16px;text-align:center">'+(k===cur?'✓':'')+'</span><span>'+v[LANG]+'</span></label>').join('')+'</div>';
 }
 function toggleFormCityDrop(prefix){
   const drop=document.getElementById(prefix+'CityDrop');
@@ -1229,7 +1270,9 @@ async function loadDiscs(){
   // Show cache instantly
   try{const c=localStorage.getItem('dc_discs');if(c){allDiscs=JSON.parse(c);applyFilters();updateStats();}}catch(e){}
   try{
-    const {data,error}=await sb.from('discs').select('*').not('status','in','("sold","deleted","unlisted")').order('created_at',{ascending:false});
+    let q=sb.from('discs').select('*').not('status','in','("sold","deleted","unlisted")').order('created_at',{ascending:false});
+    if(CU&&CU.country)q=q.eq('country',CU.country);
+    const {data,error}=await q;
     if(!error&&data){
       allDiscs=data.map(dbToDisc);
       localStorage.setItem('dc_discs',JSON.stringify(allDiscs));
@@ -1674,6 +1717,7 @@ async function submitDisc(){
     bargain:document.getElementById('ad-bargain').checked,
     trade_want:isTrade?(document.getElementById('ad-trade-desc').value.trim()||'Пропонуйте'):'',
     status:'available',
+    country:CU&&CU.country?CU.country:'ua',
     photo_url:photos[0],photo_url2:photos[1],photo_url3:photos[2],
     photo_pos:'50% '+cropPosY+'%',
   };
@@ -2608,15 +2652,91 @@ function restoreUser(){
     if(tg&&tg.initDataUnsafe?.user){
       const u=tg.initDataUnsafe.user;
       CU={name:(u.first_name+(u.last_name?' '+u.last_name:'')).trim(),tg:u.username||String(u.id),tgId:String(u.id),role:'both'};
+      // Restore cached country (avoids country-picker flash for repeat visits)
+      try{const cc=localStorage.getItem('dc_country');if(cc==='ua'||cc==='pl')CU.country=cc;}catch(e){}
       localStorage.setItem('dcUser',JSON.stringify(CU));updateUserBtn();
       if(document.getElementById('page-admin')?.classList.contains('active'))checkAdminAccess();
-      // Register/update user in Supabase
-      sb.from('users').upsert({name:CU.name,telegram_id:CU.tgId,tg_username:CU.tg,role:'both'},{onConflict:'telegram_id'}).then(()=>{});
+      // Register/update user in Supabase, then fetch country
+      sb.from('users').upsert({name:CU.name,telegram_id:CU.tgId,tg_username:CU.tg,role:'both'},{onConflict:'telegram_id'}).then(()=>{
+        sb.from('users').select('country, preferred_lang').eq('telegram_id',CU.tgId).single().then(r=>{
+          if(r&&r.data){
+            if(r.data.country){
+              CU.country=r.data.country;
+              try{localStorage.setItem('dc_country',CU.country);}catch(e){}
+            }
+            // Apply DB-stored lang only if local has no explicit choice
+            try{
+              const savedLang=localStorage.getItem('dc_lang');
+              if(!savedLang&&r.data.preferred_lang&&(r.data.preferred_lang==='uk'||r.data.preferred_lang==='en'||r.data.preferred_lang==='pl')){
+                LANG=r.data.preferred_lang;
+                localStorage.setItem('dc_lang',LANG);
+                if(typeof applyLang==='function')applyLang();
+              }
+            }catch(e){}
+          }
+        });
+      });
       return;
     }
     const saved=localStorage.getItem('dcUser');
-    if(saved){CU=JSON.parse(saved);updateUserBtn();}
+    if(saved){CU=JSON.parse(saved);try{const cc=localStorage.getItem('dc_country');if(cc==='ua'||cc==='pl')CU.country=cc;}catch(e){}updateUserBtn();}
   }catch(e){}
+}
+function openCountryPicker(){
+  if(document.getElementById('ov-countryPick'))return;
+  const ov=document.createElement('div');
+  ov.className='overlay open';ov.id='ov-countryPick';
+  ov.innerHTML=`
+    <div class="modal" style="max-width:340px">
+      <div class="mt" style="font-size:1.1rem;margin-bottom:0.5rem;text-align:center">${t('chooseCountry')}</div>
+      <div style="font-size:0.8rem;color:var(--m1);margin-bottom:1rem;text-align:center">${t('countryHint')}</div>
+      <div style="display:flex;flex-direction:column;gap:0.6rem">
+        <button class="btn btn-full" style="font-size:1rem;padding:0.9rem" onclick="pickCountry('ua')">🇺🇦 ${escHtml(COUNTRIES.ua['name'+(LANG==='uk'?'Uk':LANG==='pl'?'Pl':'En')])}</button>
+        <button class="btn btn-full" style="font-size:1rem;padding:0.9rem" onclick="pickCountry('pl')">🇵🇱 ${escHtml(COUNTRIES.pl['name'+(LANG==='uk'?'Uk':LANG==='pl'?'Pl':'En')])}</button>
+      </div>
+    </div>`;
+  document.body.appendChild(ov);
+}
+async function pickCountry(c){
+  if(!c||(c!=='ua'&&c!=='pl'))return;
+  CU=CU||{};
+  CU.country=c;
+  try{localStorage.setItem('dc_country',c);}catch(e){}
+  // Auto-switch language to country's default if user hasn't explicitly picked one
+  let pickedLang=null;
+  try{
+    const savedLang=localStorage.getItem('dc_lang');
+    if(!savedLang){
+      LANG=COUNTRIES[c].defaultLang;
+      pickedLang=LANG;
+      localStorage.setItem('dc_lang',LANG);
+      if(typeof applyLang==='function')applyLang();
+    }
+  }catch(e){}
+  if(CU.tgId){
+    try{
+      const upd={country:c};
+      if(pickedLang)upd.preferred_lang=pickedLang;
+      await sb.from('users').update(upd).eq('telegram_id',CU.tgId);
+    }catch(e){}
+  }
+  const ov=document.getElementById('ov-countryPick');if(ov)ov.remove();
+  await loadDiscs();await loadAuctions();
+}
+async function ensureCountryChosen(){
+  // Called after restoreUser; if user has no country either locally or in DB, show picker.
+  if(CU&&CU.country)return;
+  if(CU&&CU.tgId){
+    try{
+      const r=await sb.from('users').select('country').eq('telegram_id',CU.tgId).single();
+      if(r&&r.data&&r.data.country){
+        CU.country=r.data.country;
+        try{localStorage.setItem('dc_country',CU.country);}catch(e){}
+        return;
+      }
+    }catch(e){}
+  }
+  openCountryPicker();
 }
 function updateUserBtn(){
   if(!CU)return;
@@ -2653,7 +2773,9 @@ function getAucDurationMs(){
 
 async function loadAuctions(){
   try{
-    const {data}=await sb.from('auctions').select('*').neq('status','archived').order('created_at',{ascending:false});
+    let q=sb.from('auctions').select('*').neq('status','archived').order('created_at',{ascending:false});
+    if(CU&&CU.country)q=q.eq('country',CU.country);
+    const {data}=await q;
     allAuctions=data||[];
     const now=new Date();
     for(const a of allAuctions){
@@ -2906,7 +3028,8 @@ async function submitAuction(){
     min_step:minStep,buyout_price:buyoutPrice,
     reverse_start:reverseStart,reverse_end:reverseEnd,
     reverse_drop:reverseDrop,reverse_interval:reverseInterval,
-    ends_at:endsAt,status:'active'
+    ends_at:endsAt,status:'active',
+    country:CU&&CU.country?CU.country:'ua'
   };
   const {error}=await sb.from('auctions').insert(auction);
   if(!error){
@@ -3529,7 +3652,8 @@ function toggleTheme(){
   const cl=document.documentElement.classList;
   const isLight=cl.toggle('light');
   localStorage.setItem('dc_theme',isLight?'light':'dark');
-  document.getElementById('themeIcon').innerHTML=isLight?'<circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>':'<path d="M21 12.79A9 9 0 1111.21 3a7 7 0 009.79 9.79z"/>';
+  const ti=document.getElementById('themeIcon');
+  if(ti)ti.innerHTML=isLight?'<circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>':'<path d="M21 12.79A9 9 0 1111.21 3a7 7 0 009.79 9.79z"/>';
   setTimeout(initBnavPill,50);
 }
 function toggleBrutal(){
@@ -3537,21 +3661,20 @@ function toggleBrutal(){
   const isBrutal=cl.toggle('brutal');
   localStorage.setItem('dc_brutal',isBrutal?'1':'');
   const btn=document.getElementById('brutalBtn');
-  btn.style.background=isBrutal?'var(--text)':'';
-  btn.style.color=isBrutal?'var(--bg)':'';
+  if(btn){btn.style.background=isBrutal?'var(--text)':'';btn.style.color=isBrutal?'var(--bg)':'';}
   setTimeout(initBnavPill,50);
 }
 function restoreTheme(){
   const t=localStorage.getItem('dc_theme');
   if(t==='light'){
     document.documentElement.classList.add('light');
-    document.getElementById('themeIcon').innerHTML='<circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>';
+    const ti=document.getElementById('themeIcon');
+    if(ti)ti.innerHTML='<circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>';
   }
   if(localStorage.getItem('dc_brutal')==='1'){
     document.documentElement.classList.add('brutal');
     const btn=document.getElementById('brutalBtn');
-    btn.style.background='var(--text)';
-    btn.style.color='var(--bg)';
+    if(btn){btn.style.background='var(--text)';btn.style.color='var(--bg)';}
   }
 }
 restoreTheme();
@@ -3652,6 +3775,8 @@ enhanceAllSelects();
 const FNUM_RANGES={speed:{min:1,max:14,label:'1..14'},glide:{min:1,max:7,label:'1..7'},turn:{min:-5,max:1,label:'-5..1'},fade:{min:0,max:5,label:'0..5'}};
 function _fnumKindOf(input){
   const id=(input.id||'').toLowerCase();
+  // Skip filter inputs (f-speed, f-turn-max, etc.) — they are slider readouts, not user-validated fields
+  if(id.startsWith('f-'))return null;
   if(id.endsWith('-speed'))return 'speed';
   if(id.endsWith('-glide'))return 'glide';
   if(id.endsWith('-turn'))return 'turn';
@@ -3693,6 +3818,7 @@ function _fnumValidate(input){
 }
 function _fnumAttach(input){
   if(input._fnumAttached)return;
+  if(!_fnumKindOf(input))return;
   input._fnumAttached=true;
   _fnumWrap(input);
   input.addEventListener('input',()=>_fnumValidate(input));
@@ -3708,6 +3834,118 @@ function attachAllFlightValidators(){
 attachAllFlightValidators();
 // Re-attach when modals render dynamically inserted inputs
 new MutationObserver(()=>attachAllFlightValidators()).observe(document.body,{childList:true,subtree:true});
+
+// ── SETTINGS SHEET ──
+function openSettings(){
+  let ov=document.getElementById('ov-settings');
+  if(ov){ov.classList.add('open');renderSettings();return;}
+  ov=document.createElement('div');
+  ov.className='overlay open';ov.id='ov-settings';
+  ov.onclick=e=>{if(e.target===ov)closeSettings();};
+  ov.innerHTML=`
+    <div class="modal" style="max-width:360px">
+      <div class="mt" style="font-size:1.05rem;margin-bottom:0.8rem;display:flex;justify-content:space-between;align-items:center">
+        <span>${t('settings')}</span>
+        <button onclick="closeSettings()" style="background:none;border:none;color:var(--text);font-size:1.2rem;cursor:pointer;padding:0;line-height:1">✕</button>
+      </div>
+      <div id="settingsBody"></div>
+    </div>`;
+  document.body.appendChild(ov);
+  renderSettings();
+}
+function closeSettings(){const ov=document.getElementById('ov-settings');if(ov)ov.classList.remove('open');}
+function renderSettings(){
+  const body=document.getElementById('settingsBody');if(!body)return;
+  const langNames={uk:'Українська',en:'English',pl:'Polski'};
+  const langKey=LANG;
+  const themeMode=document.documentElement.classList.contains('light')?'light':'dark';
+  const isBrutal=document.documentElement.classList.contains('brutal');
+  const country=(CU&&CU.country)?CU.country:'';
+  body.innerHTML=`
+    <div class="setting-row" onclick="settingsAction('guide')">
+      <div class="setting-icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div>
+      <div class="setting-label">${t('helpTour')}</div>
+      <div class="setting-arrow">›</div>
+    </div>
+    <div class="setting-row">
+      <div class="setting-icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1111.21 3a7 7 0 009.79 9.79z"/></svg></div>
+      <div class="setting-label">${t('theme')}</div>
+      <div class="setting-segmented">
+        <button class="seg-btn ${themeMode==='dark'?'active':''}" onclick="setThemeMode('dark')">${t('themeDark')}</button>
+        <button class="seg-btn ${themeMode==='light'?'active':''}" onclick="setThemeMode('light')">${t('themeLight')}</button>
+      </div>
+    </div>
+    <div class="setting-row">
+      <div class="setting-icon"><svg viewBox="0 0 20 20" width="18" height="18"><rect x="2" y="2" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"/><rect x="5" y="6" width="5" height="2" fill="currentColor"/><rect x="5" y="10" width="4" height="2" fill="currentColor"/><rect x="5" y="14" width="6" height="2" fill="currentColor"/></svg></div>
+      <div class="setting-label">${t('design')}</div>
+      <div class="setting-segmented">
+        <button class="seg-btn ${!isBrutal?'active':''}" onclick="setBrutalMode(false)">${t('designGlass')}</button>
+        <button class="seg-btn ${isBrutal?'active':''}" onclick="setBrutalMode(true)">${t('designBrutal')}</button>
+      </div>
+    </div>
+    <div class="setting-row">
+      <div class="setting-icon" style="font-size:14px;font-weight:700">A</div>
+      <div class="setting-label">${t('language')}</div>
+      <div class="setting-segmented">
+        <button class="seg-btn ${langKey==='uk'?'active':''}" onclick="setLang('uk')">UA</button>
+        <button class="seg-btn ${langKey==='en'?'active':''}" onclick="setLang('en')">EN</button>
+        <button class="seg-btn ${langKey==='pl'?'active':''}" onclick="setLang('pl')">PL</button>
+      </div>
+    </div>
+    <div class="setting-row">
+      <div class="setting-icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg></div>
+      <div class="setting-label">${t('country')}</div>
+      <div class="setting-segmented">
+        <button class="seg-btn ${country==='ua'?'active':''}" onclick="changeCountry('ua')">🇺🇦 UA</button>
+        <button class="seg-btn ${country==='pl'?'active':''}" onclick="changeCountry('pl')">🇵🇱 PL</button>
+      </div>
+    </div>`;
+}
+function settingsAction(a){
+  if(a==='guide'){
+    closeSettings();
+    goPage('catalog');
+    localStorage.removeItem('dc_onboarded');
+    setTimeout(startOnboarding,300);
+  }
+}
+function setThemeMode(m){
+  const cur=document.documentElement.classList.contains('light')?'light':'dark';
+  if(cur!==m)toggleTheme();
+  renderSettings();
+}
+function setBrutalMode(b){
+  const cur=document.documentElement.classList.contains('brutal');
+  if(cur!==b)toggleBrutal();
+  renderSettings();
+}
+function setLang(l){
+  if(LANG===l)return;
+  LANG=l;
+  try{localStorage.setItem('dc_lang',LANG);}catch(e){}
+  applyLang();
+  renderSettings();
+  if(CU&&CU.tgId){try{sb.from('users').update({preferred_lang:l}).eq('telegram_id',CU.tgId).then(()=>{});}catch(e){}}
+}
+async function changeCountry(c){
+  if(!c||(c!=='ua'&&c!=='pl'))return;
+  if(CU&&CU.country===c)return;
+  const proceed=async ()=>{
+    CU=CU||{};
+    CU.country=c;
+    try{localStorage.setItem('dc_country',c);}catch(e){}
+    if(CU.tgId){try{await sb.from('users').update({country:c}).eq('telegram_id',CU.tgId);}catch(e){}}
+    closeSettings();
+    await loadDiscs();await loadAuctions();
+    renderSettings();
+  };
+  const tgw=window.Telegram?.WebApp;
+  if(tgw&&typeof tgw.showConfirm==='function'){
+    tgw.showConfirm(t('confirmCountryChange'),ok=>{if(ok)proceed();});
+  }else{
+    if(window.confirm(t('confirmCountryChange')))await proceed();
+  }
+}
 
 // ── ONBOARDING GUIDE ──
 function startOnboarding(){
@@ -3827,6 +4065,8 @@ async function init(){
   // so RLS policies can use auth.jwt() ->> 'sub' to identify the Telegram user.
   // Failure is non-fatal here — policies are still permissive at this stage.
   await ensureSupabaseAuth();
+  // Ensure user has chosen a country before we filter any data
+  await ensureCountryChosen();
   setTimeout(updateCondBar,100);
   const savedToken=sessionStorage.getItem('adminToken');
   if(savedToken)ADMIN_TOKEN=savedToken;
