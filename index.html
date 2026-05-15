@@ -1103,7 +1103,7 @@ let LANG=(function(){
   return SUPPORTED.indexOf(v)>=0?v:'en';
 })();
 // Note: SUPPORTED_LANGS defined just below; LANG re-validates inside setLang().
-const I18N_VERSION='2026.05.15.4';
+const I18N_VERSION='2026.05.15.5';
 const SUPPORTED_LANGS=['ua','en','pl','fi','se','no','ee','dk','is','lv','lt','cz','de'];
 let I={ua:{},en:{},pl:{}};
 async function loadTranslations(){
@@ -2162,8 +2162,9 @@ async function confirmSale(discId){
   const d=allDiscs.find(x=>String(x.id)===String(discId));if(!d)return;
   if(!confirm(`${t('confirmSaleQ')} "${escHtml(d.brand)} ${escHtml(d.model)}" → ${escHtml(d.tester)}?`))return;
   try{
-    const {error}=await sb.from('discs').update({status:'sold'}).eq('id',discId);
-    await sb.from('requests').update({status:'sold'}).eq('disc_id',discId).eq('status','pending');
+    // RPC marks disc as sold + duplicates it to buyer's cabinet with status='unlisted'.
+    // Buyer is resolved server-side from the request row to bypass RLS on cross-user insert.
+    const {error}=await sb.rpc('transfer_disc_on_sale',{p_disc_id:discId});
     if(!error){await loadDiscs();renderCabinet();toast(t('saleDone'));notifyAppsScript('sold',d,{name:d.tester,tg:d.testerTg});}
     else toast('⚠️ '+error.message,true);
   }catch(e){toast(t('errGeneric'),true);}
@@ -2904,6 +2905,7 @@ async function loadAuctions(){
         a.status=newStatus;
         await sb.from('auctions').update({status:newStatus}).eq('id',a.id);
         if(a.winner&&newStatus==='sold'){
+          try{await sb.rpc('transfer_auction_to_winner',{p_auction_id:a.id});}catch(e){console.error('transfer auction failed:',e);}
           notifyAuction('ended',a,{name:a.winner,tg:a.winner_tg_id||a.winner_tg},a.current_price);
         }
         continue;
@@ -2917,6 +2919,7 @@ async function loadAuctions(){
           a.status='sold';a.winner=winner.bidder;a.winner_tg=winner.bidder_tg;a.winner_tg_id=winner.bidder_tg_id;a.current_price=winner.amount;
           await sb.from('auctions').update({status:'sold',current_price:winner.amount,winner:winner.bidder,winner_tg:winner.bidder_tg,winner_tg_id:winner.bidder_tg_id}).eq('id',a.id);
           updateSourceDisc(a,'sold');
+          try{await sb.rpc('transfer_auction_to_winner',{p_auction_id:a.id});}catch(e){console.error('transfer reverse auction failed:',e);}
           notifyAuction('sold',a,{name:winner.bidder,tg:winner.bidder_tg_id||winner.bidder_tg},winner.amount);
         }
       }
@@ -3485,6 +3488,8 @@ async function buyoutAuction(aucId){
   if(!confirm(t('buyNow')+' '+displayPrice+''+' '+curSym()+'?'))return;
   const {data:price,error}=await sb.rpc('buyout_auction',{p_auction_id:aucId});
   if(error){toast('⚠️ '+error.message,true);return;}
+  // Transfer disc copy to winner's cabinet (status='unlisted')
+  try{await sb.rpc('transfer_auction_to_winner',{p_auction_id:aucId});}catch(e){console.error('transfer auction failed:',e);}
   toast(t('boughtFor')+' '+price+''+' '+curSym()+'!');
   notifyAuction('sold',a,CU,price);
   closeModal('aucDetail');await loadAuctions();startAucGridTimer();
