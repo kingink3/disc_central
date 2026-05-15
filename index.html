@@ -355,6 +355,19 @@ input,textarea,select{-webkit-user-select:text;user-select:text}
 body.modal-open{overflow:hidden;position:fixed;width:100%;left:0}
 .modal{background:linear-gradient(160deg,var(--glass-hi) 0%,var(--glass) 100%);backdrop-filter:var(--glass-blur);-webkit-backdrop-filter:var(--glass-blur);border:0.5px solid var(--glass-border);border-radius:20px;padding:1.5rem 1.5rem 2rem;width:100%;max-width:480px;max-height:none;overflow-y:visible;position:relative;animation:mIn 0.3s cubic-bezier(0.4,0,0.1,1);margin:1rem auto 1rem;box-shadow:0 16px 64px rgba(0,0,0,0.35),0 0 0 0.5px rgba(255,255,255,0.1),inset 0 2px 0 rgba(255,255,255,0.25),inset 0 -2px 0 rgba(255,255,255,0.1),inset 1px 0 0 rgba(255,255,255,0.06),inset -1px 0 0 rgba(255,255,255,0.06)}
 .modal-wide{max-width:640px}
+.modal-x{position:absolute;top:0.75rem;right:0.75rem;width:32px;height:32px;border:none;background:var(--glass);border:0.5px solid var(--glass-border);border-radius:50%;color:var(--text);font-size:1.3rem;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0;z-index:1;backdrop-filter:blur(10px);transition:background 0.15s}
+.modal-x:hover,.modal-x:active{background:var(--glass-hi)}
+.light .modal-x{background:rgba(0,0,0,0.05);border-color:rgba(0,0,0,0.1)}
+.brutal .modal-x{border-radius:0;border:1.5px solid var(--b1);background:var(--bg)}
+.country-pick-btn{width:100%;display:flex;align-items:center;justify-content:space-between;padding:0.7rem 0.9rem;font-size:0.95rem;font-weight:500;color:var(--text);background:var(--glass);border:0.5px solid var(--glass-border);border-radius:12px;cursor:pointer;text-align:left;transition:background 0.15s,border-color 0.15s,transform 0.1s;backdrop-filter:blur(10px);font-family:inherit}
+.country-pick-btn:hover,.country-pick-btn:active{background:var(--glass-hi);border-color:var(--lime)}
+.country-pick-btn.active{background:var(--lime);color:#000;border-color:var(--lime)}
+.country-pick-btn.active span{color:#000!important}
+.light .country-pick-btn{background:rgba(0,0,0,0.04);border-color:rgba(0,0,0,0.08);color:var(--text)}
+.light .country-pick-btn:hover{background:rgba(0,0,0,0.08)}
+.brutal .country-pick-btn{border-radius:0;border:1.5px solid var(--b1);background:var(--bg);backdrop-filter:none}
+.brutal .country-pick-btn.active{background:var(--text);color:var(--bg);border-color:var(--text)}
+.brutal .country-pick-btn.active span{color:var(--bg)!important}
 @keyframes mIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
 .mc{position:absolute;top:0.6rem;right:0.6rem;background:rgba(255,255,255,0.08);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:0.5px solid rgba(255,255,255,0.15);color:#fff;width:32px;height:32px;border-radius:12px;cursor:pointer;font-size:1.1rem;display:flex;align-items:center;justify-content:center;z-index:10;transition:all 0.2s}
 .mc:hover{background:rgba(255,255,255,0.15)}
@@ -1078,11 +1091,13 @@ const ADMINS = ['280215742'];
 let LANG=(function(){
   let v=localStorage.getItem('dc_lang');
   if(v==='uk'){v='ua';try{localStorage.setItem('dc_lang','ua');}catch(e){}}
-  return (v==='ua'||v==='en'||v==='pl')?v:'en';
+  // All supported codes (must match SUPPORTED_LANGS below; declared after for grouping)
+  const SUPPORTED=['ua','en','pl','fi','se','no','ee','dk','is','lv','lt','cz','de'];
+  return SUPPORTED.indexOf(v)>=0?v:'en';
 })();
 // Note: SUPPORTED_LANGS defined just below; LANG re-validates inside setLang().
-const I18N_VERSION='2026.05.15.3';
-const SUPPORTED_LANGS=['ua','en','pl'];
+const I18N_VERSION='2026.05.15.4';
+const SUPPORTED_LANGS=['ua','en','pl','fi','se','no','ee','dk','is','lv','lt','cz','de'];
 let I={ua:{},en:{},pl:{}};
 async function loadTranslations(){
   try{
@@ -2107,7 +2122,7 @@ async function submitReturn(){
 async function notifyAppsScript(type,disc,buyer,note){
   try{
     const ownerTg=disc.ownerTgId||disc.ownerTg||'';
-    const url=APPS_SCRIPT+'?notify=1&type='+type+'&discId='+disc.id+'&discBrand='+encodeURIComponent(disc.brand)+'&discModel='+encodeURIComponent(disc.model)+'&discBuyout='+(disc.buyout||0)+'&ownerTg='+encodeURIComponent(ownerTg)+'&testerName='+encodeURIComponent(buyer.name)+'&testerTg='+encodeURIComponent(buyer.tg||'')+'&note='+encodeURIComponent(note||'')+'&lang='+encodeURIComponent(LANG||'ua')+'&callback=cb_notify';
+    const url=APPS_SCRIPT+'?notify=1&type='+type+'&discId='+disc.id+'&discBrand='+encodeURIComponent(disc.brand)+'&discModel='+encodeURIComponent(disc.model)+'&discBuyout='+(disc.buyout||0)+'&ownerTg='+encodeURIComponent(ownerTg)+'&testerName='+encodeURIComponent(buyer.name)+'&testerTg='+encodeURIComponent(buyer.tg||'')+'&note='+encodeURIComponent(note||'')+'&lang='+encodeURIComponent(LANG||'ua')+'&country='+encodeURIComponent(disc.country||CU?.country||'ua')+'&callback=cb_notify';
     const s=document.createElement('script');
     window.cb_notify=(d)=>{delete window.cb_notify;s.remove();};
     s.onerror=()=>{s.remove();};
@@ -2710,7 +2725,7 @@ function restoreUser(){
               const savedLang=localStorage.getItem('dc_lang');
               let pl=r.data.preferred_lang;
               if(pl==='uk')pl='ua';
-              if(!savedLang&&pl&&(pl==='ua'||pl==='en'||pl==='pl')){
+              if(!savedLang&&pl&&SUPPORTED_LANGS.indexOf(pl)>=0){
                 LANG=pl;
                 localStorage.setItem('dc_lang',LANG);
                 if(typeof applyLang==='function')applyLang();
@@ -2725,27 +2740,73 @@ function restoreUser(){
     if(saved){CU=JSON.parse(saved);try{const cc=localStorage.getItem('dc_country');if(cc==='ua'||cc==='pl')CU.country=cc;}catch(e){}updateUserBtn();}
   }catch(e){}
 }
-function openCountryPicker(){
+function openCountryPicker(opts){
   if(document.getElementById('ov-countryPick'))return;
+  const closable = !!(opts && opts.closable);
   const ov=document.createElement('div');
   ov.className='overlay open';ov.id='ov-countryPick';
   // Ordered by rollout phase: existing (UA, PL) → Phase 1 (FI, SE, NO, EE) → Phase 2 (DK, IS, LV, LT, CZ) → Phase 3 (DE)
   const order=['ua','pl','fi','se','no','ee','dk','is','lv','lt','cz','de'];
   const nameKey='name'+(LANG==='ua'?'Uk':LANG==='pl'?'Pl':'En');
+  const curCountry=(CU&&CU.country)||'';
   const btns=order.filter(c=>COUNTRIES[c]).map(c=>{
     const co=COUNTRIES[c];
-    return `<button class="btn btn-full" style="font-size:0.95rem;padding:0.75rem;display:flex;align-items:center;justify-content:space-between;gap:0.5rem" onclick="pickCountry('${c}')"><span>${co.flag} ${escHtml(co[nameKey])}</span><span style="color:var(--m1);font-size:0.75rem">${co.symbol}</span></button>`;
+    const active=c===curCountry;
+    return `<button class="country-pick-btn ${active?'active':''}" onclick="pickCountry('${c}')"><span style="display:flex;align-items:center;gap:0.6rem"><span style="font-size:1.2rem">${co.flag}</span><span>${escHtml(co[nameKey])}</span></span><span style="color:var(--m1);font-size:0.78rem;font-weight:500">${co.symbol}</span></button>`;
   }).join('');
+  const closeBtn = closable
+    ? `<button class="modal-x" onclick="closeCountryPicker()" aria-label="Close">×</button>`
+    : '';
   ov.innerHTML=`
-    <div class="modal" style="max-width:340px;max-height:90vh;display:flex;flex-direction:column">
+    <div class="modal" style="max-width:360px;max-height:88vh;display:flex;flex-direction:column;position:relative">
+      ${closeBtn}
       <div class="mt" style="font-size:1.1rem;margin-bottom:0.5rem;text-align:center">${t('chooseCountry')}</div>
       <div style="font-size:0.8rem;color:var(--m1);margin-bottom:1rem;text-align:center">${t('countryHint')}</div>
-      <div style="display:flex;flex-direction:column;gap:0.5rem;overflow-y:auto;flex:1;padding-right:4px">
+      <div class="country-pick-list" style="display:flex;flex-direction:column;gap:0.4rem;overflow-y:auto;flex:1;padding-right:4px;margin-right:-4px">
         ${btns}
       </div>
     </div>`;
   document.body.appendChild(ov);
 }
+function closeCountryPicker(){const ov=document.getElementById('ov-countryPick');if(ov)ov.remove();}
+
+// ── LANGUAGE PICKER (13 languages) ──
+const LANG_LABELS = {
+  ua:{native:'Українська',flag:'🇺🇦'},
+  en:{native:'English',flag:'🇬🇧'},
+  pl:{native:'Polski',flag:'🇵🇱'},
+  fi:{native:'Suomi',flag:'🇫🇮'},
+  se:{native:'Svenska',flag:'🇸🇪'},
+  no:{native:'Norsk',flag:'🇳🇴'},
+  ee:{native:'Eesti',flag:'🇪🇪'},
+  dk:{native:'Dansk',flag:'🇩🇰'},
+  is:{native:'Íslenska',flag:'🇮🇸'},
+  lv:{native:'Latviešu',flag:'🇱🇻'},
+  lt:{native:'Lietuvių',flag:'🇱🇹'},
+  cz:{native:'Čeština',flag:'🇨🇿'},
+  de:{native:'Deutsch',flag:'🇩🇪'}
+};
+function openLangPicker(){
+  if(document.getElementById('ov-langPick'))return;
+  const ov=document.createElement('div');
+  ov.className='overlay open';ov.id='ov-langPick';
+  const order=['ua','en','pl','fi','se','no','ee','dk','is','lv','lt','cz','de'];
+  const btns=order.map(code=>{
+    const info=LANG_LABELS[code];if(!info)return '';
+    const active=code===LANG;
+    return `<button class="country-pick-btn ${active?'active':''}" onclick="setLang('${code}');closeLangPicker()"><span style="display:flex;align-items:center;gap:0.6rem"><span style="font-size:1.2rem">${info.flag}</span><span>${info.native}</span></span><span style="color:var(--m1);font-size:0.75rem;font-weight:500">${code.toUpperCase()}</span></button>`;
+  }).join('');
+  ov.innerHTML=`
+    <div class="modal" style="max-width:360px;max-height:88vh;display:flex;flex-direction:column;position:relative">
+      <button class="modal-x" onclick="closeLangPicker()" aria-label="Close">×</button>
+      <div class="mt" style="font-size:1.1rem;margin-bottom:1rem;text-align:center">${t('language')}</div>
+      <div style="display:flex;flex-direction:column;gap:0.4rem;overflow-y:auto;flex:1;padding-right:4px;margin-right:-4px">
+        ${btns}
+      </div>
+    </div>`;
+  document.body.appendChild(ov);
+}
+function closeLangPicker(){const ov=document.getElementById('ov-langPick');if(ov)ov.remove();}
 async function pickCountry(c){
   if(!c||!COUNTRIES[c])return;
   CU=CU||{};
@@ -3426,7 +3487,7 @@ function notifyAuction(type,auction,user,amount){
   try{
     const tg=user.tg||user.tgId||'';
     const ownerTg=auction.owner_tg_id||auction.owner_tg||'';
-    let url=APPS_SCRIPT+'?notify=1&type=auc_'+type+'&aucTitle='+encodeURIComponent(auction.title)+'&aucId='+encodeURIComponent(auction.id||'')+'&amount='+amount+'&ownerTg='+encodeURIComponent(ownerTg)+'&testerName='+encodeURIComponent(user.name)+'&testerTg='+encodeURIComponent(tg)+'&lang='+encodeURIComponent(LANG||'ua')+'&callback=cb_notify';
+    let url=APPS_SCRIPT+'?notify=1&type=auc_'+type+'&aucTitle='+encodeURIComponent(auction.title)+'&aucId='+encodeURIComponent(auction.id||'')+'&amount='+amount+'&ownerTg='+encodeURIComponent(ownerTg)+'&testerName='+encodeURIComponent(user.name)+'&testerTg='+encodeURIComponent(tg)+'&lang='+encodeURIComponent(LANG||'ua')+'&country='+encodeURIComponent(auction.country||CU?.country||'ua')+'&callback=cb_notify';
     const s=document.createElement('script');
     window.cb_notify=d=>{delete window.cb_notify;s.remove();};
     s.src=url;document.head.appendChild(s);
@@ -3936,11 +3997,7 @@ function renderSettings(){
     <div class="setting-row">
       <div class="setting-icon" style="font-size:14px;font-weight:700">A</div>
       <div class="setting-label">${t('language')}</div>
-      <div class="setting-segmented">
-        <button class="seg-btn ${langKey==='ua'?'active':''}" onclick="setLang('ua')">UA</button>
-        <button class="seg-btn ${langKey==='en'?'active':''}" onclick="setLang('en')">EN</button>
-        <button class="seg-btn ${langKey==='pl'?'active':''}" onclick="setLang('pl')">PL</button>
-      </div>
+      <button class="seg-btn active" style="padding:0.4rem 0.8rem;font-size:0.85rem" onclick="closeSettings();setTimeout(openLangPicker,200)">${(langKey||'en').toUpperCase()}</button>
     </div>
     <div class="setting-row">
       <div class="setting-icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg></div>
@@ -3970,6 +4027,7 @@ function setBrutalMode(b){
   renderSettings();
 }
 function setLang(l){
+  if(!l||SUPPORTED_LANGS.indexOf(l)<0)return;
   if(LANG===l)return;
   LANG=l;
   try{localStorage.setItem('dc_lang',LANG);}catch(e){}
@@ -3999,7 +4057,7 @@ async function changeCountry(c){
 }
 function openCountryPickerForChange(){
   if(document.getElementById('ov-countryPick'))return;
-  openCountryPicker();
+  openCountryPicker({closable:true});
   // Re-wire each button to changeCountry (which asks for confirmation) instead of pickCountry (silent).
   setTimeout(()=>{
     const ov=document.getElementById('ov-countryPick');if(!ov)return;
@@ -4007,7 +4065,7 @@ function openCountryPickerForChange(){
       const m=btn.getAttribute('onclick').match(/pickCountry\('(\w+)'\)/);
       if(m){
         const code=m[1];
-        btn.setAttribute('onclick',"document.getElementById('ov-countryPick').remove();changeCountry('"+code+"')");
+        btn.setAttribute('onclick',"closeCountryPicker();changeCountry('"+code+"')");
       }
     });
   },10);
