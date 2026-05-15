@@ -1636,6 +1636,7 @@ function showDetail(id){
       ${canB?`<button class="btn btn-lime btn-sm" onclick="oBuy('${d.id}');closeModal('detail')" style="flex:1">${t('buy')} ${d.buyout||0} ${curSym()}</button>`:''}
       ${d.status==='testing'&&CU?.name===d.tester?`<button class="btn btn-ghost btn-sm" onclick="oRet('${d.id}');closeModal('detail')" style="flex:1">${t('returnDisc')}</button>`:''}`}
     </div>
+    ${isDetailOwner?`<div id="detail-requests-${d.id}" style="margin-top:0.875rem"></div>`:''}
     <div style="margin-top:0.5rem"><button class="btn btn-ghost btn-xs" onclick="shareDisc('${d.id}')" style="color:var(--m1);width:100%">${t('shareLink')}</button></div>
     <div style="margin-top:1rem;border-top:1px solid var(--b1);padding-top:0.75rem">
       <div style="font-size:0.72rem;font-weight:700;color:var(--m1);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:0.5rem">${t('comments')}</div>
@@ -1654,6 +1655,10 @@ function showDetail(id){
   }
   openModal('detail');
   loadComments(d.id);
+  // For the owner: load and render request history with action buttons.
+  if(CU&&String(CU.name).trim()===String(d.owner).trim()){
+    refreshDetailRequests(d.id);
+  }
   // Setup swipe between discs
   window._currentDetailId=d.id;
   setupDetailSwipe();
@@ -2150,11 +2155,77 @@ async function acceptRequest(reqId, discId, testerName, testerTg, reqType){
     if(!error&&!e2){
       cabinetCache.loaded=false;
       await loadDiscs();renderCabinet();
+      // If detail modal is open for this disc, refresh its history block
+      if(typeof refreshDetailRequests==='function')refreshDetailRequests(discId);
       toast(`✅ ${label.charAt(0).toUpperCase()+label.slice(1)} прийнято!`);
-      // Notify tester that request was accepted
       notifyAppsScript('accepted',d,{name:testerName,tg:testerTg||''});
     }else toast(t('errGeneric'),true);
   }catch(e){toast(t('errGeneric'),true);}
+}
+
+async function cancelRequest(reqId, discId, testerName){
+  if(!confirm(`${t('confirmDelete')} ${t('requests').toLowerCase()} ${t('from2')} ${testerName}?`))return;
+  try{
+    const {error}=await sb.from('requests').update({status:'cancelled'}).eq('id',reqId);
+    if(!error){
+      cabinetCache.loaded=false;
+      await loadDiscs();renderCabinet();
+      if(typeof refreshDetailRequests==='function')refreshDetailRequests(discId);
+      toast('✅ '+t('deleted'));
+    }else toast(t('errGeneric'),true);
+  }catch(e){toast(t('errGeneric'),true);}
+}
+
+// Render the disc-request history inside the detail modal for the owner.
+// Shows full history (pending/accepted/sold/returned/cancelled) with Accept/Sold/Cancel
+// buttons inline so the owner can act from a notification deep-link without going to cabinet.
+async function refreshDetailRequests(discId){
+  const container=document.getElementById('detail-requests-'+discId);
+  if(!container)return;
+  const d=allDiscs.find(x=>String(x.id)===String(discId));
+  if(!d)return;
+  // Fetch all requests for this disc (full history)
+  let reqs=[];
+  try{
+    const {data}=await sb.from('requests').select('*').eq('disc_id',discId).order('created_at',{ascending:false});
+    reqs=data||[];
+  }catch(e){return;}
+  if(!reqs.length){
+    container.innerHTML=`<div style="font-size:0.75rem;color:var(--m1);padding:0.5rem 0;text-align:center">${t('noRequests')}</div>`;
+    return;
+  }
+  container.innerHTML=`
+    <div style="font-size:0.72rem;font-weight:700;color:var(--m1);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:0.4rem">${t('requestHistory')} (${reqs.length})</div>
+    <div style="background:var(--s2);border:1px solid var(--b1);border-radius:var(--r);overflow:hidden">
+      ${reqs.map((r,idx)=>{
+        const isBuy=r.request_type==='buy';
+        const isExch=r.request_type==='exchange';
+        const typeLabel=isBuy?t('purchase'):isExch?t('exchange'):t('test');
+        const typeBadge=isBuy?'b-av':isExch?'b-tr':'b-te';
+        const statusBadge=r.status==='sold'?'b-so':r.status==='accepted'?'b-av':r.status==='cancelled'?'b-de':'b-te';
+        // Action buttons based on status + type
+        let actions='';
+        if(r.status==='pending'){
+          if(isBuy){
+            actions+=`<button class="btn btn-lime btn-xs" onclick="confirmSale('${escJs(d.id)}')" style="flex-shrink:0">✓ ${t('sold')}</button>`;
+          }else{
+            actions+=`<button class="btn btn-cyan btn-xs" onclick="acceptRequest('${escJs(r.id)}','${escJs(d.id)}','${escJs(r.tester||'')}','${escJs(r.tester_tg||'')}','${escJs(r.request_type)}')" style="flex-shrink:0">${t('accepted')}</button>`;
+          }
+          actions+=`<button class="btn btn-ghost btn-xs" onclick="cancelRequest('${escJs(r.id)}','${escJs(d.id)}','${escJs(r.tester||'')}')" style="flex-shrink:0">✕</button>`;
+        }else if(r.status==='accepted'&&isBuy){
+          actions+=`<button class="btn btn-lime btn-xs" onclick="confirmSale('${escJs(d.id)}')" style="flex-shrink:0">✓ ${t('sold')}</button>`;
+          actions+=`<button class="btn btn-ghost btn-xs" onclick="cancelRequest('${escJs(r.id)}','${escJs(d.id)}','${escJs(r.tester||'')}')" style="flex-shrink:0">✕</button>`;
+        }
+        const noteText=r.note?escHtml(String(r.note).substring(0,60))+(String(r.note).length>60?'…':''):'';
+        return `<div style="padding:0.5rem 0.65rem;${idx>0?'border-top:1px solid var(--b1);':''}display:flex;align-items:center;gap:0.4rem;font-size:0.78rem">
+          <div style="flex:1;min-width:0">
+            <div>${escHtml(r.tester||'?')} <span class="badge ${typeBadge}" style="font-size:0.58rem">${escHtml(typeLabel)}</span> <span class="badge ${statusBadge}" style="font-size:0.58rem">${escHtml(r.status||'pending')}</span></div>
+            <div style="font-size:0.68rem;color:var(--m1);margin-top:2px">${fmtDate(r.created_at)}${r.tester_tg?' · @'+escHtml(String(r.tester_tg).replace('@','')):''}${noteText?' · '+noteText:''}</div>
+          </div>
+          ${actions?`<div style="display:flex;gap:3px;flex-shrink:0">${actions}</div>`:''}
+        </div>`;
+      }).join('')}
+    </div>`;
 }
 
 // ── CONFIRM SALE ──
@@ -2165,7 +2236,12 @@ async function confirmSale(discId){
     // RPC marks disc as sold + duplicates it to buyer's cabinet with status='unlisted'.
     // Buyer is resolved server-side from the request row to bypass RLS on cross-user insert.
     const {error}=await sb.rpc('transfer_disc_on_sale',{p_disc_id:discId});
-    if(!error){await loadDiscs();renderCabinet();toast(t('saleDone'));notifyAppsScript('sold',d,{name:d.tester,tg:d.testerTg});}
+    if(!error){
+      await loadDiscs();renderCabinet();
+      if(typeof refreshDetailRequests==='function')refreshDetailRequests(discId);
+      toast(t('saleDone'));
+      notifyAppsScript('sold',d,{name:d.tester,tg:d.testerTg});
+    }
     else toast('⚠️ '+error.message,true);
   }catch(e){toast(t('errGeneric'),true);}
 }
@@ -2271,8 +2347,11 @@ function renderSeller(){
                   <div>${escHtml(r.tester)} <span class="badge ${typeBadge}" style="font-size:0.58rem">${escHtml(typeLabel)}</span> <span class="badge b-te" style="font-size:0.58rem">${escHtml(r.status||'pending')}</span></div>
                   <div style="font-size:0.68rem;color:var(--m1)">${fmtDate(r.created_at)}${r.tester_tg?' · @'+escHtml(String(r.tester_tg).replace('@','')):''}${r.note?' · '+escHtml(r.note.substring(0,40))+(r.note.length>40?'…':''):''}</div>
                 </div>
-                ${isBuy&&r.status==='pending'?`<button class="btn btn-lime btn-xs" onclick="event.stopPropagation();confirmSale('${escJs(d.id)}')" style="flex-shrink:0">✓</button>`:''}
-                ${!isBuy&&r.status==='pending'?`<button class="btn btn-cyan btn-xs" onclick="event.stopPropagation();acceptRequest('${escJs(r.id)}','${escJs(d.id)}','${escJs(r.tester||'')}','${escJs(r.tester_tg||'')}','${escJs(r.request_type)}')" style="flex-shrink:0">${t('accepted')}</button>`:''}
+                <div style="display:flex;gap:3px;flex-shrink:0">
+                  ${isBuy&&(r.status==='pending'||r.status==='accepted')?`<button class="btn btn-lime btn-xs" onclick="event.stopPropagation();confirmSale('${escJs(d.id)}')">✓</button>`:''}
+                  ${!isBuy&&r.status==='pending'?`<button class="btn btn-cyan btn-xs" onclick="event.stopPropagation();acceptRequest('${escJs(r.id)}','${escJs(d.id)}','${escJs(r.tester||'')}','${escJs(r.tester_tg||'')}','${escJs(r.request_type)}')">${t('accepted')}</button>`:''}
+                  ${r.status==='pending'||(r.status==='accepted'&&isBuy)?`<button class="btn btn-ghost btn-xs" onclick="event.stopPropagation();cancelRequest('${escJs(r.id)}','${escJs(d.id)}','${escJs(r.tester||'')}')">✕</button>`:''}
+                </div>
               </div>`;
             }).join(''):`<div style="padding:0.4rem 0.5rem;font-size:0.75rem;color:var(--m1)">${t('noRequests')}</div>`}
           </div>
@@ -2297,8 +2376,9 @@ function renderSeller(){
               <div class="di-title">${escHtml(r.tester)} → ${disc?escHtml(disc.brand)+' '+escHtml(disc.model):'?'} <span class="badge ${typeBadge}">${escHtml(typeLabel)}</span></div>
               <div class="di-sub">${fmtDate(r.created_at)}${tgLinkFull(r.tester_tg)}</div>
             </div>
-            ${disc&&isBuy&&r.status==='pending'?`<button class="btn btn-lime btn-xs" onclick="confirmSale('${escJs(disc.id)}')">✓ ${escHtml(t('sold'))}</button>`:''}
+            ${disc&&isBuy&&(r.status==='pending'||r.status==='accepted')?`<button class="btn btn-lime btn-xs" onclick="confirmSale('${escJs(disc.id)}')">✓ ${escHtml(t('sold'))}</button>`:''}
             ${disc&&!isBuy&&r.status==='pending'?`<button class="btn btn-cyan btn-xs" onclick="acceptRequest('${escJs(r.id)}','${escJs(disc.id)}','${escJs(r.tester||'')}','${escJs(r.tester_tg||'')}','${escJs(r.request_type)}')">${t('accepted')}</button>`:''}
+            ${disc&&(r.status==='pending'||(r.status==='accepted'&&isBuy))?`<button class="btn btn-ghost btn-xs" onclick="cancelRequest('${escJs(r.id)}','${escJs(disc.id)}','${escJs(r.tester||'')}')">✕</button>`:''}
           </div>
         </div>`;
       }).join('')
