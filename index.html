@@ -2865,8 +2865,14 @@ function restoreUser(){
       try{const cc=localStorage.getItem('dc_country');if(cc==='ua'||cc==='pl')CU.country=cc;}catch(e){}
       localStorage.setItem('dcUser',JSON.stringify(CU));updateUserBtn();
       if(document.getElementById('page-admin')?.classList.contains('active'))checkAdminAccess();
-      // Register/update user in Supabase, then fetch country
-      sb.from('users').upsert({name:CU.name,telegram_id:CU.tgId,tg_username:CU.tg,role:'both'},{onConflict:'telegram_id'}).then(()=>{
+      // Register/update user in Supabase, then fetch country.
+      // IMPORTANT: only persist a REAL Telegram username. The Telegram WebApp SDK puts
+      // the username in `u.username` (separate from `u.id`), so it's safe — no risk of
+      // accidentally writing the ID here. We only validate the format (5–32 chars,
+      // [A-Za-z0-9_]) per Telegram's rules. All-digit usernames are rare but legal and
+      // are preserved as-is. Empty string when no username exists.
+      const realUsername=(u.username && /^[A-Za-z0-9_]{5,32}$/.test(u.username)) ? u.username : '';
+      sb.from('users').upsert({name:CU.name,telegram_id:CU.tgId,tg_username:realUsername,role:'both'},{onConflict:'telegram_id'}).then(()=>{
         sb.from('users').select('country, preferred_lang').eq('telegram_id',CU.tgId).single().then(r=>{
           if(r&&r.data){
             if(r.data.country){
