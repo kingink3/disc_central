@@ -1081,16 +1081,21 @@ let LANG=(function(){
   return (v==='ua'||v==='en'||v==='pl')?v:'en';
 })();
 // Note: SUPPORTED_LANGS defined just below; LANG re-validates inside setLang().
-const I18N_VERSION='2026.05.15.1';
+const I18N_VERSION='2026.05.15.3';
 const SUPPORTED_LANGS=['ua','en','pl'];
 let I={ua:{},en:{},pl:{}};
 async function loadTranslations(){
   try{
     const r=await fetch('./i18n.json?v='+I18N_VERSION,{cache:'force-cache'});
-    if(!r.ok)throw new Error('i18n fetch '+r.status);
+    if(!r.ok)throw new Error('i18n fetch '+r.status+' '+r.statusText);
     const data=await r.json();
+    if(!data||!data.ua||!data.en){throw new Error('i18n.json malformed: missing ua/en');}
     I=data;
-  }catch(e){console.error('loadTranslations failed:',e);}
+    console.log('i18n loaded: '+Object.keys(I).join(',')+' ('+Object.keys(I.ua||{}).length+' keys)');
+  }catch(e){
+    console.error('loadTranslations failed:',e);
+    console.error('  → check that i18n.json is deployed alongside index.html');
+  }
 }
 function t(k,vars){
   let s=(I[LANG]&&I[LANG][k])||(I.en&&I.en[k])||k;
@@ -1108,38 +1113,50 @@ function updateCurrencyLabels(){
 // ── CITIES ──
 const COUNTRIES={
   ua:{nameUk:'Україна',nameEn:'Ukraine',namePl:'Ukraina',currency:'UAH',symbol:'₴',defaultLang:'ua',flag:'🇺🇦'},
-  pl:{nameUk:'Польща',nameEn:'Poland',namePl:'Polska',currency:'PLN',symbol:'zł',defaultLang:'pl',flag:'🇵🇱'}
+  pl:{nameUk:'Польща',nameEn:'Poland',namePl:'Polska',currency:'PLN',symbol:'zł',defaultLang:'pl',flag:'🇵🇱'},
+  fi:{nameUk:'Фінляндія',nameEn:'Finland',namePl:'Finlandia',currency:'EUR',symbol:'€',defaultLang:'en',flag:'🇫🇮'},
+  se:{nameUk:'Швеція',nameEn:'Sweden',namePl:'Szwecja',currency:'SEK',symbol:'kr',defaultLang:'en',flag:'🇸🇪'},
+  no:{nameUk:'Норвегія',nameEn:'Norway',namePl:'Norwegia',currency:'NOK',symbol:'kr',defaultLang:'en',flag:'🇳🇴'},
+  ee:{nameUk:'Естонія',nameEn:'Estonia',namePl:'Estonia',currency:'EUR',symbol:'€',defaultLang:'en',flag:'🇪🇪'},
+  dk:{nameUk:'Данія',nameEn:'Denmark',namePl:'Dania',currency:'DKK',symbol:'kr',defaultLang:'en',flag:'🇩🇰'},
+  is:{nameUk:'Ісландія',nameEn:'Iceland',namePl:'Islandia',currency:'ISK',symbol:'kr',defaultLang:'en',flag:'🇮🇸'},
+  lv:{nameUk:'Латвія',nameEn:'Latvia',namePl:'Łotwa',currency:'EUR',symbol:'€',defaultLang:'en',flag:'🇱🇻'},
+  lt:{nameUk:'Литва',nameEn:'Lithuania',namePl:'Litwa',currency:'EUR',symbol:'€',defaultLang:'en',flag:'🇱🇹'},
+  cz:{nameUk:'Чехія',nameEn:'Czechia',namePl:'Czechy',currency:'CZK',symbol:'Kč',defaultLang:'en',flag:'🇨🇿'},
+  de:{nameUk:'Німеччина',nameEn:'Germany',namePl:'Niemcy',currency:'EUR',symbol:'€',defaultLang:'en',flag:'🇩🇪'}
 };
-const CITIES={
-  kyiv:{uk:'Київ',en:'Kyiv',pl:'Kijów',country:'ua'},
-  lutsk:{uk:'Луцьк',en:'Lutsk',pl:'Łuck',country:'ua'},
-  kremenchuk:{uk:'Кременчук',en:'Kremenchuk',pl:'Krzemieńczuk',country:'ua'},
-  odesa:{uk:'Одеса',en:'Odesa',pl:'Odessa',country:'ua'},
-  lviv:{uk:'Львів',en:'Lviv',pl:'Lwów',country:'ua'},
-  kharkiv:{uk:'Харків',en:'Kharkiv',pl:'Charków',country:'ua'},
-  dnipro:{uk:'Дніпро',en:'Dnipro',pl:'Dniepr',country:'ua'},
-  warsaw:{uk:'Варшава',en:'Warsaw',pl:'Warszawa',country:'pl'},
-  krakow:{uk:'Краків',en:'Krakow',pl:'Kraków',country:'pl'},
-  gdansk:{uk:'Гданськ',en:'Gdansk',pl:'Gdańsk',country:'pl'},
-  wroclaw:{uk:'Вроцлав',en:'Wroclaw',pl:'Wrocław',country:'pl'},
-  poznan:{uk:'Познань',en:'Poznan',pl:'Poznań',country:'pl'},
-  lodz:{uk:'Лодзь',en:'Lodz',pl:'Łódź',country:'pl'},
-  katowice:{uk:'Катовіце',en:'Katowice',pl:'Katowice',country:'pl'},
-  szczecin:{uk:'Щецин',en:'Szczecin',pl:'Szczecin',country:'pl'},
-  lublin:{uk:'Люблін',en:'Lublin',pl:'Lublin',country:'pl'},
-  rzeszow:{uk:'Жешув',en:'Rzeszow',pl:'Rzeszów',country:'pl'},
-  other:{uk:'Інше',en:'Other',pl:'Inne',country:'all'}
-};
-function tCity(key){if(!key)return'';const c=CITIES[key];if(c)return c[LANG]||c.uk;return key;}
+let CITIES={};
+async function loadCities(){
+  try{
+    const r=await fetch('./cities.json?v='+I18N_VERSION,{cache:'force-cache'});
+    if(!r.ok)throw new Error('cities fetch '+r.status);
+    CITIES=await r.json();
+    const total=Object.values(CITIES).reduce((a,b)=>a+Object.keys(b).length,0);
+    console.log('cities loaded: '+Object.keys(CITIES).length+' countries, '+total+' cities');
+  }catch(e){console.error('loadCities failed:',e);}
+}
+// Flat access helpers: cityKey strings remain unique across the whole catalog;
+// these helpers find/iterate without callers needing to know the country layer.
+function _findCity(key){
+  if(!key)return null;
+  for(const ck in CITIES){if(CITIES[ck][key])return {country:ck,data:CITIES[ck][key]};}
+  return null;
+}
+function _allCityEntries(){
+  const out=[];
+  for(const ck in CITIES){for(const ik in CITIES[ck]){out.push([ik,CITIES[ck][ik],ck]);}}
+  return out;
+}
+function tCity(key){if(!key)return'';const f=_findCity(key);if(f)return f.data[LANG]||f.data.ua||f.data.en||key;return key;}
 function curSym(){const c=CU&&CU.country?CU.country:'ua';return (COUNTRIES[c]&&COUNTRIES[c].symbol)||'₴';}
 function curCode(){const c=CU&&CU.country?CU.country:'ua';return (COUNTRIES[c]&&COUNTRIES[c].currency)||'UAH';}
-function cityKey(name){if(!name)return'';const n=name.toLowerCase().trim();for(const[k,v]of Object.entries(CITIES)){if(v.uk.toLowerCase()===n||v.en.toLowerCase()===n||k===n)return k;}for(const[k,v]of Object.entries(CITIES)){if(n.includes(v.uk.toLowerCase())||v.uk.toLowerCase().includes(n)||n.includes(v.en.toLowerCase())||v.en.toLowerCase().includes(n))return k;}return name;}
-function getActiveCities(){const used={};allDiscs.forEach(d=>{if(d.city){const k=cityKey(d.city);if(k&&CITIES[k])used[k]=true;}});return Object.keys(CITIES).filter(k=>used[k]);}
+function cityKey(name){if(!name)return'';const n=name.toLowerCase().trim();const all=_allCityEntries();for(const[k,v]of all){if((v.ua||'').toLowerCase()===n||v.en.toLowerCase()===n||k===n)return k;}for(const[k,v]of all){const ua=(v.ua||'').toLowerCase();if(n.includes(ua)||ua.includes(n)||n.includes(v.en.toLowerCase())||v.en.toLowerCase().includes(n))return k;}return name;}
+function getActiveCities(){const used={};allDiscs.forEach(d=>{if(d.city){const k=cityKey(d.city);if(k&&_findCity(k))used[k]=true;}});return _allCityEntries().filter(([k])=>used[k]).map(([k])=>k);}
 function cityFilterHTML(){const keys=getActiveCities();if(!keys.length)return'<div style="color:var(--m1);font-size:0.75rem">—</div>';const sel=window._selectedCities||[];const selLabels=sel.map(k=>tCity(k));const btnText=selLabels.length?selLabels.join(', '):t('city');
-return'<div class="city-filter-wrap" style="position:relative"><div onclick="toggleCityDrop()" style="background:var(--glass);border:0.5px solid var(--glass-border);border-radius:var(--r);padding:5px 8px;font-size:0.78rem;color:var(--text);cursor:pointer;min-height:28px;display:flex;align-items:center;justify-content:space-between;gap:4px" id="cityFilterBtn"><span style="'+(selLabels.length?'':'color:var(--m1)')+';overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+btnText+'</span><span style="color:var(--m1);font-size:0.6rem">▾</span></div><div id="cityFilterDrop" class="city-drop" style="display:none;position:absolute;top:100%;left:0;right:0;z-index:50;margin-top:2px"><input class="city-search" placeholder="🔍 '+t('search')+'..." oninput="filterCityList(this.value)" onclick="event.stopPropagation()"><div id="cityCheckList">'+keys.map(k=>'<label class="city-opt" data-city="'+k+'" style="display:flex;align-items:center;gap:6px;padding:6px 8px;font-size:0.8rem;cursor:pointer"><input type="checkbox" value="'+k+'"'+(sel.includes(k)?' checked':'')+' onchange="applyCityFilter()" style="width:auto;margin:0"><span>'+CITIES[k][LANG]+'</span></label>').join('')+'</div></div></div>';}
+return'<div class="city-filter-wrap" style="position:relative"><div onclick="toggleCityDrop()" style="background:var(--glass);border:0.5px solid var(--glass-border);border-radius:var(--r);padding:5px 8px;font-size:0.78rem;color:var(--text);cursor:pointer;min-height:28px;display:flex;align-items:center;justify-content:space-between;gap:4px" id="cityFilterBtn"><span style="'+(selLabels.length?'':'color:var(--m1)')+';overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+btnText+'</span><span style="color:var(--m1);font-size:0.6rem">▾</span></div><div id="cityFilterDrop" class="city-drop" style="display:none;position:absolute;top:100%;left:0;right:0;z-index:50;margin-top:2px"><input class="city-search" placeholder="🔍 '+t('search')+'..." oninput="filterCityList(this.value)" onclick="event.stopPropagation()"><div id="cityCheckList">'+keys.map(k=>'<label class="city-opt" data-city="'+k+'" style="display:flex;align-items:center;gap:6px;padding:6px 8px;font-size:0.8rem;cursor:pointer"><input type="checkbox" value="'+k+'"'+(sel.includes(k)?' checked':'')+' onchange="applyCityFilter()" style="width:auto;margin:0"><span>'+(_findCity(k)?.data[LANG]||k)+'</span></label>').join('')+'</div></div></div>';}
 let _cityDropOpen=false;
 function posCityDrop(){const btn=document.getElementById('cityFilterBtn');const d=document.getElementById('cityFilterDrop');if(!btn||!d||!_cityDropOpen)return;const w=btn.closest('.city-filter-wrap');const r=btn.getBoundingClientRect();const dropH=d.offsetHeight||260;const spaceBelow=window.innerHeight-r.bottom;const spaceAbove=r.top;const openUp=spaceBelow<dropH+8&&spaceAbove>spaceBelow;d.style.position='absolute';d.style.left='0';d.style.right='0';d.style.width='auto';d.style.zIndex='300';if(openUp){d.style.top='auto';d.style.bottom='100%';if(w)w.classList.add('up');}else{d.style.top='100%';d.style.bottom='auto';if(w)w.classList.remove('up');}}
-function filterCityList(q){q=q.toLowerCase();document.querySelectorAll('#cityCheckList .city-opt').forEach(el=>{const k=el.dataset.city;const name=(CITIES[k]?CITIES[k][LANG]:'').toLowerCase();el.style.display=(!q||name.includes(q)||k.includes(q))?'flex':'none';});}
+function filterCityList(q){q=q.toLowerCase();document.querySelectorAll('#cityCheckList .city-opt').forEach(el=>{const k=el.dataset.city;const f=_findCity(k);const name=(f?f.data[LANG]:'').toLowerCase();el.style.display=(!q||name.includes(q)||k.includes(q))?'flex':'none';});}
 function toggleCityDrop(){_cityDropOpen=!_cityDropOpen;const d=document.getElementById('cityFilterDrop');const btn=document.getElementById('cityFilterBtn');const w=btn?btn.closest('.city-filter-wrap'):null;const panel=btn?btn.closest('.adv-filters'):null;const arrow=btn?btn.querySelectorAll('span')[1]:null;if(!d)return;if(_cityDropOpen){d.style.display='block';if(w)w.classList.add('open');if(panel)panel.classList.add('city-open');if(arrow)arrow.textContent='▴';posCityDrop();}else{d.style.display='none';if(w){w.classList.remove('open');w.classList.remove('up');}if(panel)panel.classList.remove('city-open');if(arrow)arrow.textContent='▾';}}
 document.addEventListener('click',e=>{if(_cityDropOpen&&!e.target.closest('.city-filter-wrap')){_cityDropOpen=false;const d=document.getElementById('cityFilterDrop');if(d)d.style.display='none';const btn=document.getElementById('cityFilterBtn');const w=btn?btn.closest('.city-filter-wrap'):null;const panel=btn?btn.closest('.adv-filters'):null;if(w){w.classList.remove('open');w.classList.remove('up');}if(panel)panel.classList.remove('city-open');const arrow=btn?btn.querySelectorAll('span')[1]:null;if(arrow)arrow.textContent='▾';}});
 
@@ -1257,8 +1274,8 @@ function tgLinkFull(tg){
 // ── FORM CITY DROPDOWNS ──
 function _citiesForUser(){
   const c=CU&&CU.country?CU.country:null;
-  if(!c)return Object.entries(CITIES);
-  return Object.entries(CITIES).filter(([k,v])=>v.country===c||v.country==='all');
+  if(!c)return _allCityEntries().map(([k,v])=>[k,v]);
+  return Object.entries(CITIES[c]||{});
 }
 function renderFormCityDrop(prefix){
   const drop=document.getElementById(prefix+'CityDrop');
@@ -1285,7 +1302,7 @@ function selectFormCity(prefix,key){
   const btn=document.getElementById(prefix+'CityBtn');
   if(btn){const w=btn.closest('.city-filter-wrap');if(w){w.classList.remove('open');w.classList.remove('up');}const a=btn.querySelectorAll('span')[1];if(a)a.textContent='▾';}
 }
-function filterFormCityList(prefix,q){q=q.toLowerCase();document.querySelectorAll('#'+prefix+'CityList .city-opt').forEach(el=>{const k=el.dataset.city;const name=(CITIES[k]?CITIES[k][LANG]:'').toLowerCase();el.style.display=(!q||name.includes(q)||k.includes(q))?'flex':'none';});}
+function filterFormCityList(prefix,q){q=q.toLowerCase();document.querySelectorAll('#'+prefix+'CityList .city-opt').forEach(el=>{const k=el.dataset.city;const f=_findCity(k);const name=(f?f.data[LANG]:'').toLowerCase();el.style.display=(!q||name.includes(q)||k.includes(q))?'flex':'none';});}
 document.addEventListener('click',e=>{if(!e.target.closest('.city-filter-wrap')){['ad','edit','auc'].forEach(p=>{const d=document.getElementById(p+'CityDrop');if(d)d.style.display='none';const b=document.getElementById(p+'CityBtn');if(b){const w=b.closest('.city-filter-wrap');if(w){w.classList.remove('open');w.classList.remove('up');}const a=b.querySelectorAll('span')[1];if(a)a.textContent='▾';}});}});
 // ── LOAD DISCS ──
 const HIDDEN=['sold','deleted','unlisted'];
@@ -2712,19 +2729,25 @@ function openCountryPicker(){
   if(document.getElementById('ov-countryPick'))return;
   const ov=document.createElement('div');
   ov.className='overlay open';ov.id='ov-countryPick';
+  // Ordered by rollout phase: existing (UA, PL) → Phase 1 (FI, SE, NO, EE) → Phase 2 (DK, IS, LV, LT, CZ) → Phase 3 (DE)
+  const order=['ua','pl','fi','se','no','ee','dk','is','lv','lt','cz','de'];
+  const nameKey='name'+(LANG==='ua'?'Uk':LANG==='pl'?'Pl':'En');
+  const btns=order.filter(c=>COUNTRIES[c]).map(c=>{
+    const co=COUNTRIES[c];
+    return `<button class="btn btn-full" style="font-size:0.95rem;padding:0.75rem;display:flex;align-items:center;justify-content:space-between;gap:0.5rem" onclick="pickCountry('${c}')"><span>${co.flag} ${escHtml(co[nameKey])}</span><span style="color:var(--m1);font-size:0.75rem">${co.symbol}</span></button>`;
+  }).join('');
   ov.innerHTML=`
-    <div class="modal" style="max-width:340px">
+    <div class="modal" style="max-width:340px;max-height:90vh;display:flex;flex-direction:column">
       <div class="mt" style="font-size:1.1rem;margin-bottom:0.5rem;text-align:center">${t('chooseCountry')}</div>
       <div style="font-size:0.8rem;color:var(--m1);margin-bottom:1rem;text-align:center">${t('countryHint')}</div>
-      <div style="display:flex;flex-direction:column;gap:0.6rem">
-        <button class="btn btn-full" style="font-size:1rem;padding:0.9rem" onclick="pickCountry('ua')">🇺🇦 ${escHtml(COUNTRIES.ua['name'+(LANG==='ua'?'Uk':LANG==='pl'?'Pl':'En')])}</button>
-        <button class="btn btn-full" style="font-size:1rem;padding:0.9rem" onclick="pickCountry('pl')">🇵🇱 ${escHtml(COUNTRIES.pl['name'+(LANG==='ua'?'Uk':LANG==='pl'?'Pl':'En')])}</button>
+      <div style="display:flex;flex-direction:column;gap:0.5rem;overflow-y:auto;flex:1;padding-right:4px">
+        ${btns}
       </div>
     </div>`;
   document.body.appendChild(ov);
 }
 async function pickCountry(c){
-  if(!c||(c!=='ua'&&c!=='pl'))return;
+  if(!c||!COUNTRIES[c])return;
   CU=CU||{};
   CU.country=c;
   try{localStorage.setItem('dc_country',c);}catch(e){}
@@ -3922,10 +3945,7 @@ function renderSettings(){
     <div class="setting-row">
       <div class="setting-icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg></div>
       <div class="setting-label">${t('country')}</div>
-      <div class="setting-segmented">
-        <button class="seg-btn ${country==='ua'?'active':''}" onclick="changeCountry('ua')">🇺🇦 UA</button>
-        <button class="seg-btn ${country==='pl'?'active':''}" onclick="changeCountry('pl')">🇵🇱 PL</button>
-      </div>
+      <button class="seg-btn active" style="padding:0.4rem 0.8rem;font-size:0.85rem" onclick="closeSettings();setTimeout(openCountryPickerForChange,200)">${(COUNTRIES[country]?.flag||'')} ${(country||'').toUpperCase()}</button>
     </div>
     <div style="text-align:center;font-size:0.72rem;color:var(--m1);padding:0.9rem 0.5rem 0.3rem;line-height:1.4">
       ${t('feedbackLine')} <a href="https://t.me/deberjerac" target="_blank" rel="noopener" style="color:var(--lime);text-decoration:none;font-weight:600">@deberjerac</a>
@@ -3958,7 +3978,7 @@ function setLang(l){
   if(CU&&CU.tgId){try{sb.from('users').update({preferred_lang:l}).eq('telegram_id',CU.tgId).then(()=>{});}catch(e){}}
 }
 async function changeCountry(c){
-  if(!c||(c!=='ua'&&c!=='pl'))return;
+  if(!c||!COUNTRIES[c])return;
   if(CU&&CU.country===c)return;
   const proceed=async ()=>{
     CU=CU||{};
@@ -3976,6 +3996,21 @@ async function changeCountry(c){
   }else{
     if(window.confirm(t('confirmCountryChange')))await proceed();
   }
+}
+function openCountryPickerForChange(){
+  if(document.getElementById('ov-countryPick'))return;
+  openCountryPicker();
+  // Re-wire each button to changeCountry (which asks for confirmation) instead of pickCountry (silent).
+  setTimeout(()=>{
+    const ov=document.getElementById('ov-countryPick');if(!ov)return;
+    ov.querySelectorAll('button[onclick^="pickCountry"]').forEach(btn=>{
+      const m=btn.getAttribute('onclick').match(/pickCountry\('(\w+)'\)/);
+      if(m){
+        const code=m[1];
+        btn.setAttribute('onclick',"document.getElementById('ov-countryPick').remove();changeCountry('"+code+"')");
+      }
+    });
+  },10);
 }
 
 // ── ONBOARDING GUIDE ──
@@ -4060,8 +4095,8 @@ function startOnboarding(){
 async function init(){
   window._loadStart=Date.now();
   setTimeout(()=>{document.getElementById('loadingOverlay').classList.add('fade-out');setTimeout(()=>{document.getElementById('loadingOverlay').style.display='none'},500);},15000);
-  // Load translations first; without them, every data-i18n element shows its key.
-  await loadTranslations();
+  // Load translations + cities in parallel; without them, UI is broken
+  await Promise.all([loadTranslations(), loadCities()]);
   applyLang();
   // Telegram setup - fullscreen only on mobile
   const _tg=window.Telegram?.WebApp;
