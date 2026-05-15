@@ -1305,16 +1305,18 @@ function escHtml(s){if(!s)return'';return String(s).replace(/&/g,'&amp;').replac
 function escJs(s){return String(s||'').replace(/\\/g,'\\\\').replace(/'/g,'\\x27').replace(/"/g,'\\x22').replace(/</g,'\\x3C').replace(/>/g,'\\x3E').replace(/\r?\n/g,'\\n');}
 // Safely set CSS background-image from a URL (escape closing paren and quotes to prevent CSS injection)
 function setBgImage(el,url){if(!el)return;const safe=String(url||'').replace(/\\/g,'\\\\').replace(/"/g,'%22').replace(/\)/g,'%29').replace(/\r?\n/g,'');el.style.backgroundImage=`url("${safe}")`;}
-function tgLinkFull(tg){
+function tgLinkFull(tg,ownerName){
   const clean=String(tg||'').replace('@','').trim();
   if(!clean)return'';
-  // Numeric ID — direct tg://user?id= link. Works in clients that handle the tg:// scheme
-  // (desktop Telegram, most Android browsers). On clients that don't (Telegram WebApp on iOS
-  // notably), nothing happens — this is a Telegram-side limitation, not a bug.
+  // Numeric ID — Telegram WebApp can't open tg://user?id from a page directly (blocked by
+  // Telegram on iOS and most clients). Workaround: ask the bot to DM the current user a
+  // message containing an inline mention (<a href="tg://user?id=N">Name</a>). Telegram
+  // server-side parses that into a tappable profile card on every platform.
   if(/^\d+$/.test(clean)){
-    return ` · <a href="tg://user?id=${clean}" style="color:var(--cyan)">${escHtml(t('writeTo'))}</a>`;
+    const safeName=ownerName?String(ownerName).slice(0,80):'';
+    return ` · <a href="#" onclick="event.preventDefault();requestContactCard('${escJs(clean)}','${escJs(safeName)}')" style="color:var(--cyan)">${escHtml(t('writeTo'))}</a>`;
   }
-  // Telegram username — allows only [a-zA-Z0-9_]; reject anything else outright.
+  // Telegram username — strict charset, opens normally.
   if(!/^[a-zA-Z0-9_]{1,64}$/.test(clean))return'';
   return ` · <a href="#" onclick="event.preventDefault();openTgUsername('${escJs(clean)}')" style="color:var(--cyan)">@${escHtml(clean)}</a>`;
 }
@@ -1325,6 +1327,29 @@ function openTgUsername(username){
     try{tgApp.openTelegramLink('https://t.me/'+username);return;}catch(e){}
   }
   window.open('https://t.me/'+username,'_blank');
+}
+// Ask the bot (via Apps Script) to send the *current user* a Telegram message with an inline
+// mention of the target. Telegram renders the mention as a tappable profile card → user opens
+// chat from there. Works on every client because the bot relies on Telegram's server-side
+// mention parsing, not on the client opening tg:// URLs.
+function requestContactCard(targetId,targetName){
+  if(!CU||!CU.tgId){toast(t('loginFirst'),true);return;}
+  if(!/^\d+$/.test(String(targetId))){return;}
+  const cbName='cb_contact_'+Date.now()+'_'+Math.random().toString(36).slice(2,7);
+  try{
+    const url=APPS_SCRIPT+'?notify=1&type=contact'
+      +'&requesterTgId='+encodeURIComponent(CU.tgId)
+      +'&targetTgId='+encodeURIComponent(targetId)
+      +'&targetName='+encodeURIComponent(targetName||'')
+      +'&lang='+encodeURIComponent(LANG||'ua')
+      +'&callback='+cbName;
+    const s=document.createElement('script');
+    window[cbName]=()=>{delete window[cbName];s.remove();toast(t('contactSent')||'✅');};
+    s.onerror=()=>{delete window[cbName];s.remove();toast(t('errGeneric'),true);};
+    s.src=url;
+    document.head.appendChild(s);
+    setTimeout(()=>{if(window[cbName]){delete window[cbName];s.remove();}},10000);
+  }catch(e){toast(t('errGeneric'),true);}
 }
 
 
@@ -1654,7 +1679,7 @@ function showDetail(id){
       <div class="detail-info-item"><span class="di-label">${t('color')}:</span> ${escHtml(d.color||'—')}</div>
       ${d.inked?'<div class="detail-info-item"><span style="color:var(--purple)">🖊️ Inked</span></div>':'<div></div>'}
       ${d.city?`<div class="detail-info-item full"><span class="di-label">${t('city')}:</span> ${escHtml(tCity(d.city))}</div>`:''}
-      <div class="detail-info-item full"><span class="di-label">${t('owner')}:</span> ${escHtml(d.owner||'—')}${tgLinkFull(d.ownerTg)}</div>
+      <div class="detail-info-item full"><span class="di-label">${t('owner')}:</span> ${escHtml(d.owner||'—')}${tgLinkFull(d.ownerTg,d.owner)}</div>
       ${d.tester&&d.status==='testing'?`<div class="detail-info-item full"><span class="di-label">${t('tester')}:</span> ${escHtml(d.tester)}</div>`:''}
     </div>
     ${d.bargain&&CU&&String(CU.name).trim()!==String(d.owner).trim()?`<div class="info-box" style="border-color:rgba(212,240,64,0.2);background:rgba(212,240,64,0.04);margin-bottom:0.875rem;display:flex;align-items:center;gap:0.5rem;padding:0.5rem 0.75rem">
@@ -2077,8 +2102,8 @@ function openReqTest(id){
   const owTg=(d.ownerTg||'').replace('@','');
   document.getElementById('reqDiscInfo').innerHTML=
     `<strong>${escHtml(d.brand)} ${escHtml(d.model)}</strong> · ${escHtml(d.plastic)} · ${d.weight||''}г · <strong style="color:var(--lime)">${d.buyout||0} ${curSym()}</strong><br>`+
-    `${t('owner')}: <strong>${escHtml(d.owner)}</strong>${tgLinkFull(owTg)}<br>`+
-    `${t('from')}: <strong>${escHtml(CU.name)}</strong>${tgLinkFull(CU.tg)}`;
+    `${t('owner')}: <strong>${escHtml(d.owner)}</strong>${tgLinkFull(owTg,d.owner)}<br>`+
+    `${t('from')}: <strong>${escHtml(CU.name)}</strong>${tgLinkFull(CU.tg,CU.name)}`;
   document.getElementById('rt-note').value='';
   document.getElementById('rt-note').placeholder=t('commentPh');
   document.querySelector('#ov-reqTest .mt').innerHTML=t('testRequest').split(' ').map((w,i)=>i?'<span>'+w+'</span>':w).join(' ');
@@ -2112,7 +2137,7 @@ async function submitTestReq(){
 function oBuy(id){
   if(!CU){toast(t('loginFirst'),true);openModal('login');return;}
   buyId=id;const d=allDiscs.find(x=>x.id===id||String(x.id)===String(id));
-  document.getElementById('buyInfo').innerHTML=`<strong>${escHtml(d.brand)} ${escHtml(d.model)}</strong> · ${escHtml(d.plastic)}<br>${t('price')}: <strong style="color:var(--lime)">${d.buyout||0} ${curSym()}</strong><br>${t('owner')}: <strong>${escHtml(d.owner)}</strong>${tgLinkFull((d.ownerTg||'').replace('@',''))}<br>${t('from')}: <strong>${escHtml(CU.name)}</strong>${tgLinkFull(CU.tg)}`;
+  document.getElementById('buyInfo').innerHTML=`<strong>${escHtml(d.brand)} ${escHtml(d.model)}</strong> · ${escHtml(d.plastic)}<br>${t('price')}: <strong style="color:var(--lime)">${d.buyout||0} ${curSym()}</strong><br>${t('owner')}: <strong>${escHtml(d.owner)}</strong>${tgLinkFull((d.ownerTg||'').replace('@',''),d.owner)}<br>${t('from')}: <strong>${escHtml(CU.name)}</strong>${tgLinkFull(CU.tg,CU.name)}`;
   document.getElementById('buy-note').value='';
   const lEl=document.getElementById('buySellerLink');
   const owClean=String(d.ownerTg||'').replace('@','').trim();
@@ -2290,8 +2315,8 @@ function openTradeOffer(id){
   document.getElementById('reqDiscInfo').innerHTML=
     `<strong>${escHtml(d.brand)} ${escHtml(d.model)}</strong><br>`+
     `${t('ownerLooking')}: <strong style="color:var(--purple)">${escHtml(d.tradeWant)}</strong><br>`+
-    `${t('owner')}: <strong>${escHtml(d.owner)}</strong>${tgLinkFull(owTg)}<br>`+
-    `${t('from')}: <strong>${escHtml(CU.name)}</strong>${tgLinkFull(CU.tg)}`;
+    `${t('owner')}: <strong>${escHtml(d.owner)}</strong>${tgLinkFull(owTg,d.owner)}<br>`+
+    `${t('from')}: <strong>${escHtml(CU.name)}</strong>${tgLinkFull(CU.tg,CU.name)}`;
   document.getElementById('rt-note').placeholder=t('descYourDisc');
   document.getElementById('rt-note').value='';
   document.querySelector('#ov-reqTest .mt').innerHTML=t('tradeOffer').replace(/(\S+)$/,'<span>$1</span>');
@@ -2409,7 +2434,7 @@ function renderSeller(){
           <div style="display:flex;align-items:center;gap:0.5rem">
             <div style="flex:1;min-width:0">
               <div class="di-title">${escHtml(r.tester)} → ${disc?escHtml(disc.brand)+' '+escHtml(disc.model):'?'} <span class="badge ${typeBadge}">${escHtml(typeLabel)}</span></div>
-              <div class="di-sub">${fmtDate(r.created_at)}${tgLinkFull(r.tester_tg)}</div>
+              <div class="di-sub">${fmtDate(r.created_at)}${tgLinkFull(r.tester_tg,r.tester)}</div>
             </div>
             ${disc&&isBuy&&(r.status==='pending'||r.status==='accepted')?`<button class="btn btn-lime btn-xs" onclick="confirmSale('${escJs(disc.id)}')">✓ ${escHtml(t('sold'))}</button>`:''}
             ${disc&&!isBuy&&r.status==='pending'?`<button class="btn btn-cyan btn-xs" onclick="acceptRequest('${escJs(r.id)}','${escJs(disc.id)}','${escJs(r.tester||'')}','${escJs(r.tester_tg||'')}','${escJs(r.request_type)}')">${t('accepted')}</button>`:''}
@@ -3498,7 +3523,7 @@ async function showAucDetail(id){
     </div>
     ${isReverse?`<div style="font-size:0.78rem;color:var(--purple);margin-bottom:0.5rem;padding:0.4rem;background:rgba(168,85,247,0.1);border-radius:var(--r)">📉 ${a.reverse_start} ${curSym()} → ${a.reverse_end} ${curSym()} · -${a.reverse_drop} ${curSym()} / ${a.reverse_interval||60}${t('m')}</div>`:''}
     ${!isReverse?`<div style="font-size:0.78rem;color:var(--m2);margin-bottom:0.5rem">${t('step')}: ${a.min_step||10} ${curSym()}</div>`:''}
-    <div style="font-size:0.78rem;color:var(--m1);margin-bottom:0.75rem">${t('seller')}: <strong style="color:var(--text)">${escHtml(a.owner)}</strong>${tgLinkFull(a.owner_tg||a.owner_tg_id)}</div>
+    <div style="font-size:0.78rem;color:var(--m1);margin-bottom:0.75rem">${t('seller')}: <strong style="color:var(--text)">${escHtml(a.owner)}</strong>${tgLinkFull(a.owner_tg||a.owner_tg_id,a.owner)}</div>
     ${isActive&&CU&&a.owner_tg_id!==CU.tgId?`
       ${isReverse?`
         <div style="font-size:0.72rem;color:var(--m1);margin-bottom:0.3rem">${t('yourPriceHint')}</div>
@@ -3516,7 +3541,7 @@ async function showAucDetail(id){
       `}
     `:isActive&&CU&&a.owner_tg_id===CU.tgId?`<div style="font-size:0.78rem;color:var(--m1);margin-bottom:0.75rem;text-align:center">${t('yourAuction')}</div>`:``}
     ${!isActive?`
-      ${a.winner?`<div style="padding:0.5rem;background:rgba(74,222,128,0.1);border:1px solid var(--av);border-radius:var(--r);font-size:0.82rem;margin-bottom:0.75rem">🏆 ${t('winner')}: <strong>${escHtml(a.winner)}</strong>${tgLinkFull(a.winner_tg||a.winner_tg_id)}</div>`:'<div style="color:var(--m1);margin-bottom:0.75rem">Ніхто не зробив ставку</div>'}
+      ${a.winner?`<div style="padding:0.5rem;background:rgba(74,222,128,0.1);border:1px solid var(--av);border-radius:var(--r);font-size:0.82rem;margin-bottom:0.75rem">🏆 ${t('winner')}: <strong>${escHtml(a.winner)}</strong>${tgLinkFull(a.winner_tg||a.winner_tg_id,a.winner)}</div>`:'<div style="color:var(--m1);margin-bottom:0.75rem">Ніхто не зробив ставку</div>'}
       ${!a.winner&&CU&&a.owner_tg_id===CU.tgId?`<div style="display:flex;gap:0.4rem;margin-bottom:0.75rem">
         <button class="btn btn-lime btn-sm" onclick="auctionToCatalog('${a.id}')" style="flex:1">${t('toCatalog')}</button>
         <button class="btn btn-cyan btn-sm" onclick="restartAuction('${a.id}')" style="flex:1">${t('restartAuc')}</button>
@@ -3524,7 +3549,7 @@ async function showAucDetail(id){
     `:''}
     <div style="font-size:0.72rem;font-weight:700;color:var(--m1);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:0.4rem">${t('bidHistory')}</div>
     ${bids&&bids.length?bids.map((b,i)=>`<div style="display:flex;justify-content:space-between;padding:0.35rem 0;border-bottom:1px solid var(--b1);font-size:0.78rem">
-      <span>${i===0?'🏆 ':''}${escHtml(b.bidder)}${tgLinkFull(b.bidder_tg||b.bidder_tg_id)}</span><span style="font-weight:700;color:var(--lime)">${b.amount} ${curSym()}</span>
+      <span>${i===0?'🏆 ':''}${escHtml(b.bidder)}${tgLinkFull(b.bidder_tg||b.bidder_tg_id,b.bidder)}</span><span style="font-weight:700;color:var(--lime)">${b.amount} ${curSym()}</span>
     </div>`).join(''):'<div style="font-size:0.78rem;color:var(--m1)">Ще немає ставок</div>'}
   `;
   openModal('aucDetail');
