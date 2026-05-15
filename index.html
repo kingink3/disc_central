@@ -1147,6 +1147,32 @@ const COUNTRIES={
   cz:{nameUk:'Чехія',nameEn:'Czechia',namePl:'Czechy',currency:'CZK',symbol:'Kč',defaultLang:'en',flag:'🇨🇿'},
   de:{nameUk:'Німеччина',nameEn:'Germany',namePl:'Niemcy',currency:'EUR',symbol:'€',defaultLang:'en',flag:'🇩🇪'}
 };
+const _LANG_TO_ISO={en:'gb',ua:'ua',pl:'pl',fi:'fi',se:'se',no:'no',ee:'ee',dk:'dk',is:'is',lv:'lv',lt:'lt',cz:'cz',de:'de'};
+// Inline SVG flags (data-URIs) — no external network dependency.
+// Emoji flags fail to render on Windows and many Android builds; SVG is universal.
+const _FLAG_DATA={
+  ua:'data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2060%2040%22%3E%3Crect%20width%3D%2260%22%20height%3D%2220%22%20fill%3D%22%230057b7%22%2F%3E%3Crect%20y%3D%2220%22%20width%3D%2260%22%20height%3D%2220%22%20fill%3D%22%23ffd700%22%2F%3E%3C%2Fsvg%3E',
+  pl:'data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2060%2040%22%3E%3Crect%20width%3D%2260%22%20height%3D%2220%22%20fill%3D%22%23fff%22%2F%3E%3Crect%20y%3D%2220%22%20width%3D%2260%22%20height%3D%2220%22%20fill%3D%22%23dc143c%22%2F%3E%3C%2Fsvg%3E',
+  fi:'data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2060%2040%22%3E%3Crect%20width%3D%2260%22%20height%3D%2240%22%20fill%3D%22%23fff%22%2F%3E%3Crect%20x%3D%2218%22%20width%3D%226%22%20height%3D%2240%22%20fill%3D%22%23003580%22%2F%3E%3Crect%20y%3D%2217%22%20width%3D%2260%22%20height%3D%226%22%20fill%3D%22%23003580%22%2F%3E%3C%2Fsvg%3E',
+  se:'data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2060%2040%22%3E%3Crect%20width%3D%2260%22%20height%3D%2240%22%20fill%3D%22%23006aa7%22%2F%3E%3Crect%20x%3D%2218%22%20width%3D%226%22%20height%3D%2240%22%20fill%3D%22%23fecc00%22%2F%3E%3Crect%20y%3D%2217%22%20width%3D%2260%22%20height%3D%226%22%20fill%3D%22%23fecc00%22%2F%3E%3C%2Fsvg%3E',
+  no:'data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2060%2040%22%3E%3Crect%20width%3D%2260%22%20height%3D%2240%22%20fill%3D%22%23ba0c2f%22%2F%3E%3Crect%20x%3D%2216%22%20width%3D%2210%22%20height%3D%2240%22%20fill%3D%22%23fff%22%2F%3E%3Crect%20y%3D%2215%22%20width%3D%2260%22%20height%3D%2210%22%20fill%3D%22%23fff%22%2F%3E%3Crect%20x%3D%2218%22%20width%3D%226%22%20height%3D%2240%22%20fill%3D%22%2300205b%22%2F%3E%3Crect%20y%3D%2217%22%20width%3D%2260%22%20height%3D%226%22%20fill%3D%22%2300205b%22%2F%3E%3C%2Fsvg%3E',
+  ee:'data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2060%2040%22%3E%3Crect%20width%3D%2260%22%20height%3D%2213.33%22%20fill%3D%22%230072ce%22%2F%3E%3Crect%20y%3D%2213.33%22%20width%3D%2260%22%20height%3D%2213.34%22%20fill%3D%22%23000%22%2F%3E%3Crect%20y%3D%2226.67%22%20width%3D%2260%22%20height%3D%2213.33%22%20fill%3D%22%23fff%22%2F%3E%3C%2Fsvg%3E',
+  dk:'data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2060%2040%22%3E%3Crect%20width%3D%2260%22%20height%3D%2240%22%20fill%3D%22%23c8102e%22%2F%3E%3Crect%20x%3D%2218%22%20width%3D%226%22%20height%3D%2240%22%20fill%3D%22%23fff%22%2F%3E%3Crect%20y%3D%2217%22%20width%3D%2260%22%20height%3D%226%22%20fill%3D%22%23fff%22%2F%3E%3C%2Fsvg%3E',
+  is:'data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2060%2040%22%3E%3Crect%20width%3D%2260%22%20height%3D%2240%22%20fill%3D%22%2302529c%22%2F%3E%3Crect%20x%3D%2216%22%20width%3D%2210%22%20height%3D%2240%22%20fill%3D%22%23fff%22%2F%3E%3Crect%20y%3D%2215%22%20width%3D%2260%22%20height%3D%2210%22%20fill%3D%22%23fff%22%2F%3E%3Crect%20x%3D%2218%22%20width%3D%226%22%20height%3D%2240%22%20fill%3D%22%23dc1e35%22%2F%3E%3Crect%20y%3D%2217%22%20width%3D%2260%22%20height%3D%226%22%20fill%3D%22%23dc1e35%22%2F%3E%3C%2Fsvg%3E',
+  lv:'data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2060%2040%22%3E%3Crect%20width%3D%2260%22%20height%3D%2216%22%20fill%3D%22%239e3039%22%2F%3E%3Crect%20y%3D%2216%22%20width%3D%2260%22%20height%3D%228%22%20fill%3D%22%23fff%22%2F%3E%3Crect%20y%3D%2224%22%20width%3D%2260%22%20height%3D%2216%22%20fill%3D%22%239e3039%22%2F%3E%3C%2Fsvg%3E',
+  lt:'data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2060%2040%22%3E%3Crect%20width%3D%2260%22%20height%3D%2213.33%22%20fill%3D%22%23fdb913%22%2F%3E%3Crect%20y%3D%2213.33%22%20width%3D%2260%22%20height%3D%2213.34%22%20fill%3D%22%23006a44%22%2F%3E%3Crect%20y%3D%2226.67%22%20width%3D%2260%22%20height%3D%2213.33%22%20fill%3D%22%23c1272d%22%2F%3E%3C%2Fsvg%3E',
+  cz:'data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2060%2040%22%3E%3Crect%20width%3D%2260%22%20height%3D%2220%22%20fill%3D%22%23fff%22%2F%3E%3Crect%20y%3D%2220%22%20width%3D%2260%22%20height%3D%2220%22%20fill%3D%22%23d7141a%22%2F%3E%3Cpolygon%20points%3D%220%2C0%2030%2C20%200%2C40%22%20fill%3D%22%2311457e%22%2F%3E%3C%2Fsvg%3E',
+  de:'data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2060%2040%22%3E%3Crect%20width%3D%2260%22%20height%3D%2213.33%22%20fill%3D%22%23000%22%2F%3E%3Crect%20y%3D%2213.33%22%20width%3D%2260%22%20height%3D%2213.34%22%20fill%3D%22%23dd0000%22%2F%3E%3Crect%20y%3D%2226.67%22%20width%3D%2260%22%20height%3D%2213.33%22%20fill%3D%22%23ffce00%22%2F%3E%3C%2Fsvg%3E',
+  gb:'data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2060%2040%22%3E%3CclipPath%20id%3D%22t%22%3E%3Cpath%20d%3D%22M0%200v40h60V0z%22%2F%3E%3C%2FclipPath%3E%3CclipPath%20id%3D%22s%22%3E%3Cpath%20d%3D%22M30%2020L60%200v40zM0%200l30%2020L0%2040z%22%2F%3E%3C%2FclipPath%3E%3Cpath%20fill%3D%22%23012169%22%20d%3D%22M0%200h60v40H0z%22%2F%3E%3Cpath%20stroke%3D%22%23fff%22%20stroke-width%3D%228%22%20d%3D%22M0%200l60%2040m0-40L0%2040%22%20clip-path%3D%22url%28%23t%29%22%2F%3E%3Cpath%20stroke%3D%22%23c8102e%22%20stroke-width%3D%224%22%20d%3D%22M0%200l60%2040m0-40L0%2040%22%20clip-path%3D%22url%28%23s%29%22%2F%3E%3Cpath%20stroke%3D%22%23fff%22%20stroke-width%3D%2213%22%20d%3D%22M30%200v40M0%2020h60%22%2F%3E%3Cpath%20stroke%3D%22%23c8102e%22%20stroke-width%3D%227%22%20d%3D%22M30%200v40M0%2020h60%22%2F%3E%3C%2Fsvg%3E',
+};
+function flagImg(code,h){
+  const iso=(_LANG_TO_ISO[code]||code||'').toLowerCase();
+  const src=_FLAG_DATA[iso];
+  if(!src)return '';
+  const height=h||18;
+  const width=Math.round(height*3/2);
+  return `<img src="${src}" width="${width}" height="${height}" alt="" style="display:inline-block;vertical-align:middle;border-radius:2px;object-fit:cover;flex-shrink:0">`;
+}
 let CITIES={};
 async function loadCities(){
   try{
@@ -1282,14 +1308,23 @@ function setBgImage(el,url){if(!el)return;const safe=String(url||'').replace(/\\
 function tgLinkFull(tg){
   const clean=String(tg||'').replace('@','').trim();
   if(!clean)return'';
+  // Numeric ID — direct tg://user?id= link. Works in clients that handle the tg:// scheme
+  // (desktop Telegram, most Android browsers). On clients that don't (Telegram WebApp on iOS
+  // notably), nothing happens — this is a Telegram-side limitation, not a bug.
   if(/^\d+$/.test(clean)){
-    const tgApp=window.Telegram?.WebApp;
-    if(tgApp)return` · <a href="#" onclick="event.preventDefault();window.Telegram.WebApp.openTelegramLink('https://t.me/@id${clean}')" style="color:var(--cyan)">${escHtml(t('writeTo'))}</a>`;
-    return` · <a href="tg://user?id=${clean}" target="_blank" style="color:var(--cyan)">${escHtml(t('writeTo'))}</a>`;
+    return ` · <a href="tg://user?id=${clean}" style="color:var(--cyan)">${escHtml(t('writeTo'))}</a>`;
   }
-  // Telegram username allows only [a-zA-Z0-9_]; reject anything else outright
+  // Telegram username — allows only [a-zA-Z0-9_]; reject anything else outright.
   if(!/^[a-zA-Z0-9_]{1,64}$/.test(clean))return'';
-  return` · <a href="https://t.me/${clean}" target="_blank" style="color:var(--cyan)">@${clean}</a>`;
+  return ` · <a href="#" onclick="event.preventDefault();openTgUsername('${escJs(clean)}')" style="color:var(--cyan)">@${escHtml(clean)}</a>`;
+}
+// Open a username chat via WebApp SDK (stays inside Telegram); fallback to plain link.
+function openTgUsername(username){
+  const tgApp=window.Telegram?.WebApp;
+  if(tgApp&&typeof tgApp.openTelegramLink==='function'){
+    try{tgApp.openTelegramLink('https://t.me/'+username);return;}catch(e){}
+  }
+  window.open('https://t.me/'+username,'_blank');
 }
 
 
@@ -2845,7 +2880,7 @@ function openCountryPicker(opts){
   const btns=order.filter(c=>COUNTRIES[c]).map(c=>{
     const co=COUNTRIES[c];
     const active=c===curCountry;
-    return `<button class="country-pick-btn ${active?'active':''}" onclick="pickCountry('${c}')"><span style="display:flex;align-items:center;gap:0.6rem"><span style="font-size:1.2rem">${co.flag}</span><span>${escHtml(co[nameKey])}</span></span><span style="color:var(--m1);font-size:0.78rem;font-weight:500">${co.symbol}</span></button>`;
+    return `<button class="country-pick-btn ${active?'active':''}" onclick="pickCountry('${c}')"><span style="display:flex;align-items:center;gap:0.6rem">${flagImg(c,22)}<span>${escHtml(co[nameKey])}</span></span><span style="color:var(--m1);font-size:0.78rem;font-weight:500">${co.symbol}</span></button>`;
   }).join('');
   const closeBtn = closable
     ? `<button class="modal-x" onclick="closeCountryPicker()" aria-label="Close">×</button>`
@@ -2887,7 +2922,7 @@ function openLangPicker(){
   const btns=order.map(code=>{
     const info=LANG_LABELS[code];if(!info)return '';
     const active=code===LANG;
-    return `<button class="country-pick-btn ${active?'active':''}" onclick="setLang('${code}');closeLangPicker()"><span style="display:flex;align-items:center;gap:0.6rem"><span style="font-size:1.2rem">${info.flag}</span><span>${info.native}</span></span><span style="color:var(--m1);font-size:0.75rem;font-weight:500">${code.toUpperCase()}</span></button>`;
+    return `<button class="country-pick-btn ${active?'active':''}" onclick="setLang('${code}');closeLangPicker()"><span style="display:flex;align-items:center;gap:0.6rem">${flagImg(code,22)}<span>${info.native}</span></span><span style="color:var(--m1);font-size:0.75rem;font-weight:500">${code.toUpperCase()}</span></button>`;
   }).join('');
   ov.innerHTML=`
     <div class="modal" style="max-width:360px;max-height:88vh;display:flex;flex-direction:column;position:relative">
@@ -4094,7 +4129,7 @@ function renderSettings(){
     <div class="setting-row">
       <div class="setting-icon" style="font-size:14px;font-weight:700">A</div>
       <div class="setting-label">${t('language')}</div>
-      <button class="setting-dropdown" onclick="closeSettings();setTimeout(openLangPicker,200)">
+      <button class="setting-dropdown" onclick="openLangPicker()">
         <span>${(LANG_LABELS[langKey]?.native)||(langKey||'EN').toUpperCase()}</span>
         <span class="setting-dropdown-chev">▾</span>
       </button>
@@ -4102,8 +4137,8 @@ function renderSettings(){
     <div class="setting-row">
       <div class="setting-icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg></div>
       <div class="setting-label">${t('country')}</div>
-      <button class="setting-dropdown" onclick="closeSettings();setTimeout(openCountryPickerForChange,200)">
-        <span>${COUNTRIES[country]?(COUNTRIES[country].flag+' '+escHtml(COUNTRIES[country]['name'+(LANG==='ua'?'Uk':LANG==='pl'?'Pl':'En')])):(country||'').toUpperCase()}</span>
+      <button class="setting-dropdown" onclick="openCountryPickerForChange()">
+        <span style="display:inline-flex;align-items:center;gap:0.4rem">${COUNTRIES[country]?(flagImg(country,16)+' <span>'+escHtml(COUNTRIES[country]['name'+(LANG==='ua'?'Uk':LANG==='pl'?'Pl':'En')])+'</span>'):escHtml((country||'').toUpperCase())}</span>
         <span class="setting-dropdown-chev">▾</span>
       </button>
     </div>
