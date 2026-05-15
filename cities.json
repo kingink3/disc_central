@@ -1,0 +1,112 @@
+{
+  "ua": {
+    "kyiv":       {"ua":"Київ",      "en":"Kyiv",       "pl":"Kijów"},
+    "lutsk":      {"ua":"Луцьк",     "en":"Lutsk",      "pl":"Łuck"},
+    "kremenchuk": {"ua":"Кременчук", "en":"Kremenchuk", "pl":"Krzemieńczuk"},
+    "odesa":      {"ua":"Одеса",     "en":"Odesa",      "pl":"Odessa"},
+    "lviv":       {"ua":"Львів",     "en":"Lviv",       "pl":"Lwów"},
+    "kharkiv":    {"ua":"Харків",    "en":"Kharkiv",    "pl":"Charków"},
+    "dnipro":     {"ua":"Дніпро",    "en":"Dnipro",     "pl":"Dniepr"}
+  },
+  "pl": {
+    "warsaw":   {"ua":"Варшава",   "en":"Warsaw",   "pl":"Warszawa"},
+    "krakow":   {"ua":"Краків",    "en":"Krakow",   "pl":"Kraków"},
+    "gdansk":   {"ua":"Гданськ",   "en":"Gdansk",   "pl":"Gdańsk"},
+    "wroclaw":  {"ua":"Вроцлав",   "en":"Wroclaw",  "pl":"Wrocław"},
+    "poznan":   {"ua":"Познань",   "en":"Poznan",   "pl":"Poznań"},
+    "lodz":     {"ua":"Лодзь",     "en":"Lodz",     "pl":"Łódź"},
+    "katowice": {"ua":"Катовиці",  "en":"Katowice", "pl":"Katowice"},
+    "szczecin": {"ua":"Щецин",     "en":"Szczecin", "pl":"Szczecin"},
+    "lublin":   {"ua":"Люблін",    "en":"Lublin",   "pl":"Lublin"},
+    "rzeszow":  {"ua":"Жешув",     "en":"Rzeszow",  "pl":"Rzeszów"}
+  },
+  "fi": {
+    "helsinki": {"ua":"Гельсінкі", "en":"Helsinki", "pl":"Helsinki"},
+    "espoo":    {"ua":"Еспоо",     "en":"Espoo",    "pl":"Espoo"},
+    "tampere":  {"ua":"Тампере",   "en":"Tampere",  "pl":"Tampere"},
+    "vantaa":   {"ua":"Вантаа",    "en":"Vantaa",   "pl":"Vantaa"},
+    "turku":    {"ua":"Турку",     "en":"Turku",    "pl":"Turku"},
+    "oulu":     {"ua":"Оулу",      "en":"Oulu",     "pl":"Oulu"},
+    "jyvaskyla":{"ua":"Ювяскюля",  "en":"Jyväskylä","pl":"Jyväskylä"},
+    "lahti":    {"ua":"Лахті",     "en":"Lahti",    "pl":"Lahti"}
+  },
+  "se": {
+    "stockholm": {"ua":"Стокгольм",  "en":"Stockholm",  "pl":"Sztokholm"},
+    "gothenburg":{"ua":"Гетеборг",   "en":"Gothenburg", "pl":"Göteborg"},
+    "malmo":     {"ua":"Мальме",     "en":"Malmö",      "pl":"Malmö"},
+    "uppsala":   {"ua":"Уппсала",    "en":"Uppsala",    "pl":"Uppsala"},
+    "vasteras":  {"ua":"Вестерос",   "en":"Västerås",   "pl":"Västerås"},
+    "orebro":    {"ua":"Еребру",     "en":"Örebro",     "pl":"Örebro"},
+    "linkoping": {"ua":"Лінчепінг",  "en":"Linköping",  "pl":"Linköping"},
+    "helsingborg":{"ua":"Гельсінгборг","en":"Helsingborg","pl":"Helsingborg"}
+  },
+  "no": {
+    "oslo":     {"ua":"Осло",      "en":"Oslo",      "pl":"Oslo"},
+    "bergen":   {"ua":"Берген",    "en":"Bergen",    "pl":"Bergen"},
+    "trondheim":{"ua":"Тронгейм",  "en":"Trondheim", "pl":"Trondheim"},
+    "stavanger":{"ua":"Ставангер", "en":"Stavanger", "pl":"Stavanger"},
+    "drammen":  {"ua":"Драммен",   "en":"Drammen",   "pl":"Drammen"},
+    "fredrikstad":{"ua":"Фредрікстад","en":"Fredrikstad","pl":"Fredrikstad"},
+    "kristiansand":{"ua":"Крістіансанн","en":"Kristiansand","pl":"Kristiansand"},
+    "tromso":   {"ua":"Тромсе",    "en":"Tromsø",    "pl":"Tromsø"}
+  },
+  "ee": {
+    "tallinn": {"ua":"Таллінн", "en":"Tallinn", "pl":"Tallin"},
+    "tartu":   {"ua":"Тарту",   "en":"Tartu",   "pl":"Tartu"},
+    "narva":   {"ua":"Нарва",   "en":"Narva",   "pl":"Narwa"},
+    "parnu":   {"ua":"Пярну",   "en":"Pärnu",   "pl":"Parnawa"},
+    "kohtla-jarve":{"ua":"Кохтла-Ярве","en":"Kohtla-Järve","pl":"Kohtla-Järve"}
+  },
+  "dk": {
+    "copenhagen": {"ua":"Копенгаген", "en":"Copenhagen", "pl":"Kopenhaga"},
+    "aarhus":     {"ua":"Орхус",      "en":"Aarhus",     "pl":"Aarhus"},
+    "odense":     {"ua":"Оденсе",     "en":"Odense",     "pl":"Odense"},
+    "aalborg":    {"ua":"Ольборг",    "en":"Aalborg",    "pl":"Aalborg"},
+    "esbjerg":    {"ua":"Есб'єрг",    "en":"Esbjerg",    "pl":"Esbjerg"},
+    "randers":    {"ua":"Раннерс",    "en":"Randers",    "pl":"Randers"}
+  },
+  "is": {
+    "reykjavik": {"ua":"Рейк'явік",  "en":"Reykjavík",  "pl":"Reykjavík"},
+    "kopavogur": {"ua":"Коупавогюр", "en":"Kópavogur",  "pl":"Kópavogur"},
+    "hafnarfjordur":{"ua":"Хабнарфйордюр","en":"Hafnarfjörður","pl":"Hafnarfjörður"},
+    "akureyri":  {"ua":"Акурейрі",   "en":"Akureyri",   "pl":"Akureyri"}
+  },
+  "lv": {
+    "riga":       {"ua":"Рига",       "en":"Riga",       "pl":"Ryga"},
+    "daugavpils": {"ua":"Даугавпілс", "en":"Daugavpils", "pl":"Dyneburg"},
+    "liepaja":    {"ua":"Лієпая",     "en":"Liepāja",    "pl":"Lipawa"},
+    "jelgava":    {"ua":"Єлгава",     "en":"Jelgava",    "pl":"Jełgawa"},
+    "jurmala":    {"ua":"Юрмала",     "en":"Jūrmala",    "pl":"Jurmała"}
+  },
+  "lt": {
+    "vilnius":   {"ua":"Вільнюс",   "en":"Vilnius",   "pl":"Wilno"},
+    "kaunas":    {"ua":"Каунас",    "en":"Kaunas",    "pl":"Kowno"},
+    "klaipeda":  {"ua":"Клайпеда",  "en":"Klaipėda",  "pl":"Kłajpeda"},
+    "siauliai":  {"ua":"Шяуляй",    "en":"Šiauliai",  "pl":"Szawle"},
+    "panevezys": {"ua":"Паневежис", "en":"Panevėžys", "pl":"Poniewież"}
+  },
+  "cz": {
+    "prague":     {"ua":"Прага",     "en":"Prague",     "pl":"Praga"},
+    "brno":       {"ua":"Брно",      "en":"Brno",       "pl":"Brno"},
+    "ostrava":    {"ua":"Острава",   "en":"Ostrava",    "pl":"Ostrawa"},
+    "plzen":      {"ua":"Пльзень",   "en":"Plzeň",      "pl":"Pilzno"},
+    "liberec":    {"ua":"Ліберець",  "en":"Liberec",    "pl":"Liberec"},
+    "olomouc":    {"ua":"Оломоуць",  "en":"Olomouc",    "pl":"Ołomuniec"},
+    "ceske-budejovice":{"ua":"Чеські Будейовиці","en":"České Budějovice","pl":"Czeskie Budziejowice"},
+    "hradec-kralove":{"ua":"Градець-Кралове","en":"Hradec Králové","pl":"Hradec Králové"}
+  },
+  "de": {
+    "berlin":    {"ua":"Берлін",    "en":"Berlin",    "pl":"Berlin"},
+    "hamburg":   {"ua":"Гамбург",   "en":"Hamburg",   "pl":"Hamburg"},
+    "munich":    {"ua":"Мюнхен",    "en":"Munich",    "pl":"Monachium"},
+    "cologne":   {"ua":"Кельн",     "en":"Cologne",   "pl":"Kolonia"},
+    "frankfurt": {"ua":"Франкфурт", "en":"Frankfurt", "pl":"Frankfurt nad Menem"},
+    "stuttgart": {"ua":"Штутгарт",  "en":"Stuttgart", "pl":"Stuttgart"},
+    "dusseldorf":{"ua":"Дюссельдорф","en":"Düsseldorf","pl":"Düsseldorf"},
+    "leipzig":   {"ua":"Лейпциг",   "en":"Leipzig",   "pl":"Lipsk"},
+    "dortmund":  {"ua":"Дортмунд",  "en":"Dortmund",  "pl":"Dortmund"},
+    "dresden":   {"ua":"Дрезден",   "en":"Dresden",   "pl":"Drezno"},
+    "bremen":    {"ua":"Бремен",    "en":"Bremen",    "pl":"Brema"},
+    "hannover":  {"ua":"Ганновер",  "en":"Hannover",  "pl":"Hanower"}
+  }
+}
