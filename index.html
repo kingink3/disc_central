@@ -1332,6 +1332,8 @@ function openTgUsername(username){
 // mention of the target. Telegram renders the mention as a tappable profile card → user opens
 // chat from there. Works on every client because the bot relies on Telegram's server-side
 // mention parsing, not on the client opening tg:// URLs.
+// UX: after the card is sent, auto-open the chat with the bot so the user lands directly on
+// the message instead of having to navigate there manually.
 function requestContactCard(targetId,targetName){
   if(!CU||!CU.tgId){toast(t('loginFirst'),true);return;}
   if(!/^\d+$/.test(String(targetId))){return;}
@@ -1344,7 +1346,19 @@ function requestContactCard(targetId,targetName){
       +'&lang='+encodeURIComponent(LANG||'ua')
       +'&callback='+cbName;
     const s=document.createElement('script');
-    window[cbName]=()=>{delete window[cbName];s.remove();toast(t('contactSent')||'✅');};
+    window[cbName]=()=>{
+      delete window[cbName];s.remove();
+      toast(t('contactSent')||'✅');
+      // Open the chat with the bot so the user lands directly on the contact-card message.
+      // Mini App stays alive in the background (Bot API 7.0+ — openTelegramLink no longer closes the app).
+      try{
+        const tgApp=window.Telegram?.WebApp;
+        if(tgApp&&typeof tgApp.openTelegramLink==='function'){
+          // Small delay so the toast registers visually before the chat swap.
+          setTimeout(()=>{try{tgApp.openTelegramLink('https://t.me/disc_central_bot');}catch(e){}},250);
+        }
+      }catch(e){}
+    };
     s.onerror=()=>{delete window[cbName];s.remove();toast(t('errGeneric'),true);};
     s.src=url;
     document.head.appendChild(s);
