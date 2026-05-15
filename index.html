@@ -2206,9 +2206,14 @@ function setCabTab(tab){
 
 let cabinetCache={myDiscs:[],allReqs:[],loaded:false};
 async function preloadCabinet(){
-  if(!CU?.name)return;
+  if(!CU?.tgId&&!CU?.name)return;
   try{
-    const {data}=await sb.from('discs').select('*').eq('owner',CU.name).neq('status','deleted').order('created_at',{ascending:false});
+    // Prefer filter by owner_tg_id — stable across name changes, first-name-only inconsistencies,
+    // and matches what RPCs use internally. Fall back to owner name only when tgId unavailable.
+    let q=sb.from('discs').select('*').neq('status','deleted').order('created_at',{ascending:false});
+    if(CU.tgId)q=q.eq('owner_tg_id',String(CU.tgId));
+    else q=q.eq('owner',CU.name);
+    const {data}=await q;
     cabinetCache.myDiscs=(data||[]).map(dbToDisc);
     if(cabinetCache.myDiscs.length){
       const {data:reqs}=await sb.from('requests').select('*').in('disc_id',cabinetCache.myDiscs.map(d=>d.id)).order('created_at',{ascending:false});
