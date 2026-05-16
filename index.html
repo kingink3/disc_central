@@ -642,8 +642,12 @@ input[type=range]::-moz-range-track{height:6px;background:rgba(255,255,255,0.06)
         <div><span class="fl">Fade</span><div class="drs" data-min="0" data-max="5" data-step="0.5" data-lo="f-fade" data-hi="f-fade-max"><div class="drs-track"></div><div class="drs-fill"></div><input type="range" min="0" max="5" step="0.5" value="0" class="drs-min"><input type="range" min="0" max="5" step="0.5" value="5" class="drs-max"></div><div class="drs-vals"><input type="number" id="f-fade" min="0" max="5" step="0.5" placeholder="0" oninput="drsFromInput(this)"><span>-</span><input type="number" id="f-fade-max" min="0" max="5" step="0.5" placeholder="5" oninput="drsFromInput(this)"></div></div>
       </div>
       <div class="adv-row">
-        <div style="grid-column:1/-1;display:grid;grid-template-columns:1fr auto;gap:0.5rem;align-items:end">
+        <div style="grid-column:1/-1;display:grid;grid-template-columns:1fr auto auto;gap:0.5rem;align-items:end">
           <div><span class="fl"data-i18n="city">Місто</span><div id="cityFilterContainer"></div></div>
+          <label style="display:flex;align-items:center;gap:0.35rem;cursor:pointer;font-size:0.82rem;color:var(--text);user-select:none;padding:0 0.5rem;height:34px;border:0.5px solid var(--glass-border);border-radius:var(--r);background:var(--glass);backdrop-filter:blur(10px);white-space:nowrap" title="Показати диски з інших країн">
+            <input type="checkbox" id="f-world" onchange="toggleWorldFilter(this)" style="width:14px;height:14px;cursor:pointer;accent-color:var(--lime);margin:0">
+            <span>🌍 <span data-i18n="world">World</span></span>
+          </label>
           <button class="btn btn-ghost btn-sm" onclick="resetFilters()" style="white-space:nowrap"data-i18n="reset">✕ Скинути</button>
         </div>
       </div>
@@ -1103,7 +1107,7 @@ let LANG=(function(){
   return SUPPORTED.indexOf(v)>=0?v:'en';
 })();
 // Note: SUPPORTED_LANGS defined just below; LANG re-validates inside setLang().
-const I18N_VERSION='2026.05.15.5';
+const I18N_VERSION='2026.05.16.2';
 const SUPPORTED_LANGS=['ua','en','pl','fi','se','no','ee','dk','is','lv','lt','cz','de'];
 let I={ua:{},en:{},pl:{}};
 async function loadTranslations(){
@@ -1125,7 +1129,7 @@ function t(k,vars){
   return s;
 }
 function toggleLang(){LANG=LANG==='ua'?'en':'ua';localStorage.setItem('dc_lang',LANG);const lb=document.getElementById('langBtn');if(lb)lb.textContent=LANG==='ua'?'EN':'UA';applyLang();}
-function applyLang(){ST.available.l=t('stAvailable');ST.reserved.l=t('stReserved');ST.testing.l=t('stTesting');ST.pending.l=t('stPending');ST.sold.l=t('stSold');ST.deleted.l=t('stDeleted');ST.unlisted.l=t('stUnlisted');ST.trade.l=t('stAvailable');document.querySelectorAll('[data-i18n]').forEach(el=>{const k=el.dataset.i18n;if(el.tagName==='INPUT'||el.tagName==='TEXTAREA'){el.placeholder=t(k);}else{el.textContent=t(k);}});updateCurrencyLabels();initCitySelects();if(typeof refreshAllGs==='function')refreshAllGs();applyFilters();if(document.getElementById('page-auctions')?.classList.contains('active'))renderAuctions();if(document.getElementById('cabinetContent')?.style.display!=='none'&&CU)renderCabinet();if(document.getElementById('page-settings')?.classList.contains('active'))renderFeed();}
+function applyLang(){ST.available.l=t('stAvailable');ST.reserved.l=t('stReserved');ST.testing.l=t('stTesting');ST.pending.l=t('stPending');ST.sold.l=t('stSold');ST.deleted.l=t('stDeleted');ST.unlisted.l=t('stUnlisted');ST.trade.l=t('stAvailable');document.querySelectorAll('[data-i18n]').forEach(el=>{const k=el.dataset.i18n;if(el.tagName==='INPUT'||el.tagName==='TEXTAREA'){el.placeholder=t(k);}else{el.textContent=t(k);}});updateCurrencyLabels();initCitySelects();initWorldFilter();if(typeof refreshAllGs==='function')refreshAllGs();applyFilters();if(document.getElementById('page-auctions')?.classList.contains('active'))renderAuctions();if(document.getElementById('cabinetContent')?.style.display!=='none'&&CU)renderCabinet();if(document.getElementById('page-settings')?.classList.contains('active'))renderFeed();}
 function updateCurrencyLabels(){
   const code=curCode();
   const ab=document.getElementById('adBuyoutLabel');if(ab)ab.textContent='Buyout ('+code+')';
@@ -1406,8 +1410,10 @@ async function loadDiscs(){
   // Show cache instantly
   try{const c=localStorage.getItem('dc_discs');if(c){allDiscs=JSON.parse(c);applyFilters();updateStats();}}catch(e){}
   try{
+    // Load ALL discs across all countries. Country scoping is done client-side via the
+    // "Show discs from other countries" toggle, so realtime updates and the toggle can
+    // operate on a single in-memory dataset without re-querying.
     let q=sb.from('discs').select('*').not('status','in','("sold","deleted","unlisted")').order('created_at',{ascending:false});
-    if(CU&&CU.country)q=q.eq('country',CU.country);
     const {data,error}=await q;
     if(!error&&data){
       allDiscs=data.map(dbToDisc);
@@ -1519,6 +1525,15 @@ function cardHTML(d){
   const canB=d.status!=='sold';
   const hasTrade=String(d.tradeWant||'').trim().length>0&&String(d.tradeWant)!=='false';
   const isOwn=CU&&String(CU.name).trim()===String(d.owner||'').trim();
+  // Currency must reflect the disc's own country, not the viewer's — otherwise a UA
+  // user browsing a Finnish disc would see "25 ₴" instead of "25 €".
+  const discCountry=d.country||'ua';
+  const discSym=(COUNTRIES[discCountry]&&COUNTRIES[discCountry].symbol)||'₴';
+  // Show country flag only when viewing across countries (i.e. when world mode is on
+  // or the disc is from a different country than the user's). Avoids visual noise in
+  // the common single-country case.
+  const showCountryBadge=isWorldFilterOn() || (CU && CU.country && discCountry!==CU.country);
+  const flagBadge=showCountryBadge ? flagImg(discCountry,12)+' ' : '';
   return`<div class="disc-card" onclick="showDetail('${d.id}')">
     <div class="disc-strip ${s.c}"></div>
     <div style="position:relative">
@@ -1529,7 +1544,7 @@ function cardHTML(d){
     <div class="disc-body">
       <div class="disc-title">${escHtml(d.brand)}</div>
       <div class="disc-model">${escHtml(d.model)}</div>
-      <div class="disc-sub">${[d.plastic,d.weight?d.weight+(LANG==='ua'?'г':'g'):'',tCity(d.city)].filter(Boolean).map(escHtml).join(' · ')}</div>
+      <div class="disc-sub">${flagBadge}${[d.plastic,d.weight?d.weight+(LANG==='ua'?'г':'g'):'',tCity(d.city)].filter(Boolean).map(escHtml).join(' · ')}</div>
       ${condBar(d.condition)}
       <div class="flight-row">
         <div class="fc"><div class="fv">${d.speed||0}</div><div class="fk">Spd</div></div>
@@ -1539,7 +1554,7 @@ function cardHTML(d){
       </div>
       <div class="disc-footer">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.35rem">
-          <div class="disc-price">${d.buyout?d.buyout+' '+curSym():'—'}${d.bargain?' <span style="font-size:0.7rem" title="⚖️">⚖️</span>':''}</div>
+          <div class="disc-price">${d.buyout?d.buyout+' '+discSym:'—'}${d.bargain?' <span style="font-size:0.7rem" title="⚖️">⚖️</span>':''}</div>
           <div style="display:flex;align-items:center;gap:0.4rem">
             <span onclick="event.stopPropagation();toggleFav('${d.id}')" style="cursor:pointer;font-size:0.85rem">${isFav(d.id)?'⭐':'☆'}</span>
             <div class="disc-own" onclick="event.stopPropagation();filterByOwner('${escJs(d.owner)}')">👤 ${escHtml((d.owner||'').split(' ')[0])}</div>
@@ -1631,6 +1646,12 @@ function applyFilters(){
   const fCities=window._selectedCities||[];
   const sort=document.getElementById('f-sort')?.value||'new';
   let list=allDiscs.filter(d=>d.status!=='sold');
+  // Country scope: by default show only the user's country; if "Show other countries"
+  // is checked, show everything. Discs with no country fall back to 'ua' for legacy data.
+  const showWorld=isWorldFilterOn();
+  if(!showWorld && CU && CU.country){
+    list=list.filter(d=>(d.country||'ua')===CU.country);
+  }
   if(CF==='fav')list=list.filter(d=>isFav(d.id));
   else if(CF==='trade')list=list.filter(d=>{const tw=String(d.tradeWant||'').trim();return tw&&tw!=='false';});
   else if(CF!=='all')list=list.filter(d=>d.status===CF||d.status==='trade'&&CF==='available');
@@ -1657,6 +1678,20 @@ function applyFilters(){
   window._filteredDiscIds=list.map(d=>d.id);
 }
 function setFt(btn,val){CF=val;btn.closest('.ftabs,.cab-tabs').querySelectorAll('.ft').forEach(b=>b.classList.remove('active'));btn.classList.add('active');moveFtabsPill(btn);applyFilters();}
+// "Show discs from other countries" toggle — purely client-side, persisted in localStorage.
+// When OFF (default): only show discs whose country == CU.country. When ON: show all countries.
+// State survives reloads but lives only on this device (not synced to the user record).
+function isWorldFilterOn(){
+  try{return localStorage.getItem('dc_show_world')==='1';}catch(e){return false;}
+}
+function toggleWorldFilter(cb){
+  try{localStorage.setItem('dc_show_world',cb.checked?'1':'0');}catch(e){}
+  applyFilters();
+}
+function initWorldFilter(){
+  const cb=document.getElementById('f-world');
+  if(cb)cb.checked=isWorldFilterOn();
+}
 function filterByOwner(owner){const tabs=document.getElementById('ftabs-catalog');if(tabs){tabs.querySelectorAll('.ft').forEach((b,i)=>b.classList.toggle('active',i===0));const first=tabs.querySelector('.ft.active');if(first)moveFtabsPill(first);}CF='all';const s=document.getElementById('mainSearch');s.value=owner;document.getElementById('advFilters').classList.add('open');applyFilters();goPage('catalog');}
 
 // ── DETAIL ──
@@ -1668,6 +1703,12 @@ function showDetail(id){
   const canB=d.status!=='sold';
   const hasTrade=String(d.tradeWant||'').trim()&&String(d.tradeWant)!=='false';
   const isDetailOwner=CU&&String(CU.name).trim()===String(d.owner).trim();
+  // Use the disc's own country/currency for display, falling back to 'ua' for legacy rows.
+  // Aucions deliberately keep curSym() — bidding happens in the viewer's currency by design.
+  const discCountry=d.country||'ua';
+  const discSym=(COUNTRIES[discCountry]&&COUNTRIES[discCountry].symbol)||'₴';
+  const showCountryBadge=isWorldFilterOn() || (CU && CU.country && discCountry!==CU.country);
+  const cityFlag=showCountryBadge ? flagImg(discCountry,12)+' ' : '';
   const photos=urls.length?`<div class="detail-photos" id="pw-d${d.id}" style="position:relative">${urls.map((u,i)=>`<img src="${escHtml(u)}" class="${i===0?'active':''}" alt="">`).join('')}${urls.length>1?`<button class="photo-nav prev" onclick="photoNav('d${d.id}',-1)">‹</button><button class="photo-nav next" onclick="photoNav('d${d.id}',1)">›</button>`:''}
     <span onclick="toggleLike('${d.id}',event)" style="position:absolute;bottom:10px;right:10px;cursor:pointer;font-size:0.95rem;z-index:2;background:rgba(0,0,0,0.6);padding:4px 8px;border-radius:12px;display:flex;align-items:center;gap:4px;color:#fff;backdrop-filter:blur(4px)"><span>${getLikes(d.id).liked?'❤️':'🤍'}</span><span style="font-size:0.8rem;font-weight:600">${getLikes(d.id).count||''}</span></span>
   </div>`:`<div style="height:120px;background:var(--s2);border-radius:var(--r2);display:flex;align-items:center;justify-content:center;font-size:3rem;margin-bottom:1rem">🥏</div>`;
@@ -1692,7 +1733,7 @@ function showDetail(id){
       <div class="detail-info-item"><span class="di-label">${t('weight')}:</span> ${d.weight||'—'}${LANG==='ua'?'г':'g'}</div>
       <div class="detail-info-item"><span class="di-label">${t('color')}:</span> ${escHtml(d.color||'—')}</div>
       ${d.inked?'<div class="detail-info-item"><span style="color:var(--purple)">🖊️ Inked</span></div>':'<div></div>'}
-      ${d.city?`<div class="detail-info-item full"><span class="di-label">${t('city')}:</span> ${escHtml(tCity(d.city))}</div>`:''}
+      ${d.city?`<div class="detail-info-item full"><span class="di-label">${t('city')}:</span> ${cityFlag}${escHtml(tCity(d.city))}</div>`:''}
       <div class="detail-info-item full"><span class="di-label">${t('owner')}:</span> ${escHtml(d.owner||'—')}${tgLinkFull(d.ownerTg,d.owner)}</div>
       ${d.tester&&d.status==='testing'?`<div class="detail-info-item full"><span class="di-label">${t('tester')}:</span> ${escHtml(d.tester)}</div>`:''}
     </div>
@@ -1707,7 +1748,7 @@ function showDetail(id){
       ${isDetailOwner?`<div style="font-size:0.78rem;color:var(--m1);text-align:center;width:100%;padding:0.3rem 0">${t('thisIsYourDisc')}</div>`:`
       ${canT?`<button class="btn btn-cyan btn-sm" onclick="openReqTest('${d.id}');closeModal('detail')" style="flex:1">${t('test')}</button>`:''}
       ${hasTrade?`<button class="btn btn-purple btn-sm" onclick="openTradeOffer('${d.id}');closeModal('detail')" style="flex:1">${t('exchange')}</button>`:''}
-      ${canB?`<button class="btn btn-lime btn-sm" onclick="oBuy('${d.id}');closeModal('detail')" style="flex:1">${t('buy')} ${d.buyout||0} ${curSym()}</button>`:''}
+      ${canB?`<button class="btn btn-lime btn-sm" onclick="oBuy('${d.id}');closeModal('detail')" style="flex:1">${t('buy')} ${d.buyout||0} ${discSym}</button>`:''}
       ${d.status==='testing'&&CU?.name===d.tester?`<button class="btn btn-ghost btn-sm" onclick="oRet('${d.id}');closeModal('detail')" style="flex:1">${t('returnDisc')}</button>`:''}`}
     </div>
     ${isDetailOwner?`<div id="detail-requests-${d.id}" style="margin-top:0.875rem"></div>`:''}
@@ -1815,7 +1856,9 @@ async function submitBargain(discId){
   const price=parseInt(input?.value);if(!price||!CU){toast(t('specifyPrice'),true);return;}
   const d=allDiscs.find(x=>x.id===discId);if(!d)return;
   if(d.ownerTg&&String(CU.name).trim()!==String(d.owner).trim()){
-    notifyAppsScript('offer',d,CU,'Пропоную '+price+' '+curSym()+' за '+d.brand+' '+d.model);
+    // Use seller's currency — buyer offers in the currency the disc is listed in.
+    const sellerSym=(COUNTRIES[d.country||'ua']&&COUNTRIES[d.country||'ua'].symbol)||'₴';
+    notifyAppsScript('offer',d,CU,'Пропоную '+price+' '+sellerSym+' за '+d.brand+' '+d.model);
   }
   input.value='';toast(t('offerSent'));
 }
@@ -2114,8 +2157,9 @@ function openReqTest(id){
   const d=allDiscs.find(x=>x.id===id||String(x.id)===String(id));if(!d)return;
   if(!CU){toast(t('loginFirst'),true);openModal('login');return;}
   const owTg=(d.ownerTg||'').replace('@','');
+  const dSym=(COUNTRIES[d.country||'ua']&&COUNTRIES[d.country||'ua'].symbol)||'₴';
   document.getElementById('reqDiscInfo').innerHTML=
-    `<strong>${escHtml(d.brand)} ${escHtml(d.model)}</strong> · ${escHtml(d.plastic)} · ${d.weight||''}г · <strong style="color:var(--lime)">${d.buyout||0} ${curSym()}</strong><br>`+
+    `<strong>${escHtml(d.brand)} ${escHtml(d.model)}</strong> · ${escHtml(d.plastic)} · ${d.weight||''}г · <strong style="color:var(--lime)">${d.buyout||0} ${dSym}</strong><br>`+
     `${t('owner')}: <strong>${escHtml(d.owner)}</strong>${tgLinkFull(owTg,d.owner)}<br>`+
     `${t('from')}: <strong>${escHtml(CU.name)}</strong>${tgLinkFull(CU.tg,CU.name)}`;
   document.getElementById('rt-note').value='';
@@ -2151,7 +2195,8 @@ async function submitTestReq(){
 function oBuy(id){
   if(!CU){toast(t('loginFirst'),true);openModal('login');return;}
   buyId=id;const d=allDiscs.find(x=>x.id===id||String(x.id)===String(id));
-  document.getElementById('buyInfo').innerHTML=`<strong>${escHtml(d.brand)} ${escHtml(d.model)}</strong> · ${escHtml(d.plastic)}<br>${t('price')}: <strong style="color:var(--lime)">${d.buyout||0} ${curSym()}</strong><br>${t('owner')}: <strong>${escHtml(d.owner)}</strong>${tgLinkFull((d.ownerTg||'').replace('@',''),d.owner)}<br>${t('from')}: <strong>${escHtml(CU.name)}</strong>${tgLinkFull(CU.tg,CU.name)}`;
+  const dSym=(COUNTRIES[d.country||'ua']&&COUNTRIES[d.country||'ua'].symbol)||'₴';
+  document.getElementById('buyInfo').innerHTML=`<strong>${escHtml(d.brand)} ${escHtml(d.model)}</strong> · ${escHtml(d.plastic)}<br>${t('price')}: <strong style="color:var(--lime)">${d.buyout||0} ${dSym}</strong><br>${t('owner')}: <strong>${escHtml(d.owner)}</strong>${tgLinkFull((d.ownerTg||'').replace('@',''),d.owner)}<br>${t('from')}: <strong>${escHtml(CU.name)}</strong>${tgLinkFull(CU.tg,CU.name)}`;
   document.getElementById('buy-note').value='';
   const lEl=document.getElementById('buySellerLink');
   const owClean=String(d.ownerTg||'').replace('@','').trim();
