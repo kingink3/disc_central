@@ -644,8 +644,8 @@ input[type=range]::-moz-range-track{height:6px;background:rgba(255,255,255,0.06)
       <div class="adv-row">
         <div style="grid-column:1/-1;display:grid;grid-template-columns:1fr auto auto;gap:0.5rem;align-items:end">
           <div><span class="fl"data-i18n="city">Місто</span><div id="cityFilterContainer"></div></div>
-          <label style="display:flex;align-items:center;gap:0.35rem;cursor:pointer;font-size:0.82rem;color:var(--text);user-select:none;padding:0 0.5rem;height:34px;border:0.5px solid var(--glass-border);border-radius:var(--r);background:var(--glass);backdrop-filter:blur(10px);white-space:nowrap" title="Показати диски з інших країн">
-            <input type="checkbox" id="f-world" onchange="toggleWorldFilter(this)" style="width:14px;height:14px;cursor:pointer;accent-color:var(--lime);margin:0">
+          <label style="display:inline-flex;align-items:center;gap:0.35rem;cursor:pointer;font-size:0.75rem;font-weight:600;color:var(--text);user-select:none;padding:5px 11px;border:0.5px solid var(--glass-border);border-radius:10px;background:var(--glass);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);white-space:nowrap;font-family:'DM Sans',sans-serif" title="Показати диски з інших країн">
+            <input type="checkbox" id="f-world" onchange="toggleWorldFilter(this)" style="width:13px;height:13px;cursor:pointer;accent-color:var(--lime);margin:0">
             <span>🌍 <span data-i18n="world">World</span></span>
           </label>
           <button class="btn btn-ghost btn-sm" onclick="resetFilters()" style="white-space:nowrap"data-i18n="reset">✕ Скинути</button>
@@ -1533,18 +1533,20 @@ function cardHTML(d){
   // or the disc is from a different country than the user's). Avoids visual noise in
   // the common single-country case.
   const showCountryBadge=isWorldFilterOn() || (CU && CU.country && discCountry!==CU.country);
-  const flagBadge=showCountryBadge ? flagImg(discCountry,12)+' ' : '';
+  // Flag overlay sits on the photo, mirroring the like-badge in the bottom-right.
+  const flagOverlay=showCountryBadge ? `<span style="position:absolute;bottom:5px;left:6px;font-size:0.7rem;z-index:2;background:rgba(0,0,0,0.6);padding:2px 6px;border-radius:10px;display:inline-flex;align-items:center;color:#fff;backdrop-filter:blur(4px)">${flagImg(discCountry,12)}</span>` : '';
   return`<div class="disc-card" onclick="showDetail('${d.id}')">
     <div class="disc-strip ${s.c}"></div>
     <div style="position:relative">
       ${photoCarousel(urls,'c'+d.id,d.photoPos)}
       <span class="${s.sc} status-overlay">${s.l}</span>
       <span onclick="event.stopPropagation();toggleLike('${d.id}',event)" style="position:absolute;bottom:5px;right:6px;cursor:pointer;font-size:0.8rem;z-index:2;background:rgba(0,0,0,0.6);padding:2px 5px;border-radius:10px;display:flex;align-items:center;gap:2px;color:#fff;backdrop-filter:blur(4px)"><span style="font-size:0.75rem">${getLikes(d.id).liked?'❤️':'🤍'}</span><span style="font-size:0.65rem;font-weight:600">${getLikes(d.id).count||''}</span></span>
+      ${flagOverlay}
     </div>
     <div class="disc-body">
       <div class="disc-title">${escHtml(d.brand)}</div>
       <div class="disc-model">${escHtml(d.model)}</div>
-      <div class="disc-sub">${flagBadge}${[d.plastic,d.weight?d.weight+(LANG==='ua'?'г':'g'):'',tCity(d.city)].filter(Boolean).map(escHtml).join(' · ')}</div>
+      <div class="disc-sub">${[d.plastic,d.weight?d.weight+(LANG==='ua'?'г':'g'):'',tCity(d.city)].filter(Boolean).map(escHtml).join(' · ')}</div>
       ${condBar(d.condition)}
       <div class="flight-row">
         <div class="fc"><div class="fv">${d.speed||0}</div><div class="fk">Spd</div></div>
@@ -1708,9 +1710,11 @@ function showDetail(id){
   const discCountry=d.country||'ua';
   const discSym=(COUNTRIES[discCountry]&&COUNTRIES[discCountry].symbol)||'₴';
   const showCountryBadge=isWorldFilterOn() || (CU && CU.country && discCountry!==CU.country);
-  const cityFlag=showCountryBadge ? flagImg(discCountry,12)+' ' : '';
+  // Flag overlay on the photo (bottom-left), mirroring the like-badge in the bottom-right.
+  const flagOverlay=showCountryBadge ? `<span style="position:absolute;bottom:10px;left:10px;font-size:0.85rem;z-index:2;background:rgba(0,0,0,0.6);padding:4px 8px;border-radius:12px;display:inline-flex;align-items:center;color:#fff;backdrop-filter:blur(4px)">${flagImg(discCountry,14)}</span>` : '';
   const photos=urls.length?`<div class="detail-photos" id="pw-d${d.id}" style="position:relative">${urls.map((u,i)=>`<img src="${escHtml(u)}" class="${i===0?'active':''}" alt="">`).join('')}${urls.length>1?`<button class="photo-nav prev" onclick="photoNav('d${d.id}',-1)">‹</button><button class="photo-nav next" onclick="photoNav('d${d.id}',1)">›</button>`:''}
     <span onclick="toggleLike('${d.id}',event)" style="position:absolute;bottom:10px;right:10px;cursor:pointer;font-size:0.95rem;z-index:2;background:rgba(0,0,0,0.6);padding:4px 8px;border-radius:12px;display:flex;align-items:center;gap:4px;color:#fff;backdrop-filter:blur(4px)"><span>${getLikes(d.id).liked?'❤️':'🤍'}</span><span style="font-size:0.8rem;font-weight:600">${getLikes(d.id).count||''}</span></span>
+    ${flagOverlay}
   </div>`:`<div style="height:120px;background:var(--s2);border-radius:var(--r2);display:flex;align-items:center;justify-content:center;font-size:3rem;margin-bottom:1rem">🥏</div>`;
   document.getElementById('detailContent').innerHTML=`
     ${photos}
@@ -1733,7 +1737,7 @@ function showDetail(id){
       <div class="detail-info-item"><span class="di-label">${t('weight')}:</span> ${d.weight||'—'}${LANG==='ua'?'г':'g'}</div>
       <div class="detail-info-item"><span class="di-label">${t('color')}:</span> ${escHtml(d.color||'—')}</div>
       ${d.inked?'<div class="detail-info-item"><span style="color:var(--purple)">🖊️ Inked</span></div>':'<div></div>'}
-      ${d.city?`<div class="detail-info-item full"><span class="di-label">${t('city')}:</span> ${cityFlag}${escHtml(tCity(d.city))}</div>`:''}
+      ${d.city?`<div class="detail-info-item full"><span class="di-label">${t('city')}:</span> ${escHtml(tCity(d.city))}</div>`:''}
       <div class="detail-info-item full"><span class="di-label">${t('owner')}:</span> ${escHtml(d.owner||'—')}${tgLinkFull(d.ownerTg,d.owner)}</div>
       ${d.tester&&d.status==='testing'?`<div class="detail-info-item full"><span class="di-label">${t('tester')}:</span> ${escHtml(d.tester)}</div>`:''}
     </div>
